@@ -90,7 +90,7 @@ export default function Itinerary() {
       </div>
 
       {/* Trip List */}
-      <div className="px-6 space-y-3">
+      <div className="px-6 space-y-3.5">
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />

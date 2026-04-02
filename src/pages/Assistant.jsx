@@ -94,7 +94,7 @@ export default function Assistant() {
             <p className="text-xs text-mora-neutral/40 mt-1">Our experts are being onboarded</p>
           </GlassCard>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {assistants.map((assistant) => (
               <Link key={assistant.id} to={`/assistant/profile/${assistant.id}`}>
                  <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">

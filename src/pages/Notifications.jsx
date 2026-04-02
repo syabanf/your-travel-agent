@@ -67,7 +67,7 @@ export default function Notifications() {
         }
       />
 
-      <div className="px-6 space-y-2">
+      <div className="px-6 space-y-3">
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />

@@ -88,7 +88,7 @@ export default function Booking() {
             <p className="text-xs text-mora-neutral/40">Start exploring destinations</p>
           </GlassCard>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {bookings.map((booking) => {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
