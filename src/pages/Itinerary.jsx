@@ -97,6 +97,31 @@ export default function Itinerary() {
         ))}
       </div>
 
+      {/* My Itineraries Section */}
+      {!loading && trips.length > 0 && (
+        <div className="px-6 mb-6">
+          <h2 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">My Itineraries</h2>
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+            {trips.slice(0, 5).map((trip) => (
+              <Link key={trip.id} to={`/itinerary/${trip.id}`}>
+                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-white/10 transition-all">
+                  <p className="text-xs font-semibold text-mora-white truncate">{trip.title}</p>
+                  <p className="text-[10px] text-mora-neutral/50 mt-1">{trip.destination}</p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
+                      trip.status === "active" ? "bg-emerald-500/20 text-emerald-400" :
+                      trip.status === "planned" ? "bg-blue-500/20 text-blue-400" :
+                      trip.status === "completed" ? "bg-slate-500/20 text-slate-400" :
+                      "bg-mora-gold/20 text-gold"
+                    }`}>{trip.status}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="flex gap-1.5 px-6 mb-6">
         {tabs.map((tab) => (
