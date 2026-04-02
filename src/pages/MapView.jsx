@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Link } from "react-router-dom";
+import { Search, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 // Fix leaflet default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,6 +29,49 @@ const destinationCoords = {
   "Paris, France": [48.8566, 2.3522],
 };
 
+const MapSearchControl = ({ onSearch }) => {
+  const [searchInput, setSearchInput] = useState("");
+  const map = useMap();
+
+  const handleSearch = async () => {
+    if (!searchInput.trim()) return;
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchInput)}`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        const [lat, lon] = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        map.setView([lat, lon], 8);
+        onSearch && onSearch(searchInput);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+    }
+  };
+
+  return (
+    <div className="absolute top-4 left-4 right-4 z-[400] flex gap-2">
+      <div className="flex-1 relative">
+        <Input
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+          onKeyPress={e => e.key === "Enter" && handleSearch()}
+          placeholder="Search location..."
+          className="bg-white/10 border-white/20 text-mora-white placeholder:text-mora-neutral/40 rounded-lg h-10 pl-10"
+        />
+        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-gold/60" />
+      </div>
+      <button
+        onClick={handleSearch}
+        className="w-10 h-10 rounded-lg glass-gold flex items-center justify-center text-gold hover:glow-gold transition-all flex-shrink-0"
+      >
+        <Search className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
 export default function MapView() {
   const [trips, setTrips] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -43,7 +88,31 @@ export default function MapView() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Map View" subtitle="Your destinations" showBack />
 
-
+      <div className="px-6 mt-4 mb-4">
+        <GlassCard className="overflow-hidden h-64 p-0">
+          <MapContainer
+            center={[20, 60]}
+            zoom={2}
+            style={{ height: "100%", width: "100%" }}
+            zoomControl={false}
+          >
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+            />
+            <MapSearchControl />
+            {mappedTrips.map(trip => {
+              const coords = destinationCoords[trip.destination];
+              return (
+                <Marker key={trip.id} position={coords}
+                  eventHandlers={{ click: () => setSelected(trip) }}>
+                  <Popup>{trip.title}</Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        </GlassCard>
+      </div>
 
       <div className="px-6">
         <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-4">
