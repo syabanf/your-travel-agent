@@ -40,11 +40,11 @@ export default function MapView() {
   const mappedTrips = trips.filter(t => destinationCoords[t.destination]);
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title="Map View" subtitle="Your destinations" showBack />
 
-      <div className="px-6 mb-4">
-        <div className="rounded-2xl overflow-hidden h-64 border border-white/10">
+      <div className="px-6 mt-4 mb-6">
+        <GlassCard className="overflow-hidden h-72 p-0">
           <MapContainer
             center={[20, 60]}
             zoom={2}
@@ -65,38 +65,22 @@ export default function MapView() {
               );
             })}
           </MapContainer>
-        </div>
+        </GlassCard>
       </div>
 
-      {selected && (
-        <div className="px-6 mb-4">
-          <Link to={`/itinerary/${selected.id}`}>
-            <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
-              {selected.cover_image && (
-                <img src={selected.cover_image} alt={selected.title}
-                  className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
-              )}
-              <div>
-                <p className="text-[10px] text-gold uppercase tracking-widest">Selected</p>
-                <h3 className="text-sm font-semibold text-mora-white">{selected.title}</h3>
-                <p className="text-xs text-mora-neutral/50">{selected.destination}</p>
-              </div>
-            </GlassCard>
-          </Link>
-        </div>
-      )}
-
       <div className="px-6">
-        <h3 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">
+        <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-4">
           Destinations ({mappedTrips.length})
         </h3>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {mappedTrips.map(trip => (
             <Link key={trip.id} to={`/itinerary/${trip.id}`}>
-              <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
+              <GlassCard className={`p-3 flex items-center gap-3 hover:bg-white/10 transition-all ${
+                selected?.id === trip.id ? 'ring-1 ring-gold' : ''
+              }`}>
                 {trip.cover_image && (
                   <img src={trip.cover_image} alt={trip.title}
-                    className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-semibold text-mora-white truncate">{trip.title}</h4>
