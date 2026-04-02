@@ -60,7 +60,7 @@ export default function BottomNav() {
                 >
                   <div className="relative">
                     {isActive && (
-                      <div className="absolute -inset-2 bg-[#A5997E]/10 rounded-xl" />
+                      <div className="absolute -inset-2 bg-[#AD1F23]/10 rounded-xl" />
                     )}
                     <Icon className="w-5 h-5 relative z-10" strokeWidth={isActive ? 2 : 1.5} />
                   </div>
