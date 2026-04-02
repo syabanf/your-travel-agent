@@ -24,7 +24,7 @@ export default function RecentBookings({ bookings = [] }) {
         </Link>
       </div>
       
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {bookings.slice(0, 3).map((booking) => {
           const Icon = typeIcons[booking.type] || Plane;
           return (

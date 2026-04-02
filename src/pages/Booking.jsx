@@ -65,11 +65,11 @@ export default function Booking() {
             <p className="text-xs text-mora-neutral/40">Start exploring destinations</p>
           </GlassCard>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {bookings.map((booking) => {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
-                <Link key={booking.id} to={`/booking/${booking.id}`}>
+                <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
                   <GlassCard className="p-5 hover:bg-white/10 transition-all">
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (

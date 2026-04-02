@@ -13,7 +13,7 @@ const statusColors = {
 
 export default function TripCard({ trip }) {
   return (
-    <Link to={`/itinerary/${trip.id}`}>
+    <Link to={`/itinerary/${trip.id}`} className="block">
       <GlassCard className="overflow-hidden hover:glow-gold transition-all duration-300">
         <div className="flex">
           <div className="w-24 h-24 flex-shrink-0">
