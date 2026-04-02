@@ -96,7 +96,7 @@ export default function Assistant() {
         ) : (
           <div className="space-y-4">
             {assistants.map((assistant) => (
-              <Link key={assistant.id} to={`/assistant/profile/${assistant.id}`}>
+              <Link key={assistant.id} to={`/assistant/profile/${assistant.id}`} className="block">
                  <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
                     {assistant.photo_url ? (

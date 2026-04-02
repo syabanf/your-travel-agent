@@ -87,7 +87,7 @@ export default function Profile() {
       {/* Menu Items */}
       <div className="px-6 space-y-2.5">
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
-          <Link key={label} to={path}>
+          <Link key={label} to={path} className="block">
             <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(165,153,126,0.08)' }}>
                 <Icon className="w-4 h-4 text-gold/70" strokeWidth={1.5} />
