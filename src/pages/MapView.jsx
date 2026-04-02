@@ -43,30 +43,7 @@ export default function MapView() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Map View" subtitle="Your destinations" showBack />
 
-      <div className="px-6 mt-4 mb-6">
-        <GlassCard className="overflow-hidden h-72 p-0">
-          <MapContainer
-            center={[20, 60]}
-            zoom={2}
-            style={{ height: "100%", width: "100%" }}
-            zoomControl={false}
-          >
-            <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-            />
-            {mappedTrips.map(trip => {
-              const coords = destinationCoords[trip.destination];
-              return (
-                <Marker key={trip.id} position={coords}
-                  eventHandlers={{ click: () => setSelected(trip) }}>
-                  <Popup>{trip.title}</Popup>
-                </Marker>
-              );
-            })}
-          </MapContainer>
-        </GlassCard>
-      </div>
+
 
       <div className="px-6">
         <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-4">
