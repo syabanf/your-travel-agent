@@ -45,7 +45,7 @@ export default function Itinerary() {
   });
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader 
         title="My Itineraries" 
         subtitle="Plan & manage your journeys"
