@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div className="px-6 pt-14 pb-2">
+      <div className="px-6 pt-4 pb-2">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-gold tracking-widest uppercase mb-1">{greeting()}</p>

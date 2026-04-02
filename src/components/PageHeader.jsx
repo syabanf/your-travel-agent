@@ -5,7 +5,7 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-between px-6 pt-14 pb-4">
+    <div className="flex items-center justify-between px-6 pt-4 pb-4">
       <div className="flex items-center gap-3">
         {showBack && (
           <button 

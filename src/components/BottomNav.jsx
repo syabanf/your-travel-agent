@@ -13,8 +13,8 @@ export default function BottomNav() {
   const location = useLocation();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
-      <div className="max-w-lg w-full px-4 pb-4">
+    <div className="absolute bottom-0 left-0 right-0 z-50">
+      <div className="px-3 pb-3 pt-1">
         <nav className="glass-nav rounded-2xl px-2 py-2">
           <div className="flex items-center justify-around">
             {navItems.map(({ path, icon: Icon, label }) => {
@@ -32,7 +32,7 @@ export default function BottomNav() {
                       : "text-mora-neutral/60 hover:text-mora-neutral"
                   }`}
                 >
-                  <div className={`relative ${isActive ? "" : ""}`}>
+                  <div className="relative">
                     {isActive && (
                       <div className="absolute -inset-2 bg-[#A5997E]/10 rounded-xl" />
                     )}
