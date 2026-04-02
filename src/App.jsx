@@ -16,6 +16,18 @@ import Booking from './pages/Booking';
 import Assistant from './pages/Assistant';
 import Profile from './pages/Profile';
 import Notifications from './pages/Notifications';
+import CalendarView from './pages/CalendarView';
+import MapView from './pages/MapView';
+import BudgetView from './pages/BudgetView';
+import ChecklistView from './pages/ChecklistView';
+import BookingSearch from './pages/BookingSearch';
+import BookingDetail from './pages/BookingDetail';
+import AssistantProfile from './pages/AssistantProfile';
+import ProfilePreferences from './pages/ProfilePreferences';
+import ProfileTravelers from './pages/ProfileTravelers';
+import ProfilePayments from './pages/ProfilePayments';
+import ProfileSecurity from './pages/ProfileSecurity';
+import ProfileSettings from './pages/ProfileSettings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,13 +59,25 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Home />} />
         <Route path="/itinerary" element={<Itinerary />} />
         <Route path="/itinerary/new" element={<NewTrip />} />
+        <Route path="/itinerary/calendar" element={<CalendarView />} />
+        <Route path="/itinerary/map" element={<MapView />} />
+        <Route path="/itinerary/budget" element={<BudgetView />} />
+        <Route path="/itinerary/checklist" element={<ChecklistView />} />
         <Route path="/itinerary/:tripId" element={<TripDetail />} />
         <Route path="/itinerary/:tripId/add" element={<AddActivity />} />
         <Route path="/itinerary/:tripId/edit" element={<NewTrip />} />
         <Route path="/assistant" element={<Assistant />} />
         <Route path="/assistant/ai" element={<AIAssistant />} />
+        <Route path="/assistant/profile/:assistantId" element={<AssistantProfile />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/booking/search" element={<BookingSearch />} />
+        <Route path="/booking/:bookingId" element={<BookingDetail />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/preferences" element={<ProfilePreferences />} />
+        <Route path="/profile/travelers" element={<ProfileTravelers />} />
+        <Route path="/profile/payments" element={<ProfilePayments />} />
+        <Route path="/profile/security" element={<ProfileSecurity />} />
+        <Route path="/profile/settings" element={<ProfileSettings />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="*" element={<PageNotFound />} />
       </Route>

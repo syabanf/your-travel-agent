@@ -51,7 +51,7 @@ export default function Notifications() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pb-8">
       <PageHeader 
         title="Notifications" 
         showBack 
@@ -67,7 +67,7 @@ export default function Notifications() {
         }
       />
 
-      <div className="px-6 space-y-3">
+      <div className="px-6 space-y-4">
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
@@ -85,7 +85,7 @@ export default function Notifications() {
             return (
               <GlassCard 
                 key={notification.id} 
-                className={`p-4 flex gap-3.5 transition-all ${!notification.is_read ? "border-l-2" : ""}`}
+                className={`p-5 flex gap-4 transition-all ${!notification.is_read ? "border-l-2" : ""}`}
                 style={!notification.is_read ? { borderLeftColor: color } : {}}
                 onClick={() => !notification.is_read && markAsRead(notification.id)}
               >

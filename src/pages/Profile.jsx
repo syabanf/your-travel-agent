@@ -41,12 +41,12 @@ export default function Profile() {
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pb-8">
       <PageHeader title="Profile" showNotification />
 
       {/* Profile Card */}
-      <div className="px-6 mb-5">
-        <GlassCard className="p-5">
+      <div className="px-6 mb-6">
+        <GlassCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#A5997E]/30 to-[#606A54]/20 flex items-center justify-center border border-[#A5997E]/20">
               <span className="text-2xl font-display font-bold text-gold">
@@ -85,10 +85,10 @@ export default function Profile() {
       </div>
 
       {/* Menu Items */}
-      <div className="px-6 space-y-2">
+      <div className="px-6 space-y-2.5">
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
           <Link key={label} to={path}>
-            <GlassCard className="p-3.5 flex items-center gap-3.5 hover:bg-white/10 transition-all">
+            <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(165,153,126,0.08)' }}>
                 <Icon className="w-4 h-4 text-gold/70" strokeWidth={1.5} />
               </div>
@@ -103,7 +103,7 @@ export default function Profile() {
       </div>
 
       {/* Logout */}
-      <div className="px-6 mt-5 mb-8">
+      <div className="px-6 mt-6 mb-8">
         <button
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 py-3.5 glass-light rounded-2xl text-sm font-medium text-red-400/80 hover:text-red-400 transition-all"

@@ -26,11 +26,11 @@ export default function Assistant() {
   }, []);
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pb-8">
       <PageHeader title="Assistant" subtitle="AI & personal travel experts" showNotification />
 
       {/* AI Assistant CTA */}
-      <div className="px-6 mb-5">
+      <div className="px-6 mb-6">
         <Link to="/assistant/ai">
           <div className="relative overflow-hidden rounded-2xl">
             <div className="absolute inset-0 bg-gradient-to-r from-[#A5997E]/15 via-[#2A4631]/50 to-[#606A54]/20 backdrop-blur-xl" />
@@ -57,13 +57,13 @@ export default function Assistant() {
       </div>
 
       {/* Service Packages */}
-      <div className="px-6 mb-6">
+      <div className="px-6 mb-8">
         <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase mb-3">
           Concierge Services
         </h2>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-3">
           {servicePackages.map(({ id, name, desc, price, icon: Icon }) => (
-            <GlassCard key={id} className="p-4 hover:glow-gold transition-all cursor-pointer">
+            <GlassCard key={id} className="p-5 hover:glow-gold transition-all cursor-pointer">
               <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center mb-3">
                 <Icon className="w-5 h-5 text-gold" strokeWidth={1.5} />
               </div>
@@ -94,11 +94,11 @@ export default function Assistant() {
             <p className="text-xs text-mora-neutral/40 mt-1">Our experts are being onboarded</p>
           </GlassCard>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {assistants.map((assistant) => (
               <Link key={assistant.id} to={`/assistant/profile/${assistant.id}`}>
-                 <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">
-                   <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
+                 <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
+                   <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
                     {assistant.photo_url ? (
                       <img src={assistant.photo_url} alt={assistant.name} className="w-full h-full object-cover" />
                     ) : (

@@ -131,18 +131,18 @@ export default function TripDetail() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-2.5 px-6 -mt-2 relative z-10">
-        <GlassCard className="p-3 text-center">
+      <div className="grid grid-cols-3 gap-3 px-6 -mt-2 relative z-10">
+        <GlassCard className="p-4 text-center">
           <p className="text-lg font-display font-bold text-mora-white">{totalDays}</p>
           <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Days</p>
         </GlassCard>
-        <GlassCard className="p-3 text-center">
+        <GlassCard className="p-4 text-center">
           <p className="text-lg font-display font-bold text-gold">
             ${totalBudget.toLocaleString()}
           </p>
           <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Budget</p>
         </GlassCard>
-        <GlassCard className="p-3 text-center">
+        <GlassCard className="p-4 text-center">
           <p className="text-lg font-display font-bold text-mora-white">
             {completedItems}/{items.length}
           </p>
@@ -151,7 +151,7 @@ export default function TripDetail() {
       </div>
 
       {/* Day Timeline */}
-      <div className="px-6 mt-6 space-y-4">
+      <div className="px-6 mt-8 space-y-5 pb-8">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">Itinerary</h2>
           <Link 

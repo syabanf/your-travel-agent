@@ -45,7 +45,7 @@ export default function Itinerary() {
   });
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pb-8">
       <PageHeader 
         title="My Itineraries" 
         subtitle="Plan & manage your journeys"
@@ -61,10 +61,10 @@ export default function Itinerary() {
       />
 
       {/* Quick Links */}
-      <div className="flex gap-2.5 px-6 mb-5 overflow-x-auto hide-scrollbar">
+      <div className="flex gap-3 px-6 mb-6 overflow-x-auto hide-scrollbar">
         {quickLinks.map(({ icon: Icon, label, path }) => (
           <Link key={path} to={path}>
-            <GlassCard className="flex items-center gap-2 px-3.5 py-2.5 whitespace-nowrap">
+            <GlassCard className="flex items-center gap-2.5 px-4 py-3 whitespace-nowrap">
               <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
               <span className="text-xs text-mora-white/80 font-medium">{label}</span>
             </GlassCard>
@@ -73,7 +73,7 @@ export default function Itinerary() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 px-6 mb-5">
+      <div className="flex gap-1.5 px-6 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -90,7 +90,7 @@ export default function Itinerary() {
       </div>
 
       {/* Trip List */}
-      <div className="px-6 space-y-3.5">
+      <div className="px-6 space-y-4">
         {loading ? (
           <div className="flex justify-center py-12">
             <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />

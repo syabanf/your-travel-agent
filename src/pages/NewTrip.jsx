@@ -75,7 +75,7 @@ export default function NewTrip() {
     <div className="animate-fade-in">
       <PageHeader title="New Itinerary" subtitle="Plan your next journey" showBack />
 
-      <div className="px-6 space-y-4 mt-2">
+      <div className="px-6 space-y-5 mt-2">
         {/* AI Suggestion Banner */}
         <button
           onClick={handleAISuggestion}

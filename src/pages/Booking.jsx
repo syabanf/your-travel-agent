@@ -39,12 +39,12 @@ export default function Booking() {
   }, []);
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pb-8">
       <PageHeader title="Booking" subtitle="Find & manage reservations" showNotification />
 
       {/* Search */}
-      <div className="px-6 mb-5">
-        <GlassCard className="p-3 flex items-center gap-3">
+      <div className="px-6 mb-6">
+        <GlassCard className="p-4 flex items-center gap-3">
           <Search className="w-5 h-5 text-mora-neutral/40" />
           <input 
             placeholder="Search destinations, hotels, flights..."
@@ -54,11 +54,11 @@ export default function Booking() {
       </div>
 
       {/* Categories */}
-      <div className="px-6 mb-6">
-        <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-1">
+      <div className="px-6 mb-8">
+        <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2">
           {bookingCategories.map(({ icon: Icon, label, type }) => (
             <Link key={type} to={`/booking/search?type=${type}`}>
-              <GlassCard className="flex flex-col items-center gap-2 p-3 min-w-[72px]">
+              <GlassCard className="flex flex-col items-center gap-2 p-4 min-w-[76px]">
                 <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-gold" strokeWidth={1.5} />
                 </div>
@@ -88,12 +88,12 @@ export default function Booking() {
             <p className="text-xs text-mora-neutral/40">Start exploring destinations</p>
           </GlassCard>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {bookings.map((booking) => {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
                 <Link key={booking.id} to={`/booking/${booking.id}`}>
-                  <GlassCard className="p-4 hover:bg-white/10 transition-all">
+                  <GlassCard className="p-5 hover:bg-white/10 transition-all">
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (
                         <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
