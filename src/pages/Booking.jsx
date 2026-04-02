@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, ChevronRight } from "lucide-react";
+import { Plane, Building2, Train, Bus, Ship, Car, Ticket } from "lucide-react";
 import { Link } from "react-router-dom";
+import OTASearch from "../components/booking/OTASearch";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import moment from "moment";
@@ -42,32 +43,8 @@ export default function Booking() {
     <div className="animate-fade-in pb-8">
       <PageHeader title="Booking" subtitle="Find & manage reservations" showNotification />
 
-      {/* Search */}
-      <div className="px-6 mb-6">
-        <GlassCard className="p-4 flex items-center gap-3">
-          <Search className="w-5 h-5 text-mora-neutral/40" />
-          <input 
-            placeholder="Search destinations, hotels, flights..."
-            className="flex-1 bg-transparent text-sm text-mora-white placeholder:text-mora-neutral/40 outline-none"
-          />
-        </GlassCard>
-      </div>
-
-      {/* Categories */}
-      <div className="px-6 mb-8">
-        <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-2">
-          {bookingCategories.map(({ icon: Icon, label, type }) => (
-            <Link key={type} to={`/booking/search?type=${type}`}>
-              <GlassCard className="flex flex-col items-center gap-2 p-4 min-w-[76px]">
-                <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-gold" strokeWidth={1.5} />
-                </div>
-                <span className="text-[10px] text-mora-white/70 font-medium">{label}</span>
-              </GlassCard>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* OTA Search */}
+      <OTASearch onSaveBooking={() => base44.entities.Booking.list("-created_date", 50).then(setBookings)} />
 
       {/* Recent Bookings */}
       <div className="px-6">
