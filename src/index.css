@@ -9,24 +9,24 @@
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
 
-    --background: 217 92% 5%;
-    --foreground: 30 100% 99%;
-    --card: 217 92% 8%;
-    --card-foreground: 30 100% 99%;
-    --popover: 217 92% 6%;
-    --popover-foreground: 30 100% 99%;
+    --background: 50 70% 98%;
+    --foreground: 217 92% 10%;
+    --card: 50 100% 99%;
+    --card-foreground: 217 92% 10%;
+    --popover: 50 100% 99%;
+    --popover-foreground: 217 92% 10%;
     --primary: 217 92% 10%;
     --primary-foreground: 30 100% 99%;
-    --secondary: 217 92% 20%;
+    --secondary: 217 50% 40%;
     --secondary-foreground: 30 100% 99%;
-    --muted: 217 50% 35%;
-    --muted-foreground: 30 20% 75%;
+    --muted: 217 20% 70%;
+    --muted-foreground: 217 20% 50%;
     --accent: 357 91% 45%;
     --accent-foreground: 30 100% 99%;
     --destructive: 357 91% 45%;
     --destructive-foreground: 30 100% 99%;
-    --border: 217 92% 15%;
-    --input: 217 92% 12%;
+    --border: 217 30% 85%;
+    --input: 217 30% 92%;
     --ring: 357 91% 45%;
     --chart-1: 217 92% 10%;
     --chart-2: 357 91% 45%;
@@ -35,13 +35,13 @@
     --chart-5: 30 100% 99%;
     --radius: 1rem;
 
-    --sidebar-background: 217 92% 5%;
-    --sidebar-foreground: 30 100% 99%;
-    --sidebar-primary: 217 92% 20%;
+    --sidebar-background: 50 70% 98%;
+    --sidebar-foreground: 217 92% 10%;
+    --sidebar-primary: 217 92% 10%;
     --sidebar-primary-foreground: 30 100% 99%;
     --sidebar-accent: 357 91% 45%;
     --sidebar-accent-foreground: 30 100% 99%;
-    --sidebar-border: 217 92% 15%;
+    --sidebar-border: 217 30% 85%;
     --sidebar-ring: 357 91% 45%;
 
     --mora-deep-blue: #05308C;
@@ -95,15 +95,15 @@
   }
   body {
     @apply bg-background text-foreground font-body;
-    background: linear-gradient(135deg, #0A0A3A 0%, #05308C 25%, #0A0A3A 50%, #030820 75%, #0A0A3A 100%);
+    background: linear-gradient(135deg, #FEFDF8 0%, #F8FAFD 40%, #F2F7FC 70%, #FEFDF8 100%);
     min-height: 100vh;
     overscroll-behavior: none;
     position: fixed;
     width: 100%;
     height: 100%;
   }
-  body.light {
-    background: linear-gradient(135deg, #FEFDF8 0%, #F8FAFD 40%, #F2F7FC 70%, #FEFDF8 100%);
+  body.dark {
+    background: linear-gradient(135deg, #0A0A3A 0%, #05308C 25%, #0A0A3A 50%, #030820 75%, #0A0A3A 100%);
   }
   button, a[role="button"], nav a {
     -webkit-user-select: none;

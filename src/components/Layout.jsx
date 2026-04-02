@@ -24,9 +24,9 @@ export default function Layout() {
       <div className="w-full md:w-[393px] h-screen md:h-[852px] relative md:rounded-[48px] md:overflow-hidden md:shadow-[0_0_0_10px_#1a1a1a,0_0_0_12px_#333,0_40px_80px_rgba(0,0,0,0.8)] flex flex-col">
         {/* Background */}
         <div className="fixed md:absolute inset-0 z-0 md:rounded-[48px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0A0A3A] via-[#05308C] to-[#050520]" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#AD1F23]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-32 left-0 w-80 h-80 bg-[#05308C]/10 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FEFDF8] via-[#F8FAFD] to-[#F2F7FC]" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#05308C]/3 rounded-full blur-3xl" />
+          <div className="absolute bottom-32 left-0 w-80 h-80 bg-[#AD1F23]/2 rounded-full blur-3xl" />
         </div>
 
         {/* Status Bar */}
