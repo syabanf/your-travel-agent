@@ -93,7 +93,7 @@ export default function Itinerary() {
           <Link key={path} to={path}>
             <GlassCard className="flex items-center gap-2.5 px-4 py-3 whitespace-nowrap">
               <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
-              <span className="text-xs text-mora-white/80 font-medium">{label}</span>
+              <span className="text-xs text-mora-primary font-medium">{label}</span>
             </GlassCard>
           </Link>
         ))}
@@ -102,13 +102,13 @@ export default function Itinerary() {
       {/* My Itineraries Section */}
       {!loading && trips.length > 0 && (
         <div className="px-6 mb-6">
-          <h2 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">My Itineraries</h2>
+          <h2 className="text-xs font-semibold text-mora-primary uppercase tracking-widest mb-3">My Itineraries</h2>
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
             {trips.slice(0, 5).map((trip) => (
               <Link key={trip.id} to={`/itinerary/${trip.id}`}>
-                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-white/10 transition-all">
-                  <p className="text-xs font-semibold text-mora-white truncate">{trip.title}</p>
-                  <p className="text-[10px] text-mora-neutral/50 mt-1">{trip.destination}</p>
+                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-mora-primary/5 transition-all">
+                 <p className="text-xs font-semibold text-mora-primary truncate">{trip.title}</p>
+                 <p className="text-[10px] text-mora-neutral mt-1">{trip.destination}</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
                       trip.status === "active" ? "bg-emerald-500/20 text-emerald-400" :
@@ -133,7 +133,7 @@ export default function Itinerary() {
             className={`px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
               activeTab === tab.id
                 ? "glass-gold text-gold"
-                : "text-mora-neutral/60 hover:text-mora-neutral"
+                : "text-mora-neutral hover:text-mora-primary"
             }`}
           >
             {tab.label}
@@ -150,8 +150,8 @@ export default function Itinerary() {
         ) : filteredTrips.length === 0 ? (
           <GlassCard className="p-8 text-center">
             <Map className="w-10 h-10 text-mora-neutral/30 mx-auto mb-3" />
-            <p className="text-sm text-mora-neutral/60 mb-1">No trips found</p>
-            <p className="text-xs text-mora-neutral/40">Create your first itinerary to get started</p>
+            <p className="text-sm text-mora-neutral mb-1">No trips found</p>
+            <p className="text-xs text-mora-neutral/70">Create your first itinerary to get started</p>
             <Link 
               to="/itinerary/new"
               className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"

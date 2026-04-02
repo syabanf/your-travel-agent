@@ -3,10 +3,10 @@ import { MapPin, Sparkles, CalendarSearch, MessageCircle } from "lucide-react";
 import GlassCard from "../GlassCard";
 
 const actions = [
-  { icon: MapPin, label: "Create\nItinerary", path: "/itinerary/new", color: "#A5997E" },
-  { icon: Sparkles, label: "AI\nAssistant", path: "/assistant/ai", color: "#BCC3BD" },
-  { icon: CalendarSearch, label: "Book\nTravel", path: "/booking", color: "#A5997E" },
-  { icon: MessageCircle, label: "Personal\nAssistant", path: "/assistant", color: "#BCC3BD" },
+  { icon: MapPin, label: "Create\nItinerary", path: "/itinerary/new", color: "#05308C" },
+  { icon: Sparkles, label: "AI\nAssistant", path: "/assistant/ai", color: "#AD1F23" },
+  { icon: CalendarSearch, label: "Book\nTravel", path: "/booking", color: "#05308C" },
+  { icon: MessageCircle, label: "Personal\nAssistant", path: "/assistant", color: "#0A0A3A" },
 ];
 
 export default function QuickActions() {
@@ -21,7 +21,7 @@ export default function QuickActions() {
             >
               <Icon className="w-5 h-5" style={{ color }} strokeWidth={1.5} />
             </div>
-            <span className="text-[11px] text-mora-white/80 text-center leading-tight whitespace-pre-line font-medium">
+            <span className="text-[11px] text-mora-primary text-center leading-tight whitespace-pre-line font-medium">
               {label}
             </span>
           </GlassCard>
