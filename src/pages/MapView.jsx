@@ -158,7 +158,7 @@ export default function MapView() {
         <div className="space-y-3">
           {mappedTrips.map(trip => (
             <Link key={trip.id} to={`/itinerary/${trip.id}`}>
-              <GlassCard className={`p-3 flex items-center gap-3 hover:bg-white/10 transition-all ${
+              <GlassCard className={`p-4 flex items-center gap-4 hover:bg-white/10 transition-all ${
                 selected?.id === trip.id ? 'ring-1 ring-gold' : ''
               }`}>
                 {trip.cover_image && (
