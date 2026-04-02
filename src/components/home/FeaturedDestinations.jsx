@@ -13,7 +13,7 @@ export default function FeaturedDestinations() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">
+        <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">
           Featured Destinations
         </h2>
         <button className="text-xs text-gold flex items-center gap-1">
