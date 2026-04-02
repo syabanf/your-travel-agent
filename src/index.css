@@ -95,12 +95,9 @@
   }
   body {
     @apply bg-background text-foreground font-body;
-    background: linear-gradient(160deg, #f5f0e8 0%, #ede5d5 30%, #e8dfc8 60%, #f0ebe0 100%);
+    background: linear-gradient(160deg, #1a2e22 0%, #2A4631 30%, #1f3529 60%, #162a1e 100%);
     min-height: 100vh;
     overscroll-behavior: none;
-  }
-  .dark body {
-    background: linear-gradient(160deg, #1a2e22 0%, #2A4631 30%, #1f3529 60%, #162a1e 100%);
   }
   button, a[role="button"], nav a {
     -webkit-user-select: none;
@@ -116,89 +113,46 @@
   .font-body {
     font-family: var(--font-body);
   }
-  /* ── Dark mode glass utilities ── */
-  .dark .glass {
+  .glass {
     background: rgba(42, 70, 49, 0.35);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(252, 252, 252, 0.08);
   }
-  .dark .glass-light {
+  .glass-light {
     background: rgba(252, 252, 252, 0.06);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(252, 252, 252, 0.1);
   }
-  .dark .glass-card {
+  .glass-card {
     background: rgba(188, 195, 189, 0.08);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(252, 252, 252, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(252, 252, 252, 0.05);
   }
-  .dark .glass-gold {
+  .glass-gold {
     background: rgba(165, 153, 126, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(165, 153, 126, 0.2);
   }
-  .dark .glass-nav {
+  .glass-nav {
     background: rgba(26, 46, 34, 0.75);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(252, 252, 252, 0.08);
     box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.2);
   }
-  /* ── Light mode glass utilities ── */
-  .glass {
-    background: rgba(255, 252, 245, 0.55);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(139, 115, 85, 0.15);
-  }
-  .glass-light {
-    background: rgba(255, 252, 245, 0.45);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 115, 85, 0.12);
-  }
-  .glass-card {
-    background: rgba(255, 252, 248, 0.72);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(139, 115, 85, 0.14);
-    box-shadow: 0 4px 24px rgba(90, 70, 40, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
-  }
-  .glass-gold {
-    background: rgba(139, 115, 85, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 115, 85, 0.25);
-  }
-  .glass-nav {
-    background: rgba(245, 240, 232, 0.88);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(139, 115, 85, 0.15);
-    box-shadow: 0 -4px 20px rgba(90, 70, 40, 0.08);
-  }
-  .dark .text-gold { color: #A5997E; }
-  .dark .text-mora-white { color: #FCFCFC; }
-  .dark .text-mora-neutral { color: #BCC3BD; }
-  .dark .text-mora-green-light { color: #606A54; }
-  .dark .bg-mora-green { background-color: #2A4631; }
-  .dark .bg-mora-gold { background-color: #A5997E; }
-  .dark .border-gold { border-color: rgba(165, 153, 126, 0.3); }
-  .dark .glow-gold { box-shadow: 0 0 20px rgba(165, 153, 126, 0.15), 0 0 60px rgba(165, 153, 126, 0.05); }
-  /* Light mode text/color utilities */
-  .text-gold { color: #8B7355; }
-  .text-mora-white { color: #2A3828; }
-  .text-mora-neutral { color: #5A6B5C; }
-  .text-mora-green-light { color: #4A5E3A; }
-  .bg-mora-green { background-color: #3A5C44; }
-  .bg-mora-gold { background-color: #8B7355; }
-  .border-gold { border-color: rgba(139, 115, 85, 0.3); }
-  .glow-gold { box-shadow: 0 0 20px rgba(139, 115, 85, 0.2), 0 0 60px rgba(139, 115, 85, 0.08); }
+  .text-gold { color: #A5997E; }
+  .text-mora-white { color: #FCFCFC; }
+  .text-mora-neutral { color: #BCC3BD; }
+  .text-mora-green-light { color: #606A54; }
+  .bg-mora-green { background-color: #2A4631; }
+  .bg-mora-gold { background-color: #A5997E; }
+  .border-gold { border-color: rgba(165, 153, 126, 0.3); }
+  .glow-gold { box-shadow: 0 0 20px rgba(165, 153, 126, 0.15), 0 0 60px rgba(165, 153, 126, 0.05); }
   .gradient-premium {
     background: linear-gradient(135deg, rgba(42, 70, 49, 0.6) 0%, rgba(96, 106, 84, 0.4) 50%, rgba(42, 70, 49, 0.6) 100%);
   }
