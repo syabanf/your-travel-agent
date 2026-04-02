@@ -167,7 +167,7 @@ export default function MapView() {
                 )}
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-semibold text-mora-white truncate">{trip.title}</h4>
-                  <p className="text-xs text-mora-neutral/50">{trip.destination}</p>
+                  <p className="text-xs text-mora-neutral/50 mt-1">{trip.destination}</p>
                 </div>
               </GlassCard>
             </Link>
