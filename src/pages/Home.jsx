@@ -50,6 +50,22 @@ export default function Home() {
     );
   }
 
+  // Guest mode
+  if (!user) {
+    return (
+      <div className="animate-fade-in flex flex-col items-center justify-center min-h-screen px-6 text-center">
+        <h1 className="text-3xl font-display font-semibold text-mora-white mb-3">Welcome to MORA</h1>
+        <p className="text-mora-neutral/70 mb-8">Sign in to plan your next adventure</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 glass-gold rounded-xl text-gold font-medium hover:glow-gold transition-all"
+        >
+          Sign In
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in">
       {/* Header */}
