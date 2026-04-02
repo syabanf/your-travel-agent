@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
-import { Calendar, MapPin, Users, DollarSign, Compass, Zap } from "lucide-react";
+import { MapPin, Users, DollarSign, Sparkles, Loader2 } from "lucide-react";
 
 const travelStyles = ["luxury", "adventure", "cultural", "relaxation", "business", "family", "budget"];
 const paceOptions = ["relaxed", "moderate", "packed"];
@@ -27,6 +27,36 @@ export default function NewTrip() {
     status: "draft",
   });
   const [saving, setSaving] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleAISuggestion = async () => {
+    if (!form.destination) return;
+    setAiLoading(true);
+    const res = await base44.integrations.Core.InvokeLLM({
+      prompt: `Suggest a luxury travel itinerary plan for a trip to ${form.destination}. Based on the destination, suggest: a catchy trip title, the best travel style (one of: luxury, adventure, cultural, relaxation, business, family, budget), ideal pace (one of: relaxed, moderate, packed), trip type (one of: solo, couple, family, business, luxury, group), ideal number of travelers, and a short notes/highlights string. Be concise.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          travel_style: { type: "string" },
+          pace: { type: "string" },
+          trip_type: { type: "string" },
+          travelers: { type: "number" },
+          notes: { type: "string" }
+        }
+      }
+    });
+    setForm(prev => ({
+      ...prev,
+      title: res.title || prev.title,
+      travel_style: res.travel_style || prev.travel_style,
+      pace: res.pace || prev.pace,
+      trip_type: res.trip_type || prev.trip_type,
+      travelers: res.travelers || prev.travelers,
+      notes: res.notes || prev.notes,
+    }));
+    setAiLoading(false);
+  };
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -46,6 +76,21 @@ export default function NewTrip() {
       <PageHeader title="New Itinerary" subtitle="Plan your next journey" showBack />
 
       <div className="px-6 space-y-4 mt-2">
+        {/* AI Suggestion Banner */}
+        <button
+          onClick={handleAISuggestion}
+          disabled={!form.destination || aiLoading}
+          className="w-full glass-gold rounded-2xl p-4 flex items-center gap-3 hover:glow-gold transition-all disabled:opacity-40"
+        >
+          <div className="w-10 h-10 rounded-xl bg-mora-gold/20 flex items-center justify-center flex-shrink-0">
+            {aiLoading ? <Loader2 className="w-5 h-5 text-gold animate-spin" /> : <Sparkles className="w-5 h-5 text-gold" />}
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-semibold text-gold">{aiLoading ? "Generating suggestions..." : "AI Suggestion"}</p>
+            <p className="text-[11px] text-mora-neutral/60">Enter destination first, then auto-fill your trip details</p>
+          </div>
+        </button>
+
         {/* Title & Destination */}
         <GlassCard className="p-4 space-y-3">
           <div>
