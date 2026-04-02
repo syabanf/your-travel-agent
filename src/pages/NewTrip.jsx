@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
-import { MapPin, Users, DollarSign, Sparkles, Loader2 } from "lucide-react";
+import { MapPin, Users, DollarSign, Sparkles, Loader2, Wand2 } from "lucide-react";
 
 const travelStyles = ["luxury", "adventure", "cultural", "relaxation", "business", "family", "budget"];
 const paceOptions = ["relaxed", "moderate", "packed"];
@@ -28,6 +28,7 @@ export default function NewTrip() {
   });
   const [saving, setSaving] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   const handleAISuggestion = async () => {
     if (!form.destination) return;
@@ -59,6 +60,70 @@ export default function NewTrip() {
   };
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const handleGenerateFullTrip = async () => {
+    if (!form.destination) return;
+    setAiGenerating(true);
+    const res = await base44.integrations.Core.InvokeLLM({
+      prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
+        form.start_date ? ` from ${form.start_date}` : ''
+      }${
+        form.end_date ? ` to ${form.end_date}` : ' for 3 days'
+      }. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in USD, and a full list of activities per day.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          notes: { type: "string" },
+          budget_total: { type: "number" },
+          activities: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                day: { type: "number" },
+                time: { type: "string" },
+                name: { type: "string" },
+                location: { type: "string" },
+                description: { type: "string" },
+                budget: { type: "number" },
+                category: { type: "string" },
+                duration_minutes: { type: "number" }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const trip = await base44.entities.Trip.create({
+      ...form,
+      title: res.title || form.title || `${form.destination} Adventure`,
+      notes: res.notes || form.notes,
+      budget_total: res.budget_total || (form.budget_total ? Number(form.budget_total) : undefined),
+      status: "planned",
+      is_ai_generated: true,
+    });
+
+    if (res.activities?.length > 0) {
+      for (const act of res.activities) {
+        await base44.entities.ItineraryItem.create({
+          trip_id: trip.id,
+          day_number: act.day || 1,
+          time: act.time || "",
+          activity_name: act.name,
+          location: act.location || "",
+          description: act.description || "",
+          budget: act.budget || 0,
+          category: act.category || "activity",
+          duration_minutes: act.duration_minutes || 60,
+          booking_status: "not_booked",
+        });
+      }
+    }
+
+    navigate(`/itinerary/${trip.id}`);
+  };
 
   const handleSave = async (status = "draft") => {
     if (!form.title || !form.destination) return;
@@ -232,6 +297,16 @@ export default function NewTrip() {
             ))}
           </div>
         </GlassCard>
+
+        {/* Generate with AI button */}
+        <button
+          onClick={handleGenerateFullTrip}
+          disabled={!form.destination || aiGenerating}
+          className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-gradient-to-r from-[#A5997E]/30 to-[#606A54]/20 border border-[#A5997E]/30 text-gold hover:glow-gold"
+        >
+          {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
+          {aiGenerating ? "Generating your trip..." : "✨ Generate Full Trip with AI"}
+        </button>
 
         {/* Actions */}
         <div className="flex gap-3 pb-6">
