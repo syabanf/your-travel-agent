@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation } from "lucide-react";
+import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation, Map } from "lucide-react";
 import GlassCard from "../GlassCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import moment from "moment";
 
@@ -17,6 +17,7 @@ const categoryColors = {
 };
 
 export default function DayTimeline({ dayNumber, date, items: initialItems, tripId }) {
+  const navigate = useNavigate();
   const [items, setItems] = useState(initialItems);
 
   // Sync if parent items change
@@ -92,15 +93,21 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                       {item.activity_name}
                     </h4>
                     {item.location && (
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] text-mora-neutral/50 flex items-center gap-1 mt-0.5 hover:text-gold transition-colors"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <Navigation className="w-2.5 h-2.5" /> {item.location}
-                      </a>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <button
+                          onClick={() => navigate(`/itinerary/map?location=${encodeURIComponent(item.location)}`)}
+                          className="text-[10px] text-mora-neutral/50 flex items-center gap-1 hover:text-gold transition-colors"
+                        >
+                          <MapPin className="w-3 h-3" /> {item.location}
+                        </button>
+                        <button
+                          onClick={() => navigate(`/itinerary/map?location=${encodeURIComponent(item.location)}`)}
+                          className="w-5 h-5 flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
+                          title="View on map"
+                        >
+                          <Map className="w-3 h-3" />
+                        </button>
+                      </div>
                     )}
                     {item.budget > 0 && (
                       <span className="text-[10px] text-gold/70 mt-0.5 inline-block">${item.budget}</span>
