@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation } from "lucide-react";
@@ -13,6 +15,7 @@ const categories = ["transport", "accommodation", "dining", "attraction", "activ
 export default function AddActivity() {
   const { tripId } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const dayParam = urlParams.get("day");
 
@@ -40,12 +43,17 @@ export default function AddActivity() {
   const handleSave = async () => {
     if (!form.activity_name) return;
     setSaving(true);
-    await base44.entities.ItineraryItem.create({
-      ...form,
-      duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,
-      budget: form.budget ? Number(form.budget) : undefined,
-    });
-    navigate(`/itinerary/${tripId}`);
+    try {
+      await base44.entities.ItineraryItem.create({
+        ...form,
+        duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,
+        budget: form.budget ? Number(form.budget) : undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: ["itinerary", tripId] });
+      navigate(`/itinerary/${tripId}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -90,11 +98,11 @@ export default function AddActivity() {
             </div>
             <div>
               <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Time</label>
-              <Input 
+              <DateTimePicker 
                 type="time"
                 value={form.time}
-                onChange={e => update("time", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
+                onChange={v => update("time", v)}
+                label="Activity Time"
               />
             </div>
             <div>

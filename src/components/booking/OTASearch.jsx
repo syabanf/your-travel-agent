@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import GlassCard from "../GlassCard";
+import DateTimePicker from "../DateTimePicker";
 
 const tabs = [
   { key: "my_bookings", label: "My Bookings", icon: Ticket },
@@ -22,6 +24,7 @@ const statusColors = {
 };
 
 export default function OTASearch({ onSaveBooking }) {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("my_bookings");
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
@@ -94,26 +97,27 @@ export default function OTASearch({ onSaveBooking }) {
   };
 
   const handleBook = async (item) => {
-    let bookingData = {};
-    if (activeTab === "flight") {
-      bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
-    } else if (activeTab === "hotel") {
-      bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
-    } else if (activeTab === "train") {
-      bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
-    } else if (activeTab === "bus") {
-      bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
-    } else if (activeTab === "ship") {
-      bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
-    } else if (activeTab === "car_rental") {
-      bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
-    } else if (activeTab === "attraction") {
-      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
-    }
-    await base44.entities.Booking.create(bookingData);
-    if (onSaveBooking) onSaveBooking();
-    loadMyBookings();
-    alert("Booking saved to your reservations!");
+   let bookingData = {};
+   if (activeTab === "flight") {
+     bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
+   } else if (activeTab === "hotel") {
+     bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
+   } else if (activeTab === "train") {
+     bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
+   } else if (activeTab === "bus") {
+     bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
+   } else if (activeTab === "ship") {
+     bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
+   } else if (activeTab === "car_rental") {
+     bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
+   } else if (activeTab === "attraction") {
+     bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
+   }
+   await base44.entities.Booking.create(bookingData);
+   queryClient.invalidateQueries({ queryKey: ["bookings"] });
+   if (onSaveBooking) onSaveBooking();
+   loadMyBookings();
+   alert("Booking saved to your reservations!");
   };
 
   return (
@@ -186,28 +190,28 @@ export default function OTASearch({ onSaveBooking }) {
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             {(activeTab === "hotel" || activeTab === "car_rental") ? (
-              <>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
-                  <input type="date" value={form.checkin} onChange={e => upd("checkin", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
-                  <input type="date" value={form.checkout} onChange={e => upd("checkout", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-                </div>
-              </>
-            ) : (
-              <div>
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Date</label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                  <input type="date" value={form.date} onChange={e => upd("date", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-                </div>
-              </div>
-            )}
+                <>
+                  <DateTimePicker 
+                    type="date"
+                    value={form.checkin}
+                    onChange={v => upd("checkin", v)}
+                    label={activeTab === "car_rental" ? "Pickup Date" : "Check-in"}
+                  />
+                  <DateTimePicker 
+                    type="date"
+                    value={form.checkout}
+                    onChange={v => upd("checkout", v)}
+                    label={activeTab === "car_rental" ? "Return Date" : "Check-out"}
+                  />
+                </>
+              ) : (
+                <DateTimePicker 
+                  type="date"
+                  value={form.date}
+                  onChange={v => upd("date", v)}
+                  label="Travel Date"
+                />
+              )}
             <div className={(activeTab === "hotel" || activeTab === "car_rental") ? "hidden" : ""}>
               <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
               <div className="relative">

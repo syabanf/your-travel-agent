@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { MapPin, Users, DollarSign, Sparkles, Loader2, Wand2 } from "lucide-react";
 
@@ -12,6 +14,7 @@ const tripTypes = ["solo", "couple", "family", "business", "luxury", "group"];
 
 export default function NewTrip() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [form, setForm] = useState({
     title: "",
     destination: "",
@@ -128,12 +131,17 @@ export default function NewTrip() {
   const handleSave = async (status = "draft") => {
     if (!form.title || !form.destination) return;
     setSaving(true);
-    const trip = await base44.entities.Trip.create({
-      ...form,
-      status,
-      budget_total: form.budget_total ? Number(form.budget_total) : undefined,
-    });
-    navigate(`/itinerary/${trip.id}`);
+    try {
+      const trip = await base44.entities.Trip.create({
+        ...form,
+        status,
+        budget_total: form.budget_total ? Number(form.budget_total) : undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: ["trips"] });
+      navigate(`/itinerary/${trip.id}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -183,27 +191,27 @@ export default function NewTrip() {
 
         {/* Dates */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Dates</label>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-[10px] text-mora-neutral/50 mb-1">From</p>
-              <Input 
-                type="date"
-                value={form.start_date}
-                onChange={e => update("start_date", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
-              />
-            </div>
-            <div>
-              <p className="text-[10px] text-mora-neutral/50 mb-1">To</p>
-              <Input 
-                type="date"
-                value={form.end_date}
-                onChange={e => update("end_date", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
-              />
-            </div>
-          </div>
+         <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Dates</label>
+         <div className="grid grid-cols-2 gap-3">
+           <div>
+             <p className="text-[10px] text-mora-neutral/50 mb-1">From</p>
+             <DateTimePicker 
+               type="date"
+               value={form.start_date}
+               onChange={v => update("start_date", v)}
+               label="Departure Date"
+             />
+           </div>
+           <div>
+             <p className="text-[10px] text-mora-neutral/50 mb-1">To</p>
+             <DateTimePicker 
+               type="date"
+               value={form.end_date}
+               onChange={v => update("end_date", v)}
+               label="Return Date"
+             />
+           </div>
+         </div>
         </GlassCard>
 
         {/* Travelers & Budget */}
