@@ -57,7 +57,7 @@ export default function Home() {
         <h1 className="text-3xl font-display font-semibold text-mora-white mb-3">Welcome to MORA</h1>
         <p className="text-mora-neutral/70 mb-8">Sign in to plan your next adventure</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => base44.auth.redirectToLogin()}
           className="px-6 py-3 glass-gold rounded-xl text-gold font-medium hover:glow-gold transition-all"
         >
           Sign In
