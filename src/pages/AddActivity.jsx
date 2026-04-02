@@ -7,7 +7,7 @@ import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation } from "lucide-react";
+import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const categories = ["transport", "accommodation", "dining", "attraction", "activity", "shopping", "rest", "other"];
@@ -73,14 +73,23 @@ export default function AddActivity() {
           </div>
           <div>
             <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Location</label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
-              <Input 
-                value={form.location}
-                onChange={e => update("location", e.target.value)}
-                placeholder="Location or address"
-                className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 pl-10"
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
+                <Input 
+                  value={form.location}
+                  onChange={e => update("location", e.target.value)}
+                  placeholder="Location or address"
+                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 pl-10 w-full"
+                />
+              </div>
+              <button
+                onClick={() => navigate(`/itinerary/map?callback=/itinerary/${tripId}/add?day=${form.day_number}`)}
+                className="flex items-center gap-1.5 px-3 h-11 glass-gold rounded-xl text-xs font-semibold text-gold hover:glow-gold transition-all flex-shrink-0"
+                title="Browse map to find location"
+              >
+                <Map className="w-3.5 h-3.5" /> Browse
+              </button>
             </div>
           </div>
         </GlassCard>
