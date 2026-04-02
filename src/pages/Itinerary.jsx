@@ -54,15 +54,17 @@ export default function Itinerary() {
     }
   };
 
-  const filteredTrips = trips.filter((trip) => {
-    switch (activeTab) {
-      case "upcoming": return trip.status === "planned";
-      case "active": return trip.status === "active";
-      case "draft": return trip.status === "draft";
-      case "past": return trip.status === "completed";
-      default: return true;
-    }
-  });
+  const filteredTrips = trips
+    .filter((trip) => {
+      switch (activeTab) {
+        case "upcoming": return trip.status === "planned";
+        case "active": return trip.status === "active";
+        case "draft": return trip.status === "draft";
+        case "past": return trip.status === "completed";
+        default: return true;
+      }
+    })
+    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
   return (
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
