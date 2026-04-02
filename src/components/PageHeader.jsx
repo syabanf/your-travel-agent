@@ -10,15 +10,15 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
         {showBack && (
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-white/80 hover:text-mora-white transition-colors"
+            className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
         <div>
-          <h1 className="text-xl font-display font-semibold text-mora-white">{title}</h1>
+          <h1 className="text-xl font-display font-semibold text-mora-primary">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-mora-neutral/70 mt-0.5">{subtitle}</p>
+            <p className="text-sm text-mora-neutral mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
@@ -27,7 +27,7 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
         {showNotification && (
           <Link 
             to="/notifications"
-            className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral/70 hover:text-gold transition-colors relative"
+            className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors relative"
           >
             <Bell className="w-5 h-5" />
             <div className="absolute top-2 right-2 w-2 h-2 bg-mora-gold rounded-full" />

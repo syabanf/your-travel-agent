@@ -105,6 +105,18 @@
   body.dark {
     background: linear-gradient(135deg, #0A0A3A 0%, #05308C 25%, #0A0A3A 50%, #030820 75%, #0A0A3A 100%);
   }
+  body {
+    --text-primary: #0A0A3A;
+    --text-secondary: #5A6B7F;
+    --text-tertiary: #8A9BB5;
+    --text-accent: #AD1F23;
+  }
+  body.dark {
+    --text-primary: #FEFDF8;
+    --text-secondary: #B8C5D6;
+    --text-tertiary: #7A8699;
+    --text-accent: #AD1F23;
+  }
   button, a[role="button"], nav a {
     -webkit-user-select: none;
     user-select: none;
@@ -161,13 +173,19 @@
     color: #AD1F23;
   }
   .text-mora-white {
-    color: #FEFDF8;
+    color: #05308C;
   }
   .text-mora-neutral {
-    color: #B8C5D6;
+    color: #5A6B7F;
+  }
+  .text-mora-neutral-light {
+    color: #8A9BB5;
   }
   .text-mora-green-light {
     color: #05308C;
+  }
+  .text-mora-primary {
+    color: #0A0A3A;
   }
   .bg-mora-green {
     background-color: #05308C;

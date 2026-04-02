@@ -78,8 +78,8 @@ export default function Home() {
   if (!user) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center min-h-screen px-6 text-center">
-        <h1 className="text-3xl font-display font-semibold text-mora-white mb-3">Welcome to MORA</h1>
-        <p className="text-mora-neutral/70 mb-8">Sign in to plan your next adventure</p>
+        <h1 className="text-3xl font-display font-semibold text-mora-primary mb-3">Welcome to MORA</h1>
+        <p className="text-mora-neutral mb-8">Sign in to plan your next adventure</p>
         <button
           onClick={() => base44.auth.redirectToLogin()}
           className="px-6 py-3 glass-gold rounded-xl text-gold font-medium hover:glow-gold transition-all"
@@ -102,20 +102,20 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-gold tracking-widest uppercase mb-1">{greeting()}</p>
-            <h1 className="text-2xl font-display font-semibold text-mora-white">
+            <h1 className="text-2xl font-display font-semibold text-mora-primary">
               {user?.full_name?.split(" ")[0] || "Traveler"}
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <Link 
               to="/itinerary"
-              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral/70 hover:text-gold transition-colors"
+              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors"
             >
               <Search className="w-5 h-5" />
             </Link>
             <Link 
               to="/notifications"
-              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral/70 hover:text-gold transition-colors relative"
+              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors relative"
             >
               <Bell className="w-5 h-5" />
               <div className="absolute top-2 right-2 w-2 h-2 bg-mora-gold rounded-full" />
