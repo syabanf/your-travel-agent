@@ -11,7 +11,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center p-0 md:p-6">
       {/* Device frame — only visible on desktop */}
-      <div className="w-full md:w-[393px] md:min-h-[852px] relative md:rounded-[48px] md:overflow-hidden md:shadow-[0_0_0_10px_#1a1a1a,0_0_0_12px_#333,0_40px_80px_rgba(0,0,0,0.8)] flex flex-col">
+      <div className="w-full md:w-[393px] h-screen md:h-[852px] relative md:rounded-[48px] md:overflow-hidden md:shadow-[0_0_0_10px_#1a1a1a,0_0_0_12px_#333,0_40px_80px_rgba(0,0,0,0.8)] flex flex-col">
         {/* Background */}
         <div className="fixed md:absolute inset-0 z-0 md:rounded-[48px] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a2e22] via-[#2A4631] to-[#162a1e]" />
