@@ -61,7 +61,7 @@ export default function BudgetView() {
   );
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title="Budget Tracker" subtitle="Monitor your travel expenses" showBack />
 
       {/* Trip selector */}
