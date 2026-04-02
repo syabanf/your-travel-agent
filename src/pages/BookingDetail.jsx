@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Calendar, DollarSign, Hash, Trash2 } from "lucide-react";
+import { MapPin, Calendar, DollarSign, Hash, Trash2, CreditCard } from "lucide-react";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import moment from "moment";
@@ -101,6 +102,15 @@ export default function BookingDetail() {
             </div>
           )}
         </GlassCard>
+
+        {booking.status === "pending" && (
+          <Link
+            to={`/booking/${bookingId}/checkout`}
+            className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2"
+          >
+            <CreditCard className="w-4 h-4" /> Proceed to Checkout
+          </Link>
+        )}
 
         <button
           onClick={handleDelete}

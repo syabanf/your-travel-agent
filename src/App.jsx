@@ -22,6 +22,7 @@ import BudgetView from './pages/BudgetView';
 import ChecklistView from './pages/ChecklistView';
 import BookingSearch from './pages/BookingSearch';
 import BookingDetail from './pages/BookingDetail';
+import BookingCheckout from './pages/BookingCheckout';
 import AssistantProfile from './pages/AssistantProfile';
 import ProfilePreferences from './pages/ProfilePreferences';
 import ProfileTravelers from './pages/ProfileTravelers';
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
         <Route path="/booking" element={<Booking />} />
         <Route path="/booking/search" element={<BookingSearch />} />
         <Route path="/booking/:bookingId" element={<BookingDetail />} />
+        <Route path="/booking/:bookingId/checkout" element={<BookingCheckout />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/preferences" element={<ProfilePreferences />} />
         <Route path="/profile/travelers" element={<ProfileTravelers />} />
