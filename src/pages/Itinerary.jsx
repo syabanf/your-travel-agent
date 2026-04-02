@@ -28,12 +28,17 @@ export default function Itinerary() {
   const [startY, setStartY] = useState(null);
 
   const loadTrips = useCallback(async () => {
-    const data = await base44.entities.Trip.list("-created_date", 50);
-    setTrips(data);
-    setLoading(false);
+    try {
+      const data = await base44.entities.Trip.list("-created_date", 50);
+      setTrips(data);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => { loadTrips(); }, [loadTrips]);
+  useEffect(() => {
+    loadTrips();
+  }, [loadTrips]);
 
   const handleTouchStart = (e) => {
     if (e.currentTarget.scrollTop === 0) setStartY(e.touches[0].clientY);
