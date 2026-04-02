@@ -118,7 +118,7 @@ export default function MapView() {
         <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-4">
           Destinations ({mappedTrips.length})
         </h3>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {mappedTrips.map(trip => (
             <Link key={trip.id} to={`/itinerary/${trip.id}`}>
               <GlassCard className={`p-3 flex items-center gap-3 hover:bg-white/10 transition-all ${
