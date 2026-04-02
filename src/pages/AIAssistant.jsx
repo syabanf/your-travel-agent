@@ -138,10 +138,10 @@ ${content}`,
               <div className="w-16 h-16 glass-gold rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-gold" />
               </div>
-              <h2 className="text-lg font-display font-semibold text-mora-white mb-1">
+              <h2 className="text-lg font-display font-semibold text-mora-primary mb-1">
                 Your AI Travel Concierge
               </h2>
-              <p className="text-xs text-mora-neutral/60 leading-relaxed max-w-[260px] mx-auto">
+              <p className="text-xs text-mora-neutral leading-relaxed max-w-[260px] mx-auto">
                 I can create personalized itineraries, optimize routes, suggest hidden gems, and more.
               </p>
             </div>
@@ -156,7 +156,7 @@ ${content}`,
                 >
                   <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">
                     <Sparkles className="w-4 h-4 text-gold flex-shrink-0" />
-                    <span className="text-xs text-mora-white/80">{prompt}</span>
+                    <span className="text-xs text-mora-primary">{prompt}</span>
                   </GlassCard>
                 </button>
               ))}
@@ -178,7 +178,7 @@ ${content}`,
               <GlassCard 
                 className={`p-4 ${msg.role === "user" ? "glass-gold" : ""}`}
               >
-                <ReactMarkdown className="text-sm text-mora-white/90 leading-relaxed prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-headings:text-gold prose-strong:text-mora-white prose-li:text-mora-white/80">
+                <ReactMarkdown className="text-sm text-mora-primary leading-relaxed prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-headings:text-gold prose-strong:text-mora-primary prose-li:text-mora-primary">
                   {msg.content}
                 </ReactMarkdown>
               </GlassCard>
@@ -193,7 +193,7 @@ ${content}`,
                   </button>
                   <button
                     onClick={() => sendMessage("Regenerate this itinerary with different suggestions")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-mora-neutral/60 hover:text-mora-neutral hover:bg-white/10 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-mora-neutral hover:text-mora-primary hover:bg-mora-primary/5 transition-all"
                   >
                     <RefreshCw className="w-3 h-3" /> Regenerate
                   </button>
@@ -211,7 +211,7 @@ ${content}`,
                 <div className="w-2 h-2 bg-mora-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                 <div className="w-2 h-2 bg-mora-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-              <span className="text-xs text-mora-neutral/50">Planning your journey...</span>
+              <span className="text-xs text-mora-neutral">Planning your journey...</span>
             </GlassCard>
           </div>
         )}
@@ -227,7 +227,7 @@ ${content}`,
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && sendMessage(input)}
             placeholder="Ask anything about your trip..."
-            className="flex-1 bg-transparent text-sm text-mora-white placeholder:text-mora-neutral/40 px-3 py-2.5 outline-none"
+            className="flex-1 bg-transparent text-sm text-mora-primary placeholder:text-mora-neutral px-3 py-2.5 outline-none"
           />
           <button
             onClick={() => sendMessage(input)}

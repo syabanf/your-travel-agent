@@ -12,7 +12,7 @@ export default function ActiveTrip({ trip }) {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">
+        <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">
           {isActive ? "Active Trip" : "Upcoming Trip"}
         </h2>
         <Link to="/itinerary" className="text-xs text-gold flex items-center gap-1">
@@ -28,7 +28,7 @@ export default function ActiveTrip({ trip }) {
               alt={trip.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1a2e22]/90 via-[#1a2e22]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/90 via-mora-primary/40 to-transparent" />
             
             {daysUntil > 0 && !isActive && (
               <div className="absolute top-3 right-3 glass-gold px-3 py-1 rounded-full">
@@ -48,18 +48,18 @@ export default function ActiveTrip({ trip }) {
                 {trip.title}
               </h3>
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5 text-mora-neutral/80">
+                <div className="flex items-center gap-1.5 text-mora-white">
                   <MapPin className="w-3.5 h-3.5 text-gold" />
                   <span className="text-xs">{trip.destination}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-mora-neutral/80">
+                <div className="flex items-center gap-1.5 text-mora-white">
                   <Calendar className="w-3.5 h-3.5 text-gold" />
                   <span className="text-xs">
                     {moment(trip.start_date).format("MMM D")} - {moment(trip.end_date).format("MMM D")}
                   </span>
                 </div>
                 {trip.travelers > 1 && (
-                  <div className="flex items-center gap-1.5 text-mora-neutral/80">
+                  <div className="flex items-center gap-1.5 text-mora-white">
                     <Users className="w-3.5 h-3.5 text-gold" />
                     <span className="text-xs">{trip.travelers}</span>
                   </div>

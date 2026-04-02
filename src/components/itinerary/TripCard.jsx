@@ -24,21 +24,21 @@ export default function TripCard({ trip }) {
             />
           </div>
           <div className="flex-1 p-3.5 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-1.5">
-              <h3 className="text-sm font-display font-semibold text-mora-white truncate">
-                {trip.title}
-              </h3>
-              <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status] || statusColors.draft}`}>
-                {trip.status}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 text-mora-neutral/60 mb-1.5">
+          <div className="flex items-start justify-between gap-2 mb-1.5">
+            <h3 className="text-sm font-display font-semibold text-mora-primary truncate">
+              {trip.title}
+            </h3>
+            <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status]?.replace('text-mora-neutral', 'text-mora-primary').replace('bg-mora-neutral', 'bg-mora-primary') || statusColors.draft}`}>
+              {trip.status}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-mora-neutral mb-1.5">
               <MapPin className="w-3 h-3 text-gold" />
               <span className="text-xs truncate">{trip.destination}</span>
             </div>
             <div className="flex items-center gap-3">
               {trip.start_date && (
-                <div className="flex items-center gap-1 text-mora-neutral/50">
+                <div className="flex items-center gap-1 text-mora-neutral">
                   <Calendar className="w-3 h-3" />
                   <span className="text-[10px]">
                     {moment(trip.start_date).format("MMM D")}
@@ -47,7 +47,7 @@ export default function TripCard({ trip }) {
                 </div>
               )}
               {trip.travelers > 1 && (
-                <div className="flex items-center gap-1 text-mora-neutral/50">
+                <div className="flex items-center gap-1 text-mora-neutral">
                   <Users className="w-3 h-3" />
                   <span className="text-[10px]">{trip.travelers}</span>
                 </div>

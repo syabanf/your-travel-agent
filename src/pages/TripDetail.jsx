@@ -143,18 +143,18 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
             rightAction={
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-white/80">
+                  <button className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral">
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="glass border-white/10 text-mora-white min-w-[180px]">
-                  <DropdownMenuItem onClick={() => navigate(`/itinerary/${tripId}/edit`)} className="text-mora-white/80 focus:text-mora-white focus:bg-white/10">
+                <DropdownMenuContent className="glass border-mora-primary/10 text-mora-primary min-w-[180px]">
+                  <DropdownMenuItem onClick={() => navigate(`/itinerary/${tripId}/edit`)} className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5">
                     <Edit className="w-4 h-4 mr-2" /> Edit Trip
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDuplicate} className="text-mora-white/80 focus:text-mora-white focus:bg-white/10">
+                  <DropdownMenuItem onClick={handleDuplicate} className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5">
                     <Copy className="w-4 h-4 mr-2" /> Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-mora-white/80 focus:text-mora-white focus:bg-white/10">
+                  <DropdownMenuItem className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5">
                     <Share2 className="w-4 h-4 mr-2" /> Share
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDelete} className="text-red-400 focus:text-red-300 focus:bg-red-500/10">
@@ -169,12 +169,12 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         {/* Trip Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
-            trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-[#A5997E]/15 text-gold border-[#A5997E]/20"
+            trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-gold/15 text-gold border-gold/20"
           }`}>
             {trip.status}
           </span>
-          <h1 className="text-2xl font-display font-bold text-mora-white mb-1">{trip.title}</h1>
-          <div className="flex items-center gap-3 text-mora-neutral/70">
+          <h1 className="text-2xl font-display font-bold text-mora-primary mb-1">{trip.title}</h1>
+          <div className="flex items-center gap-3 text-mora-neutral">
             <span className="flex items-center gap-1 text-xs">
               <MapPin className="w-3.5 h-3.5 text-gold" /> {trip.destination}
             </span>
@@ -191,8 +191,8 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 px-6 -mt-2 relative z-10">
         <GlassCard className="p-4 text-center">
-          <p className="text-lg font-display font-bold text-mora-white">{totalDays}</p>
-          <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Days</p>
+          <p className="text-lg font-display font-bold text-mora-primary">{totalDays}</p>
+          <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Days</p>
         </GlassCard>
         <GlassCard className="p-4 text-center">
           <p className="text-lg font-display font-bold text-gold">
@@ -201,10 +201,10 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Budget</p>
         </GlassCard>
         <GlassCard className="p-4 text-center">
-          <p className="text-lg font-display font-bold text-mora-white">
+          <p className="text-lg font-display font-bold text-mora-primary">
             {completedItems}/{items.length}
           </p>
-          <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Done</p>
+          <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Done</p>
         </GlassCard>
       </div>
 
@@ -223,7 +223,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         )}
 
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">Itinerary</h2>
+          <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">Itinerary</h2>
           <div className="flex items-center gap-3">
             {items.length > 0 && (
               <button
