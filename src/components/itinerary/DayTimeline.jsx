@@ -1,4 +1,4 @@
-import { Clock, MapPin, CheckCircle, Circle, Plus } from "lucide-react";
+import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
@@ -80,9 +80,15 @@ export default function DayTimeline({ dayNumber, date, items, tripId }) {
                       {item.activity_name}
                     </h4>
                     {item.location && (
-                      <p className="text-[10px] text-mora-neutral/50 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-2.5 h-2.5" /> {item.location}
-                      </p>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-mora-neutral/50 flex items-center gap-1 mt-0.5 hover:text-gold transition-colors"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <Navigation className="w-2.5 h-2.5" /> {item.location}
+                      </a>
                     )}
                     {item.budget > 0 && (
                       <span className="text-[10px] text-gold/70 mt-0.5 inline-block">${item.budget}</span>

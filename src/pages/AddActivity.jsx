@@ -5,7 +5,8 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, MapPin, DollarSign, Tag, FileText } from "lucide-react";
+import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const categories = ["transport", "accommodation", "dining", "attraction", "activity", "shopping", "rest", "other"];
 
@@ -30,6 +31,7 @@ export default function AddActivity() {
     category: "activity",
     is_completed: false,
     sort_order: 0,
+    booking_id: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -160,6 +162,36 @@ export default function AddActivity() {
               <div className={`w-4 h-4 rounded-full bg-white transition-transform mx-1 ${form.reservation_required ? "translate-x-4" : ""}`} />
             </button>
           </div>
+
+          {/* Browse Booking */}
+          <div>
+            <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Link Booking</label>
+            <div className="flex gap-2">
+              <Input
+                value={form.booking_id}
+                onChange={e => update("booking_id", e.target.value)}
+                placeholder="Booking ID (optional)"
+                className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 flex-1"
+              />
+              <Link
+                to="/booking"
+                className="flex items-center gap-1.5 px-3 h-11 glass-gold rounded-xl text-xs font-semibold text-gold hover:glow-gold transition-all flex-shrink-0"
+              >
+                <Ticket className="w-3.5 h-3.5" /> Browse
+              </Link>
+            </div>
+          </div>
+
+          {form.location && (
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(form.location)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 py-2.5 px-3 glass-light rounded-xl text-xs text-mora-neutral/70 hover:text-gold transition-colors"
+            >
+              <Navigation className="w-3.5 h-3.5 text-gold" /> View "{form.location}" on Maps
+            </a>
+          )}
         </GlassCard>
 
         <button
