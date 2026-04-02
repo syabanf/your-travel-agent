@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import GlassCard from "../GlassCard";
 
 const tabs = [
+  { key: "my_bookings", label: "My Bookings", icon: Ticket },
   { key: "flight", label: "Flight", icon: Plane },
   { key: "hotel", label: "Hotel", icon: Building2 },
   { key: "train", label: "Train", icon: Train },
@@ -13,8 +14,17 @@ const tabs = [
   { key: "attraction", label: "Attraction", icon: Ticket },
 ];
 
+const statusColors = {
+  pending: "bg-[#A5997E]/15 text-gold border-[#A5997E]/20",
+  confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+  cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
+  completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+};
+
 export default function OTASearch({ onSaveBooking }) {
-  const [activeTab, setActiveTab] = useState("flight");
+  const [activeTab, setActiveTab] = useState("my_bookings");
+  const [myBookings, setMyBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
   const [form, setForm] = useState({
     from: "", to: "", checkin: "", checkout: "", guests: 1, date: ""
   });
@@ -23,6 +33,22 @@ export default function OTASearch({ onSaveBooking }) {
   const [searched, setSearched] = useState(false);
 
   const upd = (k, v) => setForm(p => ({ ...p, [k]: v }));
+
+  const loadMyBookings = async () => {
+    setLoadingBookings(true);
+    const data = await base44.entities.Booking.list("-created_date", 50);
+    setMyBookings(data);
+    setLoadingBookings(false);
+  };
+
+  useEffect(() => { loadMyBookings(); }, []);
+
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setResults([]);
+    setSearched(false);
+    if (key === "my_bookings") loadMyBookings();
+  };
 
   const handleSearch = async () => {
     if (!form.to && !form.from) return;
@@ -62,10 +88,23 @@ export default function OTASearch({ onSaveBooking }) {
   const handleBook = async (item) => {
     let bookingData = {};
     if (activeTab === "flight") {
-      bookingData = { type: "flight", title: item.operator, provider: item.operator, price: item.price, currency: "USD", status: "pending", guests: form.guests };
+      bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
+    } else if (activeTab === "hotel") {
+      bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: form.checkin ? new Date(form.checkin).toISOString() : undefined, check_out: form.checkout ? new Date(form.checkout).toISOString() : undefined, location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
+    } else if (activeTab === "train") {
+      bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
+    } else if (activeTab === "bus") {
+      bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
+    } else if (activeTab === "ship") {
+      bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
+    } else if (activeTab === "car_rental") {
+      bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: form.checkin ? new Date(form.checkin).toISOString() : undefined, check_out: form.checkout ? new Date(form.checkout).toISOString() : undefined, location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
+    } else if (activeTab === "attraction") {
+      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: form.date ? new Date(form.date).toISOString() : undefined, location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
     }
     await base44.entities.Booking.create(bookingData);
     if (onSaveBooking) onSaveBooking();
+    loadMyBookings();
     alert("Booking saved to your reservations!");
   };
 
@@ -74,7 +113,7 @@ export default function OTASearch({ onSaveBooking }) {
       {/* Tab selector */}
       <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
         {tabs.map(({ key, label, icon: Icon }) => (
-          <button key={key} onClick={() => { setActiveTab(key); setResults([]); setSearched(false); }}
+          <button key={key} onClick={() => handleTabChange(key)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === key ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
             <Icon className="w-3.5 h-3.5" />
             {label}
@@ -82,85 +121,112 @@ export default function OTASearch({ onSaveBooking }) {
         ))}
       </div>
 
+      {/* My Bookings */}
+      {activeTab === "my_bookings" && (
+        <div className="space-y-3">
+          {loadingBookings ? (
+            <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-gold" /></div>
+          ) : myBookings.length === 0 ? (
+            <GlassCard className="p-8 text-center">
+              <Ticket className="w-8 h-8 text-mora-neutral/30 mx-auto mb-2" />
+              <p className="text-sm text-mora-neutral/50">No bookings yet</p>
+            </GlassCard>
+          ) : (
+            myBookings.map((b) => (
+              <GlassCard key={b.id} className="p-4">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <p className="text-sm font-semibold text-mora-white">{b.title}</p>
+                  <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[b.status] || statusColors.pending}`}>{b.status}</span>
+                </div>
+                <p className="text-xs text-mora-neutral/50">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
+                {b.price > 0 && <p className="text-sm font-display font-bold text-gold mt-1.5">${b.price}</p>}
+              </GlassCard>
+            ))
+          )}
+        </div>
+      )}
+
       {/* Search form */}
-      <GlassCard className="p-4 space-y-3">
-        {/* From / To */}
-        <div className={`grid gap-3 ${activeTab === "hotel" ? "grid-cols-1" : "grid-cols-2"}`}>
-          {activeTab !== "hotel" && (
+      {activeTab !== "my_bookings" && (
+        <GlassCard className="p-4 space-y-3">
+          {/* From / To */}
+          <div className={`grid gap-3 ${(activeTab === "hotel" || activeTab === "car_rental" || activeTab === "attraction") ? "grid-cols-1" : "grid-cols-2"}`}>
+            {activeTab !== "hotel" && activeTab !== "car_rental" && activeTab !== "attraction" && (
+              <div>
+                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">From</label>
+                <div className="relative">
+                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
+                  <input value={form.from} onChange={e => upd("from", e.target.value)}
+                    placeholder="Origin"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
+                </div>
+              </div>
+            )}
             <div>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">From</label>
+              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">
+                {activeTab === "hotel" ? "Destination" : activeTab === "car_rental" ? "Pickup Location" : activeTab === "attraction" ? "Destination" : "To"}
+              </label>
               <div className="relative">
                 <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                <input value={form.from} onChange={e => upd("from", e.target.value)}
-                  placeholder="Origin"
+                <input value={form.to} onChange={e => upd("to", e.target.value)}
+                  placeholder={activeTab === "hotel" ? "City or area" : activeTab === "car_rental" ? "City or airport" : activeTab === "attraction" ? "City or destination" : "Destination"}
                   className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
               </div>
             </div>
-          )}
-          <div className={activeTab === "hotel" ? "" : ""}>
-            <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">
-          {activeTab === "hotel" ? "Destination" : activeTab === "car_rental" ? "Pickup Location" : activeTab === "attraction" ? "Destination" : "To"}
-        </label>
-            <div className="relative">
-              <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-              <input value={form.to} onChange={e => upd("to", e.target.value)}
-                placeholder={activeTab === "hotel" ? "City or area" : activeTab === "car_rental" ? "City or airport" : activeTab === "attraction" ? "City or destination" : "Destination"}
-                className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
-            </div>
           </div>
-        </div>
 
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-3">
-          {(activeTab === "hotel" || activeTab === "car_rental") ? (
-            <>
+          {/* Dates */}
+          <div className="grid grid-cols-2 gap-3">
+            {(activeTab === "hotel" || activeTab === "car_rental") ? (
+              <>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
+                  <input type="date" value={form.checkin} onChange={e => upd("checkin", e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
+                  <input type="date" value={form.checkout} onChange={e => upd("checkout", e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                </div>
+              </>
+            ) : (
               <div>
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
-                <input type="date" value={form.checkin} onChange={e => upd("checkin", e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Date</label>
+                <div className="relative">
+                  <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
+                  <input type="date" value={form.date} onChange={e => upd("date", e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                </div>
               </div>
-              <div>
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
-                <input type="date" value={form.checkout} onChange={e => upd("checkout", e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-              </div>
-            </>
-          ) : (
-            <div>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Date</label>
-              <div className="relative">
-                <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                <input type="date" value={form.date} onChange={e => upd("date", e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-              </div>
-            </div>
-          )}
-          <div className={(activeTab === "hotel" || activeTab === "car_rental") ? "hidden" : ""}>
-            <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
-            <div className="relative">
-              <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-              <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none" />
-            </div>
-          </div>
-          {(activeTab === "hotel" || activeTab === "car_rental") && (
-            <div className="col-span-2">
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Passengers" : "Guests"}</label>
+            )}
+            <div className={(activeTab === "hotel" || activeTab === "car_rental") ? "hidden" : ""}>
+              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
               <div className="relative">
                 <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                 <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
                   className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none" />
               </div>
             </div>
-          )}
-        </div>
+            {(activeTab === "hotel" || activeTab === "car_rental") && (
+              <div className="col-span-2">
+                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Passengers" : "Guests"}</label>
+                <div className="relative">
+                  <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
+                  <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none" />
+                </div>
+              </div>
+            )}
+          </div>
 
-        <button onClick={handleSearch} disabled={loading || (!form.to && !form.from)}
-          className="w-full py-3 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2">
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-          {loading ? "Searching..." : `Search ${tabs.find(t => t.key === activeTab)?.label}s`}
-        </button>
-      </GlassCard>
+          <button onClick={handleSearch} disabled={loading || (!form.to && !form.from)}
+            className="w-full py-3 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            {loading ? "Searching..." : `Search ${tabs.find(t => t.key === activeTab)?.label}s`}
+          </button>
+        </GlassCard>
+      )}
 
       {/* Results */}
       {searched && results.length === 0 && !loading && (
@@ -197,10 +263,7 @@ export default function OTASearch({ onSaveBooking }) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1 text-xs text-mora-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
-                    <button onClick={() => handleBook(item)}
-                      className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">
-                      Book Now
-                    </button>
+                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
                   </div>
                 </div>
               )}
@@ -224,10 +287,7 @@ export default function OTASearch({ onSaveBooking }) {
                     </div>
                   </div>
                   <p className="text-xs text-mora-neutral/50 mb-3">{item.room_type} · {item.amenities?.join(" · ")}</p>
-                  <button onClick={() => handleBook(item)}
-                    className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">
-                    Reserve Now
-                  </button>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Reserve Now</button>
                 </div>
               )}
 
@@ -254,10 +314,7 @@ export default function OTASearch({ onSaveBooking }) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1 text-xs text-mora-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
-                    <button onClick={() => handleBook(item)}
-                      className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">
-                      Book Now
-                    </button>
+                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
                   </div>
                 </div>
               )}
@@ -276,10 +333,7 @@ export default function OTASearch({ onSaveBooking }) {
                     </div>
                   </div>
                   <p className="text-xs text-mora-neutral/50 mb-3">{item.features?.join(" · ")}</p>
-                  <button onClick={() => handleBook(item)}
-                    className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">
-                    Rent Now
-                  </button>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Rent Now</button>
                 </div>
               )}
 
@@ -303,10 +357,7 @@ export default function OTASearch({ onSaveBooking }) {
                   </div>
                   <p className="text-xs text-mora-neutral/60 mb-2 leading-relaxed">{item.description}</p>
                   <p className="text-xs text-mora-neutral/50 mb-3"><Clock className="w-3 h-3 inline mr-1" />{item.duration_hours}h · Includes: {item.includes?.join(", ")}</p>
-                  <button onClick={() => handleBook(item)}
-                    className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">
-                    Book Activity
-                  </button>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Activity</button>
                 </div>
               )}
             </GlassCard>
