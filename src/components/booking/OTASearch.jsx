@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import GlassCard from "../GlassCard";
+import MobileDatePicker from "../MobileDatePicker";
 
 const tabs = [
   { key: "my_bookings", label: "My Bookings", icon: Ticket },
@@ -189,23 +190,17 @@ export default function OTASearch({ onSaveBooking }) {
               <>
                 <div>
                   <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
-                  <input type="date" value={form.checkin} onChange={e => upd("checkin", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                  <MobileDatePicker value={form.checkin} onChange={v => upd("checkin", v)} placeholder="Select date" />
                 </div>
                 <div>
                   <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
-                  <input type="date" value={form.checkout} onChange={e => upd("checkout", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
+                  <MobileDatePicker value={form.checkout} onChange={v => upd("checkout", v)} placeholder="Select date" />
                 </div>
               </>
             ) : (
               <div>
                 <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Date</label>
-                <div className="relative">
-                  <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                  <input type="date" value={form.date} onChange={e => upd("date", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none [color-scheme:dark]" />
-                </div>
+                <MobileDatePicker value={form.date} onChange={v => upd("date", v)} placeholder="Select date" />
               </div>
             )}
             <div className={(activeTab === "hotel" || activeTab === "car_rental") ? "hidden" : ""}>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
+import MobileDatePicker from "../components/MobileDatePicker";
 import { MapPin, Users, DollarSign, Sparkles, Loader2, Wand2 } from "lucide-react";
 
 const travelStyles = ["luxury", "adventure", "cultural", "relaxation", "business", "family", "budget"];
@@ -187,21 +188,11 @@ export default function NewTrip() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-[10px] text-mora-neutral/50 mb-1">From</p>
-              <Input 
-                type="date"
-                value={form.start_date}
-                onChange={e => update("start_date", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
-              />
+              <MobileDatePicker value={form.start_date} onChange={v => update("start_date", v)} placeholder="Start date" />
             </div>
             <div>
               <p className="text-[10px] text-mora-neutral/50 mb-1">To</p>
-              <Input 
-                type="date"
-                value={form.end_date}
-                onChange={e => update("end_date", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
-              />
+              <MobileDatePicker value={form.end_date} onChange={v => update("end_date", v)} placeholder="End date" />
             </div>
           </div>
         </GlassCard>

@@ -5,6 +5,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import MobileTimePicker from "../components/MobileTimePicker";
 import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -37,15 +38,16 @@ export default function AddActivity() {
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!form.activity_name) return;
     setSaving(true);
-    await base44.entities.ItineraryItem.create({
+    // Optimistic: navigate immediately, create in background
+    navigate(`/itinerary/${tripId}`);
+    base44.entities.ItineraryItem.create({
       ...form,
       duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,
       budget: form.budget ? Number(form.budget) : undefined,
     });
-    navigate(`/itinerary/${tripId}`);
   };
 
   return (
@@ -90,12 +92,7 @@ export default function AddActivity() {
             </div>
             <div>
               <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Time</label>
-              <Input 
-                type="time"
-                value={form.time}
-                onChange={e => update("time", e.target.value)}
-                className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 [color-scheme:dark]"
-              />
+              <MobileTimePicker value={form.time} onChange={v => update("time", v)} placeholder="Time" />
             </div>
             <div>
               <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Duration</label>
