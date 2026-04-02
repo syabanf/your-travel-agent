@@ -16,17 +16,19 @@ export default function Home() {
 
   useEffect(() => {
     const load = async () => {
-      const me = await base44.auth.me();
-      setUser(me);
-      
-      const trips = await base44.entities.Trip.list("-created_date", 5);
-      const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
-      setActiveTrip(active);
-      
-      const recentBookings = await base44.entities.Booking.list("-created_date", 3);
-      setBookings(recentBookings);
-      
-      setLoading(false);
+      try {
+        const me = await base44.auth.me();
+        setUser(me);
+        
+        const trips = await base44.entities.Trip.list("-created_date", 5);
+        const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
+        setActiveTrip(active);
+        
+        const recentBookings = await base44.entities.Booking.list("-created_date", 3);
+        setBookings(recentBookings);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
