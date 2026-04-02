@@ -1,5 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Map, CalendarSearch, MessageCircle, User } from "lucide-react";
+
+const TAB_ROOTS = ["/", "/itinerary", "/booking", "/assistant", "/profile"];
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -11,6 +14,24 @@ const navItems = [
 
 export default function BottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Persist last visited path per tab root in sessionStorage
+  useEffect(() => {
+    const root = TAB_ROOTS.find(r =>
+      r === "/" ? location.pathname === "/" : location.pathname.startsWith(r)
+    );
+    if (root) sessionStorage.setItem(`tab_path_${root}`, location.pathname + location.search);
+  }, [location]);
+
+  const handleTabPress = (path) => {
+    const isActive = path === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(path);
+    if (isActive) return; // already on this tab
+    const saved = sessionStorage.getItem(`tab_path_${path}`);
+    navigate(saved || path);
+  };
 
   return (
     <div className="absolute bottom-0 left-0 right-0 z-50">
@@ -23,9 +44,9 @@ export default function BottomNav() {
                 : location.pathname.startsWith(path);
               
               return (
-                <Link
+                <button
                   key={path}
-                  to={path}
+                  onClick={() => handleTabPress(path)}
                   className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-w-[44px] min-h-[44px] justify-center ${
                     isActive 
                       ? "text-mora-gold" 
@@ -41,7 +62,7 @@ export default function BottomNav() {
                   <span className={`text-xs font-medium tracking-wide ${isActive ? "text-gold" : ""}`}>
                     {label}
                   </span>
-                </Link>
+                </button>
               );
             })}
           </div>
