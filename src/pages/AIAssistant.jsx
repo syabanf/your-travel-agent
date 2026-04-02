@@ -119,14 +119,14 @@ ${content}`,
   };
 
   return (
-    <div className="animate-fade-in flex flex-col h-screen max-h-screen">
+    <div className="animate-fade-in flex flex-col" style={{ height: 'calc(100vh - 120px)' }}>
       <PageHeader 
         title="Smart-A Itinerary" 
         subtitle="AI-powered travel planning"
         showBack 
       />
 
-      <div className="flex-1 overflow-y-auto px-6 space-y-4 hide-scrollbar pb-4">
+      <div className="flex-1 overflow-y-auto px-6 space-y-4 hide-scrollbar pb-2">
         {messages.length === 0 && (
           <div className="pt-4">
             <div className="text-center mb-6">
@@ -215,7 +215,7 @@ ${content}`,
       </div>
 
       {/* Input */}
-      <div className="px-6 pb-28 pt-3">
+      <div className="px-6 pt-2 pb-3">
         <GlassCard className="p-2 flex items-center gap-2">
           <input
             value={input}

@@ -89,8 +89,8 @@ export default function Profile() {
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
           <Link key={label} to={path}>
             <GlassCard className="p-3.5 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-[#A5997E]/8 flex items-center justify-center flex-shrink-0">
-                <Icon className="w-4.5 h-4.5 text-gold/70" strokeWidth={1.5} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(165,153,126,0.08)' }}>
+                <Icon className="w-4 h-4 text-gold/70" strokeWidth={1.5} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-medium text-mora-white">{label}</h3>
