@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Calendar, Users, DollarSign, Edit, Share2, Copy, Trash2, MoreVertical, Plus, CheckCircle } from "lucide-react";
+import { MapPin, Calendar, Users, DollarSign, Edit, Share2, Copy, Trash2, MoreVertical, Plus, CheckCircle, Wand2, Loader2 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -14,6 +14,7 @@ export default function TripDetail() {
   const [trip, setTrip] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -41,6 +42,59 @@ export default function TripDetail() {
       await base44.entities.ItineraryItem.create({ ...itemData, trip_id: newTrip.id });
     }
     navigate(`/itinerary/${newTrip.id}`);
+  };
+
+  const handleGenerateActivities = async () => {
+    if (!trip) return;
+    setAiGenerating(true);
+    const res = await base44.integrations.Core.InvokeLLM({
+      prompt: `Generate a detailed ${trip.travel_style || 'luxury'} travel itinerary for ${trip.destination}${
+        trip.start_date ? ` from ${trip.start_date} to ${trip.end_date || trip.start_date}` : ` for ${totalDays} days`
+      }. Pace: ${trip.pace || 'moderate'}. Trip type: ${trip.trip_type || 'couple'}. Travelers: ${trip.travelers || 2}.
+Provide a full list of activities spread across all ${totalDays} days with specific times, locations, descriptions, budgets, and categories.`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          activities: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                day: { type: "number" },
+                time: { type: "string" },
+                name: { type: "string" },
+                location: { type: "string" },
+                description: { type: "string" },
+                budget: { type: "number" },
+                category: { type: "string" },
+                duration_minutes: { type: "number" }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (res.activities?.length > 0) {
+      for (const act of res.activities) {
+        await base44.entities.ItineraryItem.create({
+          trip_id: tripId,
+          day_number: act.day || 1,
+          time: act.time || "",
+          activity_name: act.name,
+          location: act.location || "",
+          description: act.description || "",
+          budget: act.budget || 0,
+          category: act.category || "activity",
+          duration_minutes: act.duration_minutes || 60,
+          booking_status: "not_booked",
+        });
+      }
+      // Reload items
+      const updated = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
+      setItems(updated.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
+    }
+    setAiGenerating(false);
   };
 
   if (loading) {
@@ -152,14 +206,38 @@ export default function TripDetail() {
 
       {/* Day Timeline */}
       <div className="px-6 mt-8 space-y-5 pb-8">
+        {/* Generate Activities with AI */}
+        {items.length === 0 && (
+          <button
+            onClick={handleGenerateActivities}
+            disabled={aiGenerating}
+            className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-[#A5997E]/30 to-[#606A54]/20 border border-[#A5997E]/30 text-gold hover:glow-gold mb-4"
+          >
+            {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
+            {aiGenerating ? "Generating activities..." : "✨ Generate Activities with AI"}
+          </button>
+        )}
+
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">Itinerary</h2>
-          <Link 
-            to={`/itinerary/${tripId}/add`}
-            className="flex items-center gap-1.5 text-xs text-gold"
-          >
-            <Plus className="w-4 h-4" /> Add Activity
-          </Link>
+          <div className="flex items-center gap-3">
+            {items.length > 0 && (
+              <button
+                onClick={handleGenerateActivities}
+                disabled={aiGenerating}
+                className="flex items-center gap-1 text-xs text-gold disabled:opacity-50"
+              >
+                {aiGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+                {aiGenerating ? "Generating..." : "AI Generate"}
+              </button>
+            )}
+            <Link 
+              to={`/itinerary/${tripId}/add`}
+              className="flex items-center gap-1.5 text-xs text-gold"
+            >
+              <Plus className="w-4 h-4" /> Add Activity
+            </Link>
+          </div>
         </div>
 
         {Object.entries(dayGroups).map(([day, dayItems]) => (
