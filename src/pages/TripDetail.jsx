@@ -108,16 +108,20 @@ Provide a full list of activities spread across all ${totalDays} days with speci
   if (!trip) return null;
 
   const totalDays = trip.start_date && trip.end_date
-    ? moment(trip.end_date).diff(moment(trip.start_date), "days") + 1
-    : 1;
+    ? Math.max(1, moment(trip.end_date).diff(moment(trip.start_date), "days") + 1)
+    : Math.max(1, ...items.map(i => i.day_number || 1), 1);
 
   const totalBudget = items.reduce((sum, item) => sum + (item.budget || 0), 0);
   const completedItems = items.filter(i => i.is_completed).length;
 
-  // Group items by day
+  // Group items by day — only within the date range
+  const validItems = trip.start_date && trip.end_date
+    ? items.filter(i => i.day_number >= 1 && i.day_number <= totalDays)
+    : items;
+
   const dayGroups = {};
   for (let d = 1; d <= totalDays; d++) {
-    dayGroups[d] = items.filter(i => i.day_number === d);
+    dayGroups[d] = validItems.filter(i => i.day_number === d);
   }
 
   return (
