@@ -1,11 +1,19 @@
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
-import { Globe, Bell, Moon, HelpCircle, Info } from "lucide-react";
+import { Globe, Bell, Moon, HelpCircle, Info, Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { base44 } from "@/api/base44Client";
 
 export default function ProfileSettings() {
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+
+  const handleDeleteAccount = async () => {
+    if (deleteInput !== "DELETE") return;
+    await base44.auth.logout();
+  };
 
   return (
     <div className="animate-fade-in">
@@ -61,6 +69,39 @@ export default function ProfileSettings() {
             <p className="text-xs text-mora-neutral/50">Version 1.0.0</p>
           </div>
         </GlassCard>
+        {/* Delete Account */}
+        <div className="mt-4 mb-8">
+          {!showDeleteConfirm ? (
+            <button onClick={() => setShowDeleteConfirm(true)}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-red-400/70 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 transition-all">
+              <Trash2 className="w-4 h-4" /> Delete Account
+            </button>
+          ) : (
+            <GlassCard className="p-5 border border-red-500/20">
+              <div className="flex items-center gap-3 mb-4">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-mora-white">Delete Account</p>
+                  <p className="text-xs text-mora-neutral/50 mt-0.5">This action is permanent and cannot be undone.</p>
+                </div>
+              </div>
+              <p className="text-xs text-mora-neutral/60 mb-3">Type <span className="text-red-400 font-mono font-semibold">DELETE</span> to confirm:</p>
+              <input value={deleteInput} onChange={e => setDeleteInput(e.target.value)}
+                placeholder="Type DELETE"
+                className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none mb-3 font-mono" />
+              <div className="flex gap-2">
+                <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); }}
+                  className="flex-1 py-2.5 glass-light rounded-xl text-sm text-mora-neutral/70 hover:text-mora-white transition-all">
+                  Cancel
+                </button>
+                <button onClick={handleDeleteAccount} disabled={deleteInput !== "DELETE"}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-red-400 border border-red-500/30 hover:bg-red-500/10 transition-all disabled:opacity-40">
+                  Delete
+                </button>
+              </div>
+            </GlassCard>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Map, Calendar, DollarSign, CheckSquare, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -24,15 +24,30 @@ export default function Itinerary() {
   const [trips, setTrips] = useState([]);
   const [activeTab, setActiveTab] = useState("upcoming");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [startY, setStartY] = useState(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const data = await base44.entities.Trip.list("-created_date", 50);
-      setTrips(data);
-      setLoading(false);
-    };
-    load();
+  const loadTrips = useCallback(async () => {
+    const data = await base44.entities.Trip.list("-created_date", 50);
+    setTrips(data);
+    setLoading(false);
   }, []);
+
+  useEffect(() => { loadTrips(); }, [loadTrips]);
+
+  const handleTouchStart = (e) => {
+    if (e.currentTarget.scrollTop === 0) setStartY(e.touches[0].clientY);
+  };
+  const handleTouchEnd = async (e) => {
+    if (startY === null) return;
+    const delta = e.changedTouches[0].clientY - startY;
+    setStartY(null);
+    if (delta > 70 && !refreshing) {
+      setRefreshing(true);
+      await loadTrips();
+      setRefreshing(false);
+    }
+  };
 
   const filteredTrips = trips.filter((trip) => {
     switch (activeTab) {
@@ -45,7 +60,12 @@ export default function Itinerary() {
   });
 
   return (
-    <div className="animate-fade-in pb-28">
+    <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {refreshing && (
+        <div className="flex justify-center py-3">
+          <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+        </div>
+      )}
       <PageHeader 
         title="My Itineraries" 
         subtitle="Plan & manage your journeys"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -29,18 +29,38 @@ const typeIcons = { flight: Plane, hotel: Building2, train: Train, bus: Bus, shi
 export default function Booking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [startY, setStartY] = useState(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const data = await base44.entities.Booking.list("-created_date", 50);
-      setBookings(data);
-      setLoading(false);
-    };
-    load();
+  const loadBookings = useCallback(async () => {
+    const data = await base44.entities.Booking.list("-created_date", 50);
+    setBookings(data);
+    setLoading(false);
   }, []);
 
+  useEffect(() => { loadBookings(); }, [loadBookings]);
+
+  const handleTouchStart = (e) => {
+    if (e.currentTarget.scrollTop === 0) setStartY(e.touches[0].clientY);
+  };
+  const handleTouchEnd = async (e) => {
+    if (startY === null) return;
+    const delta = e.changedTouches[0].clientY - startY;
+    setStartY(null);
+    if (delta > 70 && !refreshing) {
+      setRefreshing(true);
+      await loadBookings();
+      setRefreshing(false);
+    }
+  };
+
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {refreshing && (
+        <div className="flex justify-center py-3">
+          <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+        </div>
+      )}
       <PageHeader title="Booking" subtitle="Find & manage reservations" showNotification />
 
       {/* OTA Search */}

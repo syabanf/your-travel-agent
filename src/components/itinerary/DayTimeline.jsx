@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link } from "react-router-dom";
@@ -15,10 +16,21 @@ const categoryColors = {
   other: "#BCC3BD",
 };
 
-export default function DayTimeline({ dayNumber, date, items, tripId }) {
+export default function DayTimeline({ dayNumber, date, items: initialItems, tripId }) {
+  const [items, setItems] = useState(initialItems);
+
+  // Sync if parent items change
+  useState(() => { setItems(initialItems); });
+
   const handleToggleComplete = async (item) => {
-    await base44.entities.ItineraryItem.update(item.id, { is_completed: !item.is_completed });
-    window.location.reload();
+    // Optimistic update
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_completed: !i.is_completed } : i));
+    try {
+      await base44.entities.ItineraryItem.update(item.id, { is_completed: !item.is_completed });
+    } catch {
+      // Revert on error
+      setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_completed: item.is_completed } : i));
+    }
   };
 
   return (
@@ -96,7 +108,7 @@ export default function DayTimeline({ dayNumber, date, items, tripId }) {
                   </div>
                   <button 
                     onClick={() => handleToggleComplete(item)}
-                    className="flex-shrink-0 mt-1"
+                    className="flex-shrink-0 mt-1 w-11 h-11 flex items-center justify-center -mr-2"
                   >
                     {item.is_completed ? (
                       <CheckCircle className="w-4.5 h-4.5 text-emerald-400" />

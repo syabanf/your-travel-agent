@@ -96,6 +96,12 @@
     @apply bg-background text-foreground font-body;
     background: linear-gradient(160deg, #1a2e22 0%, #2A4631 30%, #1f3529 60%, #162a1e 100%);
     min-height: 100vh;
+    overscroll-behavior: none;
+  }
+  button, a[role="button"], nav a {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -171,5 +177,11 @@
   }
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

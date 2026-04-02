@@ -14,7 +14,7 @@ export default function BottomNav() {
 
   return (
     <div className="absolute bottom-0 left-0 right-0 z-50">
-      <div className="px-3 pb-3 pt-1">
+      <div className="px-3 pt-1" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
         <nav className="glass-nav rounded-2xl px-2 py-2">
           <div className="flex items-center justify-around">
             {navItems.map(({ path, icon: Icon, label }) => {
@@ -26,7 +26,7 @@ export default function BottomNav() {
                 <Link
                   key={path}
                   to={path}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 ${
+                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-w-[44px] min-h-[44px] justify-center ${
                     isActive 
                       ? "text-mora-gold" 
                       : "text-mora-neutral/60 hover:text-mora-neutral"
@@ -38,7 +38,7 @@ export default function BottomNav() {
                     )}
                     <Icon className="w-5 h-5 relative z-10" strokeWidth={isActive ? 2 : 1.5} />
                   </div>
-                  <span className={`text-[10px] font-medium tracking-wide ${isActive ? "text-gold" : ""}`}>
+                  <span className={`text-xs font-medium tracking-wide ${isActive ? "text-gold" : ""}`}>
                     {label}
                   </span>
                 </Link>
