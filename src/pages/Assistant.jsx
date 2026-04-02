@@ -97,8 +97,8 @@ export default function Assistant() {
           <div className="space-y-2.5">
             {assistants.map((assistant) => (
               <Link key={assistant.id} to={`/assistant/profile/${assistant.id}`}>
-                <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-                  <div className="w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0">
+                 <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">
+                   <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
                     {assistant.photo_url ? (
                       <img src={assistant.photo_url} alt={assistant.name} className="w-full h-full object-cover" />
                     ) : (
@@ -109,23 +109,23 @@ export default function Assistant() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-mora-white">{assistant.name}</h3>
-                    <p className="text-xs text-mora-neutral/60 mt-0.5">{assistant.specialization}</p>
-                    <div className="flex items-center gap-3 mt-1.5">
+                    <p className="text-xs text-mora-neutral/60 mt-0.5 truncate">{assistant.specialization}</p>
+                    <div className="flex items-center gap-2 mt-1">
                       {assistant.rating && (
-                        <span className="flex items-center gap-1 text-xs text-gold">
+                        <span className="flex items-center gap-0.5 text-xs text-gold">
                           <Star className="w-3 h-3 fill-current" /> {assistant.rating}
                         </span>
                       )}
                       {assistant.languages?.length > 0 && (
-                        <span className="flex items-center gap-1 text-[10px] text-mora-neutral/50">
-                          <Globe className="w-3 h-3" /> {assistant.languages.join(", ")}
+                        <span className="flex items-center gap-0.5 text-[10px] text-mora-neutral/50 truncate">
+                          <Globe className="w-3 h-3 flex-shrink-0" /> {assistant.languages.join(", ")}
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right flex-shrink-0 pl-1">
                     {assistant.is_available && (
-                      <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full mb-1 ml-auto" />
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full mb-1 ml-auto" />
                     )}
                     {assistant.hourly_rate && (
                       <span className="text-xs font-display text-gold">${assistant.hourly_rate}/hr</span>
