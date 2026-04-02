@@ -126,36 +126,36 @@
     font-family: var(--font-body);
   }
   .glass {
-    background: rgba(5, 48, 140, 0.15);
+    background: rgba(5, 48, 140, 0.08);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(254, 253, 248, 0.1);
+    border: 1px solid rgba(5, 48, 140, 0.15);
   }
   .glass-light {
-    background: rgba(254, 253, 248, 0.08);
+    background: rgba(5, 48, 140, 0.06);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(254, 253, 248, 0.12);
+    border: 1px solid rgba(5, 48, 140, 0.12);
   }
   .glass-card {
-    background: rgba(5, 48, 140, 0.12);
+    background: rgba(5, 48, 140, 0.07);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(254, 253, 248, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(254, 253, 248, 0.06);
+    border: 1px solid rgba(5, 48, 140, 0.15);
+    box-shadow: 0 8px 32px rgba(5, 48, 140, 0.08), inset 0 1px 0 rgba(5, 48, 140, 0.08);
   }
   .glass-gold {
-    background: rgba(173, 31, 35, 0.15);
+    background: rgba(173, 31, 35, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(173, 31, 35, 0.3);
+    border: 1px solid rgba(173, 31, 35, 0.25);
   }
   .glass-nav {
-    background: rgba(10, 10, 58, 0.85);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(254, 253, 248, 0.1);
-    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(5, 48, 140, 0.1);
+    box-shadow: 0 -4px 30px rgba(5, 48, 140, 0.05);
   }
   .text-gold {
     color: #AD1F23;
@@ -182,7 +182,7 @@
     box-shadow: 0 0 20px rgba(173, 31, 35, 0.25), 0 0 60px rgba(173, 31, 35, 0.1);
   }
   .gradient-premium {
-    background: linear-gradient(135deg, rgba(5, 48, 140, 0.4) 0%, rgba(10, 10, 58, 0.6) 50%, rgba(5, 48, 140, 0.4) 100%);
+    background: linear-gradient(135deg, rgba(5, 48, 140, 0.1) 0%, rgba(248, 250, 253, 0.5) 50%, rgba(5, 48, 140, 0.08) 100%);
   }
   .hide-scrollbar {
     -ms-overflow-style: none;

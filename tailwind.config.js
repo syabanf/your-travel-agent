@@ -14,15 +14,17 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-        mora: {
-          green: '#2A4631',
-          'green-light': '#606A54',
-          gold: '#A5997E',
-          neutral: '#BCC3BD',
-          white: '#FCFCFC',
-        },
+  		background: 'hsl(var(--background))',
+  		foreground: 'hsl(var(--foreground))',
+  		  mora: {
+  		    'deep-blue': '#05308C',
+  		    'lobster-red': '#AD1F23',
+  		    'steel-marine': '#0A0A3A',
+  		    'claw-cream': '#FEFDF8',
+  		    gold: '#AD1F23',
+  		    neutral: '#7A8699',
+  		    white: '#FEFDF8',
+  		  },
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
