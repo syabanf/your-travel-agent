@@ -1,0 +1,79 @@
+{
+  "name": "PersonalAssistant",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "specialization": {
+      "type": "string",
+      "title": "Specialization"
+    },
+    "photo_url": {
+      "type": "string",
+      "title": "Photo URL"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Languages"
+    },
+    "rating": {
+      "type": "number",
+      "title": "Rating"
+    },
+    "reviews_count": {
+      "type": "number",
+      "title": "Reviews Count"
+    },
+    "bio": {
+      "type": "string",
+      "title": "Bio"
+    },
+    "is_available": {
+      "type": "boolean",
+      "title": "Available"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "title": "Hourly Rate"
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "default": "USD"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Specialties"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      },
+      "title": "Service Packages"
+    }
+  },
+  "required": [
+    "name",
+    "specialization"
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "name": "ItineraryItem",
+  "type": "object",
+  "properties": {
+    "trip_id": {
+      "type": "string",
+      "title": "Trip ID"
+    },
+    "day_number": {
+      "type": "number",
+      "title": "Day Number"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+    },
+    "time": {
+      "type": "string",
+      "title": "Time"
+    },
+    "activity_name": {
+      "type": "string",
+      "title": "Activity Name"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "title": "Duration (minutes)"
+    },
+    "budget": {
+      "type": "number",
+      "title": "Budget"
+    },
+    "reservation_required": {
+      "type": "boolean",
+      "title": "Reservation Required"
+    },
+    "booking_status": {
+      "type": "string",
+      "enum": [
+        "not_booked",
+        "pending",
+        "confirmed",
+        "cancelled"
+      ],
+      "title": "Booking Status"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    },
+    "attachment_url": {
+      "type": "string",
+      "title": "Attachment URL"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "title": "Completed"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "transport",
+        "accommodation",
+        "dining",
+        "attraction",
+        "activity",
+        "shopping",
+        "rest",
+        "other"
+      ],
+      "title": "Category"
+    },
+    "sort_order": {
+      "type": "number",
+      "title": "Sort Order"
+    }
+  },
+  "required": [
+    "trip_id",
+    "day_number",
+    "activity_name"
+  ]
+}

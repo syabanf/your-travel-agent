@@ -1,0 +1,44 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "conversation_type": {
+      "type": "string",
+      "enum": [
+        "ai_assistant",
+        "personal_assistant"
+      ],
+      "title": "Conversation Type"
+    },
+    "related_trip_id": {
+      "type": "string",
+      "title": "Related Trip ID"
+    },
+    "assistant_id": {
+      "type": "string",
+      "title": "Assistant ID"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant",
+        "system"
+      ],
+      "title": "Role"
+    },
+    "content": {
+      "type": "string",
+      "title": "Content"
+    },
+    "metadata": {
+      "type": "object",
+      "title": "Metadata"
+    }
+  },
+  "required": [
+    "conversation_type",
+    "role",
+    "content"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "message": {
+      "type": "string",
+      "title": "Message"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "trip_reminder",
+        "booking_update",
+        "payment",
+        "assistant",
+        "system",
+        "activity_reminder"
+      ],
+      "title": "Type"
+    },
+    "is_read": {
+      "type": "boolean",
+      "title": "Read",
+      "default": false
+    },
+    "related_trip_id": {
+      "type": "string",
+      "title": "Related Trip ID"
+    },
+    "related_booking_id": {
+      "type": "string",
+      "title": "Related Booking ID"
+    },
+    "action_url": {
+      "type": "string",
+      "title": "Action URL"
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "type"
+  ]
+}

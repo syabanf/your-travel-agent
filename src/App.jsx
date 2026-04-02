@@ -5,7 +5,17 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-// Add page imports here
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import Itinerary from './pages/Itinerary';
+import TripDetail from './pages/TripDetail';
+import NewTrip from './pages/NewTrip';
+import AddActivity from './pages/AddActivity';
+import AIAssistant from './pages/AIAssistant';
+import Booking from './pages/Booking';
+import Assistant from './pages/Assistant';
+import Profile from './pages/Profile';
+import Notifications from './pages/Notifications';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -33,11 +43,23 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
-      <Route path="*" element={<PageNotFound />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/itinerary" element={<Itinerary />} />
+        <Route path="/itinerary/new" element={<NewTrip />} />
+        <Route path="/itinerary/:tripId" element={<TripDetail />} />
+        <Route path="/itinerary/:tripId/add" element={<AddActivity />} />
+        <Route path="/itinerary/:tripId/edit" element={<NewTrip />} />
+        <Route path="/assistant" element={<Assistant />} />
+        <Route path="/assistant/ai" element={<AIAssistant />} />
+        <Route path="/booking" element={<Booking />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Route>
     </Routes>
   );
-};
+  };
 
 
 function App() {
