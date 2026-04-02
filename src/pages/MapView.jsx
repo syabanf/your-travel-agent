@@ -29,6 +29,20 @@ const destinationCoords = {
   "Paris, France": [48.8566, 2.3522],
 };
 
+const MapClickHandler = ({ onPinpoint }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const handleMapClick = (e) => {
+      onPinpoint(e.latlng.lat, e.latlng.lng);
+    };
+    map.on('click', handleMapClick);
+    return () => map.off('click', handleMapClick);
+  }, [map, onPinpoint]);
+
+  return null;
+};
+
 const MapSearchControl = ({ onSearch }) => {
   const [searchInput, setSearchInput] = useState("");
   const map = useMap();
@@ -75,6 +89,7 @@ const MapSearchControl = ({ onSearch }) => {
 export default function MapView() {
   const [trips, setTrips] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [pinpoints, setPinpoints] = useState([]);
 
   useEffect(() => {
     base44.entities.Trip.list("-start_date", 50).then(data => {
@@ -83,6 +98,12 @@ export default function MapView() {
   }, []);
 
   const mappedTrips = trips.filter(t => destinationCoords[t.destination]);
+
+  const handlePinpoint = (lat, lng) => {
+    setPinpoints([...pinpoints, { lat, lng, id: Date.now() }]);
+  };
+
+  const clearPinpoints = () => setPinpoints([]);
 
   return (
     <div className="animate-fade-in pb-28">
@@ -101,6 +122,12 @@ export default function MapView() {
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
             <MapSearchControl />
+            <MapClickHandler onPinpoint={handlePinpoint} />
+            {pinpoints.map(pin => (
+              <Marker key={pin.id} position={[pin.lat, pin.lng]}>
+                <Popup>Pinpoint</Popup>
+              </Marker>
+            ))}
             {mappedTrips.map(trip => {
               const coords = destinationCoords[trip.destination];
               return (
@@ -115,9 +142,19 @@ export default function MapView() {
       </div>
 
       <div className="px-6">
-        <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-4">
-          Destinations ({mappedTrips.length})
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">
+            Destinations ({mappedTrips.length})
+          </h3>
+          {pinpoints.length > 0 && (
+            <button
+              onClick={clearPinpoints}
+              className="text-xs text-mora-neutral/60 hover:text-gold transition-colors"
+            >
+              Clear pins ({pinpoints.length})
+            </button>
+          )}
+        </div>
         <div className="space-y-3">
           {mappedTrips.map(trip => (
             <Link key={trip.id} to={`/itinerary/${trip.id}`}>
