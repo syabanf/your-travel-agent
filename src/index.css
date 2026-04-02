@@ -99,6 +99,9 @@
     min-height: 100vh;
     overscroll-behavior: none;
   }
+  body.light {
+    background: linear-gradient(135deg, #FEFDF8 0%, #F5F7FB 50%, #FEFDF8 100%);
+  }
   button, a[role="button"], nav a {
     -webkit-user-select: none;
     user-select: none;
