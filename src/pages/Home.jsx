@@ -26,6 +26,8 @@ export default function Home() {
         
         const recentBookings = await base44.entities.Booking.list("-created_date", 3);
         setBookings(recentBookings);
+      } catch (err) {
+        setUser(null);
       } finally {
         setLoading(false);
       }
