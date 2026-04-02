@@ -22,9 +22,14 @@ export default function AIAssistant() {
   const urlParams = new URLSearchParams(window.location.search);
   const destination = urlParams.get("destination");
 
+  const demoStarted = useRef(false);
+
   useEffect(() => {
     if (destination && messages.length === 0) {
       setInput(`Create a luxury 5-day itinerary for ${destination}`);
+    } else if (!destination && !demoStarted.current && messages.length === 0) {
+      demoStarted.current = true;
+      setTimeout(() => sendMessage("Create a 3-day luxury itinerary in Bali"), 600);
     }
   }, [destination]);
 
