@@ -1,12 +1,22 @@
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
-import { Globe, Bell, Moon, HelpCircle, Info, Trash2, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { Globe, Bell, Moon, Sun, HelpCircle, Info, Trash2, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 
 export default function ProfileSettings() {
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('mora_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  const toggleDarkMode = (val) => {
+    setDarkMode(val);
+    document.documentElement.classList.toggle('dark', val);
+    localStorage.setItem('mora_theme', val ? 'dark' : 'light');
+  };
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
 
@@ -36,14 +46,14 @@ export default function ProfileSettings() {
           <div className="h-px bg-white/5" />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Moon className="w-5 h-5 text-gold/70" />
+              {darkMode ? <Moon className="w-5 h-5 text-gold/70" /> : <Sun className="w-5 h-5 text-gold/70" />}
               <div>
-                <p className="text-sm font-medium text-mora-white">Dark Mode</p>
-                <p className="text-xs text-mora-neutral/50">Premium night interface</p>
+                <p className="text-sm font-medium text-mora-white">{darkMode ? 'Dark Mode' : 'Light Mode'}</p>
+                <p className="text-xs text-mora-neutral/50">{darkMode ? 'Premium night interface' : 'Warm natural tones'}</p>
               </div>
             </div>
-            <button onClick={() => setDarkMode(!darkMode)}
-              className={`w-11 h-6 rounded-full transition-all ${darkMode ? "bg-mora-gold" : "bg-white/10"}`}>
+            <button onClick={() => toggleDarkMode(!darkMode)}
+              className={`w-11 h-6 rounded-full transition-all ${darkMode ? "bg-mora-gold" : "bg-[#8B7355]"}`}>
               <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${darkMode ? "translate-x-5" : ""}`} />
             </button>
           </div>

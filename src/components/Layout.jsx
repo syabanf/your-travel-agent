@@ -11,11 +11,13 @@ export default function Layout() {
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = (e) => document.documentElement.classList.toggle('dark', e.matches);
-    apply(mq);
-    mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
+    const saved = localStorage.getItem('mora_theme');
+    if (saved) {
+      document.documentElement.classList.toggle('dark', saved === 'dark');
+    } else {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      document.documentElement.classList.toggle('dark', mq.matches);
+    }
   }, []);
 
   return (
