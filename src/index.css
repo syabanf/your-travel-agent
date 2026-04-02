@@ -9,46 +9,45 @@
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
 
-    /* ── Light Mode (default) ── */
-    --background: 42 30% 96%;
-    --foreground: 152 30% 12%;
-    --card: 40 25% 99%;
-    --card-foreground: 152 30% 12%;
-    --popover: 40 25% 97%;
-    --popover-foreground: 152 30% 12%;
-    --primary: 152 30% 25%;
-    --primary-foreground: 40 25% 98%;
-    --secondary: 100 10% 88%;
-    --secondary-foreground: 152 30% 20%;
-    --muted: 100 10% 90%;
-    --muted-foreground: 130 10% 40%;
-    --accent: 35 20% 55%;
-    --accent-foreground: 40 25% 98%;
+    --background: 152 30% 13%;
+    --foreground: 120 5% 99%;
+    --card: 152 30% 16%;
+    --card-foreground: 120 5% 99%;
+    --popover: 152 30% 14%;
+    --popover-foreground: 120 5% 99%;
+    --primary: 152 30% 21%;
+    --primary-foreground: 120 5% 99%;
+    --secondary: 100 8% 37%;
+    --secondary-foreground: 120 5% 99%;
+    --muted: 100 8% 37%;
+    --muted-foreground: 130 8% 70%;
+    --accent: 35 16% 57%;
+    --accent-foreground: 120 5% 99%;
     --destructive: 0 62% 50%;
-    --destructive-foreground: 40 25% 98%;
-    --border: 130 12% 82%;
-    --input: 130 10% 88%;
-    --ring: 35 20% 55%;
-    --chart-1: 152 30% 25%;
-    --chart-2: 35 20% 55%;
-    --chart-3: 100 10% 60%;
-    --chart-4: 130 10% 70%;
-    --chart-5: 152 30% 15%;
+    --destructive-foreground: 120 5% 99%;
+    --border: 130 12% 28%;
+    --input: 130 12% 24%;
+    --ring: 35 16% 57%;
+    --chart-1: 152 30% 21%;
+    --chart-2: 35 16% 57%;
+    --chart-3: 100 8% 37%;
+    --chart-4: 130 8% 70%;
+    --chart-5: 120 5% 99%;
     --radius: 1rem;
 
-    --sidebar-background: 40 25% 98%;
-    --sidebar-foreground: 152 30% 12%;
-    --sidebar-primary: 152 30% 25%;
-    --sidebar-primary-foreground: 40 25% 98%;
-    --sidebar-accent: 100 10% 88%;
-    --sidebar-accent-foreground: 152 30% 20%;
-    --sidebar-border: 130 12% 82%;
-    --sidebar-ring: 35 20% 55%;
+    --sidebar-background: 152 30% 13%;
+    --sidebar-foreground: 120 5% 99%;
+    --sidebar-primary: 152 30% 21%;
+    --sidebar-primary-foreground: 120 5% 99%;
+    --sidebar-accent: 100 8% 37%;
+    --sidebar-accent-foreground: 120 5% 99%;
+    --sidebar-border: 130 12% 28%;
+    --sidebar-ring: 35 16% 57%;
 
     --mora-green: #2A4631;
     --mora-green-light: #606A54;
-    --mora-gold: #8B7355;
-    --mora-neutral: #5A6B5C;
+    --mora-gold: #A5997E;
+    --mora-neutral: #BCC3BD;
     --mora-white: #FCFCFC;
   }
 
@@ -145,14 +144,30 @@
     border: 1px solid rgba(252, 252, 252, 0.08);
     box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.2);
   }
-  .text-gold { color: #A5997E; }
-  .text-mora-white { color: #FCFCFC; }
-  .text-mora-neutral { color: #BCC3BD; }
-  .text-mora-green-light { color: #606A54; }
-  .bg-mora-green { background-color: #2A4631; }
-  .bg-mora-gold { background-color: #A5997E; }
-  .border-gold { border-color: rgba(165, 153, 126, 0.3); }
-  .glow-gold { box-shadow: 0 0 20px rgba(165, 153, 126, 0.15), 0 0 60px rgba(165, 153, 126, 0.05); }
+  .text-gold {
+    color: #A5997E;
+  }
+  .text-mora-white {
+    color: #FCFCFC;
+  }
+  .text-mora-neutral {
+    color: #BCC3BD;
+  }
+  .text-mora-green-light {
+    color: #606A54;
+  }
+  .bg-mora-green {
+    background-color: #2A4631;
+  }
+  .bg-mora-gold {
+    background-color: #A5997E;
+  }
+  .border-gold {
+    border-color: rgba(165, 153, 126, 0.3);
+  }
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(165, 153, 126, 0.15), 0 0 60px rgba(165, 153, 126, 0.05);
+  }
   .gradient-premium {
     background: linear-gradient(135deg, rgba(42, 70, 49, 0.6) 0%, rgba(96, 106, 84, 0.4) 50%, rgba(42, 70, 49, 0.6) 100%);
   }

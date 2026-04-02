@@ -28,12 +28,7 @@ export default function BottomNav() {
     const isActive = path === "/"
       ? location.pathname === "/"
       : location.pathname.startsWith(path);
-    if (isActive) {
-      // Reset to root of this tab
-      navigate(path);
-      sessionStorage.removeItem(`tab_path_${path}`);
-      return;
-    }
+    if (isActive) return; // already on this tab
     const saved = sessionStorage.getItem(`tab_path_${path}`);
     navigate(saved || path);
   };
