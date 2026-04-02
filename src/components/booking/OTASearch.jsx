@@ -85,22 +85,30 @@ export default function OTASearch({ onSaveBooking }) {
     setSearched(true);
   };
 
+  const safeDate = (dateStr, timeStr) => {
+    try {
+      if (!dateStr) return undefined;
+      const d = timeStr ? new Date(`${dateStr}T${timeStr}`) : new Date(dateStr);
+      return isNaN(d.getTime()) ? undefined : d.toISOString();
+    } catch { return undefined; }
+  };
+
   const handleBook = async (item) => {
     let bookingData = {};
     if (activeTab === "flight") {
-      bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
+      bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
     } else if (activeTab === "hotel") {
-      bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: form.checkin ? new Date(form.checkin).toISOString() : undefined, check_out: form.checkout ? new Date(form.checkout).toISOString() : undefined, location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
+      bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
     } else if (activeTab === "train") {
-      bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
+      bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
     } else if (activeTab === "bus") {
-      bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
+      bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
     } else if (activeTab === "ship") {
-      bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: form.date ? new Date(form.date + "T" + item.departure_time).toISOString() : undefined, location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
+      bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
     } else if (activeTab === "car_rental") {
-      bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: form.checkin ? new Date(form.checkin).toISOString() : undefined, check_out: form.checkout ? new Date(form.checkout).toISOString() : undefined, location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
+      bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
     } else if (activeTab === "attraction") {
-      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: form.date ? new Date(form.date).toISOString() : undefined, location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
+      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
     }
     await base44.entities.Booking.create(bookingData);
     if (onSaveBooking) onSaveBooking();
