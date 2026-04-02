@@ -45,7 +45,7 @@ export default function CalendarView() {
   });
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title="Calendar" subtitle="Your trips timeline" showBack />
 
       {/* Month navigator */}
