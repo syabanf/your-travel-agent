@@ -79,7 +79,7 @@ export default function Itinerary() {
         showNotification
         rightAction={
           <Link 
-            to="/itinerary/new"
+            to="/itinerary/wizard"
             className="w-10 h-10 glass-gold rounded-xl flex items-center justify-center text-gold hover:glow-gold transition-all"
           >
             <Plus className="w-5 h-5" />
@@ -153,7 +153,7 @@ export default function Itinerary() {
             <p className="text-sm text-mora-neutral mb-1">No trips found</p>
             <p className="text-xs text-mora-neutral/70">Create your first itinerary to get started</p>
             <Link 
-              to="/itinerary/new"
+              to="/itinerary/wizard"
               className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
             >
               <Plus className="w-4 h-4" /> New Itinerary

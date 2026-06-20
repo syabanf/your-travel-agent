@@ -24,13 +24,13 @@ const statusColors = {
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
-export default function OTASearch({ onSaveBooking }) {
+export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null, defaultTab = "my_bookings" }) {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("my_bookings");
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [form, setForm] = useState({
-    from: "", to: "", checkin: "", checkout: "", guests: 1, date: ""
+    from: "", to: defaultTo, checkin: "", checkout: "", guests: 1, date: ""
   });
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -114,7 +114,7 @@ export default function OTASearch({ onSaveBooking }) {
    } else if (activeTab === "attraction") {
      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
    }
-   await base44.entities.Booking.create(bookingData);
+   await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
    queryClient.invalidateQueries({ queryKey: ["bookings"] });
    if (onSaveBooking) onSaveBooking();
    loadMyBookings();

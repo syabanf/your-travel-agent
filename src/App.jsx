@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Itinerary from './pages/Itinerary';
 import TripDetail from './pages/TripDetail';
 import NewTrip from './pages/NewTrip';
+import TripWizard from './pages/TripWizard';
 import AddActivity from './pages/AddActivity';
 import AIAssistant from './pages/AIAssistant';
 import Booking from './pages/Booking';
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Home />} />
         <Route path="/itinerary" element={<Itinerary />} />
         <Route path="/itinerary/new" element={<NewTrip />} />
+        <Route path="/itinerary/wizard" element={<TripWizard />} />
         <Route path="/itinerary/calendar" element={<CalendarView />} />
         <Route path="/itinerary/map" element={<MapView />} />
         <Route path="/itinerary/budget" element={<BudgetView />} />
