@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Heart, X, RotateCcw, MapPin, Plane, Check } from "lucide-react";
 import { DESTINATIONS } from "@/data/destinations";
+import { base44 } from "@/api/base44Client";
 import { addFavorite, removeFavorite } from "@/lib/favorites";
 import { formatIDR } from "@/lib/currency";
 
@@ -52,13 +53,20 @@ export default function DestinationSwipe({ onLikedChange }) {
   const [history, setHistory] = useState([]);
   const [gone, setGone] = useState(null); // 'left' | 'right' while the top card flies off
   const [hint, setHint] = useState(null); // live drag direction for LIKE/NOPE badges
+  const [deck, setDeck] = useState(DESTINATIONS); // CMS-managed destinations (fallback: static list)
 
-  const current = DESTINATIONS[index];
-  const next = DESTINATIONS[index + 1];
-  const done = index >= DESTINATIONS.length;
+  useEffect(() => {
+    base44.entities.Destination.list("-created_date", 100)
+      .then((rows) => { if (rows && rows.length) setDeck(rows.filter((d) => d.active !== false)); })
+      .catch(() => {});
+  }, []);
+
+  const current = deck[index];
+  const next = deck[index + 1];
+  const done = index >= deck.length;
 
   const advance = (dir) => {
-    const dest = DESTINATIONS[index];
+    const dest = deck[index];
     setHistory((h) => [...h, { dir, dest }]);
     setIndex((i) => i + 1);
     setHint(null);
@@ -69,7 +77,7 @@ export default function DestinationSwipe({ onLikedChange }) {
   const decide = (dir) => {
     if (gone) return;
     if (dir === "right") {
-      const dest = DESTINATIONS[index];
+      const dest = deck[index];
       addFavorite(dest);
       const nl = liked.some((d) => d.id === dest.id) ? liked : [...liked, dest];
       setLiked(nl);
@@ -169,7 +177,7 @@ export default function DestinationSwipe({ onLikedChange }) {
       )}
 
       <p className="text-[11px] text-mora-neutral/60 mt-4">
-        {done ? "" : `${index + 1} / ${DESTINATIONS.length} · `}
+        {done ? "" : `${index + 1} / ${deck.length} · `}
         <span className="text-gold font-medium">{liked.length} saved</span>
       </p>
     </div>

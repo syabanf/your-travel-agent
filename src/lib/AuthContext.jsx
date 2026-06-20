@@ -2,69 +2,60 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 
 const AuthContext = createContext();
+const SESSION_KEY = 'mora_session';
 
-// Local auth: the mock client always resolves a demo user, so the app loads
-// straight into an authenticated state with no backend or login provider.
+const readSession = () => {
+  try { return localStorage.getItem(SESSION_KEY) === '1'; } catch { return false; }
+};
+
+// Local auth: the mock client resolves a demo user, and a lightweight
+// localStorage "session" gates the app behind the splash/login flow.
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
-  const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(readSession());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    checkAppState();
+    (async () => {
+      try {
+        setUser(await base44.auth.me());
+      } catch (e) {
+        console.error('Auth check failed:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, []);
 
-  const checkAppState = async () => {
-    setIsLoadingPublicSettings(true);
-    setIsLoadingAuth(true);
-    setAuthError(null);
+  const login = (profile = {}) => {
     try {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
-      setIsAuthenticated(true);
-      setAppPublicSettings({ id: 'local', public_settings: {} });
-    } catch (error) {
-      console.error('Local auth check failed:', error);
-      setUser(null);
-      setIsAuthenticated(false);
-      setAuthError({ type: 'unknown', message: error?.message || 'Failed to load app' });
-    } finally {
-      setIsLoadingPublicSettings(false);
-      setIsLoadingAuth(false);
-    }
+      localStorage.setItem(SESSION_KEY, '1');
+      if (profile.name) localStorage.setItem('mora_user_name', profile.name);
+    } catch { /* ignore */ }
+    setIsAuthenticated(true);
   };
 
-  const logout = (shouldRedirect = true) => {
-    base44.auth.logout();
-    setUser(null);
+  const logout = () => {
+    try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
     setIsAuthenticated(false);
-    if (shouldRedirect && typeof window !== 'undefined') {
-      window.location.href = '/';
-    }
   };
 
-  const navigateToLogin = () => {
-    base44.auth.redirectToLogin();
+  const value = {
+    user,
+    isAuthenticated,
+    login,
+    logout,
+    // backward-compat aliases used by existing screens
+    isLoading,
+    isLoadingAuth: isLoading,
+    isLoadingPublicSettings: false,
+    authError: null,
+    appPublicSettings: { id: 'local', public_settings: {} },
+    navigateToLogin: () => { if (typeof window !== 'undefined') window.location.href = '/login'; },
+    checkAppState: () => {},
   };
 
-  return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated,
-      isLoadingAuth,
-      isLoadingPublicSettings,
-      authError,
-      appPublicSettings,
-      logout,
-      navigateToLogin,
-      checkAppState
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

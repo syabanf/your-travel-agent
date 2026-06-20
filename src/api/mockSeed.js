@@ -5,7 +5,17 @@
 //
 // All monetary amounts are in Indonesian Rupiah (IDR).
 
+import { DESTINATIONS } from '@/data/destinations';
+
 const DAY = 86400000;
+
+// Geo coords for the seeded destinations (used by the map + CMS).
+const DEST_COORDS = {
+  bali: [-8.4095, 115.1889], kyoto: [35.0116, 135.7681], santorini: [36.3932, 25.4615],
+  maldives: [3.2028, 73.2207], paris: [48.8566, 2.3522], tokyo: [35.6762, 139.6503],
+  'swiss-alps': [46.8182, 8.2275], dubai: [25.2048, 55.2708], reykjavik: [64.1466, -21.9426],
+  queenstown: [-45.0312, 168.6626], marrakech: [31.6295, -7.9811], phuket: [7.8804, 98.3923],
+};
 
 export function buildSeed() {
   const now = Date.now();
@@ -91,5 +101,23 @@ export function buildSeed() {
     { id: 'pa_sofia', created_date: iso(-25), created_by: by, name: 'Sofia Rossi', specialization: 'Family & Relaxation', photo_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80', languages: ['English', 'Italian', 'French'], rating: 4.7, reviews_count: 132, bio: 'Helping families travel smoothly and actually relax.', is_available: false, hourly_rate: 500000, currency: 'IDR', specialties: ['Family-friendly', 'Resorts', 'Slow travel'], packages: [{ name: 'Family Day', description: 'Kid-friendly day plan', price: 500000 }, { name: 'Relaxation Week', description: 'A full week, fully unwound', price: 2900000 }] },
   ];
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [] };
+  const Destination = DESTINATIONS.map((d, i) => ({
+    id: `dest_${d.id}`,
+    created_date: iso(-50 + i), updated_date: iso(-50 + i), created_by: by,
+    name: d.name, country: d.country, tagline: d.tagline, vibes: d.vibes,
+    fromPrice: d.fromPrice, emoji: d.emoji, gradient: d.gradient, image: d.image,
+    lat: DEST_COORDS[d.id] ? DEST_COORDS[d.id][0] : null,
+    lng: DEST_COORDS[d.id] ? DEST_COORDS[d.id][1] : null,
+    active: true,
+  }));
+
+  const Promotion = [
+    { id: 'promo_villas', created_date: iso(-3), created_by: by, type: 'promo', title: 'Flash Sale: Bali Villas', description: 'Up to 35% off luxury villas in Seminyak & Ubud — book before they vanish.', discount: 35, price: 2900000, valid_until: date(14), location: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80', cta: 'Book now', featured: true },
+    { id: 'promo_flights', created_date: iso(-2), created_by: by, type: 'promo', title: 'Garuda Weekend Deal', description: 'Domestic return flights from Rp 750.000. Limited seats available.', discount: 20, price: 750000, valid_until: date(7), location: 'Nationwide', image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', cta: 'Find flights', featured: false },
+    { id: 'event_arts', created_date: iso(-5), created_by: by, type: 'event', title: 'Bali Arts Festival', description: 'A month of Balinese dance, gamelan and craft markets.', date: date(30), location: 'Denpasar, Bali', image: 'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=800&q=80', cta: 'Learn more', featured: false },
+    { id: 'event_jazz', created_date: iso(-6), created_by: by, type: 'event', title: 'Java Jazz Festival', description: 'Three nights of world-class jazz in the capital.', date: date(45), location: 'Jakarta', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800&q=80', cta: 'Get tickets', featured: false },
+    { id: 'news_visa', created_date: iso(-1), created_by: by, type: 'news', title: 'New visa-on-arrival countries', description: 'Indonesia adds 10 more nationalities to its visa-on-arrival list this month.', date: date(-1), location: '', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80', cta: 'Read more', featured: false },
+  ];
+
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion };
 }

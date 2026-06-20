@@ -96,7 +96,8 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
     try {
       if (!dateStr) return undefined;
       const d = timeStr ? new Date(`${dateStr}T${timeStr}`) : new Date(dateStr);
-      return isNaN(d.getTime()) ? undefined : d.toISOString();
+      if (isNaN(d.getTime()) || d.getFullYear() < 2000 || d.getFullYear() > 2100) return undefined;
+      return d.toISOString();
     } catch { return undefined; }
   };
 

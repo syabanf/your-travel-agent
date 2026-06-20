@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, Globe } from "lucide-react";
-import { Link } from "react-router-dom";
+import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, Globe, LayoutDashboard } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/AuthContext";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 
@@ -15,9 +16,12 @@ const menuItems = [
   { icon: Bell, label: "Notifications", desc: "Alerts & reminders", path: "/notifications" },
   { icon: Shield, label: "Privacy & Security", desc: "Account protection", path: "/profile/security" },
   { icon: Settings, label: "Settings", desc: "App preferences", path: "/profile/settings" },
+  { icon: LayoutDashboard, label: "Admin Dashboard", desc: "Manage app content (CMS)", path: "/dashboard" },
 ];
 
 export default function Profile() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [tripCount, setTripCount] = useState(0);
   const [bookingCount, setBookingCount] = useState(0);
@@ -37,7 +41,8 @@ export default function Profile() {
   }, []);
 
   const handleLogout = () => {
-    base44.auth.logout();
+    logout();
+    navigate("/login");
   };
 
   return (

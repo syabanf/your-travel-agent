@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, Search, RefreshCw } from "lucide-react";
+import { Bell, Search, RefreshCw, Gift, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import QuickActions from "../components/home/QuickActions";
 import ActiveTrip from "../components/home/ActiveTrip";
@@ -126,6 +126,18 @@ export default function Home() {
 
       <div className="space-y-8 pt-4">
         <QuickActions />
+        <Link to="/promotions" className="block px-6">
+          <div className="rounded-2xl btn-primary p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Gift className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-white">What's New</p>
+              <p className="text-xs text-white/80">Promotions, events & travel news</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-white/80" />
+          </div>
+        </Link>
         <ActiveTrip trip={activeTrip} />
         <FeaturedDestinations />
         <ConciergeOffer />

@@ -15,7 +15,7 @@ import { buildSeed } from './mockSeed';
 import { invokeLLM } from './mockLLM';
 
 const PREFIX = 'mora_db_';
-const SEED_FLAG = `${PREFIX}_seeded_v2_idr`;
+const SEED_FLAG = `${PREFIX}_seeded_v3`;
 
 const MOCK_USER = {
   id: 'user_local',
@@ -143,16 +143,17 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion'];
 const entities = Object.fromEntries(ENTITY_NAMES.map((n) => [n, createEntity(n)]));
 
 /* ------------------------------ seeding ---------------------------- */
 
 function ensureSeeded() {
   if (readRaw(SEED_FLAG)) return;
+  // New seed version → reset to a clean, correct dataset (also clears stale demo data).
   const seed = buildSeed();
-  for (const [name, rows] of Object.entries(seed)) {
-    if (readCollection(name).length === 0) writeCollection(name, rows);
+  for (const name of ENTITY_NAMES) {
+    writeCollection(name, seed[name] || []);
   }
   writeRaw(SEED_FLAG, nowISO());
 }

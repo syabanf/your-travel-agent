@@ -95,7 +95,7 @@ export default function Booking() {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
                 <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
-                  <GlassCard className="p-5 hover:bg-white/10 transition-all">
+                  <GlassCard className="p-4 hover:bg-white/10 transition-all">
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (
                         <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">

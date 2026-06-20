@@ -191,4 +191,20 @@
   .border-white\/20 { border-color: rgba(11, 27, 59, 0.18); }
   .hover\:bg-white\/5:hover { background-color: rgba(11, 27, 59, 0.05); }
   .hover\:bg-white\/10:hover { background-color: rgba(11, 27, 59, 0.07); }
+
+  /* Dashboard form input */
+  .dash-input {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid rgba(11, 27, 59, 0.12);
+    border-radius: 0.7rem;
+    height: 2.6rem;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: var(--mora-navy);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .dash-input:focus { border-color: rgba(173, 31, 35, 0.5); }
+  .dash-input::placeholder { color: #93a0b8; }
 }
