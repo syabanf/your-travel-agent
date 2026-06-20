@@ -33,7 +33,7 @@ export default function ProfileSecurity() {
         <GlassCard className="overflow-hidden">
           <button onClick={() => setSection(section === 'password' ? null : 'password')}
             className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
               <Lock className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">
@@ -57,6 +57,7 @@ export default function ProfileSecurity() {
                       placeholder="••••••••"
                       className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 pr-10 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
                     <button type="button" onClick={() => setShow(!show)}
+                      aria-label={show ? "Hide password" : "Show password"}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-mora-neutral/40 hover:text-mora-neutral">
                       {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -64,7 +65,7 @@ export default function ProfileSecurity() {
                 </div>
               ))}
               {pw.new && pw.confirm && pw.new !== pw.confirm && (
-                <p className="text-xs text-red-400">Passwords don't match</p>
+                <p className="text-xs text-red-600">Passwords don't match</p>
               )}
               <button onClick={handleSavePw}
                 disabled={!pw.old || !pw.new || pw.new !== pw.confirm}
@@ -77,7 +78,7 @@ export default function ProfileSecurity() {
 
         {/* 2FA */}
         <GlassCard className="p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
             <Smartphone className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
           </div>
           <div className="flex-1">
@@ -85,6 +86,7 @@ export default function ProfileSecurity() {
             <p className="text-xs text-mora-neutral/50 mt-0.5">{twoFa ? 'Enabled — extra security active' : 'Add extra security layer'}</p>
           </div>
           <button onClick={() => setTwoFa(!twoFa)}
+            aria-label={twoFa ? "Disable two-factor authentication" : "Enable two-factor authentication"}
             className={`w-11 h-6 rounded-full transition-all flex-shrink-0 ${twoFa ? 'bg-mora-gold' : 'bg-white/10'}`}>
             <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${twoFa ? 'translate-x-5' : ''}`} />
           </button>
@@ -94,7 +96,7 @@ export default function ProfileSecurity() {
         <GlassCard className="overflow-hidden">
           <button onClick={() => setSection(section === 'activity' ? null : 'activity')}
             className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
-            <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
               <Eye className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">

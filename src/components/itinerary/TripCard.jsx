@@ -5,10 +5,10 @@ import moment from "moment";
 
 const statusColors = {
   draft: "bg-mora-neutral/15 text-mora-neutral border-mora-neutral/20",
-  planned: "bg-[#A5997E]/15 text-gold border-[#A5997E]/20",
-  active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
+  planned: "bg-mora-gold/10 text-gold border-mora-gold/20",
+  active: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
-  cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
+  cancelled: "bg-red-500/15 text-red-600 border-red-500/20",
 };
 
 export default function TripCard({ trip }) {

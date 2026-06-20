@@ -40,7 +40,7 @@ export default function MobileSelect({ value, onChange, options = [], placeholde
       </button>
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="glass-nav border-t border-white/10 bg-[#1a2e22]/95">
+        <DrawerContent className="glass-nav border-t border-white/10">
           {label && (
             <DrawerHeader className="pb-2">
               <DrawerTitle className="text-sm font-semibold text-mora-white text-center">{label}</DrawerTitle>

@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Search, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -86,16 +86,52 @@ const MapSearchControl = ({ onSearch }) => {
   );
 };
 
+const MapController = ({ center }) => {
+  const map = useMap();
+  useEffect(() => { if (center) map.setView(center, 9); }, [center, map]);
+  return null;
+};
+
 export default function MapView() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const locationParam = searchParams.get("location") || "";
+  const callback = searchParams.get("callback");
+
   const [trips, setTrips] = useState([]);
   const [selected, setSelected] = useState(null);
   const [pinpoints, setPinpoints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [focus, setFocus] = useState(null);
+  const [chosen, setChosen] = useState(locationParam);
 
   useEffect(() => {
-    base44.entities.Trip.list("-start_date", 50).then(data => {
-      setTrips(data.filter(t => destinationCoords[t.destination]));
-    });
+    base44.entities.Trip.list("-start_date", 50)
+      .then(data => setTrips(data.filter(t => destinationCoords[t.destination])))
+      .finally(() => setLoading(false));
   }, []);
+
+  // Center on an incoming ?location (geocode if it's not a known city).
+  useEffect(() => {
+    if (!locationParam) return;
+    const known = destinationCoords[locationParam];
+    if (known) { setFocus({ lat: known[0], lng: known[1], label: locationParam }); return; }
+    let active = true;
+    (async () => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationParam)}`);
+        const d = await r.json();
+        if (active && d.length) setFocus({ lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), label: locationParam });
+      } catch { /* ignore */ }
+    })();
+    return () => { active = false; };
+  }, [locationParam]);
+
+  const useThisLocation = () => {
+    const label = chosen || focus?.label || locationParam;
+    if (!callback || !label) return;
+    navigate(callback + (callback.includes("?") ? "&" : "?") + "location=" + encodeURIComponent(label));
+  };
 
   const mappedTrips = trips.filter(t => destinationCoords[t.destination]);
 
@@ -107,7 +143,15 @@ export default function MapView() {
 
   return (
     <div className="animate-fade-in pb-28">
-      <PageHeader title="Map View" subtitle="Your destinations" showBack />
+      <PageHeader title="Map View" subtitle={locationParam || "Your destinations"} showBack />
+
+      {callback && (
+        <div className="px-6 mt-2">
+          <button onClick={useThisLocation} className="w-full py-3 btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2">
+            <MapPin className="w-4 h-4" /> Use {chosen || locationParam || "this location"}
+          </button>
+        </div>
+      )}
 
       <div className="px-6 mt-4 mb-4">
         <GlassCard className="overflow-hidden h-64 p-0">
@@ -121,8 +165,14 @@ export default function MapView() {
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
-            <MapSearchControl />
+            <MapController center={focus ? [focus.lat, focus.lng] : null} />
+            <MapSearchControl onSearch={setChosen} />
             <MapClickHandler onPinpoint={handlePinpoint} />
+            {focus && (
+              <Marker position={[focus.lat, focus.lng]}>
+                <Popup>{focus.label}</Popup>
+              </Marker>
+            )}
             {pinpoints.map(pin => (
               <Marker key={pin.id} position={[pin.lat, pin.lng]}>
                 <Popup>Pinpoint</Popup>
@@ -156,7 +206,11 @@ export default function MapView() {
           )}
         </div>
         <div className="space-y-3">
-          {mappedTrips.map(trip => (
+          {loading ? (
+            <div className="flex justify-center py-8"><div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+          ) : mappedTrips.length === 0 ? (
+            <p className="text-sm text-mora-neutral/60 text-center py-6">No mapped destinations yet.</p>
+          ) : mappedTrips.map(trip => (
             <Link key={trip.id} to={`/itinerary/${trip.id}`}>
               <GlassCard className={`p-4 flex items-center gap-4 hover:bg-white/10 transition-all ${
                 selected?.id === trip.id ? 'ring-1 ring-gold' : ''

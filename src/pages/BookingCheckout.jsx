@@ -5,6 +5,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, CreditCard, User, FileText, ChevronRight, Loader2, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -21,6 +22,7 @@ export default function BookingCheckout() {
   const [booking, setBooking] = useState(null);
   const [step, setStep] = useState(1);
   const [processing, setProcessing] = useState(false);
+  const [confirmCode, setConfirmCode] = useState("");
 
   const [guestInfo, setGuestInfo] = useState({
     full_name: "",
@@ -59,15 +61,21 @@ export default function BookingCheckout() {
 
   const handleConfirmPayment = async () => {
     setProcessing(true);
-    await new Promise(r => setTimeout(r, 2000)); // simulate processing
-    const confirmCode = "MORA-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    await base44.entities.Booking.update(bookingId, {
-      status: "confirmed",
-      confirmation_code: confirmCode,
-      notes: (booking.notes || "") + `\nGuest: ${guestInfo.full_name} | ${guestInfo.email} | ${guestInfo.phone}${guestInfo.special_request ? "\nRequest: " + guestInfo.special_request : ""}`,
-    });
-    setProcessing(false);
-    setStep(4);
+    try {
+      await new Promise(r => setTimeout(r, 2000)); // simulate processing
+      const code = "MORA-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      await base44.entities.Booking.update(bookingId, {
+        status: "confirmed",
+        confirmation_code: code,
+        notes: (booking.notes || "") + `\nGuest: ${guestInfo.full_name} | ${guestInfo.email} | ${guestInfo.phone}${guestInfo.special_request ? "\nRequest: " + guestInfo.special_request : ""}`,
+      });
+      setConfirmCode(code);
+      setStep(4);
+    } catch {
+      toast.error("Payment couldn't be processed. Please try again.");
+    } finally {
+      setProcessing(false);
+    }
   };
 
   if (!booking) return (
@@ -92,12 +100,12 @@ export default function BookingCheckout() {
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                     done ? "bg-emerald-500/20 border border-emerald-500/40" :
-                    active ? "glass-gold border border-[#A5997E]/40" :
+                    active ? "glass-gold border border-mora-gold/40" :
                     "glass-light border border-white/10"
                   }`}>
-                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-400" : active ? "text-gold" : "text-mora-neutral/30"}`} />
+                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-gold" : "text-mora-neutral/30"}`} />
                   </div>
-                  <span className={`text-[9px] mt-1 ${active ? "text-gold" : done ? "text-emerald-400" : "text-mora-neutral/30"}`}>{s.label}</span>
+                  <span className={`text-[9px] mt-1 ${active ? "text-gold" : done ? "text-emerald-600" : "text-mora-neutral/30"}`}>{s.label}</span>
                 </div>
                 {i < steps.length - 1 && (
                   <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-emerald-500/30" : "bg-white/10"}`} />
@@ -253,14 +261,14 @@ export default function BookingCheckout() {
         {step === 4 && (
           <div className="text-center py-6">
             <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-              <CheckCircle className="w-10 h-10 text-emerald-400" />
+              <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
             <h2 className="text-xl font-display font-bold text-mora-white mb-2">Booking Confirmed!</h2>
             <p className="text-sm text-mora-neutral/60 mb-6">Your booking has been successfully confirmed and saved.</p>
 
             <GlassCard className="p-4 text-left mb-6">
               <p className="text-xs text-mora-neutral/50 mb-1">Confirmation Code</p>
-              <p className="text-lg font-display font-bold text-gold tracking-widest">MORA-••••••</p>
+              <p className="text-lg font-display font-bold text-gold tracking-widest">{confirmCode}</p>
               <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
                 <p className="text-xs text-mora-neutral/60">{booking.title}</p>
                 <p className="text-xs text-mora-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>

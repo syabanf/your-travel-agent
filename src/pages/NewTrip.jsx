@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { MapPin, Users, Sparkles, Loader2, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 
 const travelStyles = ["luxury", "adventure", "cultural", "relaxation", "business", "family", "budget"];
 const paceOptions = ["relaxed", "moderate", "packed"];
@@ -15,6 +16,8 @@ const tripTypes = ["solo", "couple", "family", "business", "luxury", "group"];
 export default function NewTrip() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { tripId } = useParams();
+  const isEdit = Boolean(tripId);
   const [form, setForm] = useState({
     title: "",
     destination: "",
@@ -33,9 +36,38 @@ export default function NewTrip() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  // Edit mode: load the existing trip and prefill the form.
+  useEffect(() => {
+    if (!tripId) return;
+    let active = true;
+    (async () => {
+      const results = await base44.entities.Trip.filter({ id: tripId });
+      if (active && results.length > 0) {
+        const t = results[0];
+        setForm((prev) => ({
+          ...prev,
+          title: t.title || "",
+          destination: t.destination || "",
+          start_date: t.start_date || "",
+          end_date: t.end_date || "",
+          travelers: t.travelers || 1,
+          travel_style: t.travel_style || "luxury",
+          budget_total: t.budget_total != null ? String(t.budget_total) : "",
+          budget_currency: t.budget_currency || "IDR",
+          pace: t.pace || "moderate",
+          trip_type: t.trip_type || "couple",
+          notes: t.notes || "",
+          status: t.status || "draft",
+        }));
+      }
+    })();
+    return () => { active = false; };
+  }, [tripId]);
+
   const handleAISuggestion = async () => {
     if (!form.destination) return;
     setAiLoading(true);
+    try {
     const res = await base44.integrations.Core.InvokeLLM({
       prompt: `Suggest a luxury travel itinerary plan for a trip to ${form.destination}. Based on the destination, suggest: a catchy trip title, the best travel style (one of: luxury, adventure, cultural, relaxation, business, family, budget), ideal pace (one of: relaxed, moderate, packed), trip type (one of: solo, couple, family, business, luxury, group), ideal number of travelers, and a short notes/highlights string. Be concise.`,
       response_json_schema: {
@@ -59,7 +91,11 @@ export default function NewTrip() {
       travelers: res.travelers || prev.travelers,
       notes: res.notes || prev.notes,
     }));
-    setAiLoading(false);
+    } catch {
+      toast.error("Couldn't get AI suggestions. Please try again.");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
@@ -67,6 +103,7 @@ export default function NewTrip() {
   const handleGenerateFullTrip = async () => {
     if (!form.destination) return;
     setAiGenerating(true);
+    try {
     const res = await base44.integrations.Core.InvokeLLM({
       prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
         form.start_date ? ` from ${form.start_date}` : ''
@@ -126,19 +163,26 @@ export default function NewTrip() {
     }
 
     navigate(`/itinerary/${trip.id}`);
+    } catch {
+      toast.error("Couldn't generate the trip. Please try again.");
+    } finally {
+      setAiGenerating(false);
+    }
   };
 
   const handleSave = async (status = "draft") => {
     if (!form.title || !form.destination) return;
     setSaving(true);
     try {
-      const trip = await base44.entities.Trip.create({
-        ...form,
-        status,
-        budget_total: form.budget_total ? Number(form.budget_total) : undefined,
-      });
+      const payload = { ...form, status, budget_total: form.budget_total ? Number(form.budget_total) : undefined };
+      const trip = isEdit
+        ? await base44.entities.Trip.update(tripId, payload)
+        : await base44.entities.Trip.create(payload);
       queryClient.invalidateQueries({ queryKey: ["trips"] });
+      toast.success(isEdit ? "Trip updated" : "Trip created");
       navigate(`/itinerary/${trip.id}`);
+    } catch {
+      toast.error("Couldn't save the trip. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -146,10 +190,11 @@ export default function NewTrip() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="New Itinerary" subtitle="Plan your next journey" showBack />
+      <PageHeader title={isEdit ? "Edit Trip" : "New Itinerary"} subtitle={isEdit ? "Update your journey" : "Plan your next journey"} showBack />
 
       <div className="px-6 space-y-5 mt-2">
         {/* AI Suggestion Banner */}
+        {!isEdit && (
         <button
           onClick={handleAISuggestion}
           disabled={!form.destination || aiLoading}
@@ -163,6 +208,7 @@ export default function NewTrip() {
             <p className="text-[11px] text-mora-neutral/60">Enter destination first, then auto-fill your trip details</p>
           </div>
         </button>
+        )}
 
         {/* Title & Destination */}
         <GlassCard className="p-4 space-y-3">
@@ -307,14 +353,16 @@ export default function NewTrip() {
         </GlassCard>
 
         {/* Generate with AI button */}
+        {!isEdit && (
         <button
           onClick={handleGenerateFullTrip}
           disabled={!form.destination || aiGenerating}
-          className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-gradient-to-r from-[#A5997E]/30 to-[#606A54]/20 border border-[#A5997E]/30 text-gold hover:glow-gold"
+          className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 glass-gold border border-gold text-gold hover:glow-gold"
         >
           {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
           {aiGenerating ? "Generating your trip..." : "✨ Generate Full Trip with AI"}
         </button>
+        )}
 
         {/* Actions */}
         <div className="flex gap-3 pb-6">
@@ -330,7 +378,7 @@ export default function NewTrip() {
             disabled={saving || !form.title || !form.destination}
             className="flex-1 py-3.5 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all disabled:opacity-40"
           >
-            {saving ? "Creating..." : "Create Trip"}
+            {saving ? "Saving..." : isEdit ? "Save Changes" : "Create Trip"}
           </button>
         </div>
       </div>

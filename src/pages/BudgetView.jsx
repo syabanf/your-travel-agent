@@ -6,7 +6,7 @@ import GlassCard from "../components/GlassCard";
 import { Link } from "react-router-dom";
 import { formatIDR } from "@/lib/currency";
 
-const COLORS = ["#A5997E", "#606A54", "#60A5FA", "#34D399", "#F472B6", "#FBBF24", "#94A3B8"];
+const COLORS = ["#AD1F23", "#0B1B3B", "#60A5FA", "#34D399", "#F472B6", "#FBBF24", "#94A3B8"];
 
 const categoryColors = {
   transport: "#60A5FA",
@@ -16,7 +16,7 @@ const categoryColors = {
   activity: "#F472B6",
   shopping: "#FBBF24",
   rest: "#94A3B8",
-  other: "#BCC3BD",
+  other: "#94A3B8",
 };
 
 export default function BudgetView() {
@@ -97,7 +97,7 @@ export default function BudgetView() {
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Remaining</p>
-                  <p className={`text-base font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  <p className={`text-base font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                     {formatIDR(focusTrip.budget_total - spent)}
                   </p>
                 </div>
@@ -107,7 +107,7 @@ export default function BudgetView() {
                 <div className="h-full bg-gradient-to-r from-mora-gold to-gold rounded-full transition-all"
                   style={{ width: `${Math.min(100, (spent / focusTrip.budget_total) * 100)}%` }} />
               </div>
-              <p className="text-[10px] text-mora-neutral/40 mt-1 text-right">
+              <p className="text-[10px] text-mora-neutral/55 mt-1 text-right">
                 {Math.round((spent / focusTrip.budget_total) * 100)}% used
               </p>
             </GlassCard>
@@ -127,7 +127,7 @@ export default function BudgetView() {
                       ))}
                     </Pie>
                     <Tooltip formatter={(v) => [formatIDR(v), ""]}
-                      contentStyle={{ background: "#1a2e22", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#FCFCFC" }} />
+                      contentStyle={{ background: "#FFFFFF", border: "1px solid rgba(11,27,59,0.12)", borderRadius: 12, color: "#0B1B3B" }} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -162,7 +162,7 @@ export default function BudgetView() {
                     <div className="h-full bg-gradient-to-r from-mora-gold to-gold rounded-full"
                       style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-[10px] text-mora-neutral/40 mt-1">{formatIDR(s)} planned · {Math.round(pct)}% of budget</p>
+                  <p className="text-[10px] text-mora-neutral/55 mt-1">{formatIDR(s)} planned · {Math.round(pct)}% of budget</p>
                 </GlassCard>
               </Link>
             );

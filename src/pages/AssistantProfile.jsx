@@ -5,6 +5,7 @@ import { Star, Globe, MessageCircle, Crown, Clock } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
+import { toast } from "sonner";
 
 export default function AssistantProfile() {
   const { assistantId } = useParams();
@@ -37,13 +38,13 @@ export default function AssistantProfile() {
             {assistant.photo_url ? (
               <img src={assistant.photo_url} alt={assistant.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-[#A5997E]/15 flex items-center justify-center">
+              <div className="w-full h-full bg-mora-gold/10 flex items-center justify-center">
                 <span className="text-3xl font-display text-gold">{assistant.name?.[0]}</span>
               </div>
             )}
           </div>
-          <div className="flex-1">
-            <h1 className="text-xl font-display font-bold text-mora-primary">{assistant.name}</h1>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-display font-bold text-mora-primary truncate">{assistant.name}</h1>
             <p className="text-sm text-mora-neutral/60 mt-0.5">{assistant.specialization}</p>
             <div className="flex items-center gap-3 mt-2">
               {assistant.rating && (
@@ -52,7 +53,7 @@ export default function AssistantProfile() {
                 </span>
               )}
               {assistant.is_available && (
-                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                <span className="flex items-center gap-1 text-xs text-emerald-600">
                   <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" /> Available
                 </span>
               )}
@@ -99,7 +100,7 @@ export default function AssistantProfile() {
           </div>
         )}
 
-        <button className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 mb-6">
+        <button onClick={() => toast("Consultation booking coming soon")} className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 mb-6">
           <MessageCircle className="w-4 h-4" /> Book Consultation
         </button>
       </div>

@@ -18,13 +18,14 @@ export default function AddActivity() {
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const dayParam = urlParams.get("day");
+  const locationParam = urlParams.get("location") || "";
 
   const [form, setForm] = useState({
     trip_id: tripId,
     day_number: dayParam ? parseInt(dayParam) : 1,
     time: "",
     activity_name: "",
-    location: "",
+    location: locationParam,
     description: "",
     duration_minutes: "",
     budget: "",

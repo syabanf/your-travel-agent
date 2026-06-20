@@ -15,7 +15,7 @@ const typeIcons = {
 };
 
 const typeColors = {
-  trip_reminder: "#A5997E",
+  trip_reminder: "#AD1F23",
   booking_update: "#60A5FA",
   payment: "#34D399",
   assistant: "#F472B6",
@@ -81,7 +81,7 @@ export default function Notifications() {
         ) : (
           notifications.map((notification) => {
             const Icon = typeIcons[notification.type] || Bell;
-            const color = typeColors[notification.type] || "#BCC3BD";
+            const color = typeColors[notification.type] || "#94A3B8";
             return (
               <GlassCard 
                 key={notification.id} 
@@ -105,7 +105,7 @@ export default function Notifications() {
                     )}
                   </div>
                   <p className="text-xs text-mora-neutral/50 mt-0.5 leading-relaxed">{notification.message}</p>
-                  <p className="text-[10px] text-mora-neutral/30 mt-1.5">
+                  <p className="text-[10px] text-mora-neutral/60 mt-1.5">
                     {moment(notification.created_date).fromNow()}
                   </p>
                 </div>

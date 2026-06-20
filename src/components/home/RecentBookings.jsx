@@ -28,26 +28,28 @@ export default function RecentBookings({ bookings = [] }) {
         {bookings.slice(0, 3).map((booking) => {
           const Icon = typeIcons[booking.type] || Plane;
           return (
-            <GlassCard key={booking.id} className="p-3.5 flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-[#A5997E]/10 flex items-center justify-center flex-shrink-0">
-                <Icon className="w-4.5 h-4.5 text-gold" strokeWidth={1.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-mora-white truncate">{booking.title}</h4>
-                <p className="text-xs text-mora-neutral/60 mt-0.5">
-                  {booking.location} · {moment(booking.check_in).format("MMM D")}
-                </p>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                  booking.status === "confirmed" 
-                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20" 
-                    : "bg-[#A5997E]/15 text-gold border border-[#A5997E]/20"
-                }`}>
-                  {booking.status}
-                </span>
-              </div>
-            </GlassCard>
+            <Link key={booking.id} to={`/booking/${booking.id}`}>
+              <GlassCard className="p-3.5 flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-4.5 h-4.5 text-gold" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-medium text-mora-white truncate">{booking.title}</h4>
+                  <p className="text-xs text-mora-neutral/60 mt-0.5">
+                    {booking.location} · {moment(booking.check_in).format("MMM D")}
+                  </p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                    booking.status === "confirmed"
+                      ? "bg-emerald-500/15 text-emerald-600 border border-emerald-500/20"
+                      : "bg-mora-gold/10 text-gold border border-mora-gold/20"
+                  }`}>
+                    {booking.status}
+                  </span>
+                </div>
+              </GlassCard>
+            </Link>
           );
         })}
       </div>

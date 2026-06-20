@@ -8,8 +8,9 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
     <div className="flex items-center justify-between px-6 pt-4 pb-4">
       <div className="flex items-center gap-3">
         {showBack && (
-          <button 
+          <button
             onClick={() => navigate(-1)}
+            aria-label="Go back"
             className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -25,8 +26,9 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
       <div className="flex items-center gap-2">
         {rightAction}
         {showNotification && (
-          <Link 
+          <Link
             to="/notifications"
+            aria-label="Notifications"
             className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors relative"
           >
             <Bell className="w-5 h-5" />

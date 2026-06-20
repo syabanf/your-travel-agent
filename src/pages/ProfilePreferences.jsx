@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 
@@ -14,6 +15,15 @@ export default function ProfilePreferences() {
   const toggleInterest = (i) => setSelectedInterests(prev =>
     prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
   );
+
+  const handleSave = () => {
+    localStorage.setItem("mora_preferences", JSON.stringify({
+      style: selectedStyle,
+      pace: selectedPace,
+      interests: selectedInterests,
+    }));
+    toast.success("Preferences saved");
+  };
 
   return (
     <div className="animate-fade-in">
@@ -52,7 +62,7 @@ export default function ProfilePreferences() {
             ))}
           </div>
         </GlassCard>
-        <button className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all mb-6">
+        <button onClick={handleSave} className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all mb-6">
           Save Preferences
         </button>
       </div>

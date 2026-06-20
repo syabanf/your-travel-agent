@@ -14,7 +14,7 @@ const categoryColors = {
   activity: "#F472B6",
   shopping: "#FBBF24",
   rest: "#94A3B8",
-  other: "#BCC3BD",
+  other: "#94A3B8",
 };
 
 export default function DayTimeline({ dayNumber, date, items: initialItems, tripId }) {
@@ -39,7 +39,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
     <GlassCard className="p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#A5997E]/15 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center">
             <span className="text-sm font-display font-bold text-gold">{dayNumber}</span>
           </div>
           <div>
@@ -51,7 +51,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
         </div>
         <Link 
           to={`/itinerary/${tripId}/add?day=${dayNumber}`}
-          className="w-7 h-7 glass-light rounded-lg flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
+          className="w-9 h-9 glass-light rounded-lg flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
         </Link>
@@ -105,6 +105,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                           onClick={() => navigate(`/itinerary/map?location=${encodeURIComponent(item.location)}`)}
                           className="w-5 h-5 flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
                           title="View on map"
+                          aria-label="View on map"
                         >
                           <Map className="w-3 h-3" />
                         </button>
@@ -119,7 +120,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                     className="flex-shrink-0 mt-1 w-11 h-11 flex items-center justify-center -mr-2"
                   >
                     {item.is_completed ? (
-                      <CheckCircle className="w-4.5 h-4.5 text-emerald-400" />
+                      <CheckCircle className="w-4.5 h-4.5 text-emerald-600" />
                     ) : (
                       <Circle className="w-4.5 h-4.5 text-mora-neutral/30" />
                     )}

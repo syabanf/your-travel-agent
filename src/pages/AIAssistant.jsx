@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Send, Sparkles, MapPin, Clock, DollarSign, Save, RefreshCw, Plus, MessageCircle } from "lucide-react";
+import { Send, Sparkles, MapPin, Clock, Save, RefreshCw, Plus, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import ReactMarkdown from "react-markdown";
@@ -18,18 +20,15 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
   const urlParams = new URLSearchParams(window.location.search);
   const destination = urlParams.get("destination");
 
-  const demoStarted = useRef(false);
-
   useEffect(() => {
     if (destination && messages.length === 0) {
       setInput(`Create a luxury 5-day itinerary for ${destination}`);
-    } else if (!destination && !demoStarted.current && messages.length === 0) {
-      demoStarted.current = true;
-      setTimeout(() => sendMessage("Create a 3-day luxury itinerary in Bali"), 600);
     }
   }, [destination]);
 
@@ -44,6 +43,7 @@ export default function AIAssistant() {
     setInput("");
     setLoading(true);
 
+    try {
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `You are MORA's premium AI travel concierge. You help travelers plan luxurious, well-organized itineraries. 
       
@@ -65,10 +65,17 @@ ${messages.length > 0 ? `Previous conversation context: ${messages.map(m => `${m
     });
 
     setMessages(prev => [...prev, { role: "assistant", content: response }]);
-    setLoading(false);
+    } catch {
+      setMessages(prev => [...prev, { role: "assistant", content: "Sorry — I couldn't reach the concierge just now. Please try again." }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveToTrip = async (content) => {
+    if (saving) return;
+    setSaving(true);
+    try {
     const result = await base44.integrations.Core.InvokeLLM({
       prompt: `Extract the trip details from this itinerary text and return structured data:
       
@@ -120,7 +127,13 @@ ${content}`,
       }
     }
 
-    window.location.href = `/itinerary/${trip.id}`;
+    toast.success("Saved to your trips");
+    navigate(`/itinerary/${trip.id}`);
+    } catch {
+      toast.error("Couldn't save to trips. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -169,7 +182,7 @@ ${content}`,
             <div className={`max-w-[85%] ${msg.role === "user" ? "" : ""}`}>
               {msg.role === "assistant" && (
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-[#A5997E]/15 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-mora-gold/10 flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-gold" />
                   </div>
                   <span className="text-[10px] text-gold">MORA AI</span>
@@ -187,7 +200,8 @@ ${content}`,
                 <div className="flex gap-2 mt-2 flex-wrap">
                   <button
                     onClick={() => handleSaveToTrip(msg.content)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-gold hover:bg-white/10 transition-all"
+                    disabled={saving}
+                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-gold hover:bg-white/10 transition-all disabled:opacity-50"
                   >
                     <Save className="w-3 h-3" /> Save to Trips
                   </button>

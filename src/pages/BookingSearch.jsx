@@ -10,7 +10,7 @@ import moment from "moment";
 const typeIcons = { flight: Plane, hotel: Hotel, train: Train, car_rental: Car, ship: Ship, attraction: Ticket, villa: Home, bus: Train };
 
 const statusColors = {
-  pending: "bg-[#A5997E]/15 text-gold",
+  pending: "bg-mora-gold/10 text-gold",
   confirmed: "bg-emerald-500/15 text-emerald-400",
   cancelled: "bg-red-500/15 text-red-400",
   completed: "bg-blue-500/15 text-blue-400",

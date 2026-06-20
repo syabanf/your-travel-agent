@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Calendar, Users, DollarSign, Edit, Share2, Copy, Trash2, MoreVertical, Plus, CheckCircle, Wand2, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Users, Edit, Share2, Copy, Trash2, MoreVertical, Plus, CheckCircle, Wand2, Loader2 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DayTimeline from "../components/itinerary/DayTimeline";
@@ -134,7 +135,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           alt={trip.title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a2e22] via-[#1a2e22]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/50 to-transparent" />
         
         {/* Back & Actions */}
         <div className="absolute top-0 left-0 right-0">
@@ -144,7 +145,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
             rightAction={
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral">
+                  <button aria-label="Trip options" className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral">
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </DropdownMenuTrigger>
@@ -155,10 +156,20 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
                   <DropdownMenuItem onClick={handleDuplicate} className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5">
                     <Copy className="w-4 h-4 mr-2" /> Duplicate
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({ title: trip.title, url: window.location.href }).catch(() => {});
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast("Link copied");
+                      }
+                    }}
+                    className="text-mora-primary/80 focus:text-mora-primary focus:bg-mora-primary/5"
+                  >
                     <Share2 className="w-4 h-4 mr-2" /> Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDelete} className="text-red-400 focus:text-red-300 focus:bg-red-500/10">
+                  <DropdownMenuItem onClick={handleDelete} className="text-red-600 focus:text-red-300 focus:bg-red-500/10">
                     <Trash2 className="w-4 h-4 mr-2" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -168,13 +179,13 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         </div>
 
         {/* Trip Info Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="absolute bottom-0 left-0 right-0 p-6 min-w-0">
           <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
             trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-gold/15 text-gold border-gold/20"
           }`}>
             {trip.status}
           </span>
-          <h1 className="text-2xl font-display font-bold text-white mb-1">{trip.title}</h1>
+          <h1 className="text-2xl font-display font-bold text-white mb-1 truncate">{trip.title}</h1>
           <div className="flex items-center gap-3 text-white/80">
             <span className="flex items-center gap-1 text-xs">
               <MapPin className="w-3.5 h-3.5 text-gold" /> {trip.destination}
@@ -216,7 +227,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           <button
             onClick={handleGenerateActivities}
             disabled={aiGenerating}
-            className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-gradient-to-r from-[#A5997E]/30 to-[#606A54]/20 border border-[#A5997E]/30 text-gold hover:glow-gold mb-4"
+            className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 glass-gold border border-gold text-gold hover:glow-gold mb-4"
           >
             {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
             {aiGenerating ? "Generating activities..." : "✨ Generate Activities with AI"}

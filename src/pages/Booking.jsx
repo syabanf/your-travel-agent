@@ -19,7 +19,7 @@ const bookingCategories = [
 ];
 
 const statusColors = {
-  pending: "bg-[#A5997E]/15 text-gold border-[#A5997E]/20",
+  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
@@ -64,8 +64,12 @@ export default function Booking() {
       )}
       <PageHeader title="Booking" subtitle="Find & manage reservations" showNotification />
 
-      {/* OTA Search */}
-      <OTASearch onSaveBooking={() => base44.entities.Booking.list("-created_date", 50).then(setBookings)} />
+      {/* OTA Search — opens on Flight; the curated "My Bookings" list below is the single reservations view */}
+      <OTASearch
+        defaultTab="flight"
+        showMyBookings={false}
+        onSaveBooking={() => base44.entities.Booking.list("-created_date", 50).then(setBookings)}
+      />
 
       {/* Recent Bookings */}
       <div className="px-6">
@@ -98,7 +102,7 @@ export default function Booking() {
                           <img src={booking.image_url} alt={booking.title} className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-[#A5997E]/10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
                           <Icon className="w-6 h-6 text-gold" strokeWidth={1.5} />
                         </div>
                       )}

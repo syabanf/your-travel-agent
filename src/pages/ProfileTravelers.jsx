@@ -1,6 +1,7 @@
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Users, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ProfileTravelers() {
   return (
@@ -12,7 +13,7 @@ export default function ProfileTravelers() {
           <p className="text-sm text-mora-neutral/60 mb-1">No travelers saved yet</p>
           <p className="text-xs text-mora-neutral/40">Add companions for quicker booking</p>
         </GlassCard>
-        <button className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2">
+        <button onClick={() => toast("Add traveler coming soon")} className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2">
           <Plus className="w-4 h-4" /> Add Traveler
         </button>
       </div>

@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const destinations = [
   { name: "Bali", country: "Indonesia", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80", tagline: "Island Paradise" },
@@ -16,7 +17,7 @@ export default function FeaturedDestinations() {
         <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">
           Featured Destinations
         </h2>
-        <button className="text-xs text-gold flex items-center gap-1">
+        <button onClick={() => toast("More destinations coming soon")} className="text-xs text-gold flex items-center gap-1">
           Explore <ChevronRight className="w-3 h-3" />
         </button>
       </div>

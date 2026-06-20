@@ -9,7 +9,7 @@ import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const statusColors = {
-  pending: "bg-[#A5997E]/15 text-gold border-[#A5997E]/20",
+  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
@@ -48,7 +48,7 @@ export default function BookingDetail() {
       {booking.image_url && (
         <div className="relative h-52">
           <img src={booking.image_url} alt={booking.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a2e22] via-[#1a2e22]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/40 to-transparent" />
           <div className="absolute top-0 left-0 right-0">
             <PageHeader showBack title="" />
           </div>
@@ -115,7 +115,7 @@ export default function BookingDetail() {
 
         <button
           onClick={handleDelete}
-          className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-red-400/80 hover:text-red-400 flex items-center justify-center gap-2 transition-all"
+          className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-red-600/80 hover:text-red-600 flex items-center justify-center gap-2 transition-all"
         >
           <Trash2 className="w-4 h-4" /> Delete Booking
         </button>

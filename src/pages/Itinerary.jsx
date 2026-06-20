@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Map, Calendar, Wallet, CheckSquare, Filter } from "lucide-react";
+import { Plus, Map, Calendar, Wallet, CheckSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -111,7 +111,7 @@ export default function Itinerary() {
                  <p className="text-[10px] text-mora-neutral mt-1">{trip.destination}</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
-                      trip.status === "active" ? "bg-emerald-500/20 text-emerald-400" :
+                      trip.status === "active" ? "bg-emerald-500/20 text-emerald-600" :
                       trip.status === "planned" ? "bg-blue-500/20 text-blue-400" :
                       trip.status === "completed" ? "bg-slate-500/20 text-slate-400" :
                       "bg-mora-gold/20 text-gold"

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
+import { toast } from "sonner";
 import GlassCard from "../GlassCard";
 import DateTimePicker from "../DateTimePicker";
 import { formatIDR } from "@/lib/currency";
@@ -18,14 +19,16 @@ const tabs = [
 ];
 
 const statusColors = {
-  pending: "bg-[#A5997E]/15 text-gold border-[#A5997E]/20",
+  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
-export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null, defaultTab = "my_bookings" }) {
+export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null, defaultTab = "my_bookings", showMyBookings = true }) {
   const queryClient = useQueryClient();
+  const savingRef = useRef(false);
+  const visibleTabs = showMyBookings ? tabs : tabs.filter((t) => t.key !== "my_bookings");
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
@@ -114,18 +117,26 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
    } else if (activeTab === "attraction") {
      bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
    }
-   await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
-   queryClient.invalidateQueries({ queryKey: ["bookings"] });
-   if (onSaveBooking) onSaveBooking();
-   loadMyBookings();
-   alert("Booking saved to your reservations!");
+   if (savingRef.current) return;
+   savingRef.current = true;
+   try {
+     await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
+     queryClient.invalidateQueries({ queryKey: ["bookings"] });
+     if (onSaveBooking) onSaveBooking();
+     await loadMyBookings();
+     toast.success("Booking saved to your reservations");
+   } catch {
+     toast.error("Couldn't save booking. Please try again.");
+   } finally {
+     savingRef.current = false;
+   }
   };
 
   return (
     <div className="px-6 mb-8">
       {/* Tab selector */}
       <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
-        {tabs.map(({ key, label, icon: Icon }) => (
+        {visibleTabs.map(({ key, label, icon: Icon }) => (
           <button key={key} onClick={() => handleTabChange(key)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === key ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
             <Icon className="w-3.5 h-3.5" />
