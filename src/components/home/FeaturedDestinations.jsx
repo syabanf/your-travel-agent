@@ -34,14 +34,13 @@ export default function FeaturedDestinations() {
                   alt={dest.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/40" />
-                <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/90 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/95 via-mora-primary/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-[10px] text-gold tracking-widest uppercase mb-0.5">
+                  <p className="text-[10px] text-[#F0B7B9] tracking-widest uppercase mb-0.5">
                     {dest.tagline}
                   </p>
-                  <h3 className="text-sm font-display font-semibold text-mora-white">{dest.name}</h3>
-                  <p className="text-[10px] text-mora-neutral/70">{dest.country}</p>
+                  <h3 className="text-sm font-display font-semibold text-white text-shadow-soft">{dest.name}</h3>
+                  <p className="text-[10px] text-white/70">{dest.country}</p>
                 </div>
               </div>
             </GlassCard>

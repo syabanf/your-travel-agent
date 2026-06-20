@@ -4,88 +4,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------ *
+ * MORA — coherent light "luxury" palette: deep navy + crimson + cream *
+ * One source of truth so text/surfaces stay high-contrast everywhere. *
+ * ------------------------------------------------------------------ */
+
 @layer base {
   :root {
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
 
-    --background: 50 70% 98%;
-    --foreground: 217 92% 10%;
-    --card: 50 100% 99%;
-    --card-foreground: 217 92% 10%;
-    --popover: 50 100% 99%;
-    --popover-foreground: 217 92% 10%;
-    --primary: 217 92% 10%;
-    --primary-foreground: 30 100% 99%;
-    --secondary: 217 50% 40%;
-    --secondary-foreground: 30 100% 99%;
-    --muted: 217 20% 70%;
-    --muted-foreground: 217 20% 50%;
-    --accent: 357 91% 45%;
-    --accent-foreground: 30 100% 99%;
-    --destructive: 357 91% 45%;
-    --destructive-foreground: 30 100% 99%;
-    --border: 217 30% 85%;
-    --input: 217 30% 92%;
-    --ring: 357 91% 45%;
-    --chart-1: 217 92% 10%;
-    --chart-2: 357 91% 45%;
-    --chart-3: 217 60% 25%;
-    --chart-4: 30 20% 75%;
-    --chart-5: 30 100% 99%;
+    /* shadcn tokens (light) */
+    --background: 45 56% 98%;
+    --foreground: 222 70% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 70% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 70% 14%;
+    --primary: 222 70% 14%;
+    --primary-foreground: 45 56% 98%;
+    --secondary: 222 30% 92%;
+    --secondary-foreground: 222 70% 14%;
+    --muted: 222 24% 94%;
+    --muted-foreground: 222 16% 45%;
+    --accent: 358 70% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 358 70% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 24% 88%;
+    --input: 222 24% 90%;
+    --ring: 358 70% 45%;
+    --chart-1: 222 70% 18%;
+    --chart-2: 358 70% 45%;
+    --chart-3: 211 90% 35%;
+    --chart-4: 38 70% 55%;
+    --chart-5: 160 50% 42%;
     --radius: 1rem;
 
-    --sidebar-background: 50 70% 98%;
-    --sidebar-foreground: 217 92% 10%;
-    --sidebar-primary: 217 92% 10%;
-    --sidebar-primary-foreground: 30 100% 99%;
-    --sidebar-accent: 357 91% 45%;
-    --sidebar-accent-foreground: 30 100% 99%;
-    --sidebar-border: 217 30% 85%;
-    --sidebar-ring: 357 91% 45%;
+    --sidebar-background: 45 56% 98%;
+    --sidebar-foreground: 222 70% 14%;
+    --sidebar-primary: 222 70% 14%;
+    --sidebar-primary-foreground: 45 56% 98%;
+    --sidebar-accent: 358 70% 40%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 222 24% 88%;
+    --sidebar-ring: 358 70% 45%;
 
-    --mora-deep-blue: #05308C;
-    --mora-lobster-red: #AD1F23;
-    --mora-steel-marine: #0A0A3A;
-    --mora-claw-cream: #FEFDF8;
-    --mora-dark-navy: #0A0A3A;
-    --mora-light-cream: #FEFDF8;
-  }
-
-  .dark {
-    --background: 217 92% 5%;
-    --foreground: 30 100% 99%;
-    --card: 217 92% 8%;
-    --card-foreground: 30 100% 99%;
-    --popover: 217 92% 6%;
-    --popover-foreground: 30 100% 99%;
-    --primary: 217 92% 10%;
-    --primary-foreground: 30 100% 99%;
-    --secondary: 217 92% 20%;
-    --secondary-foreground: 30 100% 99%;
-    --muted: 217 50% 35%;
-    --muted-foreground: 30 20% 75%;
-    --accent: 357 91% 45%;
-    --accent-foreground: 30 100% 99%;
-    --destructive: 357 91% 45%;
-    --destructive-foreground: 30 100% 99%;
-    --border: 217 92% 15%;
-    --input: 217 92% 12%;
-    --ring: 357 91% 45%;
-    --chart-1: 217 92% 10%;
-    --chart-2: 357 91% 45%;
-    --chart-3: 217 60% 25%;
-    --chart-4: 30 20% 75%;
-    --chart-5: 30 100% 99%;
-
-    --sidebar-background: 217 92% 5%;
-    --sidebar-foreground: 30 100% 99%;
-    --sidebar-primary: 217 92% 20%;
-    --sidebar-primary-foreground: 30 100% 99%;
-    --sidebar-accent: 357 91% 45%;
-    --sidebar-accent-foreground: 30 100% 99%;
-    --sidebar-border: 217 92% 15%;
-    --sidebar-ring: 357 91% 45%;
+    /* brand */
+    --mora-navy: #0B1B3B;
+    --mora-navy-soft: #1B2D52;
+    --mora-crimson: #AD1F23;
+    --mora-crimson-bright: #C42A2E;
+    --mora-cream: #FBFAF5;
+    --mora-slate: #5A6B85;
   }
 }
 
@@ -93,126 +64,131 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground font-body;
-    background: linear-gradient(135deg, #FEFDF8 0%, #F8FAFD 40%, #F2F7FC 70%, #FEFDF8 100%);
+  html, body {
     min-height: 100vh;
+  }
+  body {
+    @apply text-foreground font-body;
+    color: var(--mora-navy);
+    background:
+      radial-gradient(1200px 600px at 110% -10%, rgba(173, 31, 35, 0.06), transparent 60%),
+      radial-gradient(1000px 700px at -10% 110%, rgba(11, 27, 59, 0.06), transparent 55%),
+      linear-gradient(160deg, #FFFFFF 0%, #FBFAF5 45%, #F3F6FB 100%);
+    background-attachment: fixed;
     overscroll-behavior: none;
     position: fixed;
     width: 100%;
     height: 100%;
-  }
-  body.dark {
-    background: linear-gradient(135deg, #0A0A3A 0%, #05308C 25%, #0A0A3A 50%, #030820 75%, #0A0A3A 100%);
-  }
-  body {
-    --text-primary: #0A0A3A;
-    --text-secondary: #5A6B7F;
-    --text-tertiary: #8A9BB5;
-    --text-accent: #AD1F23;
-  }
-  body.dark {
-    --text-primary: #FEFDF8;
-    --text-secondary: #B8C5D6;
-    --text-tertiary: #7A8699;
-    --text-accent: #AD1F23;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   button, a[role="button"], nav a {
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+  ::selection {
+    background: rgba(173, 31, 35, 0.18);
+  }
 }
 
 @layer utilities {
-  .font-display {
-    font-family: var(--font-display);
+  .font-display { font-family: var(--font-display); }
+  .font-body { font-family: var(--font-body); }
+
+  .premium-bg-light {
+    background: linear-gradient(160deg, #FFFFFF 0%, #FBFAF5 45%, #F3F6FB 100%);
   }
   .premium-bg-dark {
-    background: linear-gradient(135deg, #0A0A3A 0%, #05308C 25%, #0A0A3A 50%, #030820 75%, #0A0A3A 100%);
+    background: linear-gradient(160deg, #0B1B3B 0%, #0E2350 55%, #081027 100%);
   }
-  .premium-bg-light {
-    background: linear-gradient(135deg, #FEFDF8 0%, #F8FAFD 40%, #F2F7FC 70%, #FEFDF8 100%);
-  }
-  .font-body {
-    font-family: var(--font-body);
-  }
+
+  /* ----- Surfaces: frosted white cards on cream ----- */
   .glass {
-    background: rgba(5, 48, 140, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(5, 48, 140, 0.15);
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid rgba(11, 27, 59, 0.08);
+    box-shadow: 0 6px 22px rgba(11, 27, 59, 0.07);
   }
   .glass-light {
-    background: rgba(5, 48, 140, 0.06);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(5, 48, 140, 0.12);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(18px) saturate(135%);
+    -webkit-backdrop-filter: blur(18px) saturate(135%);
+    border: 1px solid rgba(11, 27, 59, 0.07);
+    box-shadow: 0 3px 14px rgba(11, 27, 59, 0.05);
   }
   .glass-card {
-    background: rgba(5, 48, 140, 0.07);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(5, 48, 140, 0.15);
-    box-shadow: 0 8px 32px rgba(5, 48, 140, 0.08), inset 0 1px 0 rgba(5, 48, 140, 0.08);
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(26px) saturate(145%);
+    -webkit-backdrop-filter: blur(26px) saturate(145%);
+    border: 1px solid rgba(11, 27, 59, 0.08);
+    box-shadow: 0 10px 34px rgba(11, 27, 59, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
   .glass-gold {
-    background: rgba(173, 31, 35, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(173, 31, 35, 0.25);
+    background: linear-gradient(135deg, rgba(173, 31, 35, 0.10), rgba(173, 31, 35, 0.05));
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(173, 31, 35, 0.22);
   }
   .glass-nav {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(5, 48, 140, 0.1);
-    box-shadow: 0 -4px 30px rgba(5, 48, 140, 0.05);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid rgba(11, 27, 59, 0.07);
+    box-shadow: 0 -6px 28px rgba(11, 27, 59, 0.08);
   }
-  .text-gold {
-    color: #AD1F23;
+
+  /* ----- Primary CTA ----- */
+  .btn-primary {
+    background: linear-gradient(135deg, #C42A2E 0%, #AD1F23 55%, #8E181B 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(173, 31, 35, 0.5);
+    box-shadow: 0 10px 26px rgba(173, 31, 35, 0.28);
   }
-  .text-mora-white {
-    color: #05308C;
+  .btn-primary:hover {
+    box-shadow: 0 12px 32px rgba(173, 31, 35, 0.38);
+    filter: brightness(1.04);
   }
-  .text-mora-neutral {
-    color: #5A6B7F;
-  }
-  .text-mora-neutral-light {
-    color: #8A9BB5;
-  }
-  .text-mora-green-light {
-    color: #05308C;
-  }
-  .text-mora-primary {
-    color: #0A0A3A;
-  }
-  .bg-mora-green {
-    background-color: #05308C;
-  }
-  .bg-mora-gold {
-    background-color: #AD1F23;
-  }
-  .border-gold {
-    border-color: rgba(173, 31, 35, 0.3);
-  }
+  .btn-primary:disabled { opacity: 0.45; }
+
+  /* ----- Text colors (kept names; aligned to palette) ----- */
+  .text-gold { color: #AD1F23; }
+  .text-mora-white { color: #0B1B3B; }       /* legacy name → primary dark text on light */
+  .text-mora-primary { color: #0B1B3B; }
+  .text-mora-neutral { color: #5A6B85; }
+  .text-mora-neutral-light { color: #93A0B8; }
+  .text-mora-green-light { color: #05308C; }
+
+  /* ----- Fills / borders ----- */
+  .bg-mora-green { background-color: #05308C; }
+  .bg-mora-gold { background-color: #AD1F23; }
+  .border-gold { border-color: rgba(173, 31, 35, 0.3); }
+
+  /* ----- Accents ----- */
   .glow-gold {
-    box-shadow: 0 0 20px rgba(173, 31, 35, 0.25), 0 0 60px rgba(173, 31, 35, 0.1);
+    box-shadow: 0 0 0 1px rgba(173, 31, 35, 0.12), 0 12px 30px rgba(173, 31, 35, 0.16);
   }
   .gradient-premium {
-    background: linear-gradient(135deg, rgba(5, 48, 140, 0.1) 0%, rgba(248, 250, 253, 0.5) 50%, rgba(5, 48, 140, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(173, 31, 35, 0.08) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(11, 27, 59, 0.06) 100%);
   }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .text-shadow-soft {
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
   }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .safe-top {
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
+
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+  /* Inputs/dividers/hovers were styled with white tints for a dark theme.
+     On this light theme those are invisible — remap to subtle navy tints. */
+  .bg-white\/5 { background-color: rgba(11, 27, 59, 0.04); }
+  .bg-white\/10 { background-color: rgba(11, 27, 59, 0.06); }
+  .bg-white\/20 { background-color: rgba(11, 27, 59, 0.09); }
+  .border-white\/5 { border-color: rgba(11, 27, 59, 0.07); }
+  .border-white\/10 { border-color: rgba(11, 27, 59, 0.12); }
+  .border-white\/20 { border-color: rgba(11, 27, 59, 0.18); }
+  .hover\:bg-white\/5:hover { background-color: rgba(11, 27, 59, 0.05); }
+  .hover\:bg-white\/10:hover { background-color: rgba(11, 27, 59, 0.07); }
 }

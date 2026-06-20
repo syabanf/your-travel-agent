@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Map, Calendar, DollarSign, CheckSquare, Filter } from "lucide-react";
+import { Plus, Map, Calendar, Wallet, CheckSquare, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -16,7 +16,7 @@ const tabs = [
 const quickLinks = [
   { icon: Calendar, label: "Calendar", path: "/itinerary/calendar" },
   { icon: Map, label: "Map View", path: "/itinerary/map" },
-  { icon: DollarSign, label: "Budget", path: "/itinerary/budget" },
+  { icon: Wallet, label: "Budget", path: "/itinerary/budget" },
   { icon: CheckSquare, label: "Checklist", path: "/itinerary/checklist" },
 ];
 

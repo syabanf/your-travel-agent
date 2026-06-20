@@ -4,12 +4,13 @@ import { Sparkles, MessageCircle, Star, Globe, ChevronRight, Crown } from "lucid
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { formatIDR } from "@/lib/currency";
 
 const servicePackages = [
-  { id: "consult", name: "Consultation", desc: "Expert travel advice & tips", price: "From $29", icon: MessageCircle },
-  { id: "consult_itinerary", name: "Consult + Itinerary", desc: "Advice + custom itinerary creation", price: "From $79", icon: Star },
-  { id: "full_service", name: "Full Service", desc: "Consult + itinerary + booking", price: "From $149", icon: Crown },
-  { id: "tour_guide", name: "Tour Guide", desc: "Personal guide for your trip", price: "From $199/day", icon: Globe },
+  { id: "consult", name: "Consultation", desc: "Expert travel advice & tips", price: `From ${formatIDR(450000)}`, icon: MessageCircle },
+  { id: "consult_itinerary", name: "Consult + Itinerary", desc: "Advice + custom itinerary creation", price: `From ${formatIDR(990000)}`, icon: Star },
+  { id: "full_service", name: "Full Service", desc: "Consult + itinerary + booking", price: `From ${formatIDR(2500000)}`, icon: Crown },
+  { id: "tour_guide", name: "Tour Guide", desc: "Personal guide for your trip", price: `From ${formatIDR(1500000)}/day`, icon: Globe },
 ];
 
 export default function Assistant() {
@@ -128,7 +129,7 @@ export default function Assistant() {
                       <div className="w-2 h-2 bg-emerald-400 rounded-full mb-1 ml-auto" />
                     )}
                     {assistant.hourly_rate && (
-                      <span className="text-xs font-display text-gold">${assistant.hourly_rate}/hr</span>
+                      <span className="text-xs font-display text-gold">{formatIDR(assistant.hourly_rate)}/hr</span>
                     )}
                   </div>
                 </GlassCard>

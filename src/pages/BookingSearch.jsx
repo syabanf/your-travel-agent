@@ -4,6 +4,7 @@ import { Search, Plane, Hotel, Train, Car, Ship, Ticket, Home } from "lucide-rea
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Link } from "react-router-dom";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const typeIcons = { flight: Plane, hotel: Hotel, train: Train, car_rental: Car, ship: Ship, attraction: Ticket, villa: Home, bus: Train };
@@ -96,7 +97,7 @@ export default function BookingSearch() {
                       </span>
                     )}
                     {booking.price > 0 && (
-                      <p className="text-xs font-display text-gold mt-1">${booking.price.toLocaleString()}</p>
+                      <p className="text-xs font-display text-gold mt-1">{formatIDR(booking.price)}</p>
                     )}
                   </div>
                 </GlassCard>

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation, Map } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const categoryColors = {
@@ -21,7 +22,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
   const [items, setItems] = useState(initialItems);
 
   // Sync if parent items change
-  useState(() => { setItems(initialItems); });
+  useEffect(() => { setItems(initialItems); }, [initialItems]);
 
   const handleToggleComplete = async (item) => {
     // Optimistic update
@@ -110,7 +111,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                       </div>
                     )}
                     {item.budget > 0 && (
-                      <span className="text-[10px] text-gold/70 mt-0.5 inline-block">${item.budget}</span>
+                      <span className="text-[10px] text-gold/70 mt-0.5 inline-block">{formatIDR(item.budget)}</span>
                     )}
                   </div>
                   <button 

@@ -32,7 +32,7 @@ export default function ActiveTrip({ trip }) {
             
             {daysUntil > 0 && !isActive && (
               <div className="absolute top-3 right-3 glass-gold px-3 py-1 rounded-full">
-                <span className="text-[11px] font-semibold text-mora-white">
+                <span className="text-[11px] font-semibold text-white">
                   In {daysUntil} days
                 </span>
               </div>
@@ -44,22 +44,22 @@ export default function ActiveTrip({ trip }) {
             )}
             
             <div className="absolute bottom-0 left-0 right-0 p-4">
-              <h3 className="text-lg font-display font-semibold text-mora-white mb-1.5">
+              <h3 className="text-xl font-display font-semibold text-white mb-1.5 text-shadow-soft">
                 {trip.title}
               </h3>
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5 text-mora-white">
+                <div className="flex items-center gap-1.5 text-white">
                   <MapPin className="w-3.5 h-3.5 text-gold" />
                   <span className="text-xs">{trip.destination}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-mora-white">
+                <div className="flex items-center gap-1.5 text-white">
                   <Calendar className="w-3.5 h-3.5 text-gold" />
                   <span className="text-xs">
                     {moment(trip.start_date).format("MMM D")} - {moment(trip.end_date).format("MMM D")}
                   </span>
                 </div>
                 {trip.travelers > 1 && (
-                  <div className="flex items-center gap-1.5 text-mora-white">
+                  <div className="flex items-center gap-1.5 text-white">
                     <Users className="w-3.5 h-3.5 text-gold" />
                     <span className="text-xs">{trip.travelers}</span>
                   </div>

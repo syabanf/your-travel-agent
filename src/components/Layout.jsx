@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Signal, Wifi, Battery } from "lucide-react";
@@ -10,23 +9,15 @@ export default function Layout() {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = (e) => document.documentElement.classList.toggle('dark', e.matches);
-    apply(mq);
-    mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
-  }, []);
-
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center p-0 md:p-6">
       {/* Device frame — only visible on desktop */}
       <div className="w-full md:w-[393px] h-screen md:h-[852px] relative md:rounded-[48px] md:overflow-hidden md:shadow-[0_0_0_10px_#1a1a1a,0_0_0_12px_#333,0_40px_80px_rgba(0,0,0,0.8)] flex flex-col">
         {/* Background */}
         <div className="fixed md:absolute inset-0 z-0 md:rounded-[48px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FEFDF8] via-[#F8FAFD] to-[#F2F7FC]" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#05308C]/3 rounded-full blur-3xl" />
-          <div className="absolute bottom-32 left-0 w-80 h-80 bg-[#AD1F23]/2 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-[#FBFAF5] to-[#F3F6FB]" />
+          <div className="absolute -top-10 right-0 w-96 h-96 bg-[#AD1F23]/[0.07] rounded-full blur-3xl" />
+          <div className="absolute bottom-24 -left-10 w-80 h-80 bg-[#0B1B3B]/[0.06] rounded-full blur-3xl" />
         </div>
 
         {/* Status Bar */}

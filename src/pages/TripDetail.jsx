@@ -5,6 +5,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DayTimeline from "../components/itinerary/DayTimeline";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -173,8 +174,8 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           }`}>
             {trip.status}
           </span>
-          <h1 className="text-2xl font-display font-bold text-mora-primary mb-1">{trip.title}</h1>
-          <div className="flex items-center gap-3 text-mora-neutral">
+          <h1 className="text-2xl font-display font-bold text-white mb-1">{trip.title}</h1>
+          <div className="flex items-center gap-3 text-white/80">
             <span className="flex items-center gap-1 text-xs">
               <MapPin className="w-3.5 h-3.5 text-gold" /> {trip.destination}
             </span>
@@ -196,7 +197,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         </GlassCard>
         <GlassCard className="p-4 text-center">
           <p className="text-lg font-display font-bold text-gold">
-            ${totalBudget.toLocaleString()}
+            {formatIDR(totalBudget)}
           </p>
           <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Budget</p>
         </GlassCard>

@@ -1,14 +1,187 @@
-import { createClient } from '@base44/sdk';
-import { appParams } from '@/lib/app-params';
+// Local mock backend — a drop-in replacement for the Base44 SDK.
+//
+// The app was originally built on Base44, which provided the data store, auth,
+// and AI. That dependency has been removed. This module re-implements the small
+// surface the app actually uses, backed by the browser's localStorage:
+//
+//   base44.entities.<Name>.{ list, filter, get, create, update, delete }
+//   base44.auth.{ me, logout, redirectToLogin }
+//   base44.integrations.Core.InvokeLLM   (stubbed — see ./mockLLM.js)
+//
+// All data lives on-device. Clear it by running `localStorage.clear()` in the
+// browser console (it will be re-seeded on next load).
 
-const { appId, token, functionsVersion, appBaseUrl } = appParams;
+import { buildSeed } from './mockSeed';
+import { invokeLLM } from './mockLLM';
 
-//Create a client with authentication required
-export const base44 = createClient({
-  appId,
-  token,
-  functionsVersion,
-  serverUrl: '',
-  requiresAuth: false,
-  appBaseUrl
-});
+const PREFIX = 'mora_db_';
+const SEED_FLAG = `${PREFIX}_seeded_v2_idr`;
+
+const MOCK_USER = {
+  id: 'user_local',
+  full_name: 'Alex Rivera',
+  email: 'traveler@mora.app',
+  role: 'user',
+};
+
+/* ----------------------------- storage ----------------------------- */
+// Fall back to an in-memory store if localStorage is unavailable.
+
+const memory = new Map();
+const hasLocalStorage = (() => {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return false;
+    const k = `${PREFIX}__test`;
+    window.localStorage.setItem(k, '1');
+    window.localStorage.removeItem(k);
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
+function readRaw(key) {
+  if (hasLocalStorage) return window.localStorage.getItem(key);
+  return memory.has(key) ? memory.get(key) : null;
+}
+function writeRaw(key, value) {
+  if (hasLocalStorage) window.localStorage.setItem(key, value);
+  else memory.set(key, value);
+}
+
+function readCollection(name) {
+  const raw = readRaw(PREFIX + name);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function writeCollection(name, rows) {
+  writeRaw(PREFIX + name, JSON.stringify(rows));
+}
+
+/* ----------------------------- helpers ----------------------------- */
+
+const clone = (v) => (typeof structuredClone === 'function' ? structuredClone(v) : JSON.parse(JSON.stringify(v)));
+const nowISO = () => new Date().toISOString();
+const uid = () => `id_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+
+function sortRows(rows, order) {
+  if (!order) return rows;
+  const desc = order.startsWith('-');
+  const field = desc ? order.slice(1) : order;
+  return [...rows].sort((a, b) => {
+    let av = a?.[field];
+    let bv = b?.[field];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1; // nulls last
+    if (bv == null) return -1;
+    if (typeof av === 'number' && typeof bv === 'number') return desc ? bv - av : av - bv;
+    av = String(av);
+    bv = String(bv);
+    return desc ? bv.localeCompare(av) : av.localeCompare(bv);
+  });
+}
+
+function matches(row, query) {
+  return Object.entries(query || {}).every(([k, v]) => row?.[k] === v);
+}
+
+/* --------------------------- entity layer -------------------------- */
+
+function createEntity(name) {
+  return {
+    async list(order, limit) {
+      let rows = sortRows(readCollection(name), order);
+      if (typeof limit === 'number') rows = rows.slice(0, limit);
+      return clone(rows);
+    },
+    async filter(query, order, limit) {
+      let rows = readCollection(name).filter((r) => matches(r, query));
+      rows = sortRows(rows, order);
+      if (typeof limit === 'number') rows = rows.slice(0, limit);
+      return clone(rows);
+    },
+    async get(id) {
+      const row = readCollection(name).find((r) => r.id === id);
+      return row ? clone(row) : null;
+    },
+    async create(data) {
+      const rows = readCollection(name);
+      const row = {
+        ...data,
+        id: uid(),
+        created_date: nowISO(),
+        updated_date: nowISO(),
+        created_by: MOCK_USER.email,
+      };
+      rows.push(row);
+      writeCollection(name, rows);
+      return clone(row);
+    },
+    async bulkCreate(items = []) {
+      const created = [];
+      for (const item of items) created.push(await this.create(item));
+      return created;
+    },
+    async update(id, data) {
+      const rows = readCollection(name);
+      const idx = rows.findIndex((r) => r.id === id);
+      if (idx === -1) throw new Error(`${name} ${id} not found`);
+      rows[idx] = { ...rows[idx], ...data, id, updated_date: nowISO() };
+      writeCollection(name, rows);
+      return clone(rows[idx]);
+    },
+    async delete(id) {
+      const rows = readCollection(name).filter((r) => r.id !== id);
+      writeCollection(name, rows);
+      return { id };
+    },
+  };
+}
+
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage'];
+const entities = Object.fromEntries(ENTITY_NAMES.map((n) => [n, createEntity(n)]));
+
+/* ------------------------------ seeding ---------------------------- */
+
+function ensureSeeded() {
+  if (readRaw(SEED_FLAG)) return;
+  const seed = buildSeed();
+  for (const [name, rows] of Object.entries(seed)) {
+    if (readCollection(name).length === 0) writeCollection(name, rows);
+  }
+  writeRaw(SEED_FLAG, nowISO());
+}
+ensureSeeded();
+
+/* ------------------------------- auth ------------------------------ */
+
+const auth = {
+  async me() {
+    return clone(MOCK_USER);
+  },
+  // No real session in local mode — these are intentionally inert so the UI
+  // controls still work without throwing or redirecting off-app.
+  async logout() {
+    return { success: true };
+  },
+  redirectToLogin() {
+    // No login provider in local mode.
+    console.info('[mock] redirectToLogin() is a no-op — running with a local demo user.');
+  },
+};
+
+/* -------------------------- integrations --------------------------- */
+
+const integrations = {
+  Core: {
+    InvokeLLM: (args) => invokeLLM(args),
+  },
+};
+
+export const base44 = { entities, auth, integrations };
+export default base44;

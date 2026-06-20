@@ -16,10 +16,10 @@ export default function RecentBookings({ bookings = [] }) {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">
+        <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">
           Recent Bookings
         </h2>
-        <Link to="/booking/history" className="text-xs text-gold flex items-center gap-1">
+        <Link to="/booking" className="text-xs text-gold flex items-center gap-1">
           View All <ChevronRight className="w-3 h-3" />
         </Link>
       </div>

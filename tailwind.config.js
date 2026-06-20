@@ -19,11 +19,13 @@ module.exports = {
   		  mora: {
   		    'deep-blue': '#05308C',
   		    'lobster-red': '#AD1F23',
-  		    'steel-marine': '#0A0A3A',
-  		    'claw-cream': '#FEFDF8',
+  		    'steel-marine': '#0B1B3B',
+  		    'claw-cream': '#FBFAF5',
+  		    primary: '#0B1B3B',
   		    gold: '#AD1F23',
-  		    neutral: '#7A8699',
-  		    white: '#FEFDF8',
+  		    neutral: '#5A6B85',
+  		    white: '#0B1B3B',
+  		    green: '#05308C',
   		  },
   			card: {
   				DEFAULT: 'hsl(var(--card))',

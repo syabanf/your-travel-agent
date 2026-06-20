@@ -1,39 +1,65 @@
-**Welcome to your Base44 project** 
+# MORA — Your Travel Agent
 
-**About**
+A mobile-style travel planning app (trips, itineraries, bookings, and an AI
+concierge) built with **React + Vite + Tailwind**.
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+> This project was originally generated on Base44. The Base44 dependency has
+> been removed — it now runs **fully standalone** with a local mock backend, so
+> no account, API keys, or environment variables are required.
 
-This project contains everything you need to run your app locally.
+## Getting started
 
-**Edit the code in your local development environment**
-
-Any change pushed to the repo will also be reflected in the Base44 Builder.
-
-**Prerequisites:** 
-
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
-
-```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
-
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+```bash
+npm install
+npm run dev
 ```
 
-Run the app: `npm run dev`
+Then open the URL Vite prints (default http://localhost:5173).
 
-**Publish your changes**
+Other scripts:
 
-Open [Base44.com](http://Base44.com) and click on Publish.
+```bash
+npm run build     # production build → dist/
+npm run preview   # preview the production build
+npm run lint      # eslint
+```
 
-**Docs & Support**
+## How the backend works
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+There is no remote backend. [`src/api/base44Client.js`](src/api/base44Client.js)
+is a local, in-browser replacement that implements the small surface the app
+uses:
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- **Data** — `base44.entities.<Trip|Booking|ItineraryItem|Notification|PersonalAssistant|ChatMessage>`
+  with `list / filter / get / create / update / delete`, persisted in
+  `localStorage`. Demo data is seeded on first load (see
+  [`src/api/mockSeed.js`](src/api/mockSeed.js)).
+- **Auth** — a single local demo user (no login screen).
+- **AI** — `base44.integrations.Core.InvokeLLM` is **stubbed** with canned,
+  schema-aware responses (see [`src/api/mockLLM.js`](src/api/mockLLM.js)), so the
+  AI assistant and trip generation work offline.
+
+### Resetting demo data
+
+Run `localStorage.clear()` in the browser console and reload — the demo data
+re-seeds automatically.
+
+### Plugging in a real LLM
+
+The AI is stubbed but pluggable. Point it at a real provider (Claude, OpenAI, or
+your own proxy) by calling `configureLLM` once at startup, e.g. in
+[`src/main.jsx`](src/main.jsx):
+
+```js
+import { configureLLM } from '@/api/mockLLM';
+
+configureLLM(async ({ prompt, response_json_schema }) => {
+  // Call your LLM here. Return a string when there's no schema,
+  // or an object matching response_json_schema when there is.
+});
+```
+
+## Tech stack
+
+React 18 · Vite 6 · Tailwind CSS · shadcn/ui (Radix) · React Router · TanStack
+Query · Framer Motion · Recharts · Leaflet.

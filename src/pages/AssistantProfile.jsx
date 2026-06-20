@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { Star, Globe, MessageCircle, Crown, Clock } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { formatIDR } from "@/lib/currency";
 
 export default function AssistantProfile() {
   const { assistantId } = useParams();
@@ -42,7 +43,7 @@ export default function AssistantProfile() {
             )}
           </div>
           <div className="flex-1">
-            <h1 className="text-xl font-display font-bold text-mora-white">{assistant.name}</h1>
+            <h1 className="text-xl font-display font-bold text-mora-primary">{assistant.name}</h1>
             <p className="text-sm text-mora-neutral/60 mt-0.5">{assistant.specialization}</p>
             <div className="flex items-center gap-3 mt-2">
               {assistant.rating && (
@@ -87,10 +88,10 @@ export default function AssistantProfile() {
                 <GlassCard key={i} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium text-mora-white">{pkg.name}</h3>
+                      <h3 className="text-sm font-medium text-mora-primary">{pkg.name}</h3>
                       <p className="text-xs text-mora-neutral/50 mt-1">{pkg.description}</p>
                     </div>
-                    {pkg.price && <span className="text-sm font-display font-semibold text-gold">${pkg.price}</span>}
+                    {pkg.price && <span className="text-sm font-display font-semibold text-gold">{formatIDR(pkg.price)}</span>}
                   </div>
                 </GlassCard>
               ))}

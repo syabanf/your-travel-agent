@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import GlassCard from "../GlassCard";
 import DateTimePicker from "../DateTimePicker";
+import { formatIDR } from "@/lib/currency";
 
 const tabs = [
   { key: "my_bookings", label: "My Bookings", icon: Ticket },
@@ -61,19 +62,19 @@ export default function OTASearch({ onSaveBooking }) {
 
     let prompt = "";
     if (activeTab === "flight") {
-      prompt = `Generate 5 realistic flight options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: airline, flight_number, departure_time, arrival_time, duration, price (number USD), class (Economy/Business), stops (0=direct), available_seats.`;
+      prompt = `Generate 5 realistic flight options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: airline, flight_number, departure_time, arrival_time, duration, price (number IDR), class (Economy/Business), stops (0=direct), available_seats.`;
     } else if (activeTab === "hotel") {
-      prompt = `Generate 5 realistic hotel options in ${form.to} for ${form.guests} guest(s), check-in ${form.checkin || "travel date"}, check-out ${form.checkout || "next week"}. Return as JSON array with fields: name, location, rating (1-5), price_per_night (number USD), amenities (array of 3 strings), room_type, image_keyword (one word for the hotel style e.g. "resort" "boutique" "luxury").`;
+      prompt = `Generate 5 realistic hotel options in ${form.to} for ${form.guests} guest(s), check-in ${form.checkin || "travel date"}, check-out ${form.checkout || "next week"}. Return as JSON array with fields: name, location, rating (1-5), price_per_night (number IDR), amenities (array of 3 strings), room_type, image_keyword (one word for the hotel style e.g. "resort" "boutique" "luxury").`;
     } else if (activeTab === "train") {
-      prompt = `Generate 5 realistic train options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, train_name, departure_time, arrival_time, duration, price (number USD), class (Economy/Business/Executive), available_seats.`;
+      prompt = `Generate 5 realistic train options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, train_name, departure_time, arrival_time, duration, price (number IDR), class (Economy/Business/Executive), available_seats.`;
     } else if (activeTab === "bus") {
-      prompt = `Generate 5 realistic bus options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, bus_type (e.g. Express/Luxury/Sleeper), departure_time, arrival_time, duration, price (number USD), available_seats, amenities (array of 2 strings).`;
+      prompt = `Generate 5 realistic bus options from ${form.from || "Jakarta"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, bus_type (e.g. Express/Luxury/Sleeper), departure_time, arrival_time, duration, price (number IDR), available_seats, amenities (array of 2 strings).`;
     } else if (activeTab === "ship") {
-      prompt = `Generate 5 realistic ferry or cruise ship options from ${form.from || "a port"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, ship_name, ship_type (Ferry/Cruise/Speedboat), departure_time, arrival_time, duration, price (number USD), class (Economy/Business/VIP), available_seats.`;
+      prompt = `Generate 5 realistic ferry or cruise ship options from ${form.from || "a port"} to ${form.to} on ${form.date || "a travel date"} for ${form.guests} passenger(s). Return as JSON array with fields: operator, ship_name, ship_type (Ferry/Cruise/Speedboat), departure_time, arrival_time, duration, price (number IDR), class (Economy/Business/VIP), available_seats.`;
     } else if (activeTab === "car_rental") {
-      prompt = `Generate 5 realistic car rental options in ${form.to || form.from || "the destination"} from ${form.checkin || form.date || "pickup date"} to ${form.checkout || "return date"} for ${form.guests} person(s). Return as JSON array with fields: provider, car_name, car_type (Economy/SUV/Luxury/Van), seats, price_per_day (number USD), transmission (Auto/Manual), features (array of 3 strings), mileage (Unlimited or limited).`;
+      prompt = `Generate 5 realistic car rental options in ${form.to || form.from || "the destination"} from ${form.checkin || form.date || "pickup date"} to ${form.checkout || "return date"} for ${form.guests} person(s). Return as JSON array with fields: provider, car_name, car_type (Economy/SUV/Luxury/Van), seats, price_per_day (number IDR), transmission (Auto/Manual), features (array of 3 strings), mileage (Unlimited or limited).`;
     } else if (activeTab === "attraction") {
-      prompt = `Generate 5 realistic tourist attractions or activities in ${form.to || form.from || "the destination"} on ${form.date || "a visit date"} for ${form.guests} person(s). Return as JSON array with fields: name, location, category (Museum/Theme Park/Tour/Adventure/Cultural/Nature), duration_hours (number), price_per_person (number USD), rating (number 1-5), description (one sentence), includes (array of 2 strings).`;
+      prompt = `Generate 5 realistic tourist attractions or activities in ${form.to || form.from || "the destination"} on ${form.date || "a visit date"} for ${form.guests} person(s). Return as JSON array with fields: name, location, category (Museum/Theme Park/Tour/Adventure/Cultural/Nature), duration_hours (number), price_per_person (number IDR), rating (number 1-5), description (one sentence), includes (array of 2 strings).`;
     }
 
     const res = await base44.integrations.Core.InvokeLLM({
@@ -99,19 +100,19 @@ export default function OTASearch({ onSaveBooking }) {
   const handleBook = async (item) => {
    let bookingData = {};
    if (activeTab === "flight") {
-     bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
+     bookingData = { type: "flight", title: `${item.airline} — ${form.from} → ${form.to}`, provider: item.airline, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "IDR", status: "pending", guests: form.guests, notes: `Flight ${item.flight_number} · ${item.class} · ${item.stops === 0 ? "Direct" : item.stops + " stop(s)"}` };
    } else if (activeTab === "hotel") {
-     bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: item.location || form.to, price: item.price_per_night, currency: "USD", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
+     bookingData = { type: "hotel", title: item.name, provider: item.name, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: item.location || form.to, price: item.price_per_night, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.room_type} · ${item.amenities?.join(", ")}` };
    } else if (activeTab === "train") {
-     bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
+     bookingData = { type: "train", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.train_name} · ${item.class}` };
    } else if (activeTab === "bus") {
-     bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
+     bookingData = { type: "bus", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.bus_type} · ${item.amenities?.join(", ")}` };
    } else if (activeTab === "ship") {
-     bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "USD", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
+     bookingData = { type: "ship", title: `${item.operator} — ${form.from} → ${form.to}`, provider: item.operator, check_in: safeDate(form.date, item.departure_time), location: `${form.from} → ${form.to}`, price: item.price, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.ship_name} · ${item.ship_type} · ${item.class}` };
    } else if (activeTab === "car_rental") {
-     bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: form.to || form.from, price: item.price_per_day, currency: "USD", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
+     bookingData = { type: "car_rental", title: `${item.provider} — ${item.car_name}`, provider: item.provider, check_in: safeDate(form.checkin), check_out: safeDate(form.checkout), location: form.to || form.from, price: item.price_per_day, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.car_type} · ${item.transmission} · ${item.mileage} · ${item.features?.join(", ")}` };
    } else if (activeTab === "attraction") {
-     bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "USD", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
+     bookingData = { type: "attraction", title: item.name, provider: item.name, check_in: safeDate(form.date), location: item.location, price: item.price_per_person, currency: "IDR", status: "pending", guests: form.guests, notes: `${item.category} · ${item.duration_hours}h · ${item.includes?.join(", ")}` };
    }
    await base44.entities.Booking.create(bookingData);
    queryClient.invalidateQueries({ queryKey: ["bookings"] });
@@ -151,7 +152,7 @@ export default function OTASearch({ onSaveBooking }) {
                   <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[b.status] || statusColors.pending}`}>{b.status}</span>
                 </div>
                 <p className="text-xs text-mora-neutral/50">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
-                {b.price > 0 && <p className="text-sm font-display font-bold text-gold mt-1.5">${b.price}</p>}
+                {b.price > 0 && <p className="text-sm font-display font-bold text-gold mt-1.5">{formatIDR(b.price)}</p>}
               </GlassCard>
             ))
           )}
@@ -260,7 +261,7 @@ export default function OTASearch({ onSaveBooking }) {
                       <p className="text-[10px] text-mora-neutral/50">{item.flight_number} · {item.class}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">${item.price}</p>
+                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
                       <p className="text-[10px] text-mora-neutral/40">per person</p>
                     </div>
                   </div>
@@ -294,7 +295,7 @@ export default function OTASearch({ onSaveBooking }) {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">${item.price_per_night}</p>
+                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_night)}</p>
                       <p className="text-[10px] text-mora-neutral/40">/ night</p>
                     </div>
                   </div>
@@ -311,7 +312,7 @@ export default function OTASearch({ onSaveBooking }) {
                       <p className="text-[10px] text-mora-neutral/50">{item.train_name || item.bus_type || item.ship_name} · {item.class || item.ship_type || ""}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">${item.price}</p>
+                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
                       <p className="text-[10px] text-mora-neutral/40">per person</p>
                     </div>
                   </div>
@@ -340,7 +341,7 @@ export default function OTASearch({ onSaveBooking }) {
                       <p className="text-[10px] text-mora-neutral/40 mt-0.5">{item.seats} seats · {item.mileage}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">${item.price_per_day}</p>
+                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_day)}</p>
                       <p className="text-[10px] text-mora-neutral/40">/ day</p>
                     </div>
                   </div>
@@ -363,7 +364,7 @@ export default function OTASearch({ onSaveBooking }) {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">${item.price_per_person}</p>
+                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_person)}</p>
                       <p className="text-[10px] text-mora-neutral/40">/ person</p>
                     </div>
                   </div>

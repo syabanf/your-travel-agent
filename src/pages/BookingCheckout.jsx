@@ -5,6 +5,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, CreditCard, User, FileText, ChevronRight, Loader2, Lock } from "lucide-react";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const steps = [
@@ -130,7 +131,7 @@ export default function BookingCheckout() {
             <GlassCard className="p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-mora-neutral/70">Total Price</span>
-                <span className="text-xl font-display font-bold text-gold">${booking.price || 0} <span className="text-xs font-body font-normal">{booking.currency || "USD"}</span></span>
+                <span className="text-xl font-display font-bold text-gold">{formatIDR(booking.price || 0)}</span>
               </div>
             </GlassCard>
 
@@ -234,7 +235,7 @@ export default function BookingCheckout() {
             <GlassCard className="p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-mora-neutral/70">Total Charge</span>
-                <span className="text-xl font-display font-bold text-gold">${booking.price || 0} <span className="text-xs font-body font-normal">{booking.currency || "USD"}</span></span>
+                <span className="text-xl font-display font-bold text-gold">{formatIDR(booking.price || 0)}</span>
               </div>
             </GlassCard>
 
@@ -243,7 +244,7 @@ export default function BookingCheckout() {
               disabled={processing || !paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv}
               className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
             >
-              {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay ${booking.price || 0}</>}
+              {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(booking.price || 0)}</>}
             </button>
           </>
         )}

@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Link } from "react-router-dom";
+import { formatIDR } from "@/lib/currency";
 
 const COLORS = ["#A5997E", "#606A54", "#60A5FA", "#34D399", "#F472B6", "#FBBF24", "#94A3B8"];
 
@@ -88,16 +89,16 @@ export default function BudgetView() {
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="text-center">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Budget</p>
-                  <p className="text-base font-display font-bold text-mora-white">${focusTrip.budget_total?.toLocaleString()}</p>
+                  <p className="text-base font-display font-bold text-mora-white">{formatIDR(focusTrip.budget_total)}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Planned</p>
-                  <p className="text-base font-display font-bold text-gold">${spent.toLocaleString()}</p>
+                  <p className="text-base font-display font-bold text-gold">{formatIDR(spent)}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Remaining</p>
                   <p className={`text-base font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                    ${(focusTrip.budget_total - spent).toLocaleString()}
+                    {formatIDR(focusTrip.budget_total - spent)}
                   </p>
                 </div>
               </div>
@@ -125,7 +126,7 @@ export default function BudgetView() {
                         <Cell key={i} fill={categoryColors[entry.name] || COLORS[i % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v) => [`$${v}`, ""]}
+                    <Tooltip formatter={(v) => [formatIDR(v), ""]}
                       contentStyle={{ background: "#1a2e22", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#FCFCFC" }} />
                   </PieChart>
                 </ResponsiveContainer>
@@ -133,7 +134,7 @@ export default function BudgetView() {
                   {breakdown.map((b, i) => (
                     <div key={b.name} className="flex items-center gap-1.5">
                       <div className="w-2 h-2 rounded-full" style={{ background: categoryColors[b.name] || COLORS[i % COLORS.length] }} />
-                      <span className="text-[10px] text-mora-neutral/60 capitalize">{b.name} ${b.value}</span>
+                      <span className="text-[10px] text-mora-neutral/60 capitalize">{b.name} {formatIDR(b.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -155,13 +156,13 @@ export default function BudgetView() {
                 <GlassCard className="p-4 hover:bg-white/10 transition-all">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-mora-white">{trip.title}</h4>
-                    <span className="text-xs text-gold font-display">${trip.budget_total?.toLocaleString()}</span>
+                    <span className="text-xs text-gold font-display">{formatIDR(trip.budget_total)}</span>
                   </div>
                   <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-mora-gold to-gold rounded-full"
                       style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-[10px] text-mora-neutral/40 mt-1">${s.toLocaleString()} planned · {Math.round(pct)}% of budget</p>
+                  <p className="text-[10px] text-mora-neutral/40 mt-1">{formatIDR(s)} planned · {Math.round(pct)}% of budget</p>
                 </GlassCard>
               </Link>
             );

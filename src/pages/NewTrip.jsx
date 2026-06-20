@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
-import { MapPin, Users, DollarSign, Sparkles, Loader2, Wand2 } from "lucide-react";
+import { MapPin, Users, Sparkles, Loader2, Wand2 } from "lucide-react";
 
 const travelStyles = ["luxury", "adventure", "cultural", "relaxation", "business", "family", "budget"];
 const paceOptions = ["relaxed", "moderate", "packed"];
@@ -23,7 +23,7 @@ export default function NewTrip() {
     travelers: 1,
     travel_style: "luxury",
     budget_total: "",
-    budget_currency: "USD",
+    budget_currency: "IDR",
     pace: "moderate",
     trip_type: "couple",
     notes: "",
@@ -72,7 +72,7 @@ export default function NewTrip() {
         form.start_date ? ` from ${form.start_date}` : ''
       }${
         form.end_date ? ` to ${form.end_date}` : ' for 3 days'
-      }. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in USD, and a full list of activities per day.`,
+      }. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in IDR (Indonesian Rupiah), and a full list of activities per day.`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -233,8 +233,8 @@ export default function NewTrip() {
             <div>
               <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Budget</label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
-                <Input 
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gold/70">Rp</span>
+                <Input
                   type="number"
                   value={form.budget_total}
                   onChange={e => update("budget_total", e.target.value)}

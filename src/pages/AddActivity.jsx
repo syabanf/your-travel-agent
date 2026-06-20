@@ -7,7 +7,7 @@ import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, MapPin, DollarSign, Tag, FileText, Ticket, Navigation, Map } from "lucide-react";
+import { Clock, MapPin, Tag, FileText, Ticket, Navigation, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const categories = ["transport", "accommodation", "dining", "attraction", "activity", "shopping", "rest", "other"];
@@ -150,12 +150,12 @@ export default function AddActivity() {
           <div>
             <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Budget</label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
-              <Input 
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gold/70">Rp</span>
+              <Input
                 type="number"
                 value={form.budget}
                 onChange={e => update("budget", e.target.value)}
-                placeholder="0.00"
+                placeholder="0"
                 className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 pl-10"
               />
             </div>

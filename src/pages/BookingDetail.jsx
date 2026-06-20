@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Calendar, DollarSign, Hash, Trash2, CreditCard } from "lucide-react";
+import { MapPin, Calendar, Wallet, Hash, Trash2, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const statusColors = {
@@ -84,8 +85,8 @@ export default function BookingDetail() {
             )}
             {booking.price > 0 && (
               <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
-                <DollarSign className="w-4 h-4 text-gold/50 flex-shrink-0" />
-                <span className="font-display font-semibold text-gold">${booking.price} {booking.currency}</span>
+                <Wallet className="w-4 h-4 text-gold/50 flex-shrink-0" />
+                <span className="font-display font-semibold text-gold">{formatIDR(booking.price)}</span>
               </div>
             )}
             {booking.confirmation_code && (

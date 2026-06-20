@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import OTASearch from "../components/booking/OTASearch";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const bookingCategories = [
@@ -115,7 +116,7 @@ export default function Booking() {
                           </span>
                           {booking.price > 0 && (
                             <span className="text-sm font-display font-semibold text-gold">
-                              ${booking.price}
+                              {formatIDR(booking.price)}
                             </span>
                           )}
                         </div>
