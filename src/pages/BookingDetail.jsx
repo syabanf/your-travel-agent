@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapPin, Calendar, Wallet, Hash, Trash2, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import ErrorState from "@/components/ErrorState";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -20,15 +21,24 @@ export default function BookingDetail() {
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const results = await base44.entities.Booking.filter({ id: bookingId });
+      setBooking(results.length > 0 ? results[0] : null);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [bookingId]);
 
   useEffect(() => {
-    const load = async () => {
-      const results = await base44.entities.Booking.filter({ id: bookingId });
-      if (results.length > 0) setBooking(results[0]);
-      setLoading(false);
-    };
     load();
-  }, [bookingId]);
+  }, [load]);
 
   const handleDelete = async () => {
     await base44.entities.Booking.delete(bookingId);
@@ -41,13 +51,38 @@ export default function BookingDetail() {
     </div>
   );
 
-  if (!booking) return null;
+  if (error) return (
+    <div className="animate-fade-in">
+      <PageHeader title="Booking Detail" showBack />
+      <ErrorState
+        title="Couldn't load booking"
+        hint="Please check your connection and try again."
+        onRetry={load}
+      />
+    </div>
+  );
+
+  if (!booking) return (
+    <div className="animate-fade-in">
+      <PageHeader title="Booking Detail" showBack />
+      <ErrorState
+        title="Booking not found"
+        hint="It may have been removed."
+        onRetry={load}
+      />
+      <div className="px-6 -mt-4 flex justify-center">
+        <Link to="/booking" className="text-sm font-medium text-gold press">
+          Back to bookings
+        </Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="animate-fade-in">
       {booking.image_url && (
         <div className="relative h-52">
-          <img src={booking.image_url} alt={booking.title} className="w-full h-full object-cover" />
+          <img src={booking.image_url} alt={booking.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/40 to-transparent" />
           <div className="absolute top-0 left-0 right-0">
             <PageHeader showBack title="" />

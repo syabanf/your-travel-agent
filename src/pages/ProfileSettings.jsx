@@ -2,6 +2,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Globe, Bell, Moon, HelpCircle, Info, Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 
 export default function ProfileSettings() {
@@ -55,20 +56,24 @@ export default function ProfileSettings() {
             <p className="text-xs text-mora-neutral/50">English (US)</p>
           </div>
         </GlassCard>
-        <GlassCard className="p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all">
-          <HelpCircle className="w-5 h-5 text-gold/70" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-mora-white">Help & Support</p>
-            <p className="text-xs text-mora-neutral/50">FAQs and contact us</p>
-          </div>
-        </GlassCard>
-        <GlassCard className="p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all">
-          <Info className="w-5 h-5 text-gold/70" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-mora-white">About MORA</p>
-            <p className="text-xs text-mora-neutral/50">Version 1.0.0</p>
-          </div>
-        </GlassCard>
+        <Link to="/help" className="block">
+          <GlassCard className="p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all">
+            <HelpCircle className="w-5 h-5 text-gold/70" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-mora-white">Help & Support</p>
+              <p className="text-xs text-mora-neutral/50">FAQs and contact us</p>
+            </div>
+          </GlassCard>
+        </Link>
+        <Link to="/help" className="block">
+          <GlassCard className="p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all">
+            <Info className="w-5 h-5 text-gold/70" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-mora-white">About MORA</p>
+              <p className="text-xs text-mora-neutral/50">Version 1.0.0</p>
+            </div>
+          </GlassCard>
+        </Link>
         {/* Delete Account */}
         <div className="mt-4 mb-8">
           {!showDeleteConfirm ? (

@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Search, ChevronUp, ChevronDown, Briefcase, Map } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Search, ChevronUp, ChevronDown, Briefcase, Map, Download } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+import { downloadCSV } from "@/lib/csv";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 
@@ -166,6 +168,16 @@ export default function DashboardBookings() {
   const vBookings = sBookings.slice(0, bVisible);
   const vTrips = sTrips.slice(0, tVisible);
 
+  const exportCSV = () => downloadCSV(
+    "mora-bookings",
+    ["Title", "Type", "Provider", "Status", "Date", "Price"],
+    sBookings.map((b) => [
+      b.title, b.type, b.provider, b.status,
+      b.check_in ? moment(b.check_in).format("YYYY-MM-DD") : "",
+      b.price || 0,
+    ]),
+  );
+
   return (
     <div className="p-8 max-w-6xl">
       <header className="mb-6 flex items-center justify-between">
@@ -173,13 +185,20 @@ export default function DashboardBookings() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Trips & Bookings</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Create, review and manage every trip and booking.</p>
         </div>
-        {!editing && (tab === "bookings"
-          ? can(role, "bookings", "create") && (
-            <button onClick={startAddBooking} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New booking</button>
-          )
-          : can(role, "trips", "create") && (
-            <button onClick={startAddTrip} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New trip</button>
-          ))}
+        {!editing && (
+          <div className="flex items-center gap-2">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+            {tab === "bookings"
+              ? can(role, "bookings", "create") && (
+                <button onClick={startAddBooking} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New booking</button>
+              )
+              : can(role, "trips", "create") && (
+                <button onClick={startAddTrip} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New trip</button>
+              )}
+          </div>
+        )}
       </header>
 
       {editing ? (
@@ -292,6 +311,7 @@ export default function DashboardBookings() {
         </div>
       ) : (
         <>
+          <ReadOnlyBanner resource="bookings" />
           <div className="flex gap-2 mb-4">
             {["bookings", "trips"].map((t) => (
               <button key={t} onClick={() => setTab(t)}

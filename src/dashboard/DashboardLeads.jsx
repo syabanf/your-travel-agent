@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { Plus, Pencil, Trash2, X, Loader2, Save, MessageCircle, UserPlus, Users, Flame, Wallet, Trophy, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -37,6 +39,7 @@ export default function DashboardLeads() {
   const [query, setQuery] = useState("");
   const [sourceF, setSourceF] = useState("all");
   const [agentF, setAgentF] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   const load = async () => setItems(await base44.entities.Lead.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -123,8 +126,16 @@ export default function DashboardLeads() {
     return matchesQ && matchesSource && matchesAgent;
   });
 
+  // Reorders cards within each status column; KPIs stay on the full set.
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "budget") return (Number(b.budget) || 0) - (Number(a.budget) || 0);
+    if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+
   return (
     <div className="p-8 max-w-7xl">
+      <ReadOnlyBanner resource="leads" />
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Leads</h1>
@@ -214,6 +225,11 @@ export default function DashboardLeads() {
                 <option value="all">All agents</option>
                 {agentOptions.map((a) => <option key={a} value={a}>{a}</option>)}
               </select>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[170px]">
+                <option value="newest">Newest</option>
+                <option value="budget">Budget high–low</option>
+                <option value="name">Name</option>
+              </select>
             </div>
           )}
           {items.length === 0 ? (
@@ -233,7 +249,7 @@ export default function DashboardLeads() {
           <div className="overflow-x-auto pb-2 -mx-1 px-1">
             <div className="flex gap-4 min-w-max stagger">
               {STATUSES.map((status) => {
-                const col = filtered.filter((l) => (l.status || "new") === status);
+                const col = sorted.filter((l) => (l.status || "new") === status);
               return (
                 <div key={status} className="w-72 shrink-0">
                   <div className="flex items-center gap-2 mb-3 px-1">
@@ -243,7 +259,7 @@ export default function DashboardLeads() {
                   </div>
                   <div className="space-y-3">
                     {col.map((l) => (
-                      <div key={l.id} className="bg-white rounded-xl border border-mora-primary/10 p-3 hover:shadow-md transition-shadow">
+                      <Link key={l.id} to={`/dashboard/leads/${l.id}`} className="block bg-white rounded-xl border border-mora-primary/10 p-3 hover:shadow-md transition-shadow press">
                         <div className="font-medium text-mora-primary truncate">{l.name}</div>
                         <div className="text-xs text-mora-neutral mt-0.5 truncate">
                           {[l.destination, l.source].filter(Boolean).join(" · ") || "—"}
@@ -255,8 +271,8 @@ export default function DashboardLeads() {
                           {canEdit && (
                             <select
                               value={l.status || "new"}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => { e.stopPropagation(); setStatus(l.id, e.target.value); }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                              onChange={(e) => { e.preventDefault(); e.stopPropagation(); setStatus(l.id, e.target.value); }}
                               className="text-[11px] rounded-lg border border-mora-primary/15 bg-white px-2 py-1 text-mora-primary capitalize outline-none focus:border-mora-gold/50 flex-1 min-w-0"
                               title="Move stage"
                             >
@@ -264,7 +280,7 @@ export default function DashboardLeads() {
                             </select>
                           )}
                           <button
-                            onClick={(e) => { e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}
                             className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
                             title="WhatsApp"
                           >
@@ -272,7 +288,7 @@ export default function DashboardLeads() {
                           </button>
                           {canConvert && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); convert(l); }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); convert(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
                               title="Convert to customer"
                             >
@@ -281,7 +297,7 @@ export default function DashboardLeads() {
                           )}
                           {canEdit && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); startEdit(l); }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
                               title="Edit"
                             >
@@ -290,7 +306,7 @@ export default function DashboardLeads() {
                           )}
                           {canDelete && (
                             <button
-                              onClick={(e) => { e.stopPropagation(); remove(l); }}
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 shrink-0"
                               title="Delete"
                             >
@@ -298,7 +314,7 @@ export default function DashboardLeads() {
                             </button>
                           )}
                         </div>
-                      </div>
+                      </Link>
                     ))}
                     {col.length === 0 && (
                       <p className="text-xs text-mora-neutral/50 text-center py-6 border border-dashed border-mora-primary/10 rounded-xl">No leads</p>

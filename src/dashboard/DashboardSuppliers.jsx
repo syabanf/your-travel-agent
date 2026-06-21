@@ -4,8 +4,10 @@ import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+import { downloadCSV } from "@/lib/csv";
 import { openWhatsApp } from "@/lib/whatsapp";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percent, Star, Globe, MessageCircle, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percent, Star, Globe, MessageCircle, Search, Download } from "lucide-react";
 import { toast } from "sonner";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
@@ -34,9 +36,14 @@ export default function DashboardSuppliers() {
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [sort, setSort] = useState("newest");
+  const [visible, setVisible] = useState(12);
 
   const load = async () => setItems(await base44.entities.Supplier.list("-created_date", 500));
   useEffect(() => { load(); }, []);
+
+  // Reset pagination when the search / filters / sort change.
+  useEffect(() => { setVisible(12); }, [query, typeF, statusF, sort]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (s) => setEditing({
@@ -88,6 +95,23 @@ export default function DashboardSuppliers() {
     return matchesQ && matchesType && matchesStatus;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "rating") return (Number(b.rating) || 0) - (Number(a.rating) || 0);
+    if (sort === "commission") return (Number(b.commission_rate) || 0) - (Number(a.commission_rate) || 0);
+    return String(b.created_date || "").localeCompare(String(a.created_date || ""));
+  });
+  const visibleItems = sorted.slice(0, visible);
+
+  const exportCSV = () => downloadCSV(
+    "mora-suppliers",
+    ["Name", "Type", "Country", "Commission %", "Rating", "Status"],
+    sorted.map((s) => [
+      s.name, s.type || "dmc", s.country,
+      Number(s.commission_rate) || 0, Number(s.rating) || 0, s.status || "active",
+    ]),
+  );
+
   return (
     <div className="p-8 max-w-6xl">
       <header className="mb-6 flex items-center justify-between">
@@ -95,10 +119,17 @@ export default function DashboardSuppliers() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Suppliers</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage partner airlines, hotels, DMCs & their commissions.</p>
         </div>
-        {!editing && can(role, "suppliers", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Add supplier
-          </button>
+        {!editing && (
+          <div className="flex items-center gap-2">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+            {can(role, "suppliers", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Add supplier
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -159,6 +190,7 @@ export default function DashboardSuppliers() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <>
+        <ReadOnlyBanner resource="suppliers" />
         <div className="flex flex-wrap gap-2 mb-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
@@ -177,9 +209,15 @@ export default function DashboardSuppliers() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="dash-input max-w-[160px]">
+            <option value="newest">Newest</option>
+            <option value="name">Name A–Z</option>
+            <option value="rating">Rating</option>
+            <option value="commission">Commission</option>
+          </select>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
-          {filtered.map((s) => (
+          {visibleItems.map((s) => (
             <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow press">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -234,8 +272,13 @@ export default function DashboardSuppliers() {
               />
             </div>
           )}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
+          {items.length > 0 && sorted.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
+        {visible < sorted.length && (
+          <div className="text-center mt-4">
+            <button onClick={() => setVisible((v) => v + 12)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({sorted.length - visible} more)</button>
+          </div>
+        )}
         </>
       )}
     </div>

@@ -6,6 +6,7 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import ErrorState from "@/components/ErrorState";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -21,13 +22,20 @@ const typeIcons = { flight: Plane, hotel: Building2, train: Train, bus: Bus, shi
 export default function Booking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [startY, setStartY] = useState(null);
 
   const loadBookings = useCallback(async () => {
-    const data = await base44.entities.Booking.list("-created_date", 50);
-    setBookings(data);
-    setLoading(false);
+    setError(false);
+    try {
+      const data = await base44.entities.Booking.list("-created_date", 50);
+      setBookings(data);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { loadBookings(); }, [loadBookings]);
@@ -81,6 +89,12 @@ export default function Booking() {
 
         {loading ? (
           <SkeletonRows rows={4} />
+        ) : error ? (
+          <ErrorState
+            title="Couldn't load bookings"
+            hint="Please check your connection and try again."
+            onRetry={loadBookings}
+          />
         ) : bookings.length === 0 ? (
           <EmptyState
             icon={Ticket}
@@ -105,7 +119,7 @@ export default function Booking() {
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (
                         <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                          <img src={booking.image_url} alt={booking.title} className="w-full h-full object-cover" />
+                          <img src={booking.image_url} alt={booking.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ) : (
                         <div className="w-16 h-16 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">

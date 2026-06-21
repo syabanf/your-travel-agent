@@ -7,6 +7,7 @@ import GlassCard from "../components/GlassCard";
 import TripCard from "../components/itinerary/TripCard";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import ErrorState from "@/components/ErrorState";
 
 const tabs = [
   { id: "upcoming", label: "Upcoming" },
@@ -26,13 +27,17 @@ export default function Itinerary() {
   const [trips, setTrips] = useState([]);
   const [activeTab, setActiveTab] = useState("upcoming");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [startY, setStartY] = useState(null);
 
   const loadTrips = useCallback(async () => {
+    setError(false);
     try {
       const data = await base44.entities.Trip.list("-created_date", 50);
       setTrips(data);
+    } catch {
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -148,6 +153,12 @@ export default function Itinerary() {
         <div className="px-6">
           <SkeletonRows rows={4} />
         </div>
+      ) : error ? (
+        <ErrorState
+          title="Couldn't load itineraries"
+          hint="Please check your connection and try again."
+          onRetry={loadTrips}
+        />
       ) : filteredTrips.length === 0 ? (
         <EmptyState
           icon={Map}

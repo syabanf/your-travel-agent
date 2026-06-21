@@ -127,8 +127,8 @@ export default function Home() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link 
-              to="/itinerary"
+            <Link
+              to="/search"
               className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors"
             >
               <Search className="w-5 h-5" />

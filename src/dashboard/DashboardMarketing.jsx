@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Send, Megaphone, CheckCircle2, Users, CalendarClock, Mail, MessageCircle, Bell, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
@@ -36,6 +38,8 @@ export default function DashboardMarketing() {
   const [query, setQuery] = useState("");
   const [channelF, setChannelF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [visible, setVisible] = useState(12);
 
   const load = async () => {
     const [campaigns, custs] = await Promise.all([
@@ -109,8 +113,18 @@ export default function DashboardMarketing() {
     return matchesQ && matchesChannel && matchesStatus;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+    if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+
+  // Reset pagination whenever the filter/sort inputs change.
+  useEffect(() => { setVisible(12); }, [query, channelF, statusF, sortBy]);
+
   return (
     <div className="p-8 max-w-6xl">
+      <ReadOnlyBanner resource="marketing" />
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Marketing Campaigns</h1>
@@ -200,14 +214,19 @@ export default function DashboardMarketing() {
               <option value="scheduled">Scheduled</option>
               <option value="sent">Sent</option>
             </select>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="newest">Newest</option>
+              <option value="name">Name A–Z</option>
+              <option value="status">Status</option>
+            </select>
           </div>
           <div className="space-y-3 stagger">
-          {filtered.map((c) => {
+          {sorted.slice(0, visible).map((c) => {
             const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
             const ChIcon = meta.icon;
             const recipients = segmentCount(c.segment);
             return (
-              <div key={c.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
+              <Link key={c.id} to={`/dashboard/marketing/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
                 <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><ChIcon className="w-5 h-5" /></div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -232,24 +251,29 @@ export default function DashboardMarketing() {
                 {(can(role, "marketing", "edit") || can(role, "marketing", "delete")) && (
                   <div className="flex items-center gap-1.5 shrink-0">
                     {c.status !== "sent" && can(role, "marketing", "edit") && (
-                      <button onClick={() => sendNow(c)} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-mora-gold/10 text-gold hover:bg-mora-gold/20 flex items-center gap-1.5">
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendNow(c); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-mora-gold/10 text-gold hover:bg-mora-gold/20 flex items-center gap-1.5">
                         <Send className="w-3.5 h-3.5" /> Send now
                       </button>
                     )}
                     <div className="flex gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       {can(role, "marketing", "edit") && (
-                        <button onClick={() => startEdit(c)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                       )}
                       {can(role, "marketing", "delete") && (
-                        <button onClick={() => remove(c)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                       )}
                     </div>
                   </div>
                 )}
-              </div>
+              </Link>
             );
           })}
           </div>
+          {sorted.length > visible && (
+            <div className="flex justify-center pt-1">
+              <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
+            </div>
+          )}
           {items.length === 0 && (
             <EmptyState
               icon={Megaphone}

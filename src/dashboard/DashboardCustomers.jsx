@@ -5,7 +5,9 @@ import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Users, UserCheck, Wallet, Mail } from "lucide-react";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+import { downloadCSV } from "@/lib/csv";
+import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Users, UserCheck, Wallet, Mail, Download } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
@@ -34,10 +36,15 @@ export default function DashboardCustomers() {
   const [listQuery, setListQuery] = useState("");
   const [tierF, setTierF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [sort, setSort] = useState("newest");
+  const [visible, setVisible] = useState(12);
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Customer.list("-created_date", 500));
   useEffect(() => { load(); }, []);
+
+  // Reset pagination when the search / filters / sort change.
+  useEffect(() => { setVisible(12); }, [listQuery, tierF, statusF, sort]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (c) => setEditing({
@@ -97,6 +104,22 @@ export default function DashboardCustomers() {
     return matchesQ && matchesTier && matchesStatus;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "spend") return (Number(b.lifetime_spend) || 0) - (Number(a.lifetime_spend) || 0);
+    return moment(b.joined_date || 0).valueOf() - moment(a.joined_date || 0).valueOf();
+  });
+  const visibleItems = sorted.slice(0, visible);
+
+  const exportCSV = () => downloadCSV(
+    "mora-customers",
+    ["Name", "Email", "Phone", "City", "Country", "Tier", "Status", "Lifetime spend"],
+    sorted.map((c) => [
+      c.name, c.email, c.phone, c.city, c.country,
+      c.tier || "bronze", c.status || "active", Number(c.lifetime_spend) || 0,
+    ]),
+  );
+
   const total = items?.length || 0;
   const activeCount = items?.filter((c) => c.status === "active").length || 0;
   const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
@@ -108,10 +131,17 @@ export default function DashboardCustomers() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Customers</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
         </div>
-        {!editing && can(role, "customers", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Add customer
-          </button>
+        {!editing && (
+          <div className="flex items-center gap-2">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
+            {can(role, "customers", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Add customer
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -196,7 +226,8 @@ export default function DashboardCustomers() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <ReadOnlyBanner resource="customers" />
+          <div className="flex flex-wrap gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input
@@ -218,9 +249,14 @@ export default function DashboardCustomers() {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="newest">Newest</option>
+              <option value="name">Name A–Z</option>
+              <option value="spend">Lifetime spend</option>
+            </select>
           </div>
           <div className="space-y-3 stagger">
-          {filtered.map((c) => (
+          {visibleItems.map((c) => (
             <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
@@ -256,6 +292,11 @@ export default function DashboardCustomers() {
             </Link>
           ))}
           </div>
+          {visible < sorted.length && (
+            <div className="text-center pt-1">
+              <button onClick={() => setVisible((v) => v + 12)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({sorted.length - visible} more)</button>
+            </div>
+          )}
           {items.length === 0 && (
             <EmptyState
               icon={Users}
@@ -266,7 +307,7 @@ export default function DashboardCustomers() {
               )}
             />
           )}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers match your filters.</p>}
+          {items.length > 0 && sorted.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers match your filters.</p>}
         </div>
       )}
     </div>

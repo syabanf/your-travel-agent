@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import moment from "moment";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+
+const PAGE_SIZE = 12;
 
 const EMPTY = { title: "", url: "", tags: "" };
 
@@ -16,6 +19,8 @@ export default function DashboardMedia() {
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
   const load = async () => setItems(await base44.entities.MediaAsset.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -65,6 +70,17 @@ export default function DashboardMedia() {
     const inTags = (Array.isArray(m.tags) ? m.tags : []).some((t) => (t || "").toLowerCase().includes(q));
     return inTitle || inTags;
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
+    // newest
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+
+  const shown = sorted.slice(0, visible);
+
+  // Reset pagination whenever the search/sort narrows the list.
+  useEffect(() => { setVisible(PAGE_SIZE); }, [query, sortBy]);
 
   return (
     <div className="p-8 max-w-6xl">
@@ -128,20 +144,25 @@ export default function DashboardMedia() {
         </div>
       ) : (
         <>
+          <ReadOnlyBanner resource="media" />
           <div className="flex gap-2 mb-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
             </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="newest">Newest</option>
+              <option value="title">Title A–Z</option>
+            </select>
           </div>
 
-          <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{filtered.length} {filtered.length === 1 ? "asset" : "assets"}</div>
+          <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{sorted.length} {sorted.length === 1 ? "asset" : "assets"}</div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
-            {filtered.map((m) => (
+            {shown.map((m) => (
               <div key={m.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col">
                 <div className="aspect-square bg-mora-primary/5 relative">
-                  {m.url && <img src={m.url} alt={m.title} onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} className="w-full h-full object-cover rounded-t-2xl" />}
+                  {m.url && <img src={m.url} alt={m.title} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} className="w-full h-full object-cover rounded-t-2xl" />}
                   <div className="absolute inset-0 items-center justify-center text-mora-neutral/40" style={{ display: m.url ? "none" : "flex" }}>
                     <ImageIcon className="w-8 h-8" />
                   </div>
@@ -192,6 +213,16 @@ export default function DashboardMedia() {
               </div>
             )}
           </div>
+          {shown.length < sorted.length && (
+            <div className="flex items-center justify-center mt-4">
+              <button
+                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                className="rounded-xl px-4 py-2 text-sm font-medium text-mora-primary hover:bg-mora-primary/5 border border-mora-primary/10 press"
+              >
+                Show more ({sorted.length - shown.length})
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

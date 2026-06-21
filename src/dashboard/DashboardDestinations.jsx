@@ -7,6 +7,7 @@ import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Image as ImageI
 import { toast } from "sonner";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 
@@ -19,10 +20,15 @@ export default function DashboardDestinations() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [visible, setVisible] = useState(12);
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Destination.list("-created_date", 500));
   useEffect(() => { load(); }, []);
+
+  // Reset pagination whenever the filter/sort inputs change.
+  useEffect(() => { setVisible(12); }, [query, statusF, sortBy]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (d) => setEditing({
@@ -79,6 +85,7 @@ export default function DashboardDestinations() {
 
   return (
     <div className="p-8 max-w-6xl">
+      <ReadOnlyBanner resource="destinations" />
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Destinations</h1>
@@ -177,6 +184,11 @@ export default function DashboardDestinations() {
           const ms = statusF === "all" || (statusF === "active" ? d.active !== false : d.active === false);
           return mq && ms;
         });
+        const sorted = [...filtered].sort((a, b) => {
+          if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+          if (sortBy === "price") return (Number(b.fromPrice) || 0) - (Number(a.fromPrice) || 0);
+          return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+        });
         return (
         <>
         <div className="flex gap-2 mb-4">
@@ -189,12 +201,17 @@ export default function DashboardDestinations() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
+            <option value="newest">Newest</option>
+            <option value="name">Name A–Z</option>
+            <option value="price">Price</option>
+          </select>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
-          {filtered.map((d) => (
+          {sorted.slice(0, visible).map((d) => (
             <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
               <div className="h-28 relative bg-mora-primary">
-                {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
+                {d.image && <img src={d.image} alt={d.name} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 {d.images?.length > 1 && (
                   <span className="absolute bottom-2 left-2 z-10 text-[10px] bg-black/55 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
                     <ImageIcon className="w-3 h-3" /> {d.images.length}
@@ -238,6 +255,11 @@ export default function DashboardDestinations() {
             </div>
           )}
         </div>
+        {sorted.length > visible && (
+          <div className="flex justify-center pt-4">
+            <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
+          </div>
+        )}
         </>
         );
       })()}

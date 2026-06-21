@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search, Users } from "lucide-react";
+import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search, Users, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+
+const PAGE_SIZE = 12;
+const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -35,6 +39,9 @@ export default function DashboardTeam() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [roleF, setRoleF] = useState("all");
+  const [sortKey, setSortKey] = useState("name");
+  const [sortDir, setSortDir] = useState("asc");
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
   const filtered = (members || []).filter((member) => {
     const q = query.trim().toLowerCase();
@@ -42,6 +49,46 @@ export default function DashboardTeam() {
     const matchesRole = roleF === "all" || member.role === roleF;
     return matchesQ && matchesRole;
   });
+
+  const sortVal = (m, key) => {
+    if (key === "name") return (m.name || m.email || "").toLowerCase();
+    if (key === "role") return roleLabel(m.role || "").toLowerCase();
+    if (key === "status") return STATUS_ORDER[m.status] ?? 99;
+    if (key === "last_active") return m.last_active ? new Date(m.last_active).getTime() : -1;
+    return "";
+  };
+
+  const sorted = [...filtered].sort((a, b) => {
+    const av = sortVal(a, sortKey);
+    const bv = sortVal(b, sortKey);
+    let cmp = 0;
+    if (av < bv) cmp = -1;
+    else if (av > bv) cmp = 1;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  const shown = sorted.slice(0, visible);
+
+  // Reset pagination whenever the filter/search narrows the list.
+  useEffect(() => { setVisible(PAGE_SIZE); }, [query, roleF]);
+
+  const toggleSort = (key) => {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("asc"); }
+  };
+
+  const SortHeader = ({ label, sk, className = "" }) => (
+    <th className={`px-5 py-3 font-medium ${className}`}>
+      <button
+        type="button"
+        onClick={() => toggleSort(sk)}
+        className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-mora-primary transition-colors"
+      >
+        {label}
+        {sortKey === sk && (sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+      </button>
+    </th>
+  );
 
   const load = async () => setMembers(await base44.entities.StaffMember.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -92,6 +139,8 @@ export default function DashboardTeam() {
         <h1 className="text-2xl font-display font-bold text-mora-primary">Team &amp; Roles</h1>
         <p className="text-sm text-mora-neutral mt-0.5">Manage who can access what.</p>
       </header>
+
+      <ReadOnlyBanner resource="team" />
 
       {!canManage && (
         <div className="mb-5 flex items-center gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -168,14 +217,14 @@ export default function DashboardTeam() {
           </div>
           <table className="w-full text-sm">
             <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
-              <th className="px-5 py-3 font-medium">Member</th>
-              <th className="px-5 py-3 font-medium">Role</th>
-              <th className="px-5 py-3 font-medium">Status</th>
-              <th className="px-5 py-3 font-medium">Last active</th>
+              <SortHeader label="Name" sk="name" />
+              <SortHeader label="Role" sk="role" />
+              <SortHeader label="Status" sk="status" />
+              <SortHeader label="Last active" sk="last_active" />
               <th className="px-5 py-3"></th>
             </tr></thead>
             <tbody className="stagger">
-              {filtered.map((m) => (
+              {shown.map((m) => (
                 <tr key={m.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02] press">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
@@ -228,6 +277,16 @@ export default function DashboardTeam() {
               )}
             </tbody>
           </table>
+          {shown.length < sorted.length && (
+            <div className="px-5 py-4 border-t border-mora-primary/5 flex items-center justify-center">
+              <button
+                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                className="rounded-xl px-4 py-2 text-sm font-medium text-mora-primary hover:bg-mora-primary/5 border border-mora-primary/10 press"
+              >
+                Show more ({sorted.length - shown.length})
+              </button>
+            </div>
+          )}
           </>
         )}
       </div>

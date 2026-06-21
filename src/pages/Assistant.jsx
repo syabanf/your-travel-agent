@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Sparkles, MessageCircle, Star, Globe, ChevronRight, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import ErrorState from "@/components/ErrorState";
 import { formatIDR } from "@/lib/currency";
 
 const servicePackages = [
@@ -16,15 +17,23 @@ const servicePackages = [
 export default function Assistant() {
   const [assistants, setAssistants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
+  const load = useCallback(async () => {
+    setError(false);
+    try {
       const data = await base44.entities.PersonalAssistant.list("-rating", 20);
       setAssistants(data);
+    } catch {
+      setError(true);
+    } finally {
       setLoading(false);
-    };
-    load();
+    }
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return (
     <div className="animate-fade-in pb-28">
@@ -88,6 +97,12 @@ export default function Assistant() {
           <div className="flex justify-center py-8">
             <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
           </div>
+        ) : error ? (
+          <ErrorState
+            title="Couldn't load experts"
+            hint="Please check your connection and try again."
+            onRetry={load}
+          />
         ) : assistants.length === 0 ? (
           <GlassCard className="p-8 text-center">
           <MessageCircle className="w-10 h-10 text-mora-neutral/30 mx-auto mb-3" />
@@ -101,7 +116,7 @@ export default function Assistant() {
                  <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
                     {assistant.photo_url ? (
-                      <img src={assistant.photo_url} alt={assistant.name} className="w-full h-full object-cover" />
+                      <img src={assistant.photo_url} alt={assistant.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gold/15 flex items-center justify-center">
                         <span className="text-lg font-display text-gold">{assistant.name?.[0]}</span>

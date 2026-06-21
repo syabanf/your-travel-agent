@@ -49,6 +49,7 @@ function Shell() {
 
   return (
     <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary font-body">
+      <a href="#main" className="skip-link">Skip to content</a>
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 z-30 bg-white/90 backdrop-blur border-b border-mora-primary/10 flex items-center gap-3 px-4">
         <button onClick={() => setOpen(true)} aria-label="Open menu" className="w-10 h-10 -ml-1 rounded-xl hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary">
@@ -129,7 +130,7 @@ function Shell() {
       </aside>
 
       {/* Content */}
-      <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
+      <main id="main" className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
         <Outlet />
       </main>
     </div>

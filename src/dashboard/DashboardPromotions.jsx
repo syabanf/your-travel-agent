@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 
@@ -24,6 +25,8 @@ export default function DashboardPromotions() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [visible, setVisible] = useState(12);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const load = async () => setItems(await base44.entities.Promotion.list("-created_date", 500));
@@ -70,8 +73,18 @@ export default function DashboardPromotions() {
     return mq && mt;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
+    if (sortBy === "type") return (a.type || "promo").localeCompare(b.type || "promo");
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+
+  // Reset pagination whenever the filter/sort inputs change.
+  useEffect(() => { setVisible(12); }, [query, typeF, sortBy]);
+
   return (
     <div className="p-8 max-w-6xl">
+      <ReadOnlyBanner resource="promotions" />
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Promotions & Events</h1>
@@ -144,14 +157,19 @@ export default function DashboardPromotions() {
               <option value="event">Event</option>
               <option value="news">News</option>
             </select>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="newest">Newest</option>
+              <option value="title">Title A–Z</option>
+              <option value="type">Type</option>
+            </select>
           </div>
           <div className="space-y-3 stagger">
-          {filtered.map((p) => {
+          {sorted.slice(0, visible).map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
               <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
                 <div className="w-20 h-16 rounded-xl overflow-hidden bg-mora-primary shrink-0">
-                  {p.image && <img src={p.image} alt={p.title} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
+                  {p.image && <img src={p.image} alt={p.title} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -174,6 +192,11 @@ export default function DashboardPromotions() {
             );
           })}
           </div>
+          {sorted.length > visible && (
+            <div className="flex justify-center pt-1">
+              <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
+            </div>
+          )}
           {items.length === 0 && (
             <EmptyState
               icon={Megaphone}

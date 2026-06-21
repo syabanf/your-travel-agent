@@ -56,7 +56,7 @@
     --mora-crimson: #AD1F23;
     --mora-crimson-bright: #C42A2E;
     --mora-cream: #FBFAF5;
-    --mora-slate: #5A6B85;
+    --mora-slate: #46566F;
 
     /* Golden ratio — informs type scale, spacing rhythm & key proportions */
     --phi: 1.618;
@@ -161,8 +161,8 @@
   .text-gold { color: #AD1F23; }
   .text-mora-white { color: #0B1B3B; }       /* legacy name → primary dark text on light */
   .text-mora-primary { color: #0B1B3B; }
-  .text-mora-neutral { color: #5A6B85; }
-  .text-mora-neutral-light { color: #93A0B8; }
+  .text-mora-neutral { color: #46566F; }
+  .text-mora-neutral-light { color: #6B7A93; }
   .text-mora-green-light { color: #05308C; }
 
   /* ----- Fills / borders ----- */
@@ -266,3 +266,14 @@
   .skeleton::after { animation: none; }
   .press:active { transform: none; }
 }
+
+/* Visible keyboard-focus ring (only for keyboard navigation, not mouse/touch) */
+:focus-visible { outline: 2px solid var(--mora-crimson); outline-offset: 2px; border-radius: 6px; }
+
+/* Skip-to-content link (shown only when focused) */
+.skip-link {
+  position: absolute; left: 0.75rem; top: 0.5rem; z-index: 100;
+  background: var(--mora-navy); color: #fff; padding: 0.5rem 0.9rem; border-radius: 0.6rem;
+  font-size: 0.8rem; font-weight: 600; transform: translateY(-150%); transition: transform 0.15s ease;
+}
+.skip-link:focus { transform: translateY(0); }

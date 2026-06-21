@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+
+const PAGE_SIZE = 12;
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
 
@@ -39,6 +42,8 @@ export default function DashboardContent() {
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [visible, setVisible] = useState(PAGE_SIZE);
   const [selected, setSelected] = useState(new Set());
 
   const load = async () => setItems(await base44.entities.Page.list("-created_date", 500));
@@ -103,6 +108,19 @@ export default function DashboardContent() {
     const matchesStatus = statusF === "all" || (p.status || "draft") === statusF;
     return matchesQ && matchesType && matchesStatus;
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
+    if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
+    if (sortBy === "type") return (a.type || "page").localeCompare(b.type || "page");
+    // newest
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+
+  const shown = sorted.slice(0, visible);
+
+  // Reset pagination whenever the filter/search/sort narrows the list.
+  useEffect(() => { setVisible(PAGE_SIZE); }, [query, typeF, statusF, sortBy]);
 
   const canDelete = can(role, "content", "delete");
 
@@ -171,6 +189,7 @@ export default function DashboardContent() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
+          <ReadOnlyBanner resource="content" />
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
@@ -193,6 +212,12 @@ export default function DashboardContent() {
               <option value="published">Published</option>
               <option value="draft">Draft</option>
             </select>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="newest">Newest</option>
+              <option value="title">Title A–Z</option>
+              <option value="status">Status</option>
+              <option value="type">Type</option>
+            </select>
           </div>
 
           {selected.size > 0 && canDelete && (
@@ -206,7 +231,7 @@ export default function DashboardContent() {
           )}
 
           <div className="space-y-3 stagger">
-          {filtered.map((p) => {
+          {shown.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.page;
             const sm = STATUS_META[p.status] || STATUS_META.draft;
             const isSel = selected.has(p.id);
@@ -221,7 +246,7 @@ export default function DashboardContent() {
                 </button>
                 <div className="w-16 h-14 rounded-xl overflow-hidden bg-mora-primary/5 shrink-0 flex items-center justify-center">
                   {p.cover_image
-                    ? <img src={p.cover_image} alt={p.title} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
+                    ? <img src={p.cover_image} alt={p.title} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
                     : <FileText className="w-5 h-5 text-mora-neutral/40" />}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -250,6 +275,16 @@ export default function DashboardContent() {
             );
           })}
           </div>
+          {shown.length < sorted.length && (
+            <div className="flex items-center justify-center pt-1">
+              <button
+                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                className="rounded-xl px-4 py-2 text-sm font-medium text-mora-primary hover:bg-mora-primary/5 border border-mora-primary/10 press"
+              >
+                Show more ({sorted.length - shown.length})
+              </button>
+            </div>
+          )}
           {items.length === 0 && (
             <EmptyState
               icon={FileText}
