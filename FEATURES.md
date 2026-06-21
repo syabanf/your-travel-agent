@@ -37,7 +37,8 @@ admin dashboard. It runs **fully standalone** on a local, in-browser mock backen
 ## ✈️ Booking (OTA)
 - **Search** across **flights, hotels, trains, buses, ships, car rentals, and attractions**.
 - **AI-generated results** with realistic options and one-tap booking (linked to a trip when booked from the wizard).
-- **My Bookings** list, **booking detail**, and a **multi-step checkout** (review → guest details → payment → confirmation code).
+- **OTA marketplace** (`/ota`) — a standalone booking hub to search & book flights, hotels, trains, buses, ships, rentals & attractions directly (not tied to a trip), separated from reservation management.
+- **My Bookings** (`/booking`) — your reservations list with a CTA into the OTA marketplace, **booking detail**, and a **multi-step checkout** (review → guest details → payment → confirmation code). Trip-linked booking still happens inside each trip.
 
 ## 💬 Assistant
 - **AI travel concierge** — chat to plan, optimize, or get suggestions; **save a generated itinerary to Trips**.
@@ -85,7 +86,9 @@ The console now covers the operational layer a real travel agency needs — all 
 - **Marketing** (`/dashboard/marketing`) — campaigns across email / WhatsApp / push with audience **segments** (by tier/status), promo codes, scheduling and a simulated **"Send now"** that sizes the recipient list.
 - **Business intelligence** (`/dashboard/business`) — sales funnel, lead-conversion %, **gross-margin** analysis, margin-by-month, and supplier & agent performance tables (CSV export).
 - **AI Report Generator** (`/dashboard/ai-reports`) — **text-to-report**: describe what you want ("revenue and margin", "supplier commissions", "lead funnel"…) and the AI builds a grounded report from your live data — executive summary, KPIs, tables and recommendations, with one-click PDF export. Runs on the built-in AI stub (swap in a real model via `configureLLM()`).
-- **Filtering everywhere** — every dashboard list/table (destinations, promotions, trips & bookings, customers, leads, suppliers, marketing, team, audit) has live search + category filters.
+- **Filtering everywhere** — every dashboard list/table (destinations, promotions, trips & bookings, customers, leads, suppliers, marketing, team, audit, content, media) has live search + category filters.
+- **ERP finance reports** (`/dashboard/erp`) — **income statement (P&L)**, accounts **receivable** & **payable**, **cash flow**, and **tax (PPN 11%)**, with a revenue/cost/profit-by-month chart, period filter and CSV export.
+- **Full CMS** — beyond destinations & promotions: a **Content** manager for app **pages, FAQs, announcements & hero copy** (`/dashboard/content` — draft/published, bulk delete), a reusable **Media Library** (`/dashboard/media`), and **App Settings** (`/dashboard/settings` — brand, support contacts, social links, currency, feature flags). The CMS is grouped in the sidebar under **Insight Center · Sales & CRM · Catalog · Content · Growth · System**.
 - **Audit log** (`/dashboard/audit`) — every create/update/delete in the console is recorded (actor, action, entity, summary) with filters.
 - **Installable PWA** — web-app manifest, branded icon, theme color and an offline-shell service worker (production), so the mobile app can be added to the home screen.
 - **Privacy & data** — in-app Privacy Policy & Terms pages, consent toggles, and **export / delete all my data** (the local data store) from Profile → Privacy & Data.

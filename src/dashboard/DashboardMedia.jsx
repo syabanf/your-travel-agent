@@ -1,0 +1,177 @@
+import { useEffect, useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { can } from "@/dashboard/rbac";
+import { useRole } from "@/dashboard/RoleContext";
+import { Image as ImageIcon, Plus, Trash2, X, Loader2, Save, Search, Copy, Pencil } from "lucide-react";
+import { toast } from "sonner";
+import moment from "moment";
+
+const EMPTY = { title: "", url: "", tags: "" };
+
+export default function DashboardMedia() {
+  const { role } = useRole();
+  const [items, setItems] = useState(null);
+  const [editing, setEditing] = useState(null); // form object or null
+  const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const load = async () => setItems(await base44.entities.MediaAsset.list("-created_date", 500));
+  useEffect(() => { load(); }, []);
+
+  const startAdd = () => setEditing({ ...EMPTY });
+  const startEdit = (m) => setEditing({
+    ...EMPTY, ...m,
+    tags: Array.isArray(m.tags) ? m.tags.join(", ") : (m.tags || ""),
+  });
+  const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
+
+  const save = async () => {
+    if (!editing.title || !editing.url) { toast.error("Title and image URL are required"); return; }
+    setSaving(true);
+    try {
+      const payload = {
+        title: editing.title,
+        url: editing.url,
+        tags: String(editing.tags || "").split(",").map((t) => t.trim()).filter(Boolean),
+      };
+      if (editing.id) await base44.entities.MediaAsset.update(editing.id, payload);
+      else await base44.entities.MediaAsset.create(payload);
+      toast.success(editing.id ? "Media updated" : "Media added");
+      setEditing(null);
+      await load();
+    } catch { toast.error("Couldn't save media"); }
+    finally { setSaving(false); }
+  };
+
+  const remove = async (m) => {
+    await base44.entities.MediaAsset.delete(m.id);
+    toast.success("Media removed");
+    load();
+  };
+
+  const copyUrl = async (url) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("URL copied");
+    } catch { toast.error("Couldn't copy URL"); }
+  };
+
+  const filtered = (items || []).filter((m) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    const inTitle = (m.title || "").toLowerCase().includes(q);
+    const inTags = (Array.isArray(m.tags) ? m.tags : []).some((t) => (t || "").toLowerCase().includes(q));
+    return inTitle || inTags;
+  });
+
+  return (
+    <div className="p-8 max-w-6xl">
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Media Library</h1>
+          <p className="text-sm text-mora-neutral mt-0.5">Reusable images for destinations, promotions &amp; content.</p>
+        </div>
+        {!editing && can(role, "media", "create") && (
+          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Add media
+          </button>
+        )}
+      </header>
+
+      {editing ? (
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit media" : "New media"}</h2>
+            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Form */}
+            <div className="space-y-3">
+              <FieldD label="Title"><input value={editing.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Bali beach sunset" /></FieldD>
+              <FieldD label="Image URL"><input value={editing.url} onChange={(e) => upd("url", e.target.value)} className="dash-input" placeholder="https://…" /></FieldD>
+              <FieldD label="Tags (comma separated)"><input value={editing.tags} onChange={(e) => upd("tags", e.target.value)} className="dash-input" placeholder="beach, sunset, hero" /></FieldD>
+              <div className="flex gap-2 pt-3">
+                <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+                </button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div>
+              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Preview</label>
+              <div className="rounded-xl overflow-hidden border border-mora-primary/10 bg-mora-primary/5 aspect-video flex items-center justify-center">
+                {editing.url
+                  ? <img src={editing.url} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
+                  : <ImageIcon className="w-8 h-8 text-mora-neutral/40" />}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {items == null ? (
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+      ) : (
+        <>
+          <div className="flex gap-2 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
+            </div>
+          </div>
+
+          <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{filtered.length} {filtered.length === 1 ? "asset" : "assets"}</div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filtered.map((m) => (
+              <div key={m.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col">
+                <div className="aspect-square bg-mora-primary/5 relative">
+                  {m.url && <img src={m.url} alt={m.title} onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} className="w-full h-full object-cover rounded-t-2xl" />}
+                  <div className="absolute inset-0 items-center justify-center text-mora-neutral/40" style={{ display: m.url ? "none" : "flex" }}>
+                    <ImageIcon className="w-8 h-8" />
+                  </div>
+                </div>
+                <div className="p-3 flex flex-col flex-1">
+                  <div className="truncate font-medium text-sm text-mora-primary" title={m.title}>{m.title}</div>
+                  {m.created_date && <div className="text-[10px] text-mora-neutral/60 mt-0.5">{moment(m.created_date).format("MMM D, YYYY")}</div>}
+                  {Array.isArray(m.tags) && m.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {m.tags.map((t, i) => (
+                        <span key={i} className="text-[10px] bg-mora-primary/5 text-mora-neutral rounded-full px-1.5">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 mt-auto pt-2">
+                    <button onClick={() => copyUrl(m.url)} className="flex items-center gap-1 text-[11px] font-medium text-mora-neutral hover:text-gold">
+                      <Copy className="w-3.5 h-3.5" /> Copy URL
+                    </button>
+                    <div className="flex gap-1 ml-auto">
+                      {can(role, "media", "edit") && (
+                        <button onClick={() => startEdit(m)} className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-3.5 h-3.5" /></button>
+                      )}
+                      {can(role, "media", "delete") && (
+                        <button onClick={() => remove(m)} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {items.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No media yet — add your first image.</p>}
+            {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No media matches your search.</p>}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const FieldD = ({ label, children }) => (
+  <div>
+    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    {children}
+  </div>
+);

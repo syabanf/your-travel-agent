@@ -5,7 +5,7 @@ import GlassCard from "../GlassCard";
 const actions = [
   { icon: MapPin, label: "Plan\nTrip", path: "/itinerary/wizard", color: "#0B1B3B" },
   { icon: Sparkles, label: "AI\nAssistant", path: "/assistant/ai", color: "#AD1F23" },
-  { icon: CalendarSearch, label: "Book\nTravel", path: "/booking", color: "#AD1F23" },
+  { icon: CalendarSearch, label: "Book\nTravel", path: "/ota", color: "#AD1F23" },
   { icon: MessageCircle, label: "Personal\nAssistant", path: "/assistant", color: "#0B1B3B" },
 ];
 

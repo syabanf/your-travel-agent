@@ -1,22 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle } from "lucide-react";
+import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import OTASearch from "../components/booking/OTASearch";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
-
-const bookingCategories = [
-  { icon: Plane, label: "Flights", type: "flight" },
-  { icon: Building2, label: "Hotels", type: "hotel" },
-  { icon: Train, label: "Trains", type: "train" },
-  { icon: Bus, label: "Buses", type: "bus" },
-  { icon: Ship, label: "Ships", type: "ship" },
-  { icon: Car, label: "Rentals", type: "car_rental" },
-  { icon: Ticket, label: "Attractions", type: "attraction" },
-];
 
 const statusColors = {
   pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
@@ -62,14 +51,23 @@ export default function Booking() {
           <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
         </div>
       )}
-      <PageHeader title="Booking" subtitle="Find & manage reservations" showNotification />
+      <PageHeader title="My Bookings" subtitle="Your reservations" showNotification />
 
-      {/* OTA Search — opens on Flight; the curated "My Bookings" list below is the single reservations view */}
-      <OTASearch
-        defaultTab="flight"
-        showMyBookings={false}
-        onSaveBooking={() => base44.entities.Booking.list("-created_date", 50).then(setBookings)}
-      />
+      {/* CTA to standalone OTA marketplace */}
+      <div className="px-6 mb-6">
+        <Link to="/ota" className="block">
+          <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
+            <div className="w-11 h-11 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+              <CalendarSearch className="w-5 h-5 text-gold" strokeWidth={1.5} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-mora-white">Book flights, hotels &amp; more</p>
+              <p className="text-xs text-mora-neutral/50 mt-0.5">Search the travel marketplace</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
+          </GlassCard>
+        </Link>
+      </div>
 
       {/* Recent Bookings */}
       <div className="px-6">

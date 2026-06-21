@@ -8,7 +8,7 @@ export const ROLES = [
   { key: "viewer", label: "Viewer", desc: "Read-only access" },
 ];
 
-export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "reports", "audit", "team"];
+export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "content", "media", "settings", "reports", "erp", "audit", "team"];
 
 const ALL = ["view", "create", "edit", "delete"];
 const VIEW = ["view"];
@@ -25,7 +25,11 @@ const PERMS = {
     leads: ALL,
     suppliers: ALL,
     marketing: ALL,
+    content: ALL,
+    media: ALL,
+    settings: ALL,
     reports: VIEW,
+    erp: VIEW,
     audit: VIEW,
     team: [],
   },
@@ -39,11 +43,15 @@ const PERMS = {
     leads: ["view", "create", "edit"],
     suppliers: ["view", "create", "edit"],
     marketing: ["view", "create", "edit"],
+    content: ["view", "create", "edit"],
+    media: ["view", "create", "edit"],
+    settings: [],
     reports: VIEW,
+    erp: VIEW,
     audit: [],
     team: [],
   },
-  viewer: Object.fromEntries(RESOURCES.map((r) => [r, r === "team" || r === "audit" ? [] : VIEW])),
+  viewer: Object.fromEntries(RESOURCES.map((r) => [r, r === "team" || r === "audit" || r === "settings" ? [] : VIEW])),
 };
 
 /** can('editor', 'destinations', 'delete') -> false */

@@ -44,6 +44,7 @@ import ProfileSettings from './pages/ProfileSettings';
 import ProfilePrivacy from './pages/ProfilePrivacy';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import OTA from './pages/OTA';
 
 // Admin dashboard (desktop)
 import DashboardLayout from './dashboard/DashboardLayout';
@@ -66,6 +67,10 @@ import DashboardMarketing from './dashboard/DashboardMarketing';
 import DashboardBusiness from './dashboard/DashboardBusiness';
 import DashboardAIReports from './dashboard/DashboardAIReports';
 import DashboardAudit from './dashboard/DashboardAudit';
+import DashboardContent from './dashboard/DashboardContent';
+import DashboardMedia from './dashboard/DashboardMedia';
+import DashboardSettings from './dashboard/DashboardSettings';
+import DashboardERP from './dashboard/DashboardERP';
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -108,6 +113,10 @@ const AppRoutes = () => (
         <Route path="reports" element={<DashboardReports />} />
         <Route path="business" element={<DashboardBusiness />} />
         <Route path="ai-reports" element={<DashboardAIReports />} />
+        <Route path="erp" element={<DashboardERP />} />
+        <Route path="content" element={<DashboardContent />} />
+        <Route path="media" element={<DashboardMedia />} />
+        <Route path="settings" element={<DashboardSettings />} />
         <Route path="audit" element={<DashboardAudit />} />
         <Route path="team" element={<DashboardTeam />} />
       </Route>
@@ -130,6 +139,7 @@ const AppRoutes = () => (
         <Route path="/assistant/profile/:assistantId" element={<AssistantProfile />} />
         <Route path="/consultation/:assistantId" element={<ConsultationBooking />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/ota" element={<OTA />} />
         <Route path="/booking/search" element={<BookingSearch />} />
         <Route path="/booking/:bookingId" element={<BookingDetail />} />
         <Route path="/booking/:bookingId/checkout" element={<BookingCheckout />} />

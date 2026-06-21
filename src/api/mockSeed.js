@@ -180,5 +180,32 @@ export function buildSeed() {
     { id: 'camp_summer', created_date: iso(-1), created_by: by, name: 'Summer Escapes Teaser', channel: 'push', segment: 'all', promo_code: '', discount: 0, status: 'draft', scheduled_date: '', sent_count: 0 },
   ];
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [] };
+  // CMS content pages — hero copy, info pages, FAQs and announcements.
+  const Page = [
+    { id: 'page_hero', created_date: iso(-40), created_by: by, type: 'hero', title: 'Your journey begins with MORA', slug: 'home-hero', excerpt: 'Plan, book and travel — beautifully.', body: 'Discover handpicked destinations, build day-by-day itineraries, and book everything in one place.', cover_image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', status: 'published', order: 1 },
+    { id: 'page_about', created_date: iso(-38), created_by: by, type: 'page', title: 'About MORA', slug: 'about', excerpt: 'Who we are.', body: 'MORA is your AI-powered travel concierge — blending curated destinations, smart itineraries and one-tap booking into a single, beautiful experience.', cover_image: '', status: 'published', order: 2 },
+    { id: 'page_faq_book', created_date: iso(-30), created_by: by, type: 'faq', title: 'How do I make a booking?', slug: 'faq-booking', excerpt: '', body: 'Open the Book (OTA) page, choose a category (flight, hotel, train, and more), search, and tap Book. You can also add bookings directly to a trip.', cover_image: '', status: 'published', order: 1 },
+    { id: 'page_faq_cancel', created_date: iso(-29), created_by: by, type: 'faq', title: 'What is the cancellation policy?', slug: 'faq-cancellation', excerpt: '', body: 'Most bookings can be cancelled from the booking detail screen. Refund amounts depend on the supplier policy and how close to travel you cancel.', cover_image: '', status: 'published', order: 2 },
+    { id: 'page_faq_pay', created_date: iso(-28), created_by: by, type: 'faq', title: 'Which payment methods are supported?', slug: 'faq-payments', excerpt: '', body: 'In this demo, payments are simulated. A live deployment supports cards and e-wallets via a secure payment gateway.', cover_image: '', status: 'published', order: 3 },
+    { id: 'page_ann_ai', created_date: iso(-3), created_by: by, type: 'announcement', title: 'New: AI Report Generator', slug: 'announcement-ai-reports', excerpt: 'Generate business reports from plain English.', body: 'Admins can now generate full business reports just by describing what they need.', cover_image: '', status: 'draft', order: 1 },
+  ];
+
+  // Reusable media library (images referenced across the CMS).
+  const MediaAsset = [
+    { id: 'media_bali', created_date: iso(-40), created_by: by, title: 'Bali rice terraces', url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80', tags: ['bali', 'beach', 'indonesia'] },
+    { id: 'media_kyoto', created_date: iso(-39), created_by: by, title: 'Kyoto temple', url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80', tags: ['kyoto', 'japan', 'culture'] },
+    { id: 'media_santorini', created_date: iso(-38), created_by: by, title: 'Santorini domes', url: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=800&q=80', tags: ['santorini', 'greece', 'views'] },
+    { id: 'media_resort', created_date: iso(-30), created_by: by, title: 'Azure Bay Resort', url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80', tags: ['hotel', 'resort', 'pool'] },
+    { id: 'media_flight', created_date: iso(-28), created_by: by, title: 'Airplane wing', url: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', tags: ['flight', 'sky', 'travel'] },
+    { id: 'media_beach', created_date: iso(-20), created_by: by, title: 'Tropical beach', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', tags: ['beach', 'tropical', 'hero'] },
+    { id: 'media_maldives', created_date: iso(-18), created_by: by, title: 'Maldives overwater', url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80', tags: ['maldives', 'luxury', 'beach'] },
+    { id: 'media_market', created_date: iso(-10), created_by: by, title: 'Bali Arts Festival', url: 'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=800&q=80', tags: ['event', 'culture', 'market'] },
+  ];
+
+  // Single app-wide settings record (brand, support, social, feature flags).
+  const Setting = [
+    { id: 'app', created_date: iso(-400), created_by: by, brand_name: 'MORA', tagline: 'Your Travel Agent', support_email: 'support@mora.app', support_phone: '+62 21 5000 1234', support_whatsapp: '+62 811 2233 4455', currency: 'IDR', instagram: '@mora.travel', facebook: 'MORA Travel', hero_title: 'Your journey begins with MORA', hero_subtitle: 'Plan, book and travel — beautifully.', flag_promotions: true, flag_ai_assistant: true, flag_consultations: true, flag_ota: true },
+  ];
+
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting };
 }
