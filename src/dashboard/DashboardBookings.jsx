@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { Trash2 } from "lucide-react";
@@ -78,7 +79,7 @@ export default function DashboardBookings() {
             <tbody>
               {bookings.map((b) => (
                 <tr key={b.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
-                  <td className="px-5 py-3 font-medium text-mora-primary truncate max-w-[240px]">{b.title}</td>
+                  <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{b.title}</Link></td>
                   <td className="px-5 py-3 text-mora-neutral capitalize">{b.type}</td>
                   <td className="px-5 py-3 text-mora-neutral">{b.check_in ? moment(b.check_in).format("MMM D, YYYY") : "—"}</td>
                   <td className="px-5 py-3"><StatusCell value={b.status} options={BOOKING_STATUSES} editable={canEditBookings} onChange={(s) => setBookingStatus(b.id, s)} /></td>
@@ -99,7 +100,7 @@ export default function DashboardBookings() {
             <tbody>
               {trips.map((t) => (
                 <tr key={t.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
-                  <td className="px-5 py-3 font-medium text-mora-primary truncate max-w-[220px]">{t.title}</td>
+                  <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{t.title}</Link></td>
                   <td className="px-5 py-3 text-mora-neutral">{t.destination}</td>
                   <td className="px-5 py-3 text-mora-neutral">{t.start_date ? moment(t.start_date).format("MMM D") : "—"}{t.end_date ? ` – ${moment(t.end_date).format("MMM D")}` : ""}</td>
                   <td className="px-5 py-3"><StatusCell value={t.status} options={TRIP_STATUSES} editable={canEditTrips} onChange={(s) => setTripStatus(t.id, s)} /></td>

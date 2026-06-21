@@ -54,25 +54,33 @@ admin dashboard. It runs **fully standalone** on a local, in-browser mock backen
 ---
 
 ## 🖥️ Admin Dashboard & CMS (desktop, at `/dashboard`)
-The dashboard manages the content that powers the mobile app — changes show up live in the app.
+The dashboard manages the content that powers the mobile app — changes show up live in the app. The sidebar is organized into an **Insight Center** (analytics) and a **Data Center** (records).
 
-- **Overview** — live counts (destinations, promotions, trips, bookings), confirmed revenue, and recent bookings.
-- **Destinations CMS** — create/edit/delete destinations with a **map editor**: click the map or **geocode-search** to set coordinates, plus name, country, tagline, image, vibes, emoji and from-price. These drive the app's swipe deck & map.
+**Insight Center**
+- **Overview** — an at-a-glance hub: live counts (customers, trips, bookings, destinations), confirmed revenue + average booking value, top destination, a pending-bookings alert, and recent-bookings / new-customers panels. Every card and row deep-links into the relevant record.
+- **Reports** — KPI cards and charts (revenue by month, bookings by type, trips by status, customers by tier, top destinations) with an all-time / this-year toggle and CSV export.
+
+**Data Center** (every list drills into a full **detail page**)
+- **Destinations CMS** — create/edit/delete destinations with a **map editor** (click the map or **geocode-search** to set coordinates) plus name, country, tagline, image, vibes, emoji and from-price. Detail pages show derived insights (trips here, related bookings, est. revenue) on a map.
 - **Promotions & Events CMS** — create/edit/delete promotions, events, and news shown in "What's New".
-- **Trips & Bookings management** — review and delete travelers' trips and bookings.
+- **Trips & Bookings** — review/manage every trip and booking; detail pages show the full itinerary, related bookings, KPIs, and inline status editing.
+- **Customers CRM** — full customer CRUD with tiers, status, lifetime spend and a **map location picker**; detail pages show KPIs, contact info and a map.
+- **Team & Roles** — staff management and a roles × resources permission matrix.
+
+- **RBAC** — four roles (Admin / Manager / Editor / Viewer) gate every create/edit/delete control and navigation item; switch roles live with "Viewing as".
 - **App switcher** — jump between the **mobile app** and the **dashboard** in one click.
 
 ---
 
 ## ⚙️ Platform
-- **Local mock backend** ([`src/api/base44Client.js`](src/api/base44Client.js)) — a drop-in replacement for the original Base44 SDK, backed by `localStorage`. Entities: `Trip`, `Booking`, `ItineraryItem`, `Notification`, `PersonalAssistant`, `ChatMessage`, `Destination`, `Promotion`.
+- **Local mock backend** ([`src/api/base44Client.js`](src/api/base44Client.js)) — a drop-in replacement for the original Base44 SDK, backed by `localStorage`. Entities: `Trip`, `Booking`, `ItineraryItem`, `Notification`, `PersonalAssistant`, `ChatMessage`, `Destination`, `Promotion`, `Customer`, `StaffMember`.
 - **Stubbed, pluggable AI** ([`src/api/mockLLM.js`](src/api/mockLLM.js)) — canned, schema-aware responses; point it at a real provider with `configureLLM()`.
 - **IDR localization** ([`src/lib/currency.js`](src/lib/currency.js)) — `formatIDR` renders e.g. `Rp 1.500.000`.
 - **Seeded demo data** with a versioned clean reseed.
 - **Cohesive light "luxury" theme** — navy + crimson + cream, glassmorphism, `framer-motion` transitions, accessible contrast, and a consistent component system.
 
 ### Tech stack
-React 18 · Vite · Tailwind CSS · shadcn/ui (Radix) · React Router · TanStack Query · Framer Motion · Recharts · React-Leaflet · Sonner · date-fns/Moment.
+React 18 · Vite · Tailwind CSS · shadcn/ui (Radix) · React Router · TanStack Query · Framer Motion · Recharts · OpenLayers · Sonner · date-fns/Moment.
 
 ---
 

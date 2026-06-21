@@ -49,6 +49,10 @@ import DashboardDestinations from './dashboard/DashboardDestinations';
 import DashboardPromotions from './dashboard/DashboardPromotions';
 import DashboardBookings from './dashboard/DashboardBookings';
 import DashboardCustomers from './dashboard/DashboardCustomers';
+import DashboardCustomerDetail from './dashboard/DashboardCustomerDetail';
+import DashboardDestinationDetail from './dashboard/DashboardDestinationDetail';
+import DashboardBookingDetail from './dashboard/DashboardBookingDetail';
+import DashboardTripDetail from './dashboard/DashboardTripDetail';
 import DashboardReports from './dashboard/DashboardReports';
 import DashboardTeam from './dashboard/DashboardTeam';
 
@@ -78,9 +82,13 @@ const AppRoutes = () => (
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardOverview />} />
         <Route path="destinations" element={<DashboardDestinations />} />
+        <Route path="destinations/:id" element={<DashboardDestinationDetail />} />
         <Route path="promotions" element={<DashboardPromotions />} />
         <Route path="bookings" element={<DashboardBookings />} />
+        <Route path="bookings/:id" element={<DashboardBookingDetail />} />
+        <Route path="trips/:id" element={<DashboardTripDetail />} />
         <Route path="customers" element={<DashboardCustomers />} />
+        <Route path="customers/:id" element={<DashboardCustomerDetail />} />
         <Route path="reports" element={<DashboardReports />} />
         <Route path="team" element={<DashboardTeam />} />
       </Route>

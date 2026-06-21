@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
@@ -179,7 +180,7 @@ export default function DashboardCustomers() {
       ) : (
         <div className="space-y-3">
           {items.map((c) => (
-            <div key={c.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group">
+            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
               </div>
@@ -204,14 +205,14 @@ export default function DashboardCustomers() {
               {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
                 <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   {can(role, "customers", "edit") && (
-                    <button onClick={() => startEdit(c)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
                   )}
                   {can(role, "customers", "delete") && (
-                    <button onClick={() => remove(c)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
                   )}
                 </div>
               )}
-            </div>
+            </Link>
           ))}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers yet — add your first one.</p>}
         </div>

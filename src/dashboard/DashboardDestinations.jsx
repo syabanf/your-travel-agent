@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
@@ -134,12 +135,12 @@ export default function DashboardDestinations() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((d) => (
-            <div key={d.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group">
+            <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block">
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "destinations", "edit") && <button onClick={() => startEdit(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "destinations", "delete") && <button onClick={() => remove(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
               <div className="p-4">
@@ -153,7 +154,7 @@ export default function DashboardDestinations() {
                   {d.fromPrice > 0 && <span className="text-sm font-semibold text-gold">{formatIDR(d.fromPrice)}</span>}
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
           {items.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No destinations yet — add your first one.</p>}
         </div>
