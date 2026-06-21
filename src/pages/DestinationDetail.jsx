@@ -5,15 +5,17 @@ import OLMap from "../components/OLMap";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
+import { destImages } from "@/lib/destinationImages";
 import { MapPin, Plane, Sparkles, CalendarSearch } from "lucide-react";
 
 export default function DestinationDetail() {
   const { id } = useParams();
   const [d, setD] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    base44.entities.Destination.filter({ id }).then((r) => { setD(r[0] || null); setLoading(false); });
+    base44.entities.Destination.filter({ id }).then((r) => { setD(r[0] || null); setLoading(false); setIdx(0); });
   }, [id]);
 
   if (loading) return (
@@ -24,14 +26,32 @@ export default function DestinationDetail() {
   );
 
   const vibes = Array.isArray(d.vibes) ? d.vibes : [];
+  const gallery = destImages(d);
+  const active = Math.min(idx, Math.max(0, gallery.length - 1));
 
   return (
     <div className="animate-fade-in pb-28">
-      {/* Hero */}
-      <div className="relative h-60 bg-mora-primary">
-        {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 w-full h-full object-cover" />}
+      {/* Hero gallery */}
+      <div className="relative h-72 bg-mora-primary">
+        {gallery.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            alt={d.name}
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === active ? "opacity-100" : "opacity-0"}`}
+          />
+        ))}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
         <div className="absolute top-0 left-0 right-0"><PageHeader showBack title="" /></div>
+        {gallery.length > 1 && (
+          <button
+            type="button"
+            onClick={() => setIdx((i) => (i + 1) % gallery.length)}
+            className="absolute top-16 left-0 right-0 bottom-28"
+            aria-label="Next photo"
+          />
+        )}
         {d.fromPrice > 0 && (
           <div className="absolute top-16 right-4 glass-light px-3 py-1.5 rounded-full flex items-center gap-1.5">
             <Plane className="w-3 h-3 text-gold" />
@@ -39,6 +59,19 @@ export default function DestinationDetail() {
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-5">
+          {gallery.length > 1 && (
+            <div className="flex gap-1.5 mb-3">
+              {gallery.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setIdx(i)}
+                  className={`h-1.5 rounded-full transition-all ${i === active ? "w-5 bg-white" : "w-2 bg-white/40"}`}
+                  aria-label={`Photo ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
           {d.tagline && <p className="text-[11px] text-[#F0B7B9] tracking-widest uppercase mb-1">{d.tagline}</p>}
           <h1 className="text-3xl font-display font-bold text-white text-shadow-soft leading-tight">{d.name}</h1>
           <p className="text-sm text-white/85 flex items-center gap-1.5 mt-1"><MapPin className="w-3.5 h-3.5 text-gold" />{d.country}</p>

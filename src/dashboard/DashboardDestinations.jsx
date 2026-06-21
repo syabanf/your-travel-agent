@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
 
-const EMPTY = { name: "", country: "", tagline: "", image: "", emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
+const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
 export default function DashboardDestinations() {
   const { role } = useRole();
@@ -22,8 +22,15 @@ export default function DashboardDestinations() {
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
-  const startEdit = (d) => setEditing({ ...d, vibes: Array.isArray(d.vibes) ? d.vibes.join(", ") : (d.vibes || "") });
+  const startEdit = (d) => setEditing({
+    ...d,
+    vibes: Array.isArray(d.vibes) ? d.vibes.join(", ") : (d.vibes || ""),
+    images: (Array.isArray(d.images) && d.images.length) ? d.images : (d.image ? [d.image] : [""]),
+  });
   const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
+  const updImage = (i, v) => setEditing((p) => { const images = [...(p.images || [])]; images[i] = v; return { ...p, images }; });
+  const addImage = () => setEditing((p) => ({ ...p, images: [...(p.images || []), ""] }));
+  const removeImage = (i) => setEditing((p) => { const images = (p.images || []).filter((_, idx) => idx !== i); return { ...p, images: images.length ? images : [""] }; });
 
   const geocode = async () => {
     if (!query.trim()) return;
@@ -44,9 +51,10 @@ export default function DashboardDestinations() {
     if (editing.lat == null || editing.lng == null) { toast.error("Pick a location on the map"); return; }
     setSaving(true);
     try {
+      const images = (editing.images || []).map((s) => String(s).trim()).filter(Boolean);
       const payload = {
         name: editing.name, country: editing.country, tagline: editing.tagline,
-        image: editing.image, emoji: editing.emoji || "🌍",
+        image: images[0] || "", images, emoji: editing.emoji || "🌍",
         fromPrice: editing.fromPrice ? Number(editing.fromPrice) : 0,
         vibes: String(editing.vibes || "").split(",").map((v) => v.trim()).filter(Boolean),
         lat: editing.lat, lng: editing.lng, gradient: editing.gradient || ["#0EA5E9", "#14B8A6"], active: editing.active !== false,
@@ -95,7 +103,23 @@ export default function DashboardDestinations() {
                 <FieldD label="Country"><input value={editing.country} onChange={(e) => upd("country", e.target.value)} className="dash-input" placeholder="Indonesia" /></FieldD>
               </Row2>
               <FieldD label="Tagline"><input value={editing.tagline} onChange={(e) => upd("tagline", e.target.value)} className="dash-input" placeholder="Island Paradise" /></FieldD>
-              <FieldD label="Image URL"><input value={editing.image} onChange={(e) => upd("image", e.target.value)} className="dash-input" placeholder="https://…" /></FieldD>
+              <div>
+                <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Images <span className="text-mora-neutral/50 normal-case tracking-normal">· first is the cover</span></label>
+                <div className="space-y-2">
+                  {(editing.images || [""]).map((url, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-12 h-10 rounded-lg overflow-hidden bg-mora-primary/5 shrink-0 flex items-center justify-center">
+                        {url ? <img src={url} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-mora-neutral/40" />}
+                      </div>
+                      <input value={url} onChange={(e) => updImage(i, e.target.value)} className="dash-input flex-1" placeholder="https://…" />
+                      {(editing.images || []).length > 1 && (
+                        <button type="button" onClick={() => removeImage(i)} className="w-9 h-9 rounded-lg hover:bg-red-50 text-red-600 flex items-center justify-center shrink-0"><X className="w-4 h-4" /></button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button type="button" onClick={addImage} className="mt-2 text-xs text-gold font-medium flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add image</button>
+              </div>
               <Row2>
                 <FieldD label="Emoji"><input value={editing.emoji} onChange={(e) => upd("emoji", e.target.value)} className="dash-input" placeholder="🏝️" /></FieldD>
                 <FieldD label="From price (IDR)"><input type="number" value={editing.fromPrice} onChange={(e) => upd("fromPrice", e.target.value)} className="dash-input" placeholder="1500000" /></FieldD>
@@ -138,6 +162,11 @@ export default function DashboardDestinations() {
             <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block">
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
+                {d.images?.length > 1 && (
+                  <span className="absolute bottom-2 left-2 z-10 text-[10px] bg-black/55 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                    <ImageIcon className="w-3 h-3" /> {d.images.length}
+                  </span>
+                )}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
                   {can(role, "destinations", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}

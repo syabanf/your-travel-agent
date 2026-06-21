@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
+import { destImages } from "@/lib/destinationImages";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ export default function DashboardDestinationDetail() {
   const [dest, setDest] = useState(undefined); // undefined = loading, null = not found
   const [trips, setTrips] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [imgIdx, setImgIdx] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -80,6 +82,7 @@ export default function DashboardDestinationDetail() {
 
   const vibes = Array.isArray(dest.vibes) ? dest.vibes : String(dest.vibes || "").split(",").map((v) => v.trim()).filter(Boolean);
   const hasCoords = dest.lat != null && dest.lng != null;
+  const gallery = destImages(dest);
 
   const remove = async () => {
     try {
@@ -134,13 +137,29 @@ export default function DashboardDestinationDetail() {
         {/* Left — Details */}
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
           <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Details</h2>
-          {dest.image && (
-            <img
-              src={dest.image}
-              alt={name}
-              onError={(e) => { e.currentTarget.style.display = "none"; }}
-              className="w-full h-40 object-cover rounded-xl mb-4"
-            />
+          {gallery.length > 0 && (
+            <div className="mb-4">
+              <img
+                src={gallery[Math.min(imgIdx, gallery.length - 1)]}
+                alt={name}
+                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                className="w-full h-44 object-cover rounded-xl"
+              />
+              {gallery.length > 1 && (
+                <div className="flex gap-2 mt-2 overflow-x-auto">
+                  {gallery.map((url, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setImgIdx(i)}
+                      className={`w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 ${i === imgIdx ? "border-gold" : "border-transparent opacity-70 hover:opacity-100"}`}
+                    >
+                      <img src={url} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           {vibes.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">

@@ -160,6 +160,37 @@ function ensureSeeded() {
 }
 ensureSeeded();
 
+/* ----------------------------- migrations -------------------------- */
+// Non-destructive, run-once upgrades for data seeded before a feature landed.
+
+const MIGRATION_FLAG = `${PREFIX}_migrated_v1`;
+function runMigrations() {
+  if (readRaw(MIGRATION_FLAG)) return;
+  // Backfill destination galleries (`images`) for rows seeded before they existed.
+  try {
+    const seed = buildSeed();
+    const seedImages = Object.fromEntries(
+      (seed.Destination || []).map((d) => [d.id, Array.isArray(d.images) ? d.images : []])
+    );
+    const rows = readCollection('Destination');
+    if (rows.length) {
+      let changed = false;
+      const next = rows.map((r) => {
+        if (Array.isArray(r.images) && r.images.length) return r;
+        const imgs = seedImages[r.id]?.length ? seedImages[r.id] : (r.image ? [r.image] : []);
+        if (!imgs.length) return r;
+        changed = true;
+        return { ...r, images: imgs, image: r.image || imgs[0] };
+      });
+      if (changed) writeCollection('Destination', next);
+    }
+  } catch {
+    /* best-effort — never block app startup on a migration */
+  }
+  writeRaw(MIGRATION_FLAG, nowISO());
+}
+runMigrations();
+
 /* ------------------------------- auth ------------------------------ */
 
 const auth = {
