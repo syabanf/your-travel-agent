@@ -29,6 +29,9 @@ export default function DashboardCustomers() {
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const [listQuery, setListQuery] = useState("");
+  const [tierF, setTierF] = useState("all");
+  const [statusF, setStatusF] = useState("all");
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Customer.list("-created_date", 500));
@@ -83,6 +86,14 @@ export default function DashboardCustomers() {
     toast.success("Customer removed");
     load();
   };
+
+  const filtered = (items || []).filter((c) => {
+    const q = listQuery.trim().toLowerCase();
+    const matchesQ = !q || [c.name, c.email, c.city, c.country].some((v) => (v || "").toLowerCase().includes(q));
+    const matchesTier = tierF === "all" || (c.tier || "bronze") === tierF;
+    const matchesStatus = statusF === "all" || (c.status || "active") === statusF;
+    return matchesQ && matchesTier && matchesStatus;
+  });
 
   const total = items?.length || 0;
   const activeCount = items?.filter((c) => c.status === "active").length || 0;
@@ -179,7 +190,30 @@ export default function DashboardCustomers() {
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       ) : (
         <div className="space-y-3">
-          {items.map((c) => (
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+              <input
+                className="dash-input pl-9"
+                placeholder="Search customers…"
+                value={listQuery}
+                onChange={(e) => setListQuery(e.target.value)}
+              />
+            </div>
+            <select value={tierF} onChange={(e) => setTierF(e.target.value)} className="dash-input max-w-[150px]">
+              <option value="all">All tiers</option>
+              <option value="bronze">Bronze</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+              <option value="platinum">Platinum</option>
+            </select>
+            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
+              <option value="all">All status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          {filtered.map((c) => (
             <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
@@ -215,6 +249,7 @@ export default function DashboardCustomers() {
             </Link>
           ))}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers yet — add your first one.</p>}
+          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers match your filters.</p>}
         </div>
       )}
     </div>

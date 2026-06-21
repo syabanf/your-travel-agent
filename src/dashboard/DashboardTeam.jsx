@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck } from "lucide-react";
+import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 
@@ -31,6 +31,15 @@ export default function DashboardTeam() {
   const [inviting, setInviting] = useState(false);
   const [invite, setInvite] = useState({ ...EMPTY_INVITE });
   const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const [roleF, setRoleF] = useState("all");
+
+  const filtered = (members || []).filter((member) => {
+    const q = query.trim().toLowerCase();
+    const matchesQ = !q || [member.name, member.email].some((f) => (f || "").toLowerCase().includes(q));
+    const matchesRole = roleF === "all" || member.role === roleF;
+    return matchesQ && matchesRole;
+  });
 
   const load = async () => setMembers(await base44.entities.StaffMember.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -137,6 +146,24 @@ export default function DashboardTeam() {
         {members == null ? (
           <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
         ) : (
+          <>
+          <div className="px-5 pt-4">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="relative flex-1 min-w-[180px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="dash-input pl-9"
+                  placeholder="Search team…"
+                />
+              </div>
+              <select value={roleF} onChange={(e) => setRoleF(e.target.value)} className="dash-input max-w-[160px]">
+                <option value="all">All roles</option>
+                {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
+              </select>
+            </div>
+          </div>
           <table className="w-full text-sm">
             <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
               <th className="px-5 py-3 font-medium">Member</th>
@@ -146,7 +173,7 @@ export default function DashboardTeam() {
               <th className="px-5 py-3"></th>
             </tr></thead>
             <tbody>
-              {members.map((m) => (
+              {filtered.map((m) => (
                 <tr key={m.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
@@ -179,8 +206,10 @@ export default function DashboardTeam() {
                 </tr>
               ))}
               {members.length === 0 && <tr><td colSpan={5} className="px-5 py-10 text-center text-mora-neutral/60">No team members yet.</td></tr>}
+              {members.length > 0 && filtered.length === 0 && <tr><td colSpan={5} className="px-5 py-10 text-center text-mora-neutral/60">No team members match your filters.</td></tr>}
             </tbody>
           </table>
+          </>
         )}
       </div>
 

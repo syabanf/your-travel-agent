@@ -64,6 +64,7 @@ import DashboardSuppliers from './dashboard/DashboardSuppliers';
 import DashboardSupplierDetail from './dashboard/DashboardSupplierDetail';
 import DashboardMarketing from './dashboard/DashboardMarketing';
 import DashboardBusiness from './dashboard/DashboardBusiness';
+import DashboardAIReports from './dashboard/DashboardAIReports';
 import DashboardAudit from './dashboard/DashboardAudit';
 
 const Spinner = () => (
@@ -106,6 +107,7 @@ const AppRoutes = () => (
         <Route path="marketing" element={<DashboardMarketing />} />
         <Route path="reports" element={<DashboardReports />} />
         <Route path="business" element={<DashboardBusiness />} />
+        <Route path="ai-reports" element={<DashboardAIReports />} />
         <Route path="audit" element={<DashboardAudit />} />
         <Route path="team" element={<DashboardTeam />} />
       </Route>

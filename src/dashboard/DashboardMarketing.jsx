@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Send, Megaphone, CheckCircle2, Users, CalendarClock, Mail, MessageCircle, Bell } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Send, Megaphone, CheckCircle2, Users, CalendarClock, Mail, MessageCircle, Bell, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 
@@ -31,6 +31,9 @@ export default function DashboardMarketing() {
   const [customers, setCustomers] = useState([]);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const [channelF, setChannelF] = useState("all");
+  const [statusF, setStatusF] = useState("all");
 
   const load = async () => {
     const [campaigns, custs] = await Promise.all([
@@ -95,6 +98,14 @@ export default function DashboardMarketing() {
   const sentCount = items?.filter((c) => c.status === "sent").length || 0;
   const reached = items?.reduce((s, c) => s + (Number(c.sent_count) || 0), 0) || 0;
   const scheduledCount = items?.filter((c) => c.status === "scheduled").length || 0;
+
+  const q = query.trim().toLowerCase();
+  const filtered = (items || []).filter((c) => {
+    const matchesQ = !q || [c.name, c.promo_code].some((v) => (v || "").toLowerCase().includes(q));
+    const matchesChannel = channelF === "all" || c.channel === channelF;
+    const matchesStatus = statusF === "all" || c.status === statusF;
+    return matchesQ && matchesChannel && matchesStatus;
+  });
 
   return (
     <div className="p-8 max-w-6xl">
@@ -164,7 +175,25 @@ export default function DashboardMarketing() {
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       ) : (
         <div className="space-y-3">
-          {items.map((c) => {
+          <div className="flex flex-wrap gap-2 mb-4">
+            <div className="relative">
+              <Search className="w-4 h-4 text-mora-neutral absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search campaigns…" />
+            </div>
+            <select value={channelF} onChange={(e) => setChannelF(e.target.value)} className="dash-input max-w-[150px]">
+              <option value="all">All channels</option>
+              <option value="email">Email</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="push">Push</option>
+            </select>
+            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
+              <option value="all">All status</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="sent">Sent</option>
+            </select>
+          </div>
+          {filtered.map((c) => {
             const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
             const ChIcon = meta.icon;
             const recipients = segmentCount(c.segment);
@@ -212,6 +241,7 @@ export default function DashboardMarketing() {
             );
           })}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No campaigns yet — create your first one.</p>}
+          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No campaigns match your filters.</p>}
         </div>
       )}
     </div>

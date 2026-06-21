@@ -16,6 +16,7 @@ export default function DashboardDestinations() {
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const [statusF, setStatusF] = useState("all");
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Destination.list("-created_date", 500));
@@ -156,9 +157,28 @@ export default function DashboardDestinations() {
         </div>
       ) : items == null ? (
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
-      ) : (
+      ) : (() => {
+        const filtered = (items || []).filter((d) => {
+          const q = query.trim().toLowerCase();
+          const mq = !q || [d.name, d.country, d.tagline].some((v) => (v || "").toLowerCase().includes(q));
+          const ms = statusF === "all" || (statusF === "active" ? d.active !== false : d.active === false);
+          return mq && ms;
+        });
+        return (
+        <>
+        <div className="flex gap-2 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search destinations…" />
+          </div>
+          <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[160px]">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((d) => (
+          {filtered.map((d) => (
             <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block">
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
@@ -186,8 +206,11 @@ export default function DashboardDestinations() {
             </Link>
           ))}
           {items.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No destinations yet — add your first one.</p>}
+          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No destinations match your filters.</p>}
         </div>
-      )}
+        </>
+        );
+      })()}
     </div>
   );
 }

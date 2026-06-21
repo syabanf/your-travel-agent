@@ -84,6 +84,8 @@ The console now covers the operational layer a real travel agency needs — all 
 - **Refunds & cancellations** — cancel a booking with a refund amount + reason; the detail page records and displays the refund.
 - **Marketing** (`/dashboard/marketing`) — campaigns across email / WhatsApp / push with audience **segments** (by tier/status), promo codes, scheduling and a simulated **"Send now"** that sizes the recipient list.
 - **Business intelligence** (`/dashboard/business`) — sales funnel, lead-conversion %, **gross-margin** analysis, margin-by-month, and supplier & agent performance tables (CSV export).
+- **AI Report Generator** (`/dashboard/ai-reports`) — **text-to-report**: describe what you want ("revenue and margin", "supplier commissions", "lead funnel"…) and the AI builds a grounded report from your live data — executive summary, KPIs, tables and recommendations, with one-click PDF export. Runs on the built-in AI stub (swap in a real model via `configureLLM()`).
+- **Filtering everywhere** — every dashboard list/table (destinations, promotions, trips & bookings, customers, leads, suppliers, marketing, team, audit) has live search + category filters.
 - **Audit log** (`/dashboard/audit`) — every create/update/delete in the console is recorded (actor, action, entity, summary) with filters.
 - **Installable PWA** — web-app manifest, branded icon, theme color and an offline-shell service worker (production), so the mobile app can be added to the home screen.
 - **Privacy & data** — in-app Privacy Policy & Terms pages, consent toggles, and **export / delete all my data** (the local data store) from Profile → Privacy & Data.

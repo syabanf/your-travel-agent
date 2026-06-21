@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, X, Loader2, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
@@ -34,6 +34,8 @@ export default function DashboardBookings() {
   const [saving, setSaving] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+  const [query, setQuery] = useState("");
+  const [statusF, setStatusF] = useState("all");
 
   const load = async () => {
     setTrips(await base44.entities.Trip.list("-created_date", 500));
@@ -121,6 +123,10 @@ export default function DashboardBookings() {
   const canEditTrips = can(role, "trips", "edit");
   const canDelTrips = can(role, "trips", "delete");
   const d = editing?.data;
+
+  const q = query.trim().toLowerCase();
+  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF));
+  const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF));
 
   return (
     <div className="p-8 max-w-6xl">
@@ -257,6 +263,17 @@ export default function DashboardBookings() {
             ))}
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-4">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${tab}…`} className="dash-input pl-9" />
+            </div>
+            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[170px] capitalize">
+              <option value="all">All status</option>
+              {(tab === "bookings" ? BOOKING_STATUSES : TRIP_STATUSES).map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
           <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
             {(tab === "bookings" ? bookings : trips) == null ? (
               <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
@@ -268,7 +285,7 @@ export default function DashboardBookings() {
                   <th className="px-5 py-3 font-medium text-right">Price</th><th className="px-5 py-3"></th>
                 </tr></thead>
                 <tbody>
-                  {bookings.map((b) => (
+                  {fBookings.map((b) => (
                     <tr key={b.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{b.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral capitalize">{b.type}</td>
@@ -281,7 +298,7 @@ export default function DashboardBookings() {
                       </td>
                     </tr>
                   ))}
-                  {bookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No bookings.</td></tr>}
+                  {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">{bookings.length ? "No bookings match your filters." : "No bookings."}</td></tr>}
                 </tbody>
               </table>
             ) : (
@@ -292,7 +309,7 @@ export default function DashboardBookings() {
                   <th className="px-5 py-3 font-medium text-right">Budget</th><th className="px-5 py-3"></th>
                 </tr></thead>
                 <tbody>
-                  {trips.map((t) => (
+                  {fTrips.map((t) => (
                     <tr key={t.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{t.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral">{t.destination}</td>
@@ -305,7 +322,7 @@ export default function DashboardBookings() {
                       </td>
                     </tr>
                   ))}
-                  {trips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No trips.</td></tr>}
+                  {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">{trips.length ? "No trips match your filters." : "No trips."}</td></tr>}
                 </tbody>
               </table>
             )}

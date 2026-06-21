@@ -5,7 +5,7 @@ import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { openWhatsApp } from "@/lib/whatsapp";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percent, Star, Globe, MessageCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percent, Star, Globe, MessageCircle, Search } from "lucide-react";
 import { toast } from "sonner";
 
 const EMPTY = {
@@ -29,6 +29,9 @@ export default function DashboardSuppliers() {
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const [typeF, setTypeF] = useState("all");
+  const [statusF, setStatusF] = useState("all");
 
   const load = async () => setItems(await base44.entities.Supplier.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -74,6 +77,14 @@ export default function DashboardSuppliers() {
   const avgCommission = total
     ? Math.round((items.reduce((sum, s) => sum + (Number(s.commission_rate) || 0), 0) / total) * 10) / 10
     : 0;
+
+  const q = query.trim().toLowerCase();
+  const filtered = (items || []).filter((s) => {
+    const matchesQ = !q || [s.name, s.country].some((v) => (v || "").toLowerCase().includes(q));
+    const matchesType = typeF === "all" || s.type === typeF;
+    const matchesStatus = statusF === "all" || (s.status || "active") === statusF;
+    return matchesQ && matchesType && matchesStatus;
+  });
 
   return (
     <div className="p-8 max-w-6xl">
@@ -141,8 +152,28 @@ export default function DashboardSuppliers() {
       ) : items == null ? (
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       ) : (
+        <>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search suppliers…" />
+          </div>
+          <select value={typeF} onChange={(e) => setTypeF(e.target.value)} className="dash-input max-w-[150px]">
+            <option value="all">All types</option>
+            <option value="flight">Flight</option>
+            <option value="hotel">Hotel</option>
+            <option value="activity">Activity</option>
+            <option value="transport">Transport</option>
+            <option value="dmc">DMC</option>
+          </select>
+          <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
+            <option value="all">All status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((s) => (
+          {filtered.map((s) => (
             <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -186,7 +217,9 @@ export default function DashboardSuppliers() {
             </Link>
           ))}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers yet — add your first one.</p>}
+          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
+        </>
       )}
     </div>
   );

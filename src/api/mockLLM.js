@@ -43,6 +43,11 @@ async function defaultHandler({ prompt = '', response_json_schema } = {}) {
   // No schema => free-form chat / markdown itinerary
   if (!response_json_schema) return chatResponse(prompt);
 
+  // AI report generator shape: { report: {...} }
+  if (response_json_schema?.properties?.report) {
+    return { report: reportFor(prompt) };
+  }
+
   // OTA search shape: { results: [...] }
   if (response_json_schema?.properties?.results) {
     return { results: otaResults(prompt) };
@@ -268,3 +273,199 @@ const attractions = () =>
     description: pick(DESCS, i),
     includes: pick([['Guide', 'Transport'], ['Equipment', 'Snacks'], ['Tickets', 'Hotel pickup']], i),
   }));
+
+/* ----------------------------- AI reports -------------------------- */
+// A stubbed "analytics AI": reads the local data store and synthesises a
+// structured business report from a natural-language prompt. Swap in a real
+// model via configureLLM() and return the same { report } shape.
+
+const DB_PREFIX = 'mora_db_';
+function readCol(name) {
+  try { return JSON.parse((typeof localStorage !== 'undefined' && localStorage.getItem(DB_PREFIX + name)) || '[]') || []; } catch { return []; }
+}
+const sumBy = (arr, f) => arr.reduce((s, x) => s + (Number(f(x)) || 0), 0);
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const monthOf = (d) => { try { return MONTHS[new Date(d).getMonth()]; } catch { return null; } };
+
+function reportType(p = '') {
+  const s = p.toLowerCase();
+  if (/margin|revenue|sales|financ|profit|income/.test(s)) return 'financial';
+  if (/supplier|partner|commission|procure|vendor/.test(s)) return 'suppliers';
+  if (/lead|funnel|conversion|pipeline|enquir/.test(s)) return 'leads';
+  if (/customer|tier|loyal|crm|spend|ltv/.test(s)) return 'customers';
+  if (/market|campaign|email|promo|outreach/.test(s)) return 'marketing';
+  if (/booking|reservation/.test(s)) return 'bookings';
+  return 'overview';
+}
+
+export function reportFor(prompt = '') {
+  const type = reportType(prompt);
+  const bookings = readCol('Booking'), trips = readCol('Trip'), customers = readCol('Customer'),
+    leads = readCol('Lead'), suppliers = readCol('Supplier'), campaigns = readCol('Campaign');
+  const confirmed = bookings.filter((b) => b.status === 'confirmed' || b.status === 'completed');
+  const revenue = sumBy(confirmed, (b) => b.price);
+  const cost = sumBy(confirmed, (b) => b.cost_price);
+  const margin = revenue - cost;
+  const marginPct = revenue ? Math.round((margin / revenue) * 100) : 0;
+  const sub = `Generated from your live data for: “${prompt || 'business overview'}”`;
+
+  if (type === 'financial') {
+    const byMonth = {};
+    confirmed.forEach((b) => { const m = monthOf(b.check_in || b.created_date); if (m) { byMonth[m] = byMonth[m] || { n: 0, rev: 0 }; byMonth[m].n++; byMonth[m].rev += b.price || 0; } });
+    const monthRows = MONTHS.filter((m) => byMonth[m]).map((m) => [m, String(byMonth[m].n), formatIDR(byMonth[m].rev)]);
+    const byType = {};
+    bookings.forEach((b) => { const t = b.type || 'other'; byType[t] = byType[t] || { n: 0, rev: 0 }; byType[t].n++; byType[t].rev += b.price || 0; });
+    const typeRows = Object.entries(byType).sort((a, b) => b[1].rev - a[1].rev).map(([t, v]) => [cap(t), String(v.n), formatIDR(v.rev)]);
+    const pend = bookings.filter((b) => b.status === 'pending').length;
+    return {
+      title: 'Revenue & Margin Report', subtitle: sub,
+      summary: `MORA recorded ${formatIDR(revenue)} in confirmed revenue across ${confirmed.length} booking(s), at an estimated ${marginPct}% gross margin (${formatIDR(margin)}).${typeRows[0] ? ` ${typeRows[0][0]} is the highest-grossing category.` : ''}`,
+      kpis: [
+        { label: 'Confirmed revenue', value: formatIDR(revenue) },
+        { label: 'Gross margin', value: `${formatIDR(margin)} · ${marginPct}%` },
+        { label: 'Avg booking value', value: formatIDR(confirmed.length ? Math.round(revenue / confirmed.length) : 0) },
+        { label: 'Confirmed bookings', value: String(confirmed.length) },
+      ],
+      tables: [
+        { title: 'Revenue by month', columns: ['Month', 'Bookings', 'Revenue'], rows: monthRows.length ? monthRows : [['—', '0', formatIDR(0)]] },
+        { title: 'Revenue by type', columns: ['Type', 'Count', 'Revenue'], rows: typeRows.length ? typeRows : [['—', '0', formatIDR(0)]] },
+      ],
+      recommendations: [
+        marginPct < 20 ? `Gross margin is ${marginPct}% — renegotiate supplier rates or lift markups on low-margin products.` : `Gross margin is healthy at ${marginPct}% — protect it as volume grows.`,
+        typeRows[0] ? `Lean into ${typeRows[0][0]} — your top category by revenue; build a targeted promotion around it.` : 'Add more bookings to reveal category trends.',
+        pend ? `${pend} pending booking(s) await confirmation — chase them to bank the revenue.` : 'No pending bookings outstanding.',
+      ],
+    };
+  }
+
+  if (type === 'suppliers') {
+    const map = Object.fromEntries(suppliers.map((s) => [s.id, s]));
+    const agg = {};
+    bookings.forEach((b) => { if (!b.supplier_id) return; const s = map[b.supplier_id]; const k = b.supplier_id; agg[k] = agg[k] || { name: s?.name || k, n: 0, sales: 0, comm: 0 }; agg[k].n++; agg[k].sales += b.price || 0; agg[k].comm += (b.price || 0) * ((s?.commission_rate || 0) / 100); });
+    const list = Object.values(agg).sort((a, b) => b.sales - a.sales);
+    const rows = list.map((v) => [v.name, String(v.n), formatIDR(v.sales), formatIDR(Math.round(v.comm))]);
+    const totalComm = Math.round(sumBy(list, (v) => v.comm));
+    const active = suppliers.filter((s) => s.status === 'active').length;
+    const avgRate = suppliers.length ? Math.round(sumBy(suppliers, (s) => s.commission_rate) / suppliers.length) : 0;
+    return {
+      title: 'Supplier Performance Report', subtitle: sub,
+      summary: `You work with ${suppliers.length} supplier(s) (${active} active), accounting for ${formatIDR(sumBy(list, (v) => v.sales))} in sourced sales and ${formatIDR(totalComm)} in estimated commission.`,
+      kpis: [
+        { label: 'Suppliers', value: String(suppliers.length) },
+        { label: 'Active', value: String(active) },
+        { label: 'Est. commission', value: formatIDR(totalComm) },
+        { label: 'Avg commission rate', value: `${avgRate}%` },
+      ],
+      tables: [{ title: 'Performance by supplier', columns: ['Supplier', 'Bookings', 'Sales', 'Est. commission'], rows: rows.length ? rows : [['—', '0', formatIDR(0), formatIDR(0)]] }],
+      recommendations: [
+        list[0] ? `${list[0].name} is your top-producing partner — formalise preferred rates.` : 'Link bookings to suppliers to unlock partner analytics.',
+        suppliers.some((s) => s.status === 'inactive') ? 'Some suppliers are inactive — review whether to re-activate or retire them.' : 'All suppliers are active.',
+        'Concentrate volume with high-commission partners to grow margin.',
+      ],
+    };
+  }
+
+  if (type === 'leads') {
+    const total = leads.length, won = leads.filter((l) => l.status === 'won').length;
+    const conv = total ? Math.round((won / total) * 100) : 0;
+    const pipeline = sumBy(leads.filter((l) => ['new', 'contacted', 'quoted'].includes(l.status)), (l) => l.budget);
+    const stageRows = ['new', 'contacted', 'quoted', 'won', 'lost'].map((s) => [cap(s), String(leads.filter((l) => l.status === s).length)]);
+    const byAgent = {};
+    leads.forEach((l) => { const a = l.assigned_to || 'Unassigned'; byAgent[a] = byAgent[a] || { n: 0, won: 0 }; byAgent[a].n++; if (l.status === 'won') byAgent[a].won++; });
+    const agentRows = Object.entries(byAgent).sort((a, b) => b[1].n - a[1].n).map(([a, v]) => [a, String(v.n), String(v.won), `${v.n ? Math.round((v.won / v.n) * 100) : 0}%`]);
+    return {
+      title: 'Sales Pipeline Report', subtitle: sub,
+      summary: `You have ${total} lead(s) with a ${conv}% conversion rate. Open pipeline value is ${formatIDR(pipeline)}.`,
+      kpis: [
+        { label: 'Total leads', value: String(total) },
+        { label: 'Won', value: String(won) },
+        { label: 'Conversion', value: `${conv}%` },
+        { label: 'Pipeline value', value: formatIDR(pipeline) },
+      ],
+      tables: [
+        { title: 'Leads by stage', columns: ['Stage', 'Leads'], rows: stageRows },
+        { title: 'Agent performance', columns: ['Agent', 'Leads', 'Won', 'Conversion'], rows: agentRows.length ? agentRows : [['—', '0', '0', '0%']] },
+      ],
+      recommendations: [
+        conv < 30 ? `Conversion is ${conv}% — tighten follow-up on 'contacted' and 'quoted' leads.` : `Conversion is strong at ${conv}%.`,
+        pipeline ? `${formatIDR(pipeline)} sits in open pipeline — prioritise the highest-budget enquiries.` : 'Pipeline is empty — invest in lead generation.',
+        agentRows[0] ? `${agentRows[0][0]} handles the most leads — share their playbook with the team.` : 'Assign owners to every lead for accountability.',
+      ],
+    };
+  }
+
+  if (type === 'customers') {
+    const tierRows = ['platinum', 'gold', 'silver', 'bronze'].map((t) => { const list = customers.filter((c) => c.tier === t); return [cap(t), String(list.length), formatIDR(sumBy(list, (c) => c.lifetime_spend))]; });
+    const ltv = sumBy(customers, (c) => c.lifetime_spend);
+    const active = customers.filter((c) => c.status === 'active').length;
+    const inactive = customers.length - active;
+    const top = [...customers].sort((a, b) => (b.lifetime_spend || 0) - (a.lifetime_spend || 0)).slice(0, 5).map((c) => [c.name, cap(c.tier || ''), formatIDR(c.lifetime_spend || 0)]);
+    return {
+      title: 'Customer Insights Report', subtitle: sub,
+      summary: `Your base of ${customers.length} customer(s) (${active} active) represents ${formatIDR(ltv)} in lifetime value.`,
+      kpis: [
+        { label: 'Customers', value: String(customers.length) },
+        { label: 'Active', value: String(active) },
+        { label: 'Lifetime value', value: formatIDR(ltv) },
+        { label: 'Avg LTV', value: formatIDR(customers.length ? Math.round(ltv / customers.length) : 0) },
+      ],
+      tables: [
+        { title: 'By tier', columns: ['Tier', 'Customers', 'Lifetime value'], rows: tierRows },
+        { title: 'Top customers', columns: ['Name', 'Tier', 'Lifetime spend'], rows: top.length ? top : [['—', '—', formatIDR(0)]] },
+      ],
+      recommendations: [
+        inactive ? `${inactive} inactive customer(s) — launch a win-back campaign.` : 'All customers are active.',
+        top[0] ? `${top[0][0]} is your highest-value customer — offer a VIP perk to retain them.` : 'Grow your customer base to surface VIPs.',
+        'Upsell silver/bronze tiers with curated packages to lift average LTV.',
+      ],
+    };
+  }
+
+  if (type === 'marketing') {
+    const sent = campaigns.filter((c) => c.status === 'sent');
+    const reach = sumBy(campaigns, (c) => c.sent_count);
+    const byChannel = {};
+    campaigns.forEach((c) => { const ch = c.channel || 'other'; byChannel[ch] = byChannel[ch] || { n: 0, reach: 0 }; byChannel[ch].n++; byChannel[ch].reach += c.sent_count || 0; });
+    const chanRows = Object.entries(byChannel).map(([ch, v]) => [cap(ch), String(v.n), String(v.reach)]);
+    const drafts = campaigns.filter((c) => c.status === 'draft').length;
+    return {
+      title: 'Marketing Performance Report', subtitle: sub,
+      summary: `You have ${campaigns.length} campaign(s); ${sent.length} sent, reaching ${reach} recipient(s).`,
+      kpis: [
+        { label: 'Campaigns', value: String(campaigns.length) },
+        { label: 'Sent', value: String(sent.length) },
+        { label: 'Recipients reached', value: String(reach) },
+        { label: 'Scheduled', value: String(campaigns.filter((c) => c.status === 'scheduled').length) },
+      ],
+      tables: [{ title: 'By channel', columns: ['Channel', 'Campaigns', 'Reach'], rows: chanRows.length ? chanRows : [['—', '0', '0']] }],
+      recommendations: [
+        drafts ? `${drafts} draft campaign(s) — finish and schedule them.` : 'No drafts pending.',
+        'Segment by tier for higher engagement — send VIP offers to platinum/gold.',
+        'A/B test subject lines on your next email blast.',
+      ],
+    };
+  }
+
+  // overview (default)
+  const openLeads = leads.filter((l) => !['won', 'lost'].includes(l.status)).length;
+  const pend = bookings.filter((b) => b.status === 'pending').length;
+  return {
+    title: 'Business Overview Report', subtitle: sub,
+    summary: `Snapshot: ${formatIDR(revenue)} confirmed revenue (${marginPct}% margin) across ${bookings.length} booking(s), ${trips.length} trip(s), ${customers.length} customer(s) and ${leads.length} lead(s).`,
+    kpis: [
+      { label: 'Revenue', value: formatIDR(revenue) },
+      { label: 'Bookings', value: String(bookings.length) },
+      { label: 'Customers', value: String(customers.length) },
+      { label: 'Open leads', value: String(openLeads) },
+    ],
+    tables: [
+      { title: 'Bookings by status', columns: ['Status', 'Count'], rows: ['pending', 'confirmed', 'completed', 'cancelled'].map((s) => [cap(s), String(bookings.filter((b) => b.status === s).length)]) },
+      { title: 'Customers by tier', columns: ['Tier', 'Count'], rows: ['platinum', 'gold', 'silver', 'bronze'].map((t) => [cap(t), String(customers.filter((c) => c.tier === t).length)]) },
+    ],
+    recommendations: [
+      openLeads ? `${openLeads} open lead(s) — keep the pipeline moving.` : 'No open leads — invest in lead generation.',
+      pend ? `${pend} pending booking(s) to confirm.` : 'No pending bookings.',
+      'Ask for a focused report (e.g. “revenue and margin”, “supplier commissions”, “lead funnel”) for deeper analysis.',
+    ],
+  };
+}

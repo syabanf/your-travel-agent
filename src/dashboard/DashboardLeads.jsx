@@ -4,7 +4,7 @@ import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { openWhatsApp } from "@/lib/whatsapp";
-import { Plus, Pencil, Trash2, X, Loader2, Save, MessageCircle, UserPlus, Users, Flame, Wallet, Trophy } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, MessageCircle, UserPlus, Users, Flame, Wallet, Trophy, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 
@@ -32,6 +32,9 @@ export default function DashboardLeads() {
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const [sourceF, setSourceF] = useState("all");
+  const [agentF, setAgentF] = useState("all");
 
   const load = async () => setItems(await base44.entities.Lead.list("-created_date", 500));
   useEffect(() => { load(); }, []);
@@ -107,6 +110,17 @@ export default function DashboardLeads() {
   const pipeline = items?.filter((l) => PIPELINE.includes(l.status)).reduce((s, l) => s + (Number(l.budget) || 0), 0) || 0;
   const won = items?.filter((l) => l.status === "won").length || 0;
 
+  const sourceOptions = [...new Set((items || []).map((l) => l.source).filter(Boolean))].sort();
+  const agentOptions = [...new Set((items || []).map((l) => l.assigned_to).filter(Boolean))].sort();
+
+  const q = query.trim().toLowerCase();
+  const filtered = (items || []).filter((l) => {
+    const matchesQ = !q || [l.name, l.email, l.destination].some((f) => (f || "").toLowerCase().includes(q));
+    const matchesSource = sourceF === "all" || l.source === sourceF;
+    const matchesAgent = agentF === "all" || l.assigned_to === agentF;
+    return matchesQ && matchesSource && matchesAgent;
+  });
+
   return (
     <div className="p-8 max-w-7xl">
       <header className="mb-6 flex items-center justify-between">
@@ -174,10 +188,32 @@ export default function DashboardLeads() {
       {items == null ? (
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       ) : (
-        <div className="overflow-x-auto pb-2 -mx-1 px-1">
-          <div className="flex gap-4 min-w-max">
-            {STATUSES.map((status) => {
-              const col = items.filter((l) => (l.status || "new") === status);
+        <>
+          {!editing && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="dash-input pl-9"
+                  placeholder="Search leads…"
+                />
+              </div>
+              <select value={sourceF} onChange={(e) => setSourceF(e.target.value)} className="dash-input max-w-[160px]">
+                <option value="all">All sources</option>
+                {sourceOptions.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
+              </select>
+              <select value={agentF} onChange={(e) => setAgentF(e.target.value)} className="dash-input max-w-[170px]">
+                <option value="all">All agents</option>
+                {agentOptions.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+          )}
+          <div className="overflow-x-auto pb-2 -mx-1 px-1">
+            <div className="flex gap-4 min-w-max">
+              {STATUSES.map((status) => {
+                const col = filtered.filter((l) => (l.status || "new") === status);
               return (
                 <div key={status} className="w-72 shrink-0">
                   <div className="flex items-center gap-2 mb-3 px-1">
@@ -249,10 +285,11 @@ export default function DashboardLeads() {
                     )}
                   </div>
                 </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

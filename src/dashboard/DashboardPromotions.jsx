@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
@@ -20,6 +20,8 @@ export default function DashboardPromotions() {
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const [typeF, setTypeF] = useState("all");
 
   const [searchParams, setSearchParams] = useSearchParams();
   const load = async () => setItems(await base44.entities.Promotion.list("-created_date", 500));
@@ -58,6 +60,13 @@ export default function DashboardPromotions() {
   };
 
   const remove = async (p) => { await base44.entities.Promotion.delete(p.id); toast.success("Removed"); load(); };
+
+  const filtered = (items || []).filter((p) => {
+    const q = query.trim().toLowerCase();
+    const mq = !q || [p.title, p.description, p.location].some((v) => (v || "").toLowerCase().includes(q));
+    const mt = typeF === "all" || (p.type || "promo") === typeF;
+    return mq && mt;
+  });
 
   return (
     <div className="p-8 max-w-6xl">
@@ -122,7 +131,19 @@ export default function DashboardPromotions() {
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       ) : (
         <div className="space-y-3">
-          {items.map((p) => {
+          <div className="flex gap-2 mb-4">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-mora-neutral pointer-events-none" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search entries…" />
+            </div>
+            <select value={typeF} onChange={(e) => setTypeF(e.target.value)} className="dash-input max-w-[160px]">
+              <option value="all">All types</option>
+              <option value="promo">Promotion</option>
+              <option value="event">Event</option>
+              <option value="news">News</option>
+            </select>
+          </div>
+          {filtered.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
               <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
@@ -150,6 +171,7 @@ export default function DashboardPromotions() {
             );
           })}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No entries yet.</p>}
+          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No entries match your filters.</p>}
         </div>
       )}
     </div>

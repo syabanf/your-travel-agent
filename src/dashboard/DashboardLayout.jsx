@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -9,6 +9,7 @@ const GROUPS = [
     { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Overview", res: "overview" },
     { to: "/dashboard/reports", icon: BarChart3, label: "Reports", res: "reports" },
     { to: "/dashboard/business", icon: TrendingUp, label: "Business", res: "reports" },
+    { to: "/dashboard/ai-reports", icon: Sparkles, label: "AI Reports", res: "reports" },
   ] },
   { title: "Sales & CRM", items: [
     { to: "/dashboard/leads", icon: Target, label: "Leads", res: "leads" },
