@@ -6,7 +6,7 @@ import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
 import moment from "moment";
-import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2 } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save } from "lucide-react";
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -18,6 +18,11 @@ const statusPill = {
 };
 
 const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
+const MEMBER_ROLES = ["organizer", "traveler", "guest"];
+const MEMBER_STATUSES = ["confirmed", "invited", "declined"];
+const roleBadge = { organizer: "bg-mora-gold/15 text-gold", traveler: "bg-mora-primary/10 text-mora-primary", guest: "bg-slate-400/20 text-slate-600" };
+const memberStatusBadge = { confirmed: "bg-emerald-500/15 text-emerald-600", invited: "bg-mora-gold/10 text-gold", declined: "bg-red-500/15 text-red-600" };
+const EMPTY_MEMBER = { name: "", email: "", phone: "", role: "traveler", status: "invited" };
 
 const Pill = ({ s }) => (
   <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[s] || statusPill.draft}`}>{s || "—"}</span>
@@ -43,6 +48,15 @@ function Kpi({ icon: Icon, label, value }) {
   );
 }
 
+function Field({ label, children }) {
+  return (
+    <div>
+      <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+      {children}
+    </div>
+  );
+}
+
 export default function DashboardTripDetail() {
   const { id } = useParams();
   const { role } = useRole();
@@ -51,6 +65,9 @@ export default function DashboardTripDetail() {
   const [trip, setTrip] = useState(null);
   const [items, setItems] = useState([]);
   const [related, setRelated] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [memberForm, setMemberForm] = useState(null);
+  const [savingMember, setSavingMember] = useState(false);
   const [loading, setLoading] = useState(true);
   const [bannerOk, setBannerOk] = useState(true);
 
@@ -59,15 +76,17 @@ export default function DashboardTripDetail() {
     (async () => {
       setLoading(true);
       try {
-        const [trips, itineraryItems, allBookings] = await Promise.all([
+        const [trips, itineraryItems, allBookings, tripMembers] = await Promise.all([
           base44.entities.Trip.filter({ id }),
           base44.entities.ItineraryItem.filter({ trip_id: id }),
           base44.entities.Booking.list("-created_date", 500),
+          base44.entities.TripMember.filter({ trip_id: id }),
         ]);
         if (!alive) return;
         setTrip(trips?.[0] || null);
         setItems(Array.isArray(itineraryItems) ? itineraryItems : []);
         setRelated((Array.isArray(allBookings) ? allBookings : []).filter((b) => b.trip_id === id));
+        setMembers(Array.isArray(tripMembers) ? tripMembers : []);
       } catch {
         if (alive) toast.error("Couldn't load this trip");
       } finally {
@@ -127,6 +146,30 @@ export default function DashboardTripDetail() {
       toast.error("Couldn't delete trip");
     }
   };
+
+  // --- Members ---
+  const canManageMembers = can(role, "trips", "create") || can(role, "trips", "edit") || can(role, "trips", "delete");
+  const loadMembers = async () => setMembers(await base44.entities.TripMember.filter({ trip_id: id }));
+  const startAddMember = () => setMemberForm({ ...EMPTY_MEMBER });
+  const startEditMember = (m) => setMemberForm({ ...EMPTY_MEMBER, ...m });
+  const updMember = (k, v) => setMemberForm((p) => ({ ...p, [k]: v }));
+  const saveMember = async () => {
+    if (!memberForm.name) { toast.error("Name is required"); return; }
+    setSavingMember(true);
+    try {
+      const payload = {
+        trip_id: id, name: memberForm.name, email: memberForm.email, phone: memberForm.phone,
+        role: memberForm.role || "traveler", status: memberForm.status || "invited",
+      };
+      if (memberForm.id) await base44.entities.TripMember.update(memberForm.id, payload);
+      else await base44.entities.TripMember.create(payload);
+      toast.success(memberForm.id ? "Member updated" : "Member added");
+      setMemberForm(null);
+      await loadMembers();
+    } catch { toast.error("Couldn't save member"); }
+    finally { setSavingMember(false); }
+  };
+  const removeMember = async (mid) => { await base44.entities.TripMember.delete(mid); toast.success("Member removed"); loadMembers(); };
 
   // Sort itinerary by day then time, and group under "Day N".
   const sorted = [...items].sort((a, b) => {
@@ -188,7 +231,7 @@ export default function DashboardTripDetail() {
         <Kpi icon={Wallet} label="Budget" value={formatIDR(trip.budget_total)} />
         <Kpi icon={Activity} label="Activities" value={items.length} />
         <Kpi icon={ListChecks} label="Completed" value={`${completedCount}/${items.length}`} />
-        <Kpi icon={Users} label="Travelers" value={trip.travelers ?? "—"} />
+        <Kpi icon={Users} label="Travelers" value={members.length || trip.travelers || "—"} />
       </div>
 
       {/* 4. Itinerary */}
@@ -232,7 +275,71 @@ export default function DashboardTripDetail() {
         )}
       </div>
 
-      {/* 5. Related bookings */}
+      {/* 5. Members / roster */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display font-bold text-mora-primary">
+            Members <span className="text-mora-neutral font-body font-normal text-sm">({members.length})</span>
+          </h2>
+          {!memberForm && can(role, "trips", "create") && (
+            <button onClick={startAddMember} className="inline-flex items-center gap-1.5 text-sm font-medium text-gold hover:opacity-80">
+              <UserPlus className="w-4 h-4" /> Add member
+            </button>
+          )}
+        </div>
+
+        {memberForm && (
+          <div className="rounded-xl border border-mora-primary/10 bg-mora-primary/[0.02] p-4 mb-4">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Field label="Name"><input value={memberForm.name} onChange={(e) => updMember("name", e.target.value)} className="dash-input" placeholder="Jane Traveler" /></Field>
+              <Field label="Email"><input value={memberForm.email} onChange={(e) => updMember("email", e.target.value)} className="dash-input" placeholder="jane@example.com" /></Field>
+              <Field label="Phone"><input value={memberForm.phone} onChange={(e) => updMember("phone", e.target.value)} className="dash-input" placeholder="+62…" /></Field>
+              <Field label="Role">
+                <select value={memberForm.role} onChange={(e) => updMember("role", e.target.value)} className="dash-input capitalize">
+                  {MEMBER_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </Field>
+              <Field label="Status">
+                <select value={memberForm.status} onChange={(e) => updMember("status", e.target.value)} className="dash-input capitalize">
+                  {MEMBER_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </Field>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button onClick={saveMember} disabled={savingMember} className="btn-primary rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+                {savingMember ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+              </button>
+              <button onClick={() => setMemberForm(null)} className="rounded-xl px-4 py-2 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {members.length === 0 && !memberForm ? (
+          <p className="text-sm text-mora-neutral">No members yet{can(role, "trips", "create") ? " — add the first traveler." : "."}</p>
+        ) : (
+          <ul className="divide-y divide-mora-primary/5">
+            {members.map((m) => (
+              <li key={m.id} className="flex items-center gap-3 py-3 group">
+                <div className="w-9 h-9 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">{(m.name || "?").trim().charAt(0)}</div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-mora-primary truncate">{m.name}</p>
+                  <p className="text-xs text-mora-neutral truncate">{m.email || m.phone || "—"}</p>
+                </div>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${roleBadge[m.role] || roleBadge.traveler}`}>{m.role}</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${memberStatusBadge[m.status] || memberStatusBadge.invited}`}>{m.status}</span>
+                {canManageMembers && (
+                  <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    {can(role, "trips", "edit") && <button onClick={() => startEditMember(m)} className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-3.5 h-3.5" /></button>}
+                    {can(role, "trips", "delete") && <button onClick={() => removeMember(m.id)} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* 6. Related bookings */}
       <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6">
         <h2 className="font-display font-bold text-mora-primary mb-3">Related bookings</h2>
         {related.length === 0 ? (

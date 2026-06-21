@@ -136,5 +136,17 @@ export function buildSeed() {
     { id: 'staff_rina', created_date: iso(-30), created_by: by, name: 'Rina Putri', email: 'rina@mora.app', role: 'viewer', status: 'invited', last_active: null },
   ];
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember };
+  // Trip rosters — who is travelling on each trip.
+  const TripMember = [
+    { id: 'tm_bali_alex', created_date: iso(-12), created_by: by, trip_id: 'trip_bali', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_bali_mia', created_date: iso(-11), created_by: by, trip_id: 'trip_bali', name: 'Mia Tan', email: 'mia.tan@example.com', phone: '+65 8111 2222', role: 'traveler', status: 'confirmed' },
+    { id: 'tm_kyoto_alex', created_date: iso(-8), created_by: by, trip_id: 'trip_kyoto', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_kyoto_kenji', created_date: iso(-7), created_by: by, trip_id: 'trip_kyoto', name: 'Kenji Sato', email: 'kenji.sato@example.com', phone: '+81 90 1234 5678', role: 'traveler', status: 'invited' },
+    { id: 'tm_san_alex', created_date: iso(-4), created_by: by, trip_id: 'trip_santorini', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_san_sara', created_date: iso(-4), created_by: by, trip_id: 'trip_santorini', name: 'Sara Putri', email: 'sara.putri@example.com', phone: '+62 822 9090 1010', role: 'traveler', status: 'confirmed' },
+    { id: 'tm_san_leo', created_date: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Leo Fernandes', email: 'leo.f@example.com', phone: '+351 912 345 678', role: 'traveler', status: 'invited' },
+    { id: 'tm_san_guest', created_date: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Hana Kim', email: 'hana.kim@example.com', phone: '+82 10 5555 6666', role: 'guest', status: 'invited' },
+  ];
+
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember };
 }

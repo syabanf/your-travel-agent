@@ -17,6 +17,10 @@ export default function TripDetail() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [showInvite, setShowInvite] = useState(false);
+  const [invite, setInvite] = useState({ name: "", email: "", role: "traveler" });
+  const [savingInvite, setSavingInvite] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -25,10 +29,27 @@ export default function TripDetail() {
       
       const itineraryItems = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
       setItems(itineraryItems.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
+      const mem = await base44.entities.TripMember.filter({ trip_id: tripId });
+      setMembers(mem);
       setLoading(false);
     };
     load();
   }, [tripId]);
+
+  const reloadMembers = async () => setMembers(await base44.entities.TripMember.filter({ trip_id: tripId }));
+  const addMember = async () => {
+    if (!invite.name) { toast.error("Name is required"); return; }
+    setSavingInvite(true);
+    try {
+      await base44.entities.TripMember.create({ trip_id: tripId, name: invite.name, email: invite.email, role: invite.role, status: "invited" });
+      setInvite({ name: "", email: "", role: "traveler" });
+      setShowInvite(false);
+      await reloadMembers();
+      toast.success("Invitation sent");
+    } catch { toast.error("Couldn't add traveler"); }
+    finally { setSavingInvite(false); }
+  };
+  const removeMember = async (mid) => { await base44.entities.TripMember.delete(mid); await reloadMembers(); toast("Traveler removed"); };
 
   const handleDelete = async () => {
     await base44.entities.Trip.delete(tripId);
@@ -217,6 +238,50 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
             {completedItems}/{items.length}
           </p>
           <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Done</p>
+        </GlassCard>
+      </div>
+
+      {/* Travelers */}
+      <div className="px-6 mt-7">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">Travelers ({members.length})</h2>
+          <button onClick={() => setShowInvite((v) => !v)} className="flex items-center gap-1 text-xs text-gold">
+            <Plus className="w-4 h-4" /> Invite
+          </button>
+        </div>
+        <GlassCard className="p-2">
+          {members.length === 0 && !showInvite && (
+            <p className="text-sm text-mora-neutral/70 px-3 py-3">No travelers yet — invite someone to join this trip.</p>
+          )}
+          {members.map((m) => (
+            <div key={m.id} className="flex items-center gap-3 px-3 py-2.5 group">
+              <div className="w-9 h-9 rounded-full glass-gold text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">{(m.name || "?").trim().charAt(0)}</div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-mora-primary truncate">{m.name}</p>
+                <p className="text-[11px] text-mora-neutral truncate capitalize">{m.role} · {m.status}</p>
+              </div>
+              <button onClick={() => removeMember(m.id)} aria-label="Remove traveler" className="w-8 h-8 rounded-lg flex items-center justify-center text-mora-neutral/60 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          {showInvite && (
+            <div className="p-3 mt-1 border-t border-mora-primary/10 space-y-2">
+              <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} placeholder="Name" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
+              <input value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} placeholder="Email (optional)" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
+              <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary outline-none capitalize">
+                <option value="traveler">Traveler</option>
+                <option value="organizer">Organizer</option>
+                <option value="guest">Guest</option>
+              </select>
+              <div className="flex gap-2 pt-1">
+                <button onClick={addMember} disabled={savingInvite} className="flex-1 py-2.5 btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+                  {savingInvite ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Send invite
+                </button>
+                <button onClick={() => setShowInvite(false)} className="px-4 py-2.5 glass-light rounded-xl text-sm text-mora-neutral">Cancel</button>
+              </div>
+            </div>
+          )}
         </GlassCard>
       </div>
 

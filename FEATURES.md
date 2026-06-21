@@ -24,7 +24,7 @@ admin dashboard. It runs **fully standalone** on a local, in-browser mock backen
 - **Destination swipe** — Tinder-style deck (swipe right to save a destination as a "reference"); favorites persist and pre-fill the wizard.
 - **AI trip generation** — generate a full day-by-day itinerary, or create a trip manually.
 - **Itinerary list** with status tabs (Upcoming / Active / Drafts / Past) and quick links.
-- **Trip detail** — day-by-day timeline, completion toggles, per-activity budgets, AI "generate activities", and edit/delete.
+- **Trip detail** — day-by-day timeline, completion toggles, per-activity budgets, AI "generate activities", a **traveler roster** (invite/remove members with roles & RSVP status), and edit/delete.
 - **Edit trip** — loads and updates the existing trip (no duplicates).
 - **Add activity** — name, location (with map browse), time, duration, category, budget, notes.
 
@@ -63,7 +63,7 @@ The dashboard manages the content that powers the mobile app — changes show up
 **Data Center** (every list drills into a full **detail page**)
 - **Destinations CMS** — create/edit/delete destinations with a **map editor** (click the map or **geocode-search** to set coordinates) plus name, country, tagline, a **multi-image gallery** (add/remove, first photo is the cover), vibes, emoji and from-price. Detail pages show the gallery + derived insights (trips here, related bookings, est. revenue) on a map. In the mobile app, destination detail shows the gallery as a swipeable hero carousel.
 - **Promotions & Events CMS** — full create/edit/delete for promotions, events, and news shown in "What's New". Rows open a **detail page** (banner, type/featured badges, discount/price/validity countdown, location) with edit/delete.
-- **Trips & Bookings** — full **CRUD**: create & edit bookings (type, provider, linked trip, dates, guests, price, confirmation code, image, notes) and trips (destination, dates, travelers, budget, style, cover, notes), plus inline status editing and delete. Rows open detail pages showing the full itinerary, related bookings and KPIs.
+- **Trips & Bookings** — full **CRUD**: create & edit bookings (type, provider, linked trip, dates, guests, price, confirmation code, image, notes) and trips (destination, dates, travelers, budget, style, cover, notes), plus inline status editing and delete. Rows open detail pages showing the full itinerary, related bookings, KPIs and a **trip member roster** (add/edit/remove travelers with roles — organizer/traveler/guest — and RSVP status).
 - **Customers CRM** — full customer CRUD with tiers, status, lifetime spend and a **map location picker**; detail pages show KPIs, contact info and a map.
 - **Team & Roles** — staff management and a roles × resources permission matrix.
 

@@ -143,7 +143,7 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember'];
 const entities = Object.fromEntries(ENTITY_NAMES.map((n) => [n, createEntity(n)]));
 
 /* ------------------------------ seeding ---------------------------- */
@@ -163,12 +163,13 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v1`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v2`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
-  // Backfill destination galleries (`images`) for rows seeded before they existed.
   try {
     const seed = buildSeed();
+
+    // 1. Backfill destination galleries (`images`) for rows seeded before they existed.
     const seedImages = Object.fromEntries(
       (seed.Destination || []).map((d) => [d.id, Array.isArray(d.images) ? d.images : []])
     );
@@ -183,6 +184,11 @@ function runMigrations() {
         return { ...r, images: imgs, image: r.image || imgs[0] };
       });
       if (changed) writeCollection('Destination', next);
+    }
+
+    // 2. Seed trip members (rosters) for demo data that predates the feature.
+    if (readCollection('TripMember').length === 0 && (seed.TripMember || []).length) {
+      writeCollection('TripMember', seed.TripMember);
     }
   } catch {
     /* best-effort — never block app startup on a migration */
