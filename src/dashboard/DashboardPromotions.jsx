@@ -4,6 +4,8 @@ import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { useRole } from "./RoleContext";
+import { can } from "./rbac";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -13,6 +15,7 @@ const TYPE_META = {
 };
 
 export default function DashboardPromotions() {
+  const { role } = useRole();
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -51,7 +54,7 @@ export default function DashboardPromotions() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Promotions & Events</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Publish the offers, events and news shown in the app's "What's New".</p>
         </div>
-        {!editing && (
+        {!editing && can(role, "promotions", "create") && (
           <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
             <Plus className="w-4 h-4" /> New entry
           </button>
@@ -128,8 +131,8 @@ export default function DashboardPromotions() {
                   {p.date ? <p className="text-xs text-mora-neutral">{moment(p.date).format("MMM D")}</p> : null}
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => setEditing(p)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => remove(p)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  {can(role, "promotions", "edit") && <button onClick={() => setEditing(p)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "delete") && <button onClick={() => remove(p)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
             );

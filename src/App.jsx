@@ -48,6 +48,9 @@ import DashboardOverview from './dashboard/DashboardOverview';
 import DashboardDestinations from './dashboard/DashboardDestinations';
 import DashboardPromotions from './dashboard/DashboardPromotions';
 import DashboardBookings from './dashboard/DashboardBookings';
+import DashboardCustomers from './dashboard/DashboardCustomers';
+import DashboardReports from './dashboard/DashboardReports';
+import DashboardTeam from './dashboard/DashboardTeam';
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -77,6 +80,9 @@ const AppRoutes = () => (
         <Route path="destinations" element={<DashboardDestinations />} />
         <Route path="promotions" element={<DashboardPromotions />} />
         <Route path="bookings" element={<DashboardBookings />} />
+        <Route path="customers" element={<DashboardCustomers />} />
+        <Route path="reports" element={<DashboardReports />} />
+        <Route path="team" element={<DashboardTeam />} />
       </Route>
 
       {/* Mobile app */}

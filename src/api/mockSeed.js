@@ -119,5 +119,21 @@ export function buildSeed() {
     { id: 'news_visa', created_date: iso(-1), created_by: by, type: 'news', title: 'New visa-on-arrival countries', description: 'Indonesia adds 10 more nationalities to its visa-on-arrival list this month.', date: date(-1), location: '', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80', cta: 'Read more', featured: false },
   ];
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion };
+  const Customer = [
+    { id: 'cust_putri', created_date: iso(-300), updated_date: iso(-2), created_by: by, name: 'Putri Wijaya', email: 'putri.wijaya@example.com', phone: '+62 812 1100 2200', city: 'Jakarta', country: 'Indonesia', lat: -6.2088, lng: 106.8456, tier: 'platinum', status: 'active', lifetime_spend: 86500000, joined_date: date(-300), notes: 'Frequent business traveler — prefers window seats.' },
+    { id: 'cust_andi', created_date: iso(-240), updated_date: iso(-10), created_by: by, name: 'Andi Pratama', email: 'andi.pratama@example.com', phone: '+62 813 3300 4400', city: 'Surabaya', country: 'Indonesia', lat: -7.2575, lng: 112.7521, tier: 'gold', status: 'active', lifetime_spend: 42300000, joined_date: date(-240), notes: '' },
+    { id: 'cust_maria', created_date: iso(-180), updated_date: iso(-5), created_by: by, name: 'Maria Santos', email: 'maria.santos@example.com', phone: '+62 821 5500 6600', city: 'Denpasar', country: 'Indonesia', lat: -8.6705, lng: 115.2126, tier: 'silver', status: 'active', lifetime_spend: 18900000, joined_date: date(-180), notes: 'Loves beach & wellness trips.' },
+    { id: 'cust_kenji', created_date: iso(-150), updated_date: iso(-20), created_by: by, name: 'Kenji Sato', email: 'kenji.sato@example.com', phone: '+81 90 1234 5678', city: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, tier: 'gold', status: 'active', lifetime_spend: 51200000, joined_date: date(-150), notes: '' },
+    { id: 'cust_sarah', created_date: iso(-90), updated_date: iso(-40), created_by: by, name: 'Sarah Lee', email: 'sarah.lee@example.com', phone: '+65 8123 4567', city: 'Singapore', country: 'Singapore', lat: 1.3521, lng: 103.8198, tier: 'bronze', status: 'inactive', lifetime_spend: 6400000, joined_date: date(-90), notes: 'Dormant since last quarter.' },
+    { id: 'cust_budi', created_date: iso(-45), updated_date: iso(-1), created_by: by, name: 'Budi Hartono', email: 'budi.hartono@example.com', phone: '+62 856 7700 8800', city: 'Bandung', country: 'Indonesia', lat: -6.9175, lng: 107.6191, tier: 'silver', status: 'active', lifetime_spend: 22750000, joined_date: date(-45), notes: '' },
+  ];
+
+  const StaffMember = [
+    { id: 'staff_alex', created_date: iso(-400), created_by: by, name: 'Alex Rivera', email: 'alex@mora.app', role: 'admin', status: 'active', last_active: iso(-0.05) },
+    { id: 'staff_dewi', created_date: iso(-300), created_by: by, name: 'Dewi Lestari', email: 'dewi@mora.app', role: 'manager', status: 'active', last_active: iso(-1) },
+    { id: 'staff_tom', created_date: iso(-200), created_by: by, name: 'Tom Becker', email: 'tom@mora.app', role: 'editor', status: 'active', last_active: iso(-3) },
+    { id: 'staff_rina', created_date: iso(-30), created_by: by, name: 'Rina Putri', email: 'rina@mora.app', role: 'viewer', status: 'invited', last_active: null },
+  ];
+
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember };
 }

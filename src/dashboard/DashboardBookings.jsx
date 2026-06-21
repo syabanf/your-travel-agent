@@ -4,6 +4,8 @@ import { formatIDR } from "@/lib/currency";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { useRole } from "./RoleContext";
+import { can } from "./rbac";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -14,8 +16,11 @@ const statusPill = {
   planned: "bg-blue-500/15 text-blue-600",
   draft: "bg-mora-primary/10 text-mora-neutral",
 };
+const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
+const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
 
 export default function DashboardBookings() {
+  const { role } = useRole();
   const [tab, setTab] = useState("bookings");
   const [trips, setTrips] = useState(null);
   const [bookings, setBookings] = useState(null);
@@ -28,8 +33,21 @@ export default function DashboardBookings() {
 
   const delTrip = async (id) => { await base44.entities.Trip.delete(id); toast.success("Trip deleted"); load(); };
   const delBooking = async (id) => { await base44.entities.Booking.delete(id); toast.success("Booking deleted"); load(); };
+  const setBookingStatus = async (id, status) => { await base44.entities.Booking.update(id, { status }); toast.success("Status updated"); load(); };
+  const setTripStatus = async (id, status) => { await base44.entities.Trip.update(id, { status }); toast.success("Status updated"); load(); };
 
   const Pill = ({ s }) => <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[s] || statusPill.pending}`}>{s}</span>;
+  const StatusCell = ({ value, options, editable, onChange }) =>
+    editable ? (
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="text-[11px] rounded-lg border border-mora-primary/15 bg-white px-2 py-1 text-mora-primary capitalize outline-none focus:border-mora-gold/50">
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      </select>
+    ) : <Pill s={value} />;
+
+  const canEditBookings = can(role, "bookings", "edit");
+  const canDelBookings = can(role, "bookings", "delete");
+  const canEditTrips = can(role, "trips", "edit");
+  const canDelTrips = can(role, "trips", "delete");
 
   return (
     <div className="p-8 max-w-6xl">
@@ -63,9 +81,9 @@ export default function DashboardBookings() {
                   <td className="px-5 py-3 font-medium text-mora-primary truncate max-w-[240px]">{b.title}</td>
                   <td className="px-5 py-3 text-mora-neutral capitalize">{b.type}</td>
                   <td className="px-5 py-3 text-mora-neutral">{b.check_in ? moment(b.check_in).format("MMM D, YYYY") : "—"}</td>
-                  <td className="px-5 py-3"><Pill s={b.status} /></td>
+                  <td className="px-5 py-3"><StatusCell value={b.status} options={BOOKING_STATUSES} editable={canEditBookings} onChange={(s) => setBookingStatus(b.id, s)} /></td>
                   <td className="px-5 py-3 text-right font-semibold text-gold">{b.price ? formatIDR(b.price) : "—"}</td>
-                  <td className="px-5 py-3 text-right"><button onClick={() => delBooking(b.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button></td>
+                  <td className="px-5 py-3 text-right">{canDelBookings && <button onClick={() => delBooking(b.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>}</td>
                 </tr>
               ))}
               {bookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No bookings.</td></tr>}
@@ -84,9 +102,9 @@ export default function DashboardBookings() {
                   <td className="px-5 py-3 font-medium text-mora-primary truncate max-w-[220px]">{t.title}</td>
                   <td className="px-5 py-3 text-mora-neutral">{t.destination}</td>
                   <td className="px-5 py-3 text-mora-neutral">{t.start_date ? moment(t.start_date).format("MMM D") : "—"}{t.end_date ? ` – ${moment(t.end_date).format("MMM D")}` : ""}</td>
-                  <td className="px-5 py-3"><Pill s={t.status} /></td>
+                  <td className="px-5 py-3"><StatusCell value={t.status} options={TRIP_STATUSES} editable={canEditTrips} onChange={(s) => setTripStatus(t.id, s)} /></td>
                   <td className="px-5 py-3 text-right font-semibold text-gold">{t.budget_total ? formatIDR(t.budget_total) : "—"}</td>
-                  <td className="px-5 py-3 text-right"><button onClick={() => delTrip(t.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button></td>
+                  <td className="px-5 py-3 text-right">{canDelTrips && <button onClick={() => delTrip(t.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>}</td>
                 </tr>
               ))}
               {trips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No trips.</td></tr>}

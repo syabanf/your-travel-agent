@@ -1,0 +1,239 @@
+import { useEffect, useState, useRef } from "react";
+import { base44 } from "@/api/base44Client";
+import OLMap from "@/components/OLMap";
+import { formatIDR } from "@/lib/currency";
+import { can } from "@/dashboard/rbac";
+import { useRole } from "@/dashboard/RoleContext";
+import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Users, UserCheck, Wallet, Mail } from "lucide-react";
+import { toast } from "sonner";
+import moment from "moment";
+
+const EMPTY = {
+  name: "", email: "", phone: "", city: "", country: "",
+  lat: null, lng: null, tier: "bronze", status: "active",
+  lifetime_spend: "", joined_date: moment().format("YYYY-MM-DD"), notes: "",
+};
+
+const TIERS = ["bronze", "silver", "gold", "platinum"];
+const TIER_BADGE = {
+  bronze: "bg-amber-100 text-amber-700",
+  silver: "bg-slate-200 text-slate-700",
+  gold: "bg-mora-gold/15 text-gold",
+  platinum: "bg-indigo-100 text-indigo-700",
+};
+
+export default function DashboardCustomers() {
+  const { role } = useRole();
+  const [items, setItems] = useState(null);
+  const [editing, setEditing] = useState(null); // form object or null
+  const [saving, setSaving] = useState(false);
+  const [query, setQuery] = useState("");
+  const searchRef = useRef(null);
+
+  const load = async () => setItems(await base44.entities.Customer.list("-created_date", 500));
+  useEffect(() => { load(); }, []);
+
+  const startAdd = () => setEditing({ ...EMPTY });
+  const startEdit = (c) => setEditing({
+    ...EMPTY, ...c,
+    lifetime_spend: c.lifetime_spend ?? "",
+    joined_date: c.joined_date || moment().format("YYYY-MM-DD"),
+  });
+  const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
+
+  const geocode = async () => {
+    if (!query.trim()) return;
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+      const d = await r.json();
+      if (d.length) {
+        const lat = parseFloat(d[0].lat), lng = parseFloat(d[0].lon);
+        const city = d[0].display_name.split(",")[0];
+        const country = d[0].display_name.split(",").slice(-1)[0].trim();
+        setEditing((p) => ({ ...p, lat, lng, city: p.city || city, country: p.country || country }));
+      } else toast.error("Location not found");
+    } catch { toast.error("Search failed"); }
+  };
+
+  const save = async () => {
+    if (!editing.name || !editing.email) { toast.error("Name and email are required"); return; }
+    setSaving(true);
+    try {
+      const payload = {
+        name: editing.name, email: editing.email, phone: editing.phone,
+        city: editing.city, country: editing.country,
+        lat: editing.lat, lng: editing.lng,
+        tier: editing.tier || "bronze", status: editing.status || "active",
+        lifetime_spend: editing.lifetime_spend ? Number(editing.lifetime_spend) : 0,
+        joined_date: editing.joined_date || moment().format("YYYY-MM-DD"),
+        notes: editing.notes || "",
+      };
+      if (editing.id) await base44.entities.Customer.update(editing.id, payload);
+      else await base44.entities.Customer.create(payload);
+      toast.success(editing.id ? "Customer updated" : "Customer added");
+      setEditing(null);
+      await load();
+    } catch { toast.error("Couldn't save customer"); }
+    finally { setSaving(false); }
+  };
+
+  const remove = async (c) => {
+    await base44.entities.Customer.delete(c.id);
+    toast.success("Customer removed");
+    load();
+  };
+
+  const total = items?.length || 0;
+  const activeCount = items?.filter((c) => c.status === "active").length || 0;
+  const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
+
+  return (
+    <div className="p-8 max-w-6xl">
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Customers</h1>
+          <p className="text-sm text-mora-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
+        </div>
+        {!editing && can(role, "customers", "create") && (
+          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Add customer
+          </button>
+        )}
+      </header>
+
+      {/* KPI row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <Kpi icon={Users} label="Total customers" value={total} />
+        <Kpi icon={UserCheck} label="Active customers" value={activeCount} />
+        <Kpi icon={Wallet} label="Total lifetime value" value={formatIDR(ltv)} />
+      </div>
+
+      {editing ? (
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
+            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Form */}
+            <div className="space-y-3">
+              <Row2>
+                <FieldD label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Jane Traveler" /></FieldD>
+                <FieldD label="Email"><input type="email" value={editing.email} onChange={(e) => upd("email", e.target.value)} className="dash-input" placeholder="jane@example.com" /></FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Phone"><input value={editing.phone} onChange={(e) => upd("phone", e.target.value)} className="dash-input" placeholder="+62…" /></FieldD>
+                <FieldD label="City"><input value={editing.city} onChange={(e) => upd("city", e.target.value)} className="dash-input" placeholder="Jakarta" /></FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Country"><input value={editing.country} onChange={(e) => upd("country", e.target.value)} className="dash-input" placeholder="Indonesia" /></FieldD>
+                <FieldD label="Tier">
+                  <select value={editing.tier} onChange={(e) => upd("tier", e.target.value)} className="dash-input">
+                    {TIERS.map((t) => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}
+                  </select>
+                </FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Status">
+                  <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </FieldD>
+                <FieldD label="Lifetime spend (IDR)"><input type="number" value={editing.lifetime_spend} onChange={(e) => upd("lifetime_spend", e.target.value)} className="dash-input" placeholder="25000000" /></FieldD>
+              </Row2>
+              <FieldD label="Joined date"><input type="date" value={editing.joined_date} onChange={(e) => upd("joined_date", e.target.value)} className="dash-input" /></FieldD>
+              <FieldD label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input" rows={3} placeholder="Preferences, VIP notes…" /></FieldD>
+              <div className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
+                <MapPin className="w-4 h-4 text-gold" />
+                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-mora-neutral/60">Click the map or search to set location</span>}
+              </div>
+              <div className="flex gap-2 pt-3">
+                <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+                </button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+              </div>
+            </div>
+
+            {/* Map */}
+            <div>
+              <div className="flex gap-2 mb-2">
+                <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && geocode()} placeholder="Search a place…" className="dash-input flex-1" />
+                <button onClick={geocode} className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
+              </div>
+              <div className="rounded-xl overflow-hidden border border-mora-primary/10" style={{ height: 300 }}>
+                <OLMap
+                  center={editing.lat != null ? [editing.lng, editing.lat] : [110, -2]}
+                  zoom={editing.lat != null ? 6 : 4}
+                  markers={editing.lat != null ? [{ id: "sel", lng: editing.lng, lat: editing.lat }] : []}
+                  onClick={(lng, lat) => setEditing((p) => ({ ...p, lat, lng }))}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : items == null ? (
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+      ) : (
+        <div className="space-y-3">
+          {items.map((c) => (
+            <div key={c.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group">
+              <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
+                {(c.name || "?").trim().charAt(0)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-display font-semibold text-mora-primary truncate">{c.name}</h3>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span>
+                </div>
+                <p className="text-xs text-mora-neutral mt-0.5 flex items-center gap-1.5 truncate">
+                  <Mail className="w-3 h-3 shrink-0" /> {c.email}
+                </p>
+                <p className="text-xs text-mora-neutral/70 mt-0.5">
+                  {[c.city, c.country].filter(Boolean).join(" · ") || "No location"}
+                  {c.joined_date ? ` · joined ${moment(c.joined_date).format("MMM YYYY")}` : ""}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="text-sm font-semibold text-gold">{formatIDR(Number(c.lifetime_spend) || 0)}</div>
+                <div className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">lifetime</div>
+              </div>
+              {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
+                <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                  {can(role, "customers", "edit") && (
+                    <button onClick={() => startEdit(c)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                  )}
+                  {can(role, "customers", "delete") && (
+                    <button onClick={() => remove(c)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers yet — add your first one.</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const Kpi = ({ icon: Icon, label, value }) => (
+  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4">
+    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+    <div className="min-w-0">
+      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-xl font-display font-bold text-mora-primary truncate">{value}</div>
+    </div>
+  </div>
+);
+
+const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const FieldD = ({ label, children }) => (
+  <div>
+    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    {children}
+  </div>
+);

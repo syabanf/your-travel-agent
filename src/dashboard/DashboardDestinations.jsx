@@ -4,10 +4,13 @@ import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { useRole } from "./RoleContext";
+import { can } from "./rbac";
 
 const EMPTY = { name: "", country: "", tagline: "", image: "", emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
 export default function DashboardDestinations() {
+  const { role } = useRole();
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -69,7 +72,7 @@ export default function DashboardDestinations() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Destinations</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage the places travelers discover & swipe in the app.</p>
         </div>
-        {!editing && (
+        {!editing && can(role, "destinations", "create") && (
           <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
             <Plus className="w-4 h-4" /> Add destination
           </button>
@@ -135,8 +138,8 @@ export default function DashboardDestinations() {
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => startEdit(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => remove(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  {can(role, "destinations", "edit") && <button onClick={() => startEdit(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "delete") && <button onClick={() => remove(d)} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
               <div className="p-4">
