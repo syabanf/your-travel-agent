@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Send, Sparkles, MapPin, Clock, Save, RefreshCw, Plus, MessageCircle } from "lucide-react";
+import { Send, Sparkles, MapPin, Clock, Save, RefreshCw, Plus, MessageCircle, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -14,6 +14,14 @@ const quickPrompts = [
   "Add family-friendly dinner options",
   "Suggest indoor alternatives if it rains",
   "Reduce total budget by 20%",
+];
+
+const chipPrompts = [
+  "Plan a 5-day Bali trip",
+  "Beach honeymoon ideas",
+  "Best time to visit Japan",
+  "Budget for a Europe trip",
+  "Things to do in Kyoto",
 ];
 
 export default function AIAssistant() {
@@ -157,6 +165,9 @@ ${content}`,
               <p className="text-xs text-mora-neutral leading-relaxed max-w-[260px] mx-auto">
                 I can create personalized itineraries, optimize routes, suggest hidden gems, and more.
               </p>
+              <p className="text-[10px] text-mora-neutral/80 leading-relaxed max-w-[260px] mx-auto mt-2">
+                I'm an AI assistant — a human concierge is available anytime if you'd prefer to talk to a person.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -231,6 +242,28 @@ ${content}`,
         )}
         
         <div ref={scrollRef} />
+      </div>
+
+      {/* Quick-prompt chips + human handoff */}
+      <div className="px-6 pt-1 pb-1 space-y-2">
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar flex-nowrap">
+          {chipPrompts.map((prompt) => (
+            <button
+              key={prompt}
+              onClick={() => sendMessage(prompt)}
+              disabled={loading}
+              className="flex-shrink-0 glass-light rounded-full px-3 py-1.5 text-xs text-mora-primary hover:bg-white/10 transition-all disabled:opacity-40"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => navigate("/assistant")}
+          className="flex items-center gap-1.5 text-[11px] text-mora-neutral hover:text-mora-primary transition-all"
+        >
+          <Headphones className="w-3.5 h-3.5" /> Talk to a human concierge
+        </button>
       </div>
 
       {/* Input */}

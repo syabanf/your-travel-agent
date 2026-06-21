@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, Globe, LayoutDashboard } from "lucide-react";
+import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, Globe, LayoutDashboard, Database } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import PageHeader from "../components/PageHeader";
@@ -15,6 +15,7 @@ const menuItems = [
   { icon: Sparkles, label: "AI Trip History", desc: "Generated itineraries", path: "/itinerary" },
   { icon: Bell, label: "Notifications", desc: "Alerts & reminders", path: "/notifications" },
   { icon: Shield, label: "Privacy & Security", desc: "Account protection", path: "/profile/security" },
+  { icon: Database, label: "Privacy & Data", desc: "Export or delete your data", path: "/profile/privacy" },
   { icon: Settings, label: "Settings", desc: "App preferences", path: "/profile/settings" },
   { icon: LayoutDashboard, label: "Admin Dashboard", desc: "Manage app content (CMS)", path: "/dashboard" },
 ];

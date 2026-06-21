@@ -1,0 +1,277 @@
+import { useEffect, useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { formatIDR } from "@/lib/currency";
+import { can } from "@/dashboard/rbac";
+import { useRole } from "@/dashboard/RoleContext";
+import { openWhatsApp } from "@/lib/whatsapp";
+import { Plus, Pencil, Trash2, X, Loader2, Save, MessageCircle, UserPlus, Users, Flame, Wallet, Trophy } from "lucide-react";
+import { toast } from "sonner";
+import moment from "moment";
+
+const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
+const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
+const PIPELINE = ["new", "contacted", "quoted"];
+
+const STATUS_DOT = {
+  new: "bg-blue-500",
+  contacted: "bg-amber-500",
+  quoted: "bg-indigo-500",
+  won: "bg-emerald-500",
+  lost: "bg-red-500",
+};
+
+const EMPTY = {
+  name: "", email: "", phone: "", source: "website", destination: "",
+  budget: "", status: "new", assigned_to: "", notes: "",
+};
+
+const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+export default function DashboardLeads() {
+  const { role } = useRole();
+  const [items, setItems] = useState(null);
+  const [editing, setEditing] = useState(null); // form object or null
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => setItems(await base44.entities.Lead.list("-created_date", 500));
+  useEffect(() => { load(); }, []);
+
+  const startAdd = () => setEditing({ ...EMPTY });
+  const startEdit = (l) => setEditing({
+    ...EMPTY, ...l,
+    budget: l.budget ?? "",
+    source: l.source || "website",
+    status: l.status || "new",
+  });
+  const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
+
+  const canEdit = can(role, "leads", "edit");
+  const canDelete = can(role, "leads", "delete");
+  const canCreate = can(role, "leads", "create");
+  const canConvert = can(role, "customers", "create");
+
+  const save = async () => {
+    if (!editing.name.trim()) { toast.error("Name is required"); return; }
+    setSaving(true);
+    try {
+      const payload = {
+        name: editing.name, email: editing.email, phone: editing.phone,
+        source: editing.source || "website", destination: editing.destination,
+        budget: editing.budget ? Number(editing.budget) : 0,
+        status: editing.status || "new",
+        assigned_to: editing.assigned_to || "",
+        notes: editing.notes || "",
+      };
+      if (editing.id) await base44.entities.Lead.update(editing.id, payload);
+      else await base44.entities.Lead.create(payload);
+      toast.success(editing.id ? "Lead updated" : "Lead added");
+      setEditing(null);
+      await load();
+    } catch { toast.error("Couldn't save lead"); }
+    finally { setSaving(false); }
+  };
+
+  const setStatus = async (id, status) => {
+    if (!canEdit) return;
+    try {
+      await base44.entities.Lead.update(id, { status });
+      toast.success("Stage updated");
+      await load();
+    } catch { toast.error("Couldn't update stage"); }
+  };
+
+  const remove = async (l) => {
+    try {
+      await base44.entities.Lead.delete(l.id);
+      toast.success("Lead removed");
+      await load();
+    } catch { toast.error("Couldn't remove lead"); }
+  };
+
+  const convert = async (l) => {
+    try {
+      await base44.entities.Customer.create({
+        name: l.name, email: l.email, phone: l.phone,
+        city: "", country: "", tier: "bronze", status: "active",
+        lifetime_spend: 0, joined_date: moment().format("YYYY-MM-DD"),
+        notes: `Converted from lead. ${l.notes || ""}`.trim(),
+      });
+      await base44.entities.Lead.update(l.id, { status: "won" });
+      toast.success("Converted to customer");
+      await load();
+    } catch { toast.error("Couldn't convert lead"); }
+  };
+
+  const total = items?.length || 0;
+  const open = items?.filter((l) => l.status !== "won" && l.status !== "lost").length || 0;
+  const pipeline = items?.filter((l) => PIPELINE.includes(l.status)).reduce((s, l) => s + (Number(l.budget) || 0), 0) || 0;
+  const won = items?.filter((l) => l.status === "won").length || 0;
+
+  return (
+    <div className="p-8 max-w-7xl">
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Leads</h1>
+          <p className="text-sm text-mora-neutral mt-0.5">Track enquiries through the sales pipeline.</p>
+        </div>
+        {!editing && canCreate && (
+          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+            <Plus className="w-4 h-4" /> New lead
+          </button>
+        )}
+      </header>
+
+      {/* KPI row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Kpi icon={Users} label="Total leads" value={total} />
+        <Kpi icon={Flame} label="Open" value={open} />
+        <Kpi icon={Wallet} label="Pipeline value" value={formatIDR(pipeline)} />
+        <Kpi icon={Trophy} label="Won" value={won} />
+      </div>
+
+      {editing && (
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6 max-w-2xl">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit lead" : "New lead"}</h2>
+            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+          </div>
+          <div className="space-y-3">
+            <Row2>
+              <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Jane Traveler" /></Fld>
+              <Fld label="Email"><input type="email" value={editing.email} onChange={(e) => upd("email", e.target.value)} className="dash-input" placeholder="jane@example.com" /></Fld>
+            </Row2>
+            <Row2>
+              <Fld label="Phone"><input value={editing.phone} onChange={(e) => upd("phone", e.target.value)} className="dash-input" placeholder="+62…" /></Fld>
+              <Fld label="Source">
+                <select value={editing.source} onChange={(e) => upd("source", e.target.value)} className="dash-input capitalize">
+                  {SOURCES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
+                </select>
+              </Fld>
+            </Row2>
+            <Row2>
+              <Fld label="Destination"><input value={editing.destination} onChange={(e) => upd("destination", e.target.value)} className="dash-input" placeholder="Bali, Indonesia" /></Fld>
+              <Fld label="Budget (IDR)"><input type="number" value={editing.budget} onChange={(e) => upd("budget", e.target.value)} className="dash-input" placeholder="25000000" /></Fld>
+            </Row2>
+            <Row2>
+              <Fld label="Status">
+                <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input capitalize">
+                  {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
+                </select>
+              </Fld>
+              <Fld label="Assigned to"><input value={editing.assigned_to} onChange={(e) => upd("assigned_to", e.target.value)} className="dash-input" placeholder="Staff name" /></Fld>
+            </Row2>
+            <Fld label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Enquiry details, preferences…" /></Fld>
+          </div>
+          <div className="flex gap-2 pt-5">
+            <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
+            </button>
+            <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {items == null ? (
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+      ) : (
+        <div className="overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="flex gap-4 min-w-max">
+            {STATUSES.map((status) => {
+              const col = items.filter((l) => (l.status || "new") === status);
+              return (
+                <div key={status} className="w-72 shrink-0">
+                  <div className="flex items-center gap-2 mb-3 px-1">
+                    <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
+                    <h3 className="font-display font-semibold text-mora-primary">{cap(status)}</h3>
+                    <span className="text-xs text-mora-neutral/60">{col.length}</span>
+                  </div>
+                  <div className="space-y-3">
+                    {col.map((l) => (
+                      <div key={l.id} className="bg-white rounded-xl border border-mora-primary/10 p-3">
+                        <div className="font-medium text-mora-primary truncate">{l.name}</div>
+                        <div className="text-xs text-mora-neutral mt-0.5 truncate">
+                          {[l.destination, l.source].filter(Boolean).join(" · ") || "—"}
+                        </div>
+                        <div className="text-sm font-semibold text-gold mt-1">{formatIDR(Number(l.budget) || 0)}</div>
+                        {l.assigned_to && <div className="text-[10px] text-mora-neutral/60 uppercase tracking-wider mt-1">{l.assigned_to}</div>}
+
+                        <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-mora-primary/5">
+                          {canEdit && (
+                            <select
+                              value={l.status || "new"}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => { e.stopPropagation(); setStatus(l.id, e.target.value); }}
+                              className="text-[11px] rounded-lg border border-mora-primary/15 bg-white px-2 py-1 text-mora-primary capitalize outline-none focus:border-mora-gold/50 flex-1 min-w-0"
+                              title="Move stage"
+                            >
+                              {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
+                            </select>
+                          )}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}
+                            className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
+                            title="WhatsApp"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                          </button>
+                          {canConvert && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); convert(l); }}
+                              className="w-7 h-7 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
+                              title="Convert to customer"
+                            >
+                              <UserPlus className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canEdit && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); startEdit(l); }}
+                              className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
+                              title="Edit"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); remove(l); }}
+                              className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 shrink-0"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {col.length === 0 && (
+                      <p className="text-xs text-mora-neutral/50 text-center py-6 border border-dashed border-mora-primary/10 rounded-xl">No leads</p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const Kpi = ({ icon: Icon, label, value }) => (
+  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4">
+    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+    <div className="min-w-0">
+      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-xl font-display font-bold text-mora-primary truncate">{value}</div>
+    </div>
+  </div>
+);
+
+const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const Fld = ({ label, children }) => (
+  <div>
+    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    {children}
+  </div>
+);

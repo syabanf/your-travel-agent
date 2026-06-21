@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -8,13 +8,24 @@ const GROUPS = [
   { title: "Insight Center", items: [
     { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Overview", res: "overview" },
     { to: "/dashboard/reports", icon: BarChart3, label: "Reports", res: "reports" },
+    { to: "/dashboard/business", icon: TrendingUp, label: "Business", res: "reports" },
   ] },
-  { title: "Data Center", items: [
+  { title: "Sales & CRM", items: [
+    { to: "/dashboard/leads", icon: Target, label: "Leads", res: "leads" },
+    { to: "/dashboard/customers", icon: Users, label: "Customers", res: "customers" },
+    { to: "/dashboard/bookings", icon: CalendarCheck, label: "Trips & Bookings", res: "bookings" },
+  ] },
+  { title: "Catalog", items: [
     { to: "/dashboard/destinations", icon: MapPin, label: "Destinations", res: "destinations" },
     { to: "/dashboard/promotions", icon: Megaphone, label: "Promotions & Events", res: "promotions" },
-    { to: "/dashboard/bookings", icon: CalendarCheck, label: "Trips & Bookings", res: "bookings" },
-    { to: "/dashboard/customers", icon: Users, label: "Customers", res: "customers" },
+    { to: "/dashboard/suppliers", icon: Building2, label: "Suppliers", res: "suppliers" },
+  ] },
+  { title: "Growth", items: [
+    { to: "/dashboard/marketing", icon: Send, label: "Marketing", res: "marketing" },
+  ] },
+  { title: "System", items: [
     { to: "/dashboard/team", icon: Shield, label: "Team & Roles", res: "team" },
+    { to: "/dashboard/audit", icon: History, label: "Audit Log", res: "audit" },
   ] },
 ];
 

@@ -4,9 +4,10 @@ import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import { printDocument, tripItineraryHTML } from "@/lib/voucher";
 import { toast } from "sonner";
 import moment from "moment";
-import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save, Printer, User } from "lucide-react";
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -68,6 +69,7 @@ export default function DashboardTripDetail() {
   const [members, setMembers] = useState([]);
   const [memberForm, setMemberForm] = useState(null);
   const [savingMember, setSavingMember] = useState(false);
+  const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bannerOk, setBannerOk] = useState(true);
 
@@ -83,10 +85,12 @@ export default function DashboardTripDetail() {
           base44.entities.TripMember.filter({ trip_id: id }),
         ]);
         if (!alive) return;
-        setTrip(trips?.[0] || null);
+        const t0 = trips?.[0] || null;
+        setTrip(t0);
         setItems(Array.isArray(itineraryItems) ? itineraryItems : []);
         setRelated((Array.isArray(allBookings) ? allBookings : []).filter((b) => b.trip_id === id));
         setMembers(Array.isArray(tripMembers) ? tripMembers : []);
+        if (t0?.customer_id) base44.entities.Customer.filter({ id: t0.customer_id }).then((r) => alive && setCustomer(r[0] || null));
       } catch {
         if (alive) toast.error("Couldn't load this trip");
       } finally {
@@ -146,6 +150,8 @@ export default function DashboardTripDetail() {
       toast.error("Couldn't delete trip");
     }
   };
+
+  const printItinerary = () => printDocument("MORA Itinerary", tripItineraryHTML(trip, items, members));
 
   // --- Members ---
   const canManageMembers = can(role, "trips", "create") || can(role, "trips", "edit") || can(role, "trips", "delete");
@@ -216,14 +222,24 @@ export default function DashboardTripDetail() {
       )}
 
       {/* 2. Sub-header */}
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-mora-neutral">
-        {trip.destination && (
-          <span className="inline-flex items-center gap-1.5 text-mora-primary font-medium">
-            <MapPin className="w-4 h-4 text-gold" /> {trip.destination}
-          </span>
-        )}
-        <Pill s={trip.status} />
-        {dateRange && <span>{dateRange}</span>}
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-mora-neutral flex-1 min-w-0">
+          {trip.destination && (
+            <span className="inline-flex items-center gap-1.5 text-mora-primary font-medium">
+              <MapPin className="w-4 h-4 text-gold" /> {trip.destination}
+            </span>
+          )}
+          <Pill s={trip.status} />
+          {dateRange && <span>{dateRange}</span>}
+          {customer && (
+            <Link to={`/dashboard/customers/${customer.id}`} className="inline-flex items-center gap-1.5 text-mora-primary hover:text-gold">
+              <User className="w-4 h-4 text-gold" /> {customer.name}
+            </Link>
+          )}
+        </div>
+        <button onClick={printItinerary} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3 py-1.5 rounded-xl shrink-0">
+          <Printer className="w-4 h-4" /> Print itinerary
+        </button>
       </div>
 
       {/* 3. KPI row */}

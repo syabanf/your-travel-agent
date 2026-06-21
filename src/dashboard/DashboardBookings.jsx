@@ -22,8 +22,8 @@ const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
 const BOOKING_TYPES = ["flight", "hotel", "train", "bus", "car", "attraction", "restaurant", "activity"];
 const TRAVEL_STYLES = ["luxury", "cultural", "relaxation", "adventure", "budget", "family"];
 
-const EMPTY_BOOKING = { type: "hotel", title: "", provider: "", status: "pending", trip_id: "", location: "", check_in: "", check_out: "", guests: "", price: "", confirmation_code: "", image_url: "", notes: "" };
-const EMPTY_TRIP = { title: "", destination: "", status: "draft", start_date: "", end_date: "", travelers: "", budget_total: "", travel_style: "", cover_image: "", notes: "" };
+const EMPTY_BOOKING = { type: "hotel", title: "", provider: "", status: "pending", trip_id: "", customer_id: "", supplier_id: "", location: "", check_in: "", check_out: "", guests: "", price: "", cost_price: "", confirmation_code: "", image_url: "", notes: "" };
+const EMPTY_TRIP = { title: "", destination: "", customer_id: "", status: "draft", start_date: "", end_date: "", travelers: "", budget_total: "", travel_style: "", cover_image: "", notes: "" };
 
 export default function DashboardBookings() {
   const { role } = useRole();
@@ -32,10 +32,14 @@ export default function DashboardBookings() {
   const [bookings, setBookings] = useState(null);
   const [editing, setEditing] = useState(null); // { kind: 'booking'|'trip', data } | null
   const [saving, setSaving] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
 
   const load = async () => {
     setTrips(await base44.entities.Trip.list("-created_date", 500));
     setBookings(await base44.entities.Booking.list("-created_date", 500));
+    setCustomers(await base44.entities.Customer.list("-created_date", 500));
+    setSuppliers(await base44.entities.Supplier.list("-created_date", 500));
   };
   useEffect(() => { load(); }, []);
 
@@ -48,14 +52,15 @@ export default function DashboardBookings() {
   const startAddTrip = () => setEditing({ kind: "trip", data: { ...EMPTY_TRIP } });
   const startEditBooking = (b) => setEditing({ kind: "booking", data: {
     ...EMPTY_BOOKING, ...b,
-    trip_id: b.trip_id || "",
+    trip_id: b.trip_id || "", customer_id: b.customer_id || "", supplier_id: b.supplier_id || "",
     check_in: b.check_in ? moment(b.check_in).format("YYYY-MM-DD") : "",
     check_out: b.check_out ? moment(b.check_out).format("YYYY-MM-DD") : "",
-    guests: b.guests ?? "", price: b.price ?? "",
+    guests: b.guests ?? "", price: b.price ?? "", cost_price: b.cost_price ?? "",
     confirmation_code: b.confirmation_code || "", image_url: b.image_url || "", notes: b.notes || "",
   } });
   const startEditTrip = (t) => setEditing({ kind: "trip", data: {
     ...EMPTY_TRIP, ...t,
+    customer_id: t.customer_id || "",
     start_date: t.start_date ? moment(t.start_date).format("YYYY-MM-DD") : "",
     end_date: t.end_date ? moment(t.end_date).format("YYYY-MM-DD") : "",
     travelers: t.travelers ?? "", budget_total: t.budget_total ?? "",
@@ -73,10 +78,12 @@ export default function DashboardBookings() {
       if (kind === "booking") {
         const payload = {
           type: data.type, title: data.title, provider: data.provider, status: data.status || "pending",
-          trip_id: data.trip_id || undefined, location: data.location,
+          trip_id: data.trip_id || undefined, customer_id: data.customer_id || undefined, supplier_id: data.supplier_id || undefined,
+          location: data.location,
           check_in: data.check_in || undefined, check_out: data.check_out || undefined,
           guests: data.guests ? Number(data.guests) : undefined,
-          price: data.price ? Number(data.price) : 0, currency: "IDR",
+          price: data.price ? Number(data.price) : 0,
+          cost_price: data.cost_price ? Number(data.cost_price) : 0, currency: "IDR",
           confirmation_code: data.confirmation_code || undefined,
           image_url: data.image_url || undefined, notes: data.notes || "",
         };
@@ -84,7 +91,7 @@ export default function DashboardBookings() {
         else await base44.entities.Booking.create(payload);
       } else {
         const payload = {
-          title: data.title, destination: data.destination, status: data.status || "draft",
+          title: data.title, destination: data.destination, customer_id: data.customer_id || undefined, status: data.status || "draft",
           start_date: data.start_date || undefined, end_date: data.end_date || undefined,
           travelers: data.travelers ? Number(data.travelers) : undefined,
           budget_total: data.budget_total ? Number(data.budget_total) : 0, budget_currency: "IDR",
@@ -164,6 +171,20 @@ export default function DashboardBookings() {
                   </select>
                 </Fld>
               </Row2>
+              <Row2>
+                <Fld label="Customer">
+                  <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
+                    <option value="">— None —</option>
+                    {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </Fld>
+                <Fld label="Supplier">
+                  <select value={d.supplier_id} onChange={(e) => upd("supplier_id", e.target.value)} className="dash-input">
+                    <option value="">— None —</option>
+                    {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </Fld>
+              </Row2>
               <Fld label="Location"><input value={d.location} onChange={(e) => upd("location", e.target.value)} className="dash-input" placeholder="Seminyak, Bali" /></Fld>
               <Row2>
                 <Fld label="Check-in"><input type="date" value={d.check_in} onChange={(e) => upd("check_in", e.target.value)} className="dash-input" /></Fld>
@@ -174,9 +195,10 @@ export default function DashboardBookings() {
                 <Fld label="Price (IDR)"><input type="number" value={d.price} onChange={(e) => upd("price", e.target.value)} className="dash-input" placeholder="4200000" /></Fld>
               </Row2>
               <Row2>
+                <Fld label="Cost price (IDR)"><input type="number" value={d.cost_price} onChange={(e) => upd("cost_price", e.target.value)} className="dash-input" placeholder="3300000" /></Fld>
                 <Fld label="Confirmation code"><input value={d.confirmation_code} onChange={(e) => upd("confirmation_code", e.target.value)} className="dash-input" placeholder="AB-558210" /></Fld>
-                <Fld label="Image URL"><input value={d.image_url} onChange={(e) => upd("image_url", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
               </Row2>
+              <Fld label="Image URL"><input value={d.image_url} onChange={(e) => upd("image_url", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
               <Fld label="Notes"><textarea value={d.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input !h-auto py-2" rows={2} /></Fld>
             </div>
           ) : (
@@ -190,6 +212,12 @@ export default function DashboardBookings() {
                   </select>
                 </Fld>
               </Row2>
+              <Fld label="Customer">
+                <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
+                  <option value="">— None —</option>
+                  {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </Fld>
               <Row2>
                 <Fld label="Start date"><input type="date" value={d.start_date} onChange={(e) => upd("start_date", e.target.value)} className="dash-input" /></Fld>
                 <Fld label="End date"><input type="date" value={d.end_date} onChange={(e) => upd("end_date", e.target.value)} className="dash-input" /></Fld>

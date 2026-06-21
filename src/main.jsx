@@ -6,3 +6,10 @@ import '@/index.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <App />
 )
+
+// Register the offline service worker in production only (keeps dev/HMR clean).
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}

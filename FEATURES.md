@@ -72,6 +72,22 @@ The dashboard manages the content that powers the mobile app — changes show up
 
 ---
 
+## 🧭 Agency operations (CRM, commissions, marketing, compliance)
+The console now covers the operational layer a real travel agency needs — all running on the local mock backend (no external services). The sidebar is grouped into **Insight Center**, **Sales & CRM**, **Catalog**, **Growth** and **System**.
+
+- **Leads pipeline** (`/dashboard/leads`) — a 5-stage Kanban (new → contacted → quoted → won → lost) with create/edit, drag-by-dropdown stage changes, **WhatsApp follow-up**, and **convert-to-customer**.
+- **Customer ↔ booking linking** — bookings and trips now carry a `customer_id`; a customer's detail page lists all their trips & bookings with totals, and bookings/trips can be assigned a customer in their forms.
+- **Suppliers** (`/dashboard/suppliers`) — supplier directory (flights/hotels/activities/transport/DMC) with CRUD, ratings, commission rates, and a detail page showing each supplier's bookings, sales, cost and **estimated commission**.
+- **Commissions & margins** — bookings carry a `cost_price`; the booking detail shows **sell / cost / margin (%) / commission**, and the Business page rolls these up.
+- **Vouchers & itineraries (PDF)** — one-click **print-to-PDF** booking vouchers and trip itineraries (client-side, no backend).
+- **WhatsApp** — click-to-chat deep links for booking confirmations, customer messages and lead follow-ups.
+- **Refunds & cancellations** — cancel a booking with a refund amount + reason; the detail page records and displays the refund.
+- **Marketing** (`/dashboard/marketing`) — campaigns across email / WhatsApp / push with audience **segments** (by tier/status), promo codes, scheduling and a simulated **"Send now"** that sizes the recipient list.
+- **Business intelligence** (`/dashboard/business`) — sales funnel, lead-conversion %, **gross-margin** analysis, margin-by-month, and supplier & agent performance tables (CSV export).
+- **Audit log** (`/dashboard/audit`) — every create/update/delete in the console is recorded (actor, action, entity, summary) with filters.
+- **Installable PWA** — web-app manifest, branded icon, theme color and an offline-shell service worker (production), so the mobile app can be added to the home screen.
+- **Privacy & data** — in-app Privacy Policy & Terms pages, consent toggles, and **export / delete all my data** (the local data store) from Profile → Privacy & Data.
+
 ## ⚙️ Platform
 - **Local mock backend** ([`src/api/base44Client.js`](src/api/base44Client.js)) — a drop-in replacement for the original Base44 SDK, backed by `localStorage`. Entities: `Trip`, `Booking`, `ItineraryItem`, `Notification`, `PersonalAssistant`, `ChatMessage`, `Destination`, `Promotion`, `Customer`, `StaffMember`.
 - **Stubbed, pluggable AI** ([`src/api/mockLLM.js`](src/api/mockLLM.js)) — canned, schema-aware responses; point it at a real provider with `configureLLM()`.

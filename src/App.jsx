@@ -41,6 +41,9 @@ import ProfileTravelers from './pages/ProfileTravelers';
 import ProfilePayments from './pages/ProfilePayments';
 import ProfileSecurity from './pages/ProfileSecurity';
 import ProfileSettings from './pages/ProfileSettings';
+import ProfilePrivacy from './pages/ProfilePrivacy';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 // Admin dashboard (desktop)
 import DashboardLayout from './dashboard/DashboardLayout';
@@ -56,6 +59,12 @@ import DashboardBookingDetail from './dashboard/DashboardBookingDetail';
 import DashboardTripDetail from './dashboard/DashboardTripDetail';
 import DashboardReports from './dashboard/DashboardReports';
 import DashboardTeam from './dashboard/DashboardTeam';
+import DashboardLeads from './dashboard/DashboardLeads';
+import DashboardSuppliers from './dashboard/DashboardSuppliers';
+import DashboardSupplierDetail from './dashboard/DashboardSupplierDetail';
+import DashboardMarketing from './dashboard/DashboardMarketing';
+import DashboardBusiness from './dashboard/DashboardBusiness';
+import DashboardAudit from './dashboard/DashboardAudit';
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -91,7 +100,13 @@ const AppRoutes = () => (
         <Route path="trips/:id" element={<DashboardTripDetail />} />
         <Route path="customers" element={<DashboardCustomers />} />
         <Route path="customers/:id" element={<DashboardCustomerDetail />} />
+        <Route path="leads" element={<DashboardLeads />} />
+        <Route path="suppliers" element={<DashboardSuppliers />} />
+        <Route path="suppliers/:id" element={<DashboardSupplierDetail />} />
+        <Route path="marketing" element={<DashboardMarketing />} />
         <Route path="reports" element={<DashboardReports />} />
+        <Route path="business" element={<DashboardBusiness />} />
+        <Route path="audit" element={<DashboardAudit />} />
         <Route path="team" element={<DashboardTeam />} />
       </Route>
 
@@ -125,6 +140,9 @@ const AppRoutes = () => (
         <Route path="/profile/payments" element={<ProfilePayments />} />
         <Route path="/profile/security" element={<ProfileSecurity />} />
         <Route path="/profile/settings" element={<ProfileSettings />} />
+        <Route path="/profile/privacy" element={<ProfilePrivacy />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="*" element={<PageNotFound />} />
       </Route>

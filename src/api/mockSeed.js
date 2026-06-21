@@ -23,6 +23,7 @@ export function buildSeed() {
   const iso = (offsetDays) => at(offsetDays).toISOString();
   const date = (offsetDays) => at(offsetDays).toISOString().slice(0, 10); // YYYY-MM-DD
   const by = 'traveler@mora.app';
+  const cost = (p) => Math.round((p * 0.78) / 50000) * 50000; // indicative supplier cost
 
   const Trip = [
     {
@@ -32,7 +33,7 @@ export function buildSeed() {
       start_date: date(-2), end_date: date(5), status: 'active', travelers: 2,
       travel_style: 'luxury', budget_total: 48000000, budget_currency: 'IDR',
       notes: 'Anniversary trip — focus on beaches, spas and fine dining.',
-      pace: 'moderate', trip_type: 'couple', is_ai_generated: false,
+      pace: 'moderate', trip_type: 'couple', is_ai_generated: false, customer_id: 'cust_putri',
     },
     {
       id: 'trip_kyoto', created_date: iso(-8), updated_date: iso(-3), created_by: by,
@@ -41,7 +42,7 @@ export function buildSeed() {
       start_date: date(34), end_date: date(41), status: 'planned', travelers: 2,
       travel_style: 'cultural', budget_total: 62000000, budget_currency: 'IDR',
       notes: 'Temples, tea ceremonies, and autumn gardens.',
-      pace: 'relaxed', trip_type: 'couple', is_ai_generated: true,
+      pace: 'relaxed', trip_type: 'couple', is_ai_generated: true, customer_id: 'cust_kenji',
     },
     {
       id: 'trip_santorini', created_date: iso(-4), updated_date: iso(-4), created_by: by,
@@ -50,7 +51,7 @@ export function buildSeed() {
       start_date: date(70), end_date: date(75), status: 'draft', travelers: 4,
       travel_style: 'relaxation', budget_total: 54000000, budget_currency: 'IDR',
       notes: 'Caldera views, white villages, sunsets in Oia.',
-      pace: 'relaxed', trip_type: 'group', is_ai_generated: false,
+      pace: 'relaxed', trip_type: 'group', is_ai_generated: false, customer_id: 'cust_andi',
     },
   ];
 
@@ -61,6 +62,7 @@ export function buildSeed() {
       provider: 'Garuda Indonesia', check_in: iso(-2), location: 'Singapore → Bali',
       confirmation_code: 'GA-7Q2K', price: 6800000, currency: 'IDR', status: 'confirmed',
       guests: 2, notes: 'GA407 · Business · Direct',
+      customer_id: 'cust_putri', supplier_id: 'sup_garuda', cost_price: cost(6800000),
     },
     {
       id: 'bk_hotel', created_date: iso(-10), updated_date: iso(-10), created_by: by,
@@ -70,6 +72,7 @@ export function buildSeed() {
       price: 4200000, currency: 'IDR', status: 'confirmed', guests: 2,
       image_url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
       notes: 'Ocean Suite · Infinity pool, Spa, Free breakfast',
+      customer_id: 'cust_putri', supplier_id: 'sup_azure', cost_price: cost(4200000),
     },
     {
       id: 'bk_attraction', created_date: iso(-6), updated_date: iso(-6), created_by: by,
@@ -77,6 +80,7 @@ export function buildSeed() {
       provider: 'Bali Adventures', check_in: iso(1), location: 'Kintamani, Bali',
       price: 980000, currency: 'IDR', status: 'pending', guests: 2,
       notes: 'Adventure · 6h · Guide, Transport',
+      customer_id: 'cust_putri', supplier_id: 'sup_baliadv', cost_price: cost(980000),
     },
   ];
 
@@ -148,5 +152,33 @@ export function buildSeed() {
     { id: 'tm_san_guest', created_date: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Hana Kim', email: 'hana.kim@example.com', phone: '+82 10 5555 6666', role: 'guest', status: 'invited' },
   ];
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember };
+  // Suppliers travel products are sourced from (flights, hotels, activities, DMCs).
+  const Supplier = [
+    { id: 'sup_garuda', created_date: iso(-200), created_by: by, name: 'Garuda Indonesia', type: 'flight', contact_email: 'agency@garuda.example', contact_phone: '+62 21 2351 9999', country: 'Indonesia', commission_rate: 7, rating: 4.6, status: 'active', notes: 'National carrier — strong domestic network.' },
+    { id: 'sup_azure', created_date: iso(-180), created_by: by, name: 'Azure Bay Resort', type: 'hotel', contact_email: 'sales@azurebay.example', contact_phone: '+62 361 555 200', country: 'Indonesia', commission_rate: 12, rating: 4.8, status: 'active', notes: 'Preferred Seminyak partner.' },
+    { id: 'sup_baliadv', created_date: iso(-160), created_by: by, name: 'Bali Adventures', type: 'activity', contact_email: 'book@baliadv.example', contact_phone: '+62 361 555 311', country: 'Indonesia', commission_rate: 15, rating: 4.7, status: 'active', notes: 'Treks, rafting, sunrise tours.' },
+    { id: 'sup_hotelbeds', created_date: iso(-140), created_by: by, name: 'Hotelbeds (DMC)', type: 'dmc', contact_email: 'partners@hotelbeds.example', contact_phone: '+34 971 000 000', country: 'Spain', commission_rate: 10, rating: 4.5, status: 'active', notes: 'Global hotel & transfer aggregator.' },
+    { id: 'sup_viator', created_date: iso(-120), created_by: by, name: 'Viator', type: 'activity', contact_email: 'supply@viator.example', contact_phone: '+1 415 000 0000', country: 'United States', commission_rate: 18, rating: 4.4, status: 'active', notes: 'Worldwide tours & experiences.' },
+    { id: 'sup_railink', created_date: iso(-90), created_by: by, name: 'Railink Express', type: 'transport', contact_email: 'b2b@railink.example', contact_phone: '+62 21 2555 700', country: 'Indonesia', commission_rate: 6, rating: 4.2, status: 'inactive', notes: 'Airport & intercity rail.' },
+  ];
+
+  // Sales pipeline — enquiries that have not yet converted to customers/trips.
+  const Lead = [
+    { id: 'lead_dimas', created_date: iso(-9), created_by: by, name: 'Dimas Aji', email: 'dimas.aji@example.com', phone: '+62 812 7777 1234', source: 'website', destination: 'Maldives', budget: 60000000, status: 'new', assigned_to: 'Dewi Lestari', notes: 'Honeymoon, overwater villa, July.' },
+    { id: 'lead_clara', created_date: iso(-7), created_by: by, name: 'Clara Wijaya', email: 'clara.w@example.com', phone: '+62 813 2222 8899', source: 'instagram', destination: 'Japan', budget: 45000000, status: 'contacted', assigned_to: 'Tom Becker', notes: 'Family of 4, cherry blossom season.' },
+    { id: 'lead_arjun', created_date: iso(-6), created_by: by, name: 'Arjun Mehta', email: 'arjun.m@example.com', phone: '+91 98 1010 2020', source: 'referral', destination: 'Bali', budget: 30000000, status: 'quoted', assigned_to: 'Dewi Lestari', notes: 'Group of 6, villa + activities. Quote sent.' },
+    { id: 'lead_sophie', created_date: iso(-4), created_by: by, name: 'Sophie Martin', email: 'sophie.m@example.com', phone: '+33 6 12 34 56 78', source: 'whatsapp', destination: 'Switzerland', budget: 80000000, status: 'won', assigned_to: 'Tom Becker', notes: 'Booked alpine tour — converted.' },
+    { id: 'lead_budi', created_date: iso(-3), created_by: by, name: 'Budi Santoso', email: 'budi.s@example.com', phone: '+62 856 4545 6767', source: 'walk-in', destination: 'Dubai', budget: 25000000, status: 'lost', assigned_to: 'Dewi Lestari', notes: 'Went with another agency on price.' },
+    { id: 'lead_mei', created_date: iso(-2), created_by: by, name: 'Mei Lin', email: 'mei.lin@example.com', phone: '+65 9123 4567', source: 'website', destination: 'Santorini', budget: 55000000, status: 'contacted', assigned_to: 'Dewi Lestari', notes: 'Anniversary, sunset suite.' },
+  ];
+
+  // Marketing campaigns across channels.
+  const Campaign = [
+    { id: 'camp_flash', created_date: iso(-10), created_by: by, name: 'Bali Flash Sale Blast', channel: 'email', segment: 'all', promo_code: 'BALI35', discount: 35, status: 'sent', scheduled_date: date(-9), sent_count: 1240 },
+    { id: 'camp_vip', created_date: iso(-5), created_by: by, name: 'Platinum VIP Preview', channel: 'whatsapp', segment: 'platinum', promo_code: 'VIPONLY', discount: 15, status: 'sent', scheduled_date: date(-4), sent_count: 86 },
+    { id: 'camp_winback', created_date: iso(-2), created_by: by, name: 'We Miss You — Winback', channel: 'email', segment: 'inactive', promo_code: 'COMEBACK20', discount: 20, status: 'scheduled', scheduled_date: date(3), sent_count: 0 },
+    { id: 'camp_summer', created_date: iso(-1), created_by: by, name: 'Summer Escapes Teaser', channel: 'push', segment: 'all', promo_code: '', discount: 0, status: 'draft', scheduled_date: '', sent_count: 0 },
+  ];
+
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [] };
 }

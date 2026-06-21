@@ -4,18 +4,13 @@ import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import { printDocument, bookingVoucherHTML } from "@/lib/voucher";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { toast } from "sonner";
 import moment from "moment";
 import {
-  ArrowLeft,
-  Building2,
-  MapPin,
-  CalendarDays,
-  Users,
-  Wallet,
-  Hash,
-  StickyNote,
-  Trash2,
+  ArrowLeft, Building2, MapPin, CalendarDays, Users, Wallet, Hash, StickyNote,
+  Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp,
 } from "lucide-react";
 
 const statusPill = {
@@ -44,17 +39,24 @@ export default function DashboardBookingDetail() {
   const { role } = useRole();
   const navigate = useNavigate();
   const [b, setB] = useState(null);
+  const [customer, setCustomer] = useState(null);
+  const [supplier, setSupplier] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundReason, setRefundReason] = useState("");
 
   useEffect(() => {
     let active = true;
     (async () => {
       setLoading(true);
       const rows = await base44.entities.Booking.filter({ id });
-      if (active) {
-        setB(rows[0] || null);
-        setLoading(false);
-      }
+      const bk = rows[0] || null;
+      if (!active) return;
+      setB(bk);
+      setLoading(false);
+      if (bk?.customer_id) base44.entities.Customer.filter({ id: bk.customer_id }).then((r) => active && setCustomer(r[0] || null));
+      if (bk?.supplier_id) base44.entities.Supplier.filter({ id: bk.supplier_id }).then((r) => active && setSupplier(r[0] || null));
     })();
     return () => { active = false; };
   }, [id]);
@@ -66,22 +68,13 @@ export default function DashboardBookingDetail() {
   );
 
   if (loading) {
-    return (
-      <div className="p-8 max-w-3xl">
-        <div className="flex justify-center py-16">
-          <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-        </div>
-      </div>
-    );
+    return <div className="p-8 max-w-3xl"><div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div></div>;
   }
-
   if (!b) {
     return (
       <div className="p-8 max-w-3xl">
         <div className="mb-6">{backLink}</div>
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center text-mora-neutral">
-          Booking not found.
-        </div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center text-mora-neutral">Booking not found.</div>
       </div>
     );
   }
@@ -91,57 +84,91 @@ export default function DashboardBookingDetail() {
     setB((prev) => ({ ...prev, status }));
     toast.success("Status updated");
   };
-
   const remove = async () => {
     await base44.entities.Booking.delete(id);
     toast.success("Booking deleted");
     navigate("/dashboard/bookings");
   };
+  const cancelBooking = async () => {
+    const amt = refundAmount ? Number(refundAmount) : 0;
+    const patch = { status: "cancelled", refunded_amount: amt, cancellation_reason: refundReason || "", cancelled_date: moment().format("YYYY-MM-DD") };
+    await base44.entities.Booking.update(id, patch);
+    setB((prev) => ({ ...prev, ...patch }));
+    setCancelOpen(false);
+    toast.success(amt ? `Cancelled · refund ${formatIDR(amt)}` : "Booking cancelled");
+  };
+  const printVoucher = () => printDocument(`MORA Voucher`, bookingVoucherHTML(b, { supplierName: supplier?.name, customerName: customer?.name }));
+  const sendWhatsApp = () => {
+    const code = b.confirmation_code || `MORA-${String(id).slice(-6).toUpperCase()}`;
+    const msg = `Hi ${customer?.name || "there"}, your MORA booking "${b.title}" is ${b.status}. Confirmation: ${code}. Total: ${formatIDR(b.price || 0)}. Thank you for booking with MORA Travel!`;
+    openWhatsApp(customer?.phone, msg);
+  };
 
   const canEdit = can(role, "bookings", "edit");
   const canDelete = can(role, "bookings", "delete");
-  const dates =
-    b.check_in
-      ? `${moment(b.check_in).format("MMM D, YYYY")}${b.check_out ? ` → ${moment(b.check_out).format("MMM D, YYYY")}` : ""}`
-      : "";
+  const dates = b.check_in ? `${moment(b.check_in).format("MMM D, YYYY")}${b.check_out ? ` → ${moment(b.check_out).format("MMM D, YYYY")}` : ""}` : "";
+  const price = b.price || 0;
+  const costPrice = b.cost_price || 0;
+  const margin = price - costPrice;
+  const marginPct = price ? Math.round((margin / price) * 100) : 0;
+  const commission = supplier?.commission_rate ? Math.round((price * supplier.commission_rate) / 100) : null;
 
   return (
     <div className="p-8 max-w-3xl">
       <div className="mb-6">{backLink}</div>
 
       {b.image_url && (
-        <img
-          src={b.image_url}
-          alt={b.title}
-          className="w-full h-48 object-cover rounded-2xl mb-6"
-          onError={(e) => { e.currentTarget.style.display = "none"; }}
-        />
+        <img src={b.image_url} alt={b.title} className="w-full h-48 object-cover rounded-2xl mb-6" onError={(e) => { e.currentTarget.style.display = "none"; }} />
       )}
 
       <header className="mb-6">
         <h1 className="text-2xl font-display font-bold text-mora-primary">{b.title}</h1>
         <div className="flex items-center gap-2 mt-2">
-          {b.type && (
-            <span className="text-[11px] px-2 py-0.5 rounded-full capitalize bg-mora-primary/10 text-mora-neutral">{b.type}</span>
-          )}
+          {b.type && <span className="text-[11px] px-2 py-0.5 rounded-full capitalize bg-mora-primary/10 text-mora-neutral">{b.type}</span>}
           <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[b.status] || statusPill.pending}`}>{b.status}</span>
         </div>
       </header>
 
+      {b.status === "cancelled" && (
+        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-4 mb-6 text-sm">
+          <p className="font-medium text-red-600">Cancelled{b.cancelled_date ? ` on ${moment(b.cancelled_date).format("MMM D, YYYY")}` : ""}</p>
+          {b.refunded_amount ? <p className="text-mora-neutral mt-0.5">Refunded {formatIDR(b.refunded_amount)}</p> : null}
+          {b.cancellation_reason ? <p className="text-mora-neutral mt-0.5">Reason: {b.cancellation_reason}</p> : null}
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
         <Row icon={Building2} label="Provider">{b.provider}</Row>
+        <Row icon={User} label="Customer">{customer ? <Link to={`/dashboard/customers/${customer.id}`} className="text-mora-primary hover:text-gold font-medium">{customer.name}</Link> : (b.customer_id ? "—" : null)}</Row>
+        <Row icon={Truck} label="Supplier">{supplier ? <Link to={`/dashboard/suppliers/${supplier.id}`} className="text-mora-primary hover:text-gold font-medium">{supplier.name}</Link> : (b.supplier_id ? "—" : null)}</Row>
         <Row icon={MapPin} label="Location">{b.location}</Row>
         <Row icon={CalendarDays} label="Dates">{dates}</Row>
         <Row icon={Users} label="Guests">{b.guests}</Row>
-        <Row icon={Wallet} label="Price">
-          {b.price != null ? <span className="font-semibold text-gold">{formatIDR(b.price)}</span> : null}
-        </Row>
-        <Row icon={Hash} label="Confirmation code">
-          {b.confirmation_code ? <span className="font-mono">{b.confirmation_code}</span> : null}
-        </Row>
+        <Row icon={Hash} label="Confirmation code">{b.confirmation_code ? <span className="font-mono">{b.confirmation_code}</span> : null}</Row>
         <Row icon={StickyNote} label="Notes">{b.notes}</Row>
       </div>
 
+      {/* Financials / margin */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
+        <h2 className="text-sm font-semibold text-mora-primary mb-4 flex items-center gap-2"><Wallet className="w-4 h-4 text-gold" /> Financials</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Sell price</div><div className="text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
+          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Cost</div><div className="text-lg font-display font-bold text-mora-primary">{formatIDR(costPrice)}</div></div>
+          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-mora-neutral">({marginPct}%)</span></div></div>
+          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="text-lg font-display font-bold text-mora-primary">{commission != null ? formatIDR(commission) : "—"}</div></div>
+        </div>
+      </div>
+
+      {/* Documents & sharing */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
+        <h2 className="text-sm font-semibold text-mora-primary mb-4">Documents & sharing</h2>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={printVoucher} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><Printer className="w-4 h-4" /> Print voucher (PDF)</button>
+          <button onClick={sendWhatsApp} className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15 px-3.5 py-2 rounded-xl transition-colors"><MessageCircle className="w-4 h-4" /> Send confirmation via WhatsApp</button>
+        </div>
+      </div>
+
+      {/* Actions */}
       <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
         <h2 className="text-sm font-semibold text-mora-primary mb-4">Actions</h2>
         {!canEdit && !canDelete ? (
@@ -151,24 +178,32 @@ export default function DashboardBookingDetail() {
             {canEdit && (
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Status</label>
-                <select
-                  value={b.status}
-                  onChange={(e) => updateStatus(e.target.value)}
-                  className="dash-input max-w-xs capitalize"
-                >
-                  {BOOKING_STATUSES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
+                <select value={b.status} onChange={(e) => updateStatus(e.target.value)} className="dash-input max-w-xs capitalize">
+                  {BOOKING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             )}
+
+            {canEdit && b.status !== "cancelled" && (
+              cancelOpen ? (
+                <div className="rounded-xl border border-mora-primary/10 bg-mora-primary/[0.02] p-4 max-w-md">
+                  <p className="text-sm font-medium text-mora-primary mb-3">Cancel & refund</p>
+                  <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1">Refund amount (IDR)</label>
+                  <input type="number" value={refundAmount} onChange={(e) => setRefundAmount(e.target.value)} className="dash-input mb-3" placeholder={String(price)} />
+                  <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1">Reason</label>
+                  <input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} className="dash-input mb-3" placeholder="Customer requested / supplier issue…" />
+                  <div className="flex gap-2">
+                    <button onClick={cancelBooking} className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl"><Ban className="w-4 h-4" /> Confirm cancellation</button>
+                    <button onClick={() => setCancelOpen(false)} className="text-sm font-medium text-mora-neutral hover:bg-mora-primary/5 px-4 py-2 rounded-xl">Keep booking</button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => { setRefundAmount(String(price)); setCancelOpen(true); }} className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"><Ban className="w-4 h-4" /> Cancel & refund</button>
+              )
+            )}
+
             {canDelete && (
-              <button
-                onClick={remove}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
-              >
-                <Trash2 className="w-4 h-4" /> Delete booking
-              </button>
+              <button onClick={remove} className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /> Delete booking</button>
             )}
           </div>
         )}

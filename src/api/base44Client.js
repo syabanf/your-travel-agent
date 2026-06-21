@@ -120,6 +120,7 @@ function createEntity(name) {
       };
       rows.push(row);
       writeCollection(name, rows);
+      logAudit('create', name, row.id, row);
       return clone(row);
     },
     async bulkCreate(items = []) {
@@ -133,17 +134,33 @@ function createEntity(name) {
       if (idx === -1) throw new Error(`${name} ${id} not found`);
       rows[idx] = { ...rows[idx], ...data, id, updated_date: nowISO() };
       writeCollection(name, rows);
+      logAudit('update', name, id, rows[idx]);
       return clone(rows[idx]);
     },
     async delete(id) {
-      const rows = readCollection(name).filter((r) => r.id !== id);
+      const all = readCollection(name);
+      const removed = all.find((r) => r.id === id);
+      const rows = all.filter((r) => r.id !== id);
       writeCollection(name, rows);
+      logAudit('delete', name, id, removed);
       return { id };
     },
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog'];
+
+// Business records whose changes are written to the AuditLog (compliance trail).
+const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign']);
+function logAudit(action, name, id, data) {
+  if (!AUDITABLE.has(name)) return;
+  try {
+    const rows = readCollection('AuditLog');
+    const label = data?.title || data?.name || id;
+    rows.unshift({ id: uid(), created_date: nowISO(), actor: MOCK_USER.full_name, action, entity: name, entity_id: id, summary: `${action} ${name}${label ? ` — ${label}` : ''}` });
+    writeCollection('AuditLog', rows.slice(0, 500));
+  } catch { /* never block a write on audit logging */ }
+}
 const entities = Object.fromEntries(ENTITY_NAMES.map((n) => [n, createEntity(n)]));
 
 /* ------------------------------ seeding ---------------------------- */
@@ -163,7 +180,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v2`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v3`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -189,6 +206,37 @@ function runMigrations() {
     // 2. Seed trip members (rosters) for demo data that predates the feature.
     if (readCollection('TripMember').length === 0 && (seed.TripMember || []).length) {
       writeCollection('TripMember', seed.TripMember);
+    }
+
+    // 3. Link bookings/trips to customers + add supplier & cost for agency ops.
+    const seedBk = Object.fromEntries((seed.Booking || []).map((b) => [b.id, b]));
+    const bks = readCollection('Booking');
+    if (bks.length) {
+      let changed = false;
+      const next = bks.map((b) => {
+        const patch = {};
+        if (b.customer_id == null && seedBk[b.id]?.customer_id) patch.customer_id = seedBk[b.id].customer_id;
+        if (b.supplier_id == null && seedBk[b.id]?.supplier_id) patch.supplier_id = seedBk[b.id].supplier_id;
+        if (b.cost_price == null) patch.cost_price = seedBk[b.id]?.cost_price ?? Math.round(((b.price || 0) * 0.78) / 50000) * 50000;
+        if (Object.keys(patch).length) { changed = true; return { ...b, ...patch }; }
+        return b;
+      });
+      if (changed) writeCollection('Booking', next);
+    }
+    const seedTr = Object.fromEntries((seed.Trip || []).map((t) => [t.id, t]));
+    const trs = readCollection('Trip');
+    if (trs.length) {
+      let changed = false;
+      const next = trs.map((t) => {
+        if (t.customer_id == null && seedTr[t.id]?.customer_id) { changed = true; return { ...t, customer_id: seedTr[t.id].customer_id }; }
+        return t;
+      });
+      if (changed) writeCollection('Trip', next);
+    }
+
+    // 4. Seed new agency collections if empty.
+    for (const nm of ['Supplier', 'Lead', 'Campaign']) {
+      if (readCollection(nm).length === 0 && (seed[nm] || []).length) writeCollection(nm, seed[nm]);
     }
   } catch {
     /* best-effort — never block app startup on a migration */

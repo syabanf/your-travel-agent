@@ -5,11 +5,12 @@ import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
+import { openWhatsApp } from "@/lib/whatsapp";
 import { toast } from "sonner";
 import moment from "moment";
 import {
   ChevronLeft, Trash2, Wallet, CalendarClock, Award, Phone, Mail,
-  MapPin, Globe, CalendarDays, StickyNote, MapPinned,
+  MapPin, Globe, CalendarDays, StickyNote, MapPinned, MessageCircle, Plane, CalendarCheck,
 } from "lucide-react";
 
 const TIER_BADGE = {
@@ -26,9 +27,13 @@ export default function DashboardCustomerDetail() {
   const navigate = useNavigate();
   const { role } = useRole();
   const [c, setC] = useState(undefined); // undefined = loading, null = not found
+  const [trips, setTrips] = useState([]);
+  const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     base44.entities.Customer.filter({ id }).then((r) => setC(r[0] || null));
+    base44.entities.Trip.filter({ customer_id: id }).then((r) => setTrips(r || []));
+    base44.entities.Booking.filter({ customer_id: id }).then((r) => setBookings(r || []));
   }, [id]);
 
   const remove = async () => {
@@ -90,11 +95,18 @@ export default function DashboardCustomerDetail() {
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{status}</span>
           </div>
         </div>
-        {can(role, "customers", "delete") && (
-          <button onClick={remove} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 text-red-600 hover:bg-red-50 shrink-0">
-            <Trash2 className="w-4 h-4" /> Delete
-          </button>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {c.phone && (
+            <button onClick={() => openWhatsApp(c.phone, `Hi ${c.name}, this is MORA Travel — how can we help with your next trip?`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
+              <MessageCircle className="w-4 h-4" /> WhatsApp
+            </button>
+          )}
+          {can(role, "customers", "delete") && (
+            <button onClick={remove} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 text-red-600 hover:bg-red-50">
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Insight KPI row */}
@@ -138,6 +150,51 @@ export default function DashboardCustomerDetail() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Trips & bookings */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
+        <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Trips &amp; bookings</h2>
+        {trips.length === 0 && bookings.length === 0 ? (
+          <p className="text-sm text-mora-neutral/70">No trips or bookings linked to this customer yet.</p>
+        ) : (
+          <div className="space-y-4">
+            {trips.length > 0 && (
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Trips</p>
+                <ul className="divide-y divide-mora-primary/5">
+                  {trips.map((t) => (
+                    <li key={t.id}>
+                      <Link to={`/dashboard/trips/${t.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
+                        <Plane className="w-4 h-4 text-gold shrink-0" />
+                        <span className="text-sm font-medium text-mora-primary flex-1 truncate">{t.title}</span>
+                        <span className="text-xs text-mora-neutral hidden sm:block">{t.destination}</span>
+                        <span className="text-sm font-semibold text-mora-primary w-28 text-right">{formatIDR(t.budget_total || 0)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {bookings.length > 0 && (
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Bookings · {formatIDR(bookings.reduce((s, b) => s + (b.price || 0), 0))} total</p>
+                <ul className="divide-y divide-mora-primary/5">
+                  {bookings.map((b) => (
+                    <li key={b.id}>
+                      <Link to={`/dashboard/bookings/${b.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
+                        <CalendarCheck className="w-4 h-4 text-gold shrink-0" />
+                        <span className="text-sm font-medium text-mora-primary flex-1 truncate">{b.title}</span>
+                        <span className="text-xs text-mora-neutral capitalize hidden sm:block">{b.type}</span>
+                        <span className="text-sm font-semibold text-gold w-28 text-right">{formatIDR(b.price || 0)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
