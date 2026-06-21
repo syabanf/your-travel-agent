@@ -18,9 +18,9 @@ function Spinner() {
 function Kpi({ icon: Icon, label, value, sub, tone = "primary" }) {
   const toneClass = tone === "good" ? "text-emerald-600" : tone === "bad" ? "text-red-600" : "text-mora-primary";
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
-      <div className="flex items-center gap-2 text-mora-neutral text-xs uppercase tracking-wider"><Icon className="w-4 h-4 text-gold" />{label}</div>
-      <div className={`text-xl lg:text-2xl font-display font-bold mt-1.5 ${toneClass}`}>{value}</div>
+    <div className="bg-white rounded-2xl border border-mora-primary/10 p-4 min-w-0">
+      <div className="flex items-center gap-1.5 text-mora-neutral text-[11px] uppercase tracking-wider"><Icon className="w-4 h-4 text-gold shrink-0" />{label}</div>
+      <div className={`text-lg lg:text-xl font-display font-bold mt-1.5 leading-tight break-words tabular-nums ${toneClass}`}>{value}</div>
       {sub && <div className="text-xs text-mora-neutral/70 mt-0.5">{sub}</div>}
     </div>
   );
