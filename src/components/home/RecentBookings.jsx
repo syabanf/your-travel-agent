@@ -24,12 +24,12 @@ export default function RecentBookings({ bookings = [] }) {
         </Link>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {bookings.slice(0, 3).map((booking) => {
           const Icon = typeIcons[booking.type] || Plane;
           return (
-            <Link key={booking.id} to={`/booking/${booking.id}`}>
-              <GlassCard className="p-3.5 flex items-center gap-3.5">
+            <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
+              <GlassCard className="p-4 flex items-center gap-3.5">
                 <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
                   <Icon className="w-4.5 h-4.5 text-gold" strokeWidth={1.5} />
                 </div>

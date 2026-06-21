@@ -110,7 +110,7 @@ export default function CalendarView() {
         ) : (
           <div className="space-y-3">
             {monthTrips.map(trip => (
-              <Link key={trip.id} to={`/itinerary/${trip.id}`}>
+              <Link key={trip.id} to={`/itinerary/${trip.id}`} className="block">
                 <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
                   {trip.cover_image && (
                     <img src={trip.cover_image} alt={trip.title}

@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 import { base44 } from "@/api/base44Client";
+import OLMap from "../components/OLMap";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
 import { MapPin, Plane, Sparkles, CalendarSearch } from "lucide-react";
-
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
 
 export default function DestinationDetail() {
   const { id } = useParams();
@@ -73,10 +64,7 @@ export default function DestinationDetail() {
         {d.lat != null && d.lng != null && (
           <GlassCard className="overflow-hidden p-0">
             <div className="h-40">
-              <MapContainer center={[d.lat, d.lng]} zoom={6} style={{ height: "100%", width: "100%" }} zoomControl={false} scrollWheelZoom={false} dragging={false}>
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution="&copy; CARTO" />
-                <Marker position={[d.lat, d.lng]} />
-              </MapContainer>
+              <OLMap center={[d.lng, d.lat]} zoom={6} markers={[{ id: d.id, lng: d.lng, lat: d.lat }]} interactive={false} />
             </div>
           </GlassCard>
         )}

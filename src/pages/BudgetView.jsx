@@ -152,7 +152,7 @@ export default function BudgetView() {
             const s = getSpent(trip.id);
             const pct = trip.budget_total > 0 ? Math.min(100, (s / trip.budget_total) * 100) : 0;
             return (
-              <Link key={trip.id} to={`/itinerary/${trip.id}`}>
+              <Link key={trip.id} to={`/itinerary/${trip.id}`} className="block">
                 <GlassCard className="p-4 hover:bg-white/10 transition-all">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-mora-white">{trip.title}</h4>

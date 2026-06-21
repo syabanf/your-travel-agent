@@ -73,7 +73,7 @@ export default function BookingSearch() {
           {filtered.map(booking => {
             const Icon = typeIcons[booking.type] || Ticket;
             return (
-              <Link key={booking.id} to={`/booking/${booking.id}`}>
+              <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
                 <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
                   {booking.image_url ? (
                     <img src={booking.image_url} alt={booking.title}

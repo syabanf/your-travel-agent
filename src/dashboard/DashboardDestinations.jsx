@@ -1,30 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 import { base44 } from "@/api/base44Client";
+import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
-
 const EMPTY = { name: "", country: "", tagline: "", image: "", emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
-
-function ClickCapture({ onPick }) {
-  useMapEvents({ click(e) { onPick(e.latlng.lat, e.latlng.lng); } });
-  return null;
-}
-function Recenter({ center }) {
-  const map = useMap();
-  useEffect(() => { if (center) map.setView(center, Math.max(map.getZoom(), 5)); }, [center, map]);
-  return null;
-}
 
 export default function DashboardDestinations() {
   const [items, setItems] = useState(null);
@@ -81,8 +62,6 @@ export default function DashboardDestinations() {
     load();
   };
 
-  const center = editing && editing.lat != null ? [editing.lat, editing.lng] : null;
-
   return (
     <div className="p-8 max-w-6xl">
       <header className="mb-6 flex items-center justify-between">
@@ -137,12 +116,12 @@ export default function DashboardDestinations() {
                 <button onClick={geocode} className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
               </div>
               <div className="rounded-xl overflow-hidden border border-mora-primary/10" style={{ height: 340 }}>
-                <MapContainer center={center || [10, 80]} zoom={center ? 5 : 2} style={{ height: "100%", width: "100%" }}>
-                  <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; CARTO' />
-                  <ClickCapture onPick={(lat, lng) => setEditing((p) => ({ ...p, lat, lng }))} />
-                  <Recenter center={center} />
-                  {center && <Marker position={center} />}
-                </MapContainer>
+                <OLMap
+                  center={editing.lat != null ? [editing.lng, editing.lat] : [100, 5]}
+                  zoom={editing.lat != null ? 5 : 2}
+                  markers={editing.lat != null ? [{ id: "sel", lng: editing.lng, lat: editing.lat }] : []}
+                  onClick={(lng, lat) => setEditing((p) => ({ ...p, lat, lng }))}
+                />
               </div>
             </div>
           </div>

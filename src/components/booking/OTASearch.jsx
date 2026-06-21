@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import { toast } from "sonner";
 import GlassCard from "../GlassCard";
@@ -27,6 +28,7 @@ const statusColors = {
 
 export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null, defaultTab = "my_bookings", showMyBookings = true }) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const savingRef = useRef(false);
   const visibleTabs = showMyBookings ? tabs : tabs.filter((t) => t.key !== "my_bookings");
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -121,13 +123,12 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
    if (savingRef.current) return;
    savingRef.current = true;
    try {
-     await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
+     const created = await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
      queryClient.invalidateQueries({ queryKey: ["bookings"] });
      if (onSaveBooking) onSaveBooking();
-     await loadMyBookings();
-     toast.success("Booking saved to your reservations");
+     navigate(`/booking/${created.id}/checkout`);
    } catch {
-     toast.error("Couldn't save booking. Please try again.");
+     toast.error("Couldn't start booking. Please try again.");
    } finally {
      savingRef.current = false;
    }
