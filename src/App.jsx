@@ -51,6 +51,7 @@ import DashboardBookings from './dashboard/DashboardBookings';
 import DashboardCustomers from './dashboard/DashboardCustomers';
 import DashboardCustomerDetail from './dashboard/DashboardCustomerDetail';
 import DashboardDestinationDetail from './dashboard/DashboardDestinationDetail';
+import DashboardPromotionDetail from './dashboard/DashboardPromotionDetail';
 import DashboardBookingDetail from './dashboard/DashboardBookingDetail';
 import DashboardTripDetail from './dashboard/DashboardTripDetail';
 import DashboardReports from './dashboard/DashboardReports';
@@ -84,6 +85,7 @@ const AppRoutes = () => (
         <Route path="destinations" element={<DashboardDestinations />} />
         <Route path="destinations/:id" element={<DashboardDestinationDetail />} />
         <Route path="promotions" element={<DashboardPromotions />} />
+        <Route path="promotions/:id" element={<DashboardPromotionDetail />} />
         <Route path="bookings" element={<DashboardBookings />} />
         <Route path="bookings/:id" element={<DashboardBookingDetail />} />
         <Route path="trips/:id" element={<DashboardTripDetail />} />

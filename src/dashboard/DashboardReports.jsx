@@ -85,11 +85,81 @@ function ChartCard({ title, subtitle, hasData, children }) {
   );
 }
 
+const cap = (s) => {
+  const str = s == null ? "" : String(s);
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+function ReportTable({ title, subtitle, columns, rows, onExport }) {
+  return (
+    <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+      <div className="flex items-start justify-between gap-4 px-5 py-4">
+        <div>
+          <h2 className="font-display font-semibold text-mora-primary">{title}</h2>
+          {subtitle && <p className="text-xs text-mora-neutral mt-0.5">{subtitle}</p>}
+        </div>
+        <button
+          onClick={onExport}
+          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-gold"
+        >
+          <Download className="w-3.5 h-3.5" />
+          Export CSV
+        </button>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className={`px-5 py-3 font-medium ${col.align === "right" ? "text-right" : ""}`}
+                >
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length ? (
+              rows.map((row, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]"
+                >
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`px-5 py-3 ${col.align === "right" ? "text-right" : ""}`}
+                    >
+                      {col.render ? col.render(row) : row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-5 py-8 text-center text-sm text-mora-neutral/60"
+                >
+                  No data yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 /* ---------------------------------- page ---------------------------------- */
 
 export default function DashboardReports() {
   const [data, setData] = useState(null);
   const [period, setPeriod] = useState("all"); // "all" | "year"
+  const [tab, setTab] = useState("analytics"); // "analytics" | "tables"
 
   useEffect(() => {
     let cancelled = false;
@@ -197,34 +267,72 @@ export default function DashboardReports() {
       .slice(0, 6);
   }, [trips]);
 
-  // CSV export — built from the period-filtered bookings.
-  const exportCSV = () => {
+  // Confirmed booking counts per month (aligned with revenueByMonth labels).
+  const confirmedCountByMonth = useMemo(() => {
+    const acc = {};
+    for (const b of confirmed) {
+      const label = moment(b.check_in || b.created_date).format("MMM");
+      acc[label] = (acc[label] || 0) + 1;
+    }
+    return acc;
+  }, [confirmed]);
+
+  // Total booking value per type (all bookings, not just confirmed).
+  const valueByType = useMemo(() => {
+    const acc = {};
+    for (const b of bookings) {
+      const key = b.type || "other";
+      acc[key] = (acc[key] || 0) + (Number(b.price) || 0);
+    }
+    return acc;
+  }, [bookings]);
+
+  // Lifetime spend aggregates per customer tier (full set, not period-filtered).
+  const tierStats = useMemo(() => {
+    if (!data) return {};
+    const acc = {};
+    for (const c of data.customers) {
+      const key = (c.tier || "unknown").toLowerCase();
+      if (!acc[key]) acc[key] = { count: 0, spend: 0 };
+      acc[key].count += 1;
+      acc[key].spend += Number(c.lifetime_spend) || 0;
+    }
+    return acc;
+  }, [data]);
+
+  // Generalized CSV export shared by every table.
+  function downloadCSV(filename, header, rows) {
     const esc = (v) => {
       const s = v == null ? "" : String(v);
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const header = ["title", "type", "provider", "status", "price", "date"];
-    const rows = bookings.map((b) => [
-      b.title,
-      b.type,
-      b.provider,
-      b.status,
-      Number(b.price) || 0,
-      b.check_in ? moment(b.check_in).format("YYYY-MM-DD") : "",
-    ]);
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
-
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `mora-bookings-${moment().format("YYYY-MM-DD")}.csv`;
+    a.download = `${filename}-${moment().format("YYYY-MM-DD")}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Report exported");
-  };
+    toast.success("Exported " + filename);
+  }
+
+  // The top "Export CSV" button downloads the full bookings ledger.
+  const exportBookings = () =>
+    downloadCSV(
+      "mora-bookings",
+      ["title", "type", "provider", "status", "date", "price"],
+      bookings.map((b) => [
+        b.title,
+        b.type,
+        b.provider,
+        b.status,
+        moment(b.check_in || b.created_date).format("YYYY-MM-DD"),
+        Number(b.price) || 0,
+      ])
+    );
 
   const kpis = data
     ? [
@@ -246,7 +354,7 @@ export default function DashboardReports() {
           </p>
         </div>
         <button
-          onClick={exportCSV}
+          onClick={exportBookings}
           disabled={!data}
           className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium btn-primary text-white disabled:opacity-50"
         >
@@ -286,6 +394,28 @@ export default function DashboardReports() {
             ))}
           </div>
 
+          {/* Tab switcher */}
+          <div className="flex gap-2 mb-4">
+            {[
+              { key: "analytics", label: "Analytics" },
+              { key: "tables", label: "Tables" },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  tab === t.key
+                    ? "bg-mora-gold/10 text-gold"
+                    : "text-mora-neutral hover:bg-mora-primary/5"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {tab === "analytics" && (
+          <>
           {/* Revenue by month */}
           <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mb-4">
             <div className="mb-4">
@@ -446,6 +576,193 @@ export default function DashboardReports() {
               </ResponsiveContainer>
             </ChartCard>
           </div>
+          </>
+          )}
+
+          {tab === "tables" && (
+          <div className="space-y-4">
+            {/* Revenue by month */}
+            <ReportTable
+              title="Revenue by month"
+              subtitle="Confirmed booking revenue grouped by month."
+              columns={[
+                { key: "month", label: "Month" },
+                { key: "count", label: "Confirmed bookings", align: "right" },
+                {
+                  key: "revenue",
+                  label: "Revenue",
+                  align: "right",
+                  render: (r) => formatIDR(r.revenue),
+                },
+              ]}
+              rows={revenueByMonth.map((r) => ({
+                month: r.month,
+                count: confirmedCountByMonth[r.month] || 0,
+                revenue: r.revenue,
+              }))}
+              onExport={() =>
+                downloadCSV(
+                  "mora-revenue-by-month",
+                  ["Month", "Confirmed bookings", "Revenue"],
+                  revenueByMonth.map((r) => [
+                    r.month,
+                    confirmedCountByMonth[r.month] || 0,
+                    r.revenue,
+                  ])
+                )
+              }
+            />
+
+            {/* Bookings by type */}
+            <ReportTable
+              title="Bookings by type"
+              subtitle="Volume and value of bookings across categories."
+              columns={[
+                { key: "name", label: "Type", render: (r) => cap(r.name) },
+                { key: "value", label: "Count", align: "right" },
+                {
+                  key: "total",
+                  label: "Total value",
+                  align: "right",
+                  render: (r) => formatIDR(valueByType[r.name] || 0),
+                },
+                {
+                  key: "share",
+                  label: "Share",
+                  align: "right",
+                  render: (r) =>
+                    `${bookings.length ? Math.round((r.value / bookings.length) * 100) : 0}%`,
+                },
+              ]}
+              rows={bookingsByType}
+              onExport={() =>
+                downloadCSV(
+                  "mora-bookings-by-type",
+                  ["Type", "Count", "Total value", "Share"],
+                  bookingsByType.map((r) => [
+                    cap(r.name),
+                    r.value,
+                    valueByType[r.name] || 0,
+                    `${bookings.length ? Math.round((r.value / bookings.length) * 100) : 0}%`,
+                  ])
+                )
+              }
+            />
+
+            {/* Trips by status */}
+            <ReportTable
+              title="Trips by status"
+              subtitle="How many trips sit in each stage."
+              columns={[
+                { key: "status", label: "Status", render: (r) => cap(r.status) },
+                { key: "count", label: "Count", align: "right" },
+                {
+                  key: "share",
+                  label: "Share",
+                  align: "right",
+                  render: (r) =>
+                    `${trips.length ? Math.round((r.count / trips.length) * 100) : 0}%`,
+                },
+              ]}
+              rows={tripsByStatus}
+              onExport={() =>
+                downloadCSV(
+                  "mora-trips-by-status",
+                  ["Status", "Count", "Share"],
+                  tripsByStatus.map((r) => [
+                    cap(r.status),
+                    r.count,
+                    `${trips.length ? Math.round((r.count / trips.length) * 100) : 0}%`,
+                  ])
+                )
+              }
+            />
+
+            {/* Customers by tier */}
+            <ReportTable
+              title="Customers by tier"
+              subtitle="Loyalty tier breakdown and lifetime value."
+              columns={[
+                { key: "name", label: "Tier", render: (r) => cap(r.name) },
+                { key: "value", label: "Customers", align: "right" },
+                {
+                  key: "ltv",
+                  label: "Lifetime value",
+                  align: "right",
+                  render: (r) => formatIDR((tierStats[r.name] || {}).spend || 0),
+                },
+                {
+                  key: "avg",
+                  label: "Avg / customer",
+                  align: "right",
+                  render: (r) => {
+                    const s = tierStats[r.name] || { count: 0, spend: 0 };
+                    return formatIDR(s.count ? s.spend / s.count : 0);
+                  },
+                },
+              ]}
+              rows={customersByTier}
+              onExport={() =>
+                downloadCSV(
+                  "mora-customers-by-tier",
+                  ["Tier", "Customers", "Lifetime value", "Avg / customer"],
+                  customersByTier.map((r) => {
+                    const s = tierStats[r.name] || { count: 0, spend: 0 };
+                    return [
+                      cap(r.name),
+                      r.value,
+                      s.spend,
+                      s.count ? Math.round(s.spend / s.count) : 0,
+                    ];
+                  })
+                )
+              }
+            />
+
+            {/* Top destinations */}
+            <ReportTable
+              title="Top destinations"
+              subtitle="Most-planned destinations by trip count."
+              columns={[
+                { key: "name", label: "Destination" },
+                { key: "count", label: "Trips", align: "right" },
+              ]}
+              rows={topDestinations}
+              onExport={() =>
+                downloadCSV(
+                  "mora-top-destinations",
+                  ["Destination", "Trips"],
+                  topDestinations.map((r) => [r.name, r.count])
+                )
+              }
+            />
+
+            {/* Bookings ledger */}
+            <ReportTable
+              title="Bookings ledger"
+              subtitle="Every booking in the selected period."
+              columns={[
+                { key: "title", label: "Title" },
+                { key: "type", label: "Type", render: (r) => cap(r.type) },
+                { key: "provider", label: "Provider" },
+                { key: "status", label: "Status", render: (r) => cap(r.status) },
+                {
+                  key: "date",
+                  label: "Date",
+                  render: (r) => moment(r.check_in || r.created_date).format("MMM D, YYYY"),
+                },
+                {
+                  key: "price",
+                  label: "Price",
+                  align: "right",
+                  render: (r) => formatIDR(Number(r.price) || 0),
+                },
+              ]}
+              rows={bookings}
+              onExport={exportBookings}
+            />
+          </div>
+          )}
         </>
       )}
     </div>

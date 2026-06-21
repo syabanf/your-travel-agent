@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper } from "lucide-react";
@@ -20,8 +21,19 @@ export default function DashboardPromotions() {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const load = async () => setItems(await base44.entities.Promotion.list("-created_date", 500));
   useEffect(() => { load(); }, []);
+
+  // Open the editor when arriving from a detail page (?edit=<id>).
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (editId && items) {
+      const it = items.find((p) => p.id === editId);
+      if (it) setEditing(it);
+      setSearchParams({}, { replace: true });
+    }
+  }, [items, searchParams, setSearchParams]);
 
   const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
 
@@ -113,7 +125,7 @@ export default function DashboardPromotions() {
           {items.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
-              <div key={p.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group">
+              <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
                 <div className="w-20 h-16 rounded-xl overflow-hidden bg-mora-primary shrink-0">
                   {p.image && <img src={p.image} alt={p.title} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 </div>
@@ -131,10 +143,10 @@ export default function DashboardPromotions() {
                   {p.date ? <p className="text-xs text-mora-neutral">{moment(p.date).format("MMM D")}</p> : null}
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "promotions", "edit") && <button onClick={() => setEditing(p)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "promotions", "delete") && <button onClick={() => remove(p)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
                 </div>
-              </div>
+              </Link>
             );
           })}
           {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No entries yet.</p>}
