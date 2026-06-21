@@ -39,12 +39,12 @@ function Spinner() {
 
 function Kpi({ icon: Icon, label, value }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-4">
+    <div className="bg-white rounded-2xl border border-mora-primary/10 p-4 min-w-0">
       <div className="flex items-center gap-2 text-mora-neutral text-xs font-medium">
         <Icon className="w-4 h-4 text-gold" />
         {label}
       </div>
-      <div className="mt-1.5 text-xl font-display font-bold text-mora-primary">{value}</div>
+      <div className="stat-value mt-1.5 text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</div>
     </div>
   );
 }

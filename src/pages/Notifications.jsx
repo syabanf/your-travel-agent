@@ -51,9 +51,9 @@ export default function Notifications() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="animate-fade-in pb-8">
-      <PageHeader 
-        title="Notifications" 
+    <div className="animate-fade-in pb-28">
+      <PageHeader
+        title="Notifications"
         showBack 
         rightAction={
           unreadCount > 0 && (

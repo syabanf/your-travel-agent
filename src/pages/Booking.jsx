@@ -112,12 +112,12 @@ export default function Booking() {
                           </span>
                         </div>
                         <p className="text-xs text-mora-neutral/60 mt-0.5">{booking.provider}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs text-mora-neutral/50">
+                        <div className="flex items-center justify-between gap-2 mt-2">
+                          <span className="text-xs text-mora-neutral/50 truncate min-w-0">
                             {booking.check_in && moment(booking.check_in).format("MMM D, YYYY")}
                           </span>
                           {booking.price > 0 && (
-                            <span className="text-sm font-display font-semibold text-gold">
+                            <span className="stat-value text-sm font-display font-semibold text-gold shrink-0">
                               {formatIDR(booking.price)}
                             </span>
                           )}

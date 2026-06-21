@@ -59,9 +59,9 @@ export default function Promotions() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-semibold text-mora-primary truncate">{p.title}</h3>
                       <p className="text-xs text-mora-neutral/70 line-clamp-2 mt-0.5">{p.description}</p>
-                      <div className="flex items-center justify-between mt-1.5">
-                        {p.valid_until ? <span className="text-[10px] text-gold">Until {moment(p.valid_until).format("MMM D")}</span> : <span />}
-                        {p.price ? <span className="text-sm font-semibold text-gold">{formatIDR(p.price)}</span> : null}
+                      <div className="flex items-center justify-between gap-2 mt-1.5">
+                        {p.valid_until ? <span className="text-[10px] text-gold truncate">Until {moment(p.valid_until).format("MMM D")}</span> : <span />}
+                        {p.price ? <span className="stat-value text-sm font-semibold text-gold flex-shrink-0">{formatIDR(p.price)}</span> : null}
                       </div>
                     </div>
                   </GlassCard>

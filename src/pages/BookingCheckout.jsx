@@ -116,7 +116,7 @@ export default function BookingCheckout() {
         </div>
       </div>
 
-      <div className="px-6 space-y-4">
+      <div className="px-6 space-y-4 pb-28">
 
         {/* Step 1: Review */}
         {step === 1 && (
@@ -137,9 +137,9 @@ export default function BookingCheckout() {
             </GlassCard>
 
             <GlassCard className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-mora-neutral/70">Total Price</span>
-                <span className="text-xl font-display font-bold text-gold">{formatIDR(booking.price || 0)}</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-mora-neutral/70 shrink-0">Total Price</span>
+                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(booking.price || 0)}</span>
               </div>
             </GlassCard>
 
@@ -241,9 +241,9 @@ export default function BookingCheckout() {
             </GlassCard>
 
             <GlassCard className="p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-mora-neutral/70">Total Charge</span>
-                <span className="text-xl font-display font-bold text-gold">{formatIDR(booking.price || 0)}</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-mora-neutral/70 shrink-0">Total Charge</span>
+                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(booking.price || 0)}</span>
               </div>
             </GlassCard>
 

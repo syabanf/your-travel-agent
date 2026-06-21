@@ -56,7 +56,7 @@ export default function BookingDetail() {
       )}
       {!booking.image_url && <PageHeader title="Booking Detail" showBack />}
 
-      <div className="px-6 mt-4 space-y-4">
+      <div className="px-6 mt-6 space-y-4 pb-28">
         <GlassCard className="p-5">
           <div className="flex items-start justify-between gap-3 mb-4">
             <h1 className="text-xl font-display font-bold text-mora-white">{booking.title}</h1>
@@ -86,7 +86,7 @@ export default function BookingDetail() {
             {booking.price > 0 && (
               <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
                 <Wallet className="w-4 h-4 text-gold/50 flex-shrink-0" />
-                <span className="font-display font-semibold text-gold">{formatIDR(booking.price)}</span>
+                <span className="stat-value font-display font-semibold text-gold">{formatIDR(booking.price)}</span>
               </div>
             )}
             {booking.confirmation_code && (

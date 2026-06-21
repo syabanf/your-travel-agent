@@ -27,7 +27,7 @@ export default function Assistant() {
   }, []);
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title="Assistant" subtitle="AI & personal travel experts" showNotification />
 
       {/* AI Assistant CTA */}
@@ -129,7 +129,7 @@ export default function Assistant() {
                       <div className="w-2 h-2 bg-emerald-400 rounded-full mb-1 ml-auto" />
                     )}
                     {assistant.hourly_rate && (
-                      <span className="text-xs font-display text-gold">{formatIDR(assistant.hourly_rate)}/hr</span>
+                      <span className="stat-value block text-xs font-display text-gold whitespace-nowrap">{formatIDR(assistant.hourly_rate)}/hr</span>
                     )}
                   </div>
                 </GlassCard>

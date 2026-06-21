@@ -235,11 +235,11 @@ export default function DashboardDestinationDetail() {
 
 function Kpi({ icon: Icon, label, value }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
       <div className="w-9 h-9 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center mb-3">
         <Icon className="w-4 h-4" />
       </div>
-      <div className="text-2xl font-display font-bold text-mora-primary leading-tight">{value}</div>
+      <div className="stat-value text-xl font-display font-bold text-mora-primary">{value}</div>
       <div className="text-xs text-mora-neutral mt-0.5">{label}</div>
     </div>
   );

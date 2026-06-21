@@ -131,8 +131,8 @@ export default function ConsultationBooking() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-mora-primary">{p.name}</p>
-                      {p.price ? <span className="text-sm font-display font-semibold text-gold">{formatIDR(p.price)}</span> : null}
+                      <p className="text-sm font-semibold text-mora-primary min-w-0 truncate">{p.name}</p>
+                      {p.price ? <span className="stat-value text-sm font-display font-semibold text-gold flex-shrink-0">{formatIDR(p.price)}</span> : null}
                     </div>
                     {p.description && <p className="text-xs text-mora-neutral/60 mt-0.5">{p.description}</p>}
                   </div>
@@ -166,12 +166,12 @@ export default function ConsultationBooking() {
         </GlassCard>
 
         {/* Summary + confirm */}
-        <GlassCard className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-mora-neutral">
-            <CalendarDays className="w-4 h-4 text-gold" />
-            {date && time ? `${moment(date).format("MMM D")} · ${time}` : "Select date & time"}
+        <GlassCard className="p-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm text-mora-neutral min-w-0">
+            <CalendarDays className="w-4 h-4 text-gold flex-shrink-0" />
+            <span className="truncate">{date && time ? `${moment(date).format("MMM D")} · ${time}` : "Select date & time"}</span>
           </div>
-          <span className="text-lg font-display font-bold text-gold">{formatIDR(pkg.price || 0)}</span>
+          <span className="stat-value text-lg font-display font-bold text-gold flex-shrink-0">{formatIDR(pkg.price || 0)}</span>
         </GlassCard>
 
         <button onClick={confirm} disabled={saving} className="w-full py-4 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
@@ -185,9 +185,9 @@ export default function ConsultationBooking() {
 
 function Row({ label, value, accent }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-xs text-mora-neutral/60">{label}</span>
-      <span className={`text-sm font-medium ${accent ? "text-gold font-display font-bold" : "text-mora-primary"}`}>{value}</span>
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-xs text-mora-neutral/60 flex-shrink-0">{label}</span>
+      <span className={`stat-value text-sm font-medium text-right ${accent ? "text-gold font-display font-bold" : "text-mora-primary"}`}>{value}</span>
     </div>
   );
 }

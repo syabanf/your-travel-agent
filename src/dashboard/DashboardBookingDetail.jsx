@@ -152,10 +152,10 @@ export default function DashboardBookingDetail() {
       <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
         <h2 className="text-sm font-semibold text-mora-primary mb-4 flex items-center gap-2"><Wallet className="w-4 h-4 text-gold" /> Financials</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Sell price</div><div className="text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
-          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Cost</div><div className="text-lg font-display font-bold text-mora-primary">{formatIDR(costPrice)}</div></div>
-          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-mora-neutral">({marginPct}%)</span></div></div>
-          <div><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="text-lg font-display font-bold text-mora-primary">{commission != null ? formatIDR(commission) : "—"}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Sell price</div><div className="stat-value text-base lg:text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Cost</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{formatIDR(costPrice)}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-mora-neutral">({marginPct}%)</span></div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{commission != null ? formatIDR(commission) : "—"}</div></div>
         </div>
       </div>
 

@@ -70,32 +70,32 @@ export default function DashboardOverview() {
           {/* Count cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {stats.map((c) => (
-              <Link key={c.label} to={c.to} className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow group">
+              <Link key={c.label} to={c.to} className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow group min-w-0">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center"><c.icon className="w-5 h-5 text-gold" /></div>
                   <ArrowUpRight className="w-4 h-4 text-mora-neutral/40 group-hover:text-gold transition-colors" />
                 </div>
-                <p className="text-3xl font-display font-bold text-mora-primary">{c.value}</p>
-                <p className="text-xs text-mora-neutral mt-0.5">{c.label}</p>
+                <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{c.value}</p>
+                <p className="text-xs text-mora-neutral mt-1">{c.label}</p>
               </Link>
             ))}
           </div>
 
           {/* Insight cards */}
           <div className="grid lg:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
               <div className="flex items-center gap-2 text-mora-neutral mb-2"><Wallet className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Confirmed revenue</span></div>
-              <p className="text-2xl font-display font-bold text-mora-primary">{formatIDR(revenue)}</p>
+              <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{formatIDR(revenue)}</p>
               <p className="text-xs text-mora-neutral/70 mt-1">Avg {formatIDR(avgValue)} / booking</p>
             </div>
-            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
               <div className="flex items-center gap-2 text-mora-neutral mb-2"><TrendingUp className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Top destination</span></div>
-              <p className="text-2xl font-display font-bold text-mora-primary truncate">{topDest ? topDest.name : "—"}</p>
+              <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary truncate">{topDest ? topDest.name : "—"}</p>
               <p className="text-xs text-mora-neutral/70 mt-1">{topDest ? `${topDest.count} trip${topDest.count > 1 ? "s" : ""} planned` : "No trips yet"}</p>
             </div>
-            <Link to="/dashboard/bookings" className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow">
+            <Link to="/dashboard/bookings" className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow min-w-0">
               <div className="flex items-center gap-2 text-mora-neutral mb-2"><AlertCircle className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Pending bookings</span></div>
-              <p className="text-2xl font-display font-bold text-mora-primary">{pending}</p>
+              <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{pending}</p>
               <p className="text-xs text-gold mt-1">{pending ? "Need attention →" : "All clear"}</p>
             </Link>
           </div>

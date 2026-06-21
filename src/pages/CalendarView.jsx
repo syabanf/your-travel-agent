@@ -49,7 +49,7 @@ export default function CalendarView() {
       <PageHeader title="Calendar" subtitle="Your trips timeline" showBack />
 
       {/* Month navigator */}
-      <div className="px-6 mb-4">
+      <div className="px-6 mb-6">
         <GlassCard className="p-4">
           <div className="flex items-center justify-between mb-4">
             <button onClick={() => setCurrentMonth(m => m.clone().subtract(1, "month"))}

@@ -201,12 +201,12 @@ export default function DashboardCustomerDetail() {
 }
 
 const Kpi = ({ icon: Icon, label, value, sub }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
     <div className="flex items-center gap-3">
       <div className="w-10 h-10 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
       <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
     </div>
-    <div className="text-xl font-display font-bold text-mora-primary mt-3 truncate">{value}</div>
+    <div className="stat-value text-xl font-display font-bold text-mora-primary mt-3">{value}</div>
     {sub && <div className="text-xs text-mora-neutral/70 mt-0.5">{sub}</div>}
   </div>
 );

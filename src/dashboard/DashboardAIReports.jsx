@@ -118,9 +118,9 @@ export default function DashboardAIReports() {
           {report.kpis?.length > 0 && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {report.kpis.map((k) => (
-                <div key={k.label} className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+                <div key={k.label} className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
                   <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70">{k.label}</p>
-                  <p className="text-xl font-display font-bold text-mora-primary mt-1">{k.value}</p>
+                  <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary mt-1">{k.value}</p>
                 </div>
               ))}
             </div>

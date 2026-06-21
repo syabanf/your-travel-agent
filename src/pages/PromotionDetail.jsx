@@ -18,7 +18,7 @@ function InfoCell({ icon: Icon, label, value }) {
       </div>
       <div className="min-w-0">
         <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">{label}</p>
-        <p className="text-sm font-medium text-mora-primary truncate">{value}</p>
+        <p className="stat-value text-sm font-medium text-mora-primary truncate">{value}</p>
       </div>
     </div>
   );

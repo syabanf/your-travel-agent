@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DayTimeline from "../components/itinerary/DayTimeline";
-import { formatIDR } from "@/lib/currency";
+import { formatIDR, formatIDRCompact } from "@/lib/currency";
 import moment from "moment";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -223,26 +223,26 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 px-6 -mt-2 relative z-10">
-        <GlassCard className="p-4 text-center">
-          <p className="text-lg font-display font-bold text-mora-primary">{totalDays}</p>
-          <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Days</p>
+        <GlassCard className="p-4 text-center min-w-0">
+          <p className="stat-value text-lg font-display font-bold text-mora-primary">{totalDays}</p>
+          <p className="text-[10px] text-mora-neutral uppercase tracking-wider mt-1">Days</p>
         </GlassCard>
-        <GlassCard className="p-4 text-center">
-          <p className="text-lg font-display font-bold text-gold">
-            {formatIDR(totalBudget)}
+        <GlassCard className="p-4 text-center min-w-0">
+          <p className="stat-value text-lg font-display font-bold text-gold" title={formatIDR(totalBudget)}>
+            {formatIDRCompact(totalBudget)}
           </p>
-          <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">Budget</p>
+          <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider mt-1">Budget</p>
         </GlassCard>
-        <GlassCard className="p-4 text-center">
-          <p className="text-lg font-display font-bold text-mora-primary">
+        <GlassCard className="p-4 text-center min-w-0">
+          <p className="stat-value text-lg font-display font-bold text-mora-primary">
             {completedItems}/{items.length}
           </p>
-          <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Done</p>
+          <p className="text-[10px] text-mora-neutral uppercase tracking-wider mt-1">Done</p>
         </GlassCard>
       </div>
 
       {/* Travelers */}
-      <div className="px-6 mt-7">
+      <div className="px-6 mt-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">Travelers ({members.length})</h2>
           <button onClick={() => setShowInvite((v) => !v)} className="flex items-center gap-1 text-xs text-gold">
@@ -286,7 +286,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
       </div>
 
       {/* Day Timeline */}
-      <div className="px-6 mt-8 space-y-5 pb-8">
+      <div className="px-6 mt-8 space-y-5 pb-28">
         {/* Generate Activities with AI */}
         {items.length === 0 && (
           <button

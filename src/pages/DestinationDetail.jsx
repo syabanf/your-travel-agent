@@ -54,8 +54,8 @@ export default function DestinationDetail() {
         )}
         {d.fromPrice > 0 && (
           <div className="absolute top-16 right-4 glass-light px-3 py-1.5 rounded-full flex items-center gap-1.5">
-            <Plane className="w-3 h-3 text-gold" />
-            <span className="text-[11px] font-semibold text-mora-primary">from {formatIDR(d.fromPrice)}</span>
+            <Plane className="w-3 h-3 text-gold flex-shrink-0" />
+            <span className="stat-value text-[11px] font-semibold text-mora-primary whitespace-nowrap">from {formatIDR(d.fromPrice)}</span>
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -105,7 +105,7 @@ export default function DestinationDetail() {
         <Link to={`/assistant/ai?destination=${encodeURIComponent(d.name)}`} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2">
           <Sparkles className="w-4 h-4" /> Plan a trip to {d.name}
         </Link>
-        <Link to="/booking" className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-mora-primary flex items-center justify-center gap-2 hover:bg-mora-primary/5 transition-colors">
+        <Link to="/ota" className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-mora-primary flex items-center justify-center gap-2 hover:bg-mora-primary/5 transition-colors">
           <CalendarSearch className="w-4 h-4 text-gold" /> Browse flights & stays
         </Link>
       </div>

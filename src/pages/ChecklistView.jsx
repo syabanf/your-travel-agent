@@ -155,7 +155,7 @@ export default function ChecklistView() {
       ) : (
         <>
           {/* Progress */}
-          <div className="px-6 mb-5">
+          <div className="px-6 mb-6">
             <GlassCard className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-medium text-mora-white">{checkedItems} / {totalItems} packed</p>

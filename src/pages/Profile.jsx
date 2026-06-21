@@ -47,7 +47,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title="Profile" showNotification />
 
       {/* Profile Card */}
@@ -74,16 +74,16 @@ export default function Profile() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-mora-primary/10">
-           <div className="text-center">
-            <p className="text-lg font-display font-bold text-mora-primary">{tripCount}</p>
-            <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Trips</p>
-           </div>
-           <div className="text-center">
-            <p className="text-lg font-display font-bold text-mora-primary">{bookingCount}</p>
-            <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Bookings</p>
+            <div className="text-center min-w-0">
+              <p className="stat-value text-lg font-display font-bold text-mora-primary">{tripCount}</p>
+              <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Trips</p>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-display font-bold text-gold">4.9</p>
+            <div className="text-center min-w-0">
+              <p className="stat-value text-lg font-display font-bold text-mora-primary">{bookingCount}</p>
+              <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Bookings</p>
+            </div>
+            <div className="text-center min-w-0">
+              <p className="stat-value text-lg font-display font-bold text-gold">4.9</p>
               <p className="text-[10px] text-mora-neutral/50 uppercase tracking-wider">Rating</p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export default function Profile() {
       </div>
 
       {/* Menu Items */}
-      <div className="px-6 space-y-2.5">
+      <div className="px-6 space-y-3">
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
           <Link key={label} to={path} className="block">
             <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
@@ -109,7 +109,7 @@ export default function Profile() {
       </div>
 
       {/* Logout */}
-      <div className="px-6 mt-6 mb-8">
+      <div className="px-6 mt-8">
         <button
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 py-3.5 glass-light rounded-2xl text-sm font-medium text-red-600 hover:text-red-700 transition-all"

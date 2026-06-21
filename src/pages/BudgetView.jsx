@@ -87,17 +87,17 @@ export default function BudgetView() {
             <GlassCard className="p-5">
               <h3 className="text-sm font-display font-semibold text-mora-white mb-4">{focusTrip.title}</h3>
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="text-center">
+                <div className="text-center min-w-0">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Budget</p>
-                  <p className="text-base font-display font-bold text-mora-white">{formatIDR(focusTrip.budget_total)}</p>
+                  <p className="stat-value text-[15px] font-display font-bold text-mora-white">{formatIDR(focusTrip.budget_total)}</p>
                 </div>
-                <div className="text-center">
+                <div className="text-center min-w-0">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Planned</p>
-                  <p className="text-base font-display font-bold text-gold">{formatIDR(spent)}</p>
+                  <p className="stat-value text-[15px] font-display font-bold text-gold">{formatIDR(spent)}</p>
                 </div>
-                <div className="text-center">
+                <div className="text-center min-w-0">
                   <p className="text-[10px] text-mora-neutral/50 mb-1">Remaining</p>
-                  <p className={`text-base font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                  <p className={`stat-value text-[15px] font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                     {formatIDR(focusTrip.budget_total - spent)}
                   </p>
                 </div>
@@ -154,9 +154,9 @@ export default function BudgetView() {
             return (
               <Link key={trip.id} to={`/itinerary/${trip.id}`} className="block">
                 <GlassCard className="p-4 hover:bg-white/10 transition-all">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-semibold text-mora-white">{trip.title}</h4>
-                    <span className="text-xs text-gold font-display">{formatIDR(trip.budget_total)}</span>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <h4 className="text-sm font-semibold text-mora-white truncate min-w-0">{trip.title}</h4>
+                    <span className="stat-value text-xs text-gold font-display shrink-0">{formatIDR(trip.budget_total)}</span>
                   </div>
                   <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-mora-gold to-gold rounded-full"

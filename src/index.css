@@ -57,6 +57,9 @@
     --mora-crimson-bright: #C42A2E;
     --mora-cream: #FBFAF5;
     --mora-slate: #5A6B85;
+
+    /* Golden ratio — informs type scale, spacing rhythm & key proportions */
+    --phi: 1.618;
   }
 }
 
@@ -207,4 +210,13 @@
   }
   .dash-input:focus { border-color: rgba(173, 31, 35, 0.5); }
   .dash-input::placeholder { color: #93a0b8; }
+
+  /* Overflow-safe numeric/stat values — never spill past their card.
+     Pair with `min-w-0` on the card so grid/flex items can shrink. */
+  .stat-value {
+    font-variant-numeric: tabular-nums;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
 }

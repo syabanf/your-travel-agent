@@ -57,12 +57,12 @@ function Spinner() {
 
 function KpiCard({ icon: Icon, value, label }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
       <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3">
         <Icon className="w-5 h-5 text-gold" />
       </div>
-      <p className="text-2xl lg:text-3xl font-display font-bold text-mora-primary">{value}</p>
-      <p className="text-xs text-mora-neutral mt-0.5">{label}</p>
+      <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
+      <p className="text-xs text-mora-neutral mt-1">{label}</p>
     </div>
   );
 }
