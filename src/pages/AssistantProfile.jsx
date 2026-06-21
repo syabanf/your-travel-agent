@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useParams } from "react-router-dom";
-import { Star, Globe, MessageCircle, Crown, Clock } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Star, Globe, MessageCircle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
-import { toast } from "sonner";
 
 export default function AssistantProfile() {
   const { assistantId } = useParams();
+  const navigate = useNavigate();
   const [assistant, setAssistant] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -86,21 +86,23 @@ export default function AssistantProfile() {
             <h2 className="text-xs text-gold uppercase tracking-widest mb-3">Service Packages</h2>
             <div className="space-y-3">
               {assistant.packages.map((pkg, i) => (
-                <GlassCard key={i} className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <h3 className="text-sm font-medium text-mora-primary">{pkg.name}</h3>
-                      <p className="text-xs text-mora-neutral/50 mt-1">{pkg.description}</p>
+                <button key={i} onClick={() => navigate(`/consultation/${assistantId}?pkg=${i}`)} className="w-full text-left">
+                  <GlassCard className="p-4 hover:bg-white/10 transition-all">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium text-mora-primary">{pkg.name}</h3>
+                        <p className="text-xs text-mora-neutral/50 mt-1">{pkg.description}</p>
+                      </div>
+                      {pkg.price && <span className="text-sm font-display font-semibold text-gold">{formatIDR(pkg.price)}</span>}
                     </div>
-                    {pkg.price && <span className="text-sm font-display font-semibold text-gold">{formatIDR(pkg.price)}</span>}
-                  </div>
-                </GlassCard>
+                  </GlassCard>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        <button onClick={() => toast("Consultation booking coming soon")} className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 mb-6">
+        <button onClick={() => navigate(`/consultation/${assistantId}`)} className="w-full py-4 btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2 mb-6">
           <MessageCircle className="w-4 h-4" /> Book Consultation
         </button>
       </div>

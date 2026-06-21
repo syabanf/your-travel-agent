@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket } from "lucide-react";
+import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import OTASearch from "../components/booking/OTASearch";
 import PageHeader from "../components/PageHeader";
@@ -25,7 +25,7 @@ const statusColors = {
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
-const typeIcons = { flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2 };
+const typeIcons = { flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2, consultation: MessageCircle };
 
 export default function Booking() {
   const [bookings, setBookings] = useState([]);

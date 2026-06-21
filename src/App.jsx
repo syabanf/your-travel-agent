@@ -32,6 +32,7 @@ import BookingSearch from './pages/BookingSearch';
 import BookingDetail from './pages/BookingDetail';
 import BookingCheckout from './pages/BookingCheckout';
 import AssistantProfile from './pages/AssistantProfile';
+import ConsultationBooking from './pages/ConsultationBooking';
 import Promotions from './pages/Promotions';
 import PromotionDetail from './pages/PromotionDetail';
 import DestinationDetail from './pages/DestinationDetail';
@@ -94,6 +95,7 @@ const AppRoutes = () => (
         <Route path="/assistant" element={<Assistant />} />
         <Route path="/assistant/ai" element={<AIAssistant />} />
         <Route path="/assistant/profile/:assistantId" element={<AssistantProfile />} />
+        <Route path="/consultation/:assistantId" element={<ConsultationBooking />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/booking/search" element={<BookingSearch />} />
         <Route path="/booking/:bookingId" element={<BookingDetail />} />
