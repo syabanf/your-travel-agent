@@ -60,6 +60,8 @@
 
     /* Golden ratio — informs type scale, spacing rhythm & key proportions */
     --phi: 1.618;
+    /* Secondary accent — muted gold for non-destructive highlights */
+    --mora-amber: #C99A3F;
   }
 }
 
@@ -214,9 +216,53 @@
   /* Overflow-safe numeric/stat values — never spill past their card.
      Pair with `min-w-0` on the card so grid/flex items can shrink. */
   .stat-value {
+    font-family: var(--font-body);
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    letter-spacing: -0.01em;
     line-height: 1.12;
     overflow-wrap: anywhere;
     min-width: 0;
   }
+}
+
+/* ---------------- Motion, skeletons & accents (UI polish) ---------------- */
+@keyframes mora-shimmer { 100% { transform: translateX(100%); } }
+@keyframes mora-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* Shimmering placeholder for loading states */
+.skeleton { position: relative; overflow: hidden; background: rgba(11, 27, 59, 0.07); border-radius: 0.6rem; }
+.skeleton::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: mora-shimmer 1.4s infinite;
+}
+
+/* Entrance motion */
+.animate-rise { animation: mora-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > * { animation: mora-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.03s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.09s; }
+.stagger > *:nth-child(4) { animation-delay: 0.12s; }
+.stagger > *:nth-child(5) { animation-delay: 0.15s; }
+.stagger > *:nth-child(6) { animation-delay: 0.18s; }
+.stagger > *:nth-child(7) { animation-delay: 0.21s; }
+.stagger > *:nth-child(8) { animation-delay: 0.24s; }
+.stagger > *:nth-child(9) { animation-delay: 0.27s; }
+.stagger > *:nth-child(n+10) { animation-delay: 0.3s; }
+
+/* Tap/press feedback */
+.press { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.press:active { transform: scale(0.985); }
+
+/* Secondary accent (muted gold) */
+.text-amber-accent { color: var(--mora-amber); }
+.bg-amber-soft { background-color: rgba(201, 154, 63, 0.12); }
+.border-amber-soft { border-color: rgba(201, 154, 63, 0.30); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise, .stagger > *, .animate-fade-in { animation: none !important; }
+  .skeleton::after { animation: none; }
+  .press:active { transform: none; }
 }

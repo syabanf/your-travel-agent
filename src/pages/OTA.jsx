@@ -42,7 +42,7 @@ export default function OTA() {
 
       {/* Standalone note */}
       <div className="px-6">
-        <p className="text-xs text-mora-neutral/40 leading-relaxed">
+        <p className="text-xs text-mora-neutral/60 leading-relaxed">
           Bookings made here are standalone. To book inside a trip, open the trip and use its booking flow.
         </p>
       </div>

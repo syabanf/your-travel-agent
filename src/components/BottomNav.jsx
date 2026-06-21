@@ -52,19 +52,17 @@ export default function BottomNav() {
                 <button
                   key={path}
                   onClick={() => handleTabPress(path)}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-300 min-w-[44px] min-h-[44px] justify-center ${
-                    isActive 
-                      ? "text-mora-gold" 
-                      : "text-mora-neutral/60 hover:text-mora-neutral"
+                  aria-label={label}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl transition-all duration-300 min-w-[48px] min-h-[48px] justify-center ${
+                    isActive ? "bg-mora-gold/10" : "hover:bg-mora-primary/5 active:scale-95"
                   }`}
                 >
-                  <div className="relative">
-                    {isActive && (
-                      <div className="absolute -inset-2 bg-[#AD1F23]/10 rounded-xl" />
-                    )}
-                    <Icon className="w-5 h-5 relative z-10" strokeWidth={isActive ? 2 : 1.5} />
-                  </div>
-                  <span className={`text-xs font-medium tracking-wide ${isActive ? "text-gold" : ""}`}>
+                  <Icon
+                    className={`w-5 h-5 ${isActive ? "text-gold" : "text-mora-neutral/70"}`}
+                    strokeWidth={isActive ? 2.2 : 1.6}
+                  />
+                  <span className={`text-[11px] font-medium tracking-wide ${isActive ? "text-gold" : "text-mora-neutral/70"}`}>
                     {label}
                   </span>
                 </button>

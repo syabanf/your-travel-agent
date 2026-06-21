@@ -116,7 +116,7 @@ export default function DashboardAIReports() {
 
           {/* KPIs */}
           {report.kpis?.length > 0 && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger">
               {report.kpis.map((k) => (
                 <div key={k.label} className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
                   <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70">{k.label}</p>

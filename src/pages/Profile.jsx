@@ -65,8 +65,8 @@ export default function Profile() {
               </h2>
               <p className="text-xs text-mora-neutral mt-0.5">{user?.email}</p>
               <div className="flex items-center gap-1 mt-1.5">
-                <div className="px-2.5 py-0.5 glass-gold rounded-full">
-                  <span className="text-[9px] text-gold font-semibold tracking-wider uppercase">Premium Member</span>
+                <div className="px-2.5 py-0.5 bg-amber-soft border border-amber-soft rounded-full">
+                  <span className="text-[9px] text-amber-accent font-semibold tracking-wider uppercase">Premium Member</span>
                 </div>
               </div>
             </div>
@@ -84,16 +84,16 @@ export default function Profile() {
             </div>
             <div className="text-center min-w-0">
               <p className="stat-value text-lg font-display font-bold text-gold">4.9</p>
-              <p className="text-[10px] text-mora-neutral/50 uppercase tracking-wider">Rating</p>
+              <p className="text-[10px] text-mora-neutral/70 uppercase tracking-wider">Rating</p>
             </div>
           </div>
         </GlassCard>
       </div>
 
       {/* Menu Items */}
-      <div className="px-6 space-y-3">
+      <div className="px-6 space-y-3 stagger">
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
-          <Link key={label} to={path} className="block">
+          <Link key={label} to={path} className="block press">
             <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(173, 31, 35, 0.08)' }}>
                 <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />

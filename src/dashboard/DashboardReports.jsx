@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 
 const PALETTE = ["#AD1F23", "#0B1B3B", "#C99A3F", "#5A6B85", "#0EA5E9", "#10B981"];
 
@@ -46,14 +47,6 @@ const MONTH_ORDER = [
 const TIERS = ["bronze", "silver", "gold", "platinum"];
 
 /* ---------------------------- small building blocks ---------------------------- */
-
-function Spinner() {
-  return (
-    <div className="flex justify-center py-20">
-      <div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-    </div>
-  );
-}
 
 function KpiCard({ icon: Icon, value, label }) {
   return (
@@ -364,7 +357,16 @@ export default function DashboardReports() {
       </header>
 
       {!data ? (
-        <Spinner />
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+          </div>
+          <Skeleton className="h-[260px] w-full rounded-2xl mb-4" />
+          <div className="grid lg:grid-cols-2 gap-4">
+            <Skeleton className="h-[260px] w-full rounded-2xl" />
+            <Skeleton className="h-[260px] w-full rounded-2xl" />
+          </div>
+        </>
       ) : (
         <>
           {/* Period toggle */}
@@ -388,7 +390,7 @@ export default function DashboardReports() {
           </div>
 
           {/* KPI cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
             {kpis.map((k) => (
               <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} />
             ))}

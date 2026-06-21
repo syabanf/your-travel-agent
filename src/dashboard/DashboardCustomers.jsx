@@ -8,6 +8,8 @@ import { useRole } from "@/dashboard/RoleContext";
 import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Users, UserCheck, Wallet, Mail } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -114,17 +116,21 @@ export default function DashboardCustomers() {
       </header>
 
       {/* KPI row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <Kpi icon={Users} label="Total customers" value={total} />
-        <Kpi icon={UserCheck} label="Active customers" value={activeCount} />
-        <Kpi icon={Wallet} label="Total lifetime value" value={formatIDR(ltv)} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 stagger">
+        {items == null ? (
+          <><SkeletonStat /><SkeletonStat /><SkeletonStat /></>
+        ) : (<>
+          <Kpi icon={Users} label="Total customers" value={total} />
+          <Kpi icon={UserCheck} label="Active customers" value={activeCount} />
+          <Kpi icon={Wallet} label="Total lifetime value" value={formatIDR(ltv)} />
+        </>)}
       </div>
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -187,7 +193,7 @@ export default function DashboardCustomers() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex gap-2">
@@ -213,8 +219,9 @@ export default function DashboardCustomers() {
               <option value="inactive">Inactive</option>
             </select>
           </div>
+          <div className="space-y-3 stagger">
           {filtered.map((c) => (
-            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
+            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
               </div>
@@ -239,16 +246,26 @@ export default function DashboardCustomers() {
               {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
                 <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   {can(role, "customers", "edit") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                   )}
                   {can(role, "customers", "delete") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                   )}
                 </div>
               )}
             </Link>
           ))}
-          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers yet — add your first one.</p>}
+          </div>
+          {items.length === 0 && (
+            <EmptyState
+              icon={Users}
+              title="No customers yet"
+              hint="Add your first traveler to track tiers, spend and home locations."
+              action={can(role, "customers", "create") && (
+                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add customer</button>
+              )}
+            />
+          )}
           {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers match your filters.</p>}
         </div>
       )}

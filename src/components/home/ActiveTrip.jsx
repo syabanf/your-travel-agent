@@ -20,7 +20,7 @@ export default function ActiveTrip({ trip }) {
         </Link>
       </div>
       
-      <Link to={`/itinerary/${trip.id}`}>
+      <Link to={`/itinerary/${trip.id}`} className="block press">
         <GlassCard className="overflow-hidden">
           <div className="relative h-36">
             <img 
@@ -38,8 +38,8 @@ export default function ActiveTrip({ trip }) {
               </div>
             )}
             {isActive && (
-              <div className="absolute top-3 right-3 bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 rounded-full">
-                <span className="text-[11px] font-semibold text-emerald-300">Active Now</span>
+              <div className="absolute top-3 right-3 bg-amber-soft border border-amber-soft px-3 py-1 rounded-full">
+                <span className="text-[11px] font-semibold text-amber-accent">Active Now</span>
               </div>
             )}
             

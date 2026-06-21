@@ -7,6 +7,7 @@ import ActiveTrip from "../components/home/ActiveTrip";
 import FeaturedDestinations from "../components/home/FeaturedDestinations";
 import ConciergeOffer from "../components/home/ConciergeOffer";
 import RecentBookings from "../components/home/RecentBookings";
+import Skeleton, { SkeletonRows } from "@/components/Skeletons";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -68,8 +69,27 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+      <div className="animate-fade-in">
+        <div className="px-6 pt-4 pb-2 flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-7 w-36" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-10 rounded-xl" />
+            <Skeleton className="h-10 w-10 rounded-xl" />
+          </div>
+        </div>
+        <div className="px-6 space-y-8 pt-6">
+          <div className="grid grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 rounded-2xl" />
+            ))}
+          </div>
+          <Skeleton className="h-16 rounded-2xl" />
+          <Skeleton className="h-44 rounded-2xl" />
+          <SkeletonRows rows={3} />
+        </div>
       </div>
     );
   }
@@ -124,10 +144,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="space-y-8 pt-4">
+      <div className="space-y-8 pt-4 stagger">
         <QuickActions />
         <Link to="/promotions" className="block px-6">
-          <div className="rounded-2xl btn-primary p-4 flex items-center gap-3">
+          <div className="rounded-2xl btn-primary p-4 flex items-center gap-3 press">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
               <Gift className="w-5 h-5 text-white" />
             </div>

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search } from "lucide-react";
+import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search, Users } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -116,7 +118,7 @@ export default function DashboardTeam() {
           <div className="px-5 py-4 border-b border-mora-primary/5 bg-mora-primary/[0.02]">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-mora-primary">Invite a new member</h3>
-              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
@@ -144,7 +146,7 @@ export default function DashboardTeam() {
         )}
 
         {members == null ? (
-          <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+          <div className="px-5 py-5"><SkeletonRows rows={6} /></div>
         ) : (
           <>
           <div className="px-5 pt-4">
@@ -172,9 +174,9 @@ export default function DashboardTeam() {
               <th className="px-5 py-3 font-medium">Last active</th>
               <th className="px-5 py-3"></th>
             </tr></thead>
-            <tbody>
+            <tbody className="stagger">
               {filtered.map((m) => (
-                <tr key={m.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
+                <tr key={m.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02] press">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-semibold text-sm shrink-0 uppercase">
@@ -200,13 +202,30 @@ export default function DashboardTeam() {
                   <td className="px-5 py-3 text-mora-neutral">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>
                   <td className="px-5 py-3 text-right">
                     {canDelete && (
-                      <button onClick={() => remove(m)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => remove(m)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </td>
                 </tr>
               ))}
-              {members.length === 0 && <tr><td colSpan={5} className="px-5 py-10 text-center text-mora-neutral/60">No team members yet.</td></tr>}
-              {members.length > 0 && filtered.length === 0 && <tr><td colSpan={5} className="px-5 py-10 text-center text-mora-neutral/60">No team members match your filters.</td></tr>}
+              {members.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-6">
+                  <EmptyState
+                    icon={Users}
+                    title="No team members yet"
+                    hint="Invite teammates and assign them roles to control access."
+                    action={canCreate ? (
+                      <button onClick={() => setInviting(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                        <UserPlus className="w-4 h-4" /> Invite member
+                      </button>
+                    ) : null}
+                  />
+                </td></tr>
+              )}
+              {members.length > 0 && filtered.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-6">
+                  <EmptyState icon={Search} title="No matches" hint="No team members match your search or filters." />
+                </td></tr>
+              )}
             </tbody>
           </table>
           </>

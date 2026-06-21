@@ -7,6 +7,8 @@ import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Image as ImageI
 import { toast } from "sonner";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import Skeleton from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
@@ -93,7 +95,7 @@ export default function DashboardDestinations() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit destination" : "New destination"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -156,7 +158,18 @@ export default function DashboardDestinations() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+              <Skeleton className="h-28 rounded-none" />
+              <div className="p-4 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (() => {
         const filtered = (items || []).filter((d) => {
           const q = query.trim().toLowerCase();
@@ -177,9 +190,9 @@ export default function DashboardDestinations() {
             <option value="inactive">Inactive</option>
           </select>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {filtered.map((d) => (
-            <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block">
+            <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 {d.images?.length > 1 && (
@@ -188,8 +201,8 @@ export default function DashboardDestinations() {
                   </span>
                 )}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "destinations", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(d); }} className="w-8 h-8 rounded-lg bg-white/90 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(d); }} className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
               <div className="p-4">
@@ -205,8 +218,25 @@ export default function DashboardDestinations() {
               </div>
             </Link>
           ))}
-          {items.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No destinations yet — add your first one.</p>}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No destinations match your filters.</p>}
+          {items.length === 0 && (
+            <div className="col-span-full">
+              <EmptyState
+                icon={MapPin}
+                title="No destinations yet"
+                hint="Add the places travelers discover and swipe in the app."
+                action={can(role, "destinations", "create") ? (
+                  <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                    <Plus className="w-4 h-4" /> Add destination
+                  </button>
+                ) : null}
+              />
+            </div>
+          )}
+          {items.length > 0 && filtered.length === 0 && (
+            <div className="col-span-full">
+              <EmptyState icon={Search} title="No matches" hint="No destinations match your search or filters." />
+            </div>
+          )}
         </div>
         </>
         );

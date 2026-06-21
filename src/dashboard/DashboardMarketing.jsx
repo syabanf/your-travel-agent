@@ -5,6 +5,8 @@ import { useRole } from "@/dashboard/RoleContext";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Send, Megaphone, CheckCircle2, Users, CalendarClock, Mail, MessageCircle, Bell, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -122,18 +124,24 @@ export default function DashboardMarketing() {
       </header>
 
       {/* KPI row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Kpi icon={Megaphone} label="Total campaigns" value={total} />
-        <Kpi icon={CheckCircle2} label="Sent" value={sentCount} />
-        <Kpi icon={Users} label="Recipients reached" value={reached} />
-        <Kpi icon={CalendarClock} label="Scheduled" value={scheduledCount} />
-      </div>
+      {items == null ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 stagger">
+          <Kpi icon={Megaphone} label="Total campaigns" value={total} />
+          <Kpi icon={CheckCircle2} label="Sent" value={sentCount} />
+          <Kpi icon={Users} label="Recipients reached" value={reached} />
+          <Kpi icon={CalendarClock} label="Scheduled" value={scheduledCount} />
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit campaign" : "New campaign"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Platinum Bali Flash Sale" /></Fld>
@@ -172,7 +180,7 @@ export default function DashboardMarketing() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2 mb-4">
@@ -193,6 +201,7 @@ export default function DashboardMarketing() {
               <option value="sent">Sent</option>
             </select>
           </div>
+          <div className="space-y-3 stagger">
           {filtered.map((c) => {
             const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
             const ChIcon = meta.icon;
@@ -229,10 +238,10 @@ export default function DashboardMarketing() {
                     )}
                     <div className="flex gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       {can(role, "marketing", "edit") && (
-                        <button onClick={() => startEdit(c)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={() => startEdit(c)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                       )}
                       {can(role, "marketing", "delete") && (
-                        <button onClick={() => remove(c)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => remove(c)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                       )}
                     </div>
                   </div>
@@ -240,8 +249,22 @@ export default function DashboardMarketing() {
               </div>
             );
           })}
-          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No campaigns yet — create your first one.</p>}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No campaigns match your filters.</p>}
+          </div>
+          {items.length === 0 && (
+            <EmptyState
+              icon={Megaphone}
+              title="No campaigns yet"
+              hint="Plan and send email, WhatsApp & push campaigns to traveler segments."
+              action={can(role, "marketing", "create") ? (
+                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> New campaign
+                </button>
+              ) : null}
+            />
+          )}
+          {items.length > 0 && filtered.length === 0 && (
+            <EmptyState icon={Search} title="No matches" hint="No campaigns match your search or filters." />
+          )}
         </div>
       )}
     </div>

@@ -4,6 +4,8 @@ import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, Calenda
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -55,14 +57,14 @@ export default function Booking() {
 
       {/* CTA to standalone OTA marketplace */}
       <div className="px-6 mb-6">
-        <Link to="/ota" className="block">
+        <Link to="/ota" className="block press">
           <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
             <div className="w-11 h-11 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
               <CalendarSearch className="w-5 h-5 text-gold" strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-mora-white">Book flights, hotels &amp; more</p>
-              <p className="text-xs text-mora-neutral/50 mt-0.5">Search the travel marketplace</p>
+              <p className="text-xs text-mora-neutral/70 mt-0.5">Search the travel marketplace</p>
             </div>
             <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
           </GlassCard>
@@ -78,21 +80,27 @@ export default function Booking() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-          </div>
+          <SkeletonRows rows={4} />
         ) : bookings.length === 0 ? (
-          <GlassCard className="p-8 text-center">
-            <Ticket className="w-10 h-10 text-mora-neutral/30 mx-auto mb-3" />
-            <p className="text-sm text-mora-neutral/60 mb-1">No bookings yet</p>
-            <p className="text-xs text-mora-neutral/40">Start exploring destinations</p>
-          </GlassCard>
+          <EmptyState
+            icon={Ticket}
+            title="No bookings yet"
+            hint="Start exploring destinations and book your next trip"
+            action={
+              <Link
+                to="/ota"
+                className="press inline-flex items-center gap-2 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
+              >
+                <CalendarSearch className="w-4 h-4" /> Book travel
+              </Link>
+            }
+          />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 stagger">
             {bookings.map((booking) => {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
-                <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
+                <Link key={booking.id} to={`/booking/${booking.id}`} className="block press">
                   <GlassCard className="p-4 hover:bg-white/10 transition-all">
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (
@@ -113,7 +121,7 @@ export default function Booking() {
                         </div>
                         <p className="text-xs text-mora-neutral/60 mt-0.5">{booking.provider}</p>
                         <div className="flex items-center justify-between gap-2 mt-2">
-                          <span className="text-xs text-mora-neutral/50 truncate min-w-0">
+                          <span className="text-xs text-mora-neutral/70 truncate min-w-0">
                             {booking.check_in && moment(booking.check_in).format("MMM D, YYYY")}
                           </span>
                           {booking.price > 0 && (

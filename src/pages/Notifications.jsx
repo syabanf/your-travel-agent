@@ -3,6 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { Bell, MapPin, CreditCard, MessageCircle, Calendar, Check, Settings } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 import moment from "moment";
 
 const typeIcons = {
@@ -67,25 +69,25 @@ export default function Notifications() {
         }
       />
 
-      <div className="px-6 space-y-4">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-          </div>
-        ) : notifications.length === 0 ? (
-          <GlassCard className="p-8 text-center">
-            <Bell className="w-10 h-10 text-mora-neutral/30 mx-auto mb-3" />
-            <p className="text-sm text-mora-neutral/60">All caught up</p>
-            <p className="text-xs text-mora-neutral/40 mt-1">No notifications yet</p>
-          </GlassCard>
-        ) : (
-          notifications.map((notification) => {
+      {loading ? (
+        <div className="px-6">
+          <SkeletonRows rows={4} />
+        </div>
+      ) : notifications.length === 0 ? (
+        <EmptyState
+          icon={Bell}
+          title="All caught up"
+          hint="No notifications yet — we'll let you know when something comes up."
+        />
+      ) : (
+        <div className="px-6 space-y-4 stagger">
+          {notifications.map((notification) => {
             const Icon = typeIcons[notification.type] || Bell;
             const color = typeColors[notification.type] || "#94A3B8";
             return (
-              <GlassCard 
-                key={notification.id} 
-                className={`p-5 flex gap-4 transition-all ${!notification.is_read ? "border-l-2" : ""}`}
+              <GlassCard
+                key={notification.id}
+                className={`press p-5 flex gap-4 transition-all ${!notification.is_read ? "border-l-2" : ""}`}
                 style={!notification.is_read ? { borderLeftColor: color } : {}}
                 onClick={() => !notification.is_read && markAsRead(notification.id)}
               >
@@ -104,16 +106,16 @@ export default function Notifications() {
                       <div className="w-2 h-2 bg-mora-gold rounded-full flex-shrink-0 mt-1.5" />
                     )}
                   </div>
-                  <p className="text-xs text-mora-neutral/50 mt-0.5 leading-relaxed">{notification.message}</p>
+                  <p className="text-xs text-mora-neutral/70 mt-0.5 leading-relaxed">{notification.message}</p>
                   <p className="text-[10px] text-mora-neutral/60 mt-1.5">
                     {moment(notification.created_date).fromNow()}
                   </p>
                 </div>
               </GlassCard>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }

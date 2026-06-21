@@ -5,6 +5,8 @@ import { useRole } from "@/dashboard/RoleContext";
 import { FileText, Plus, Pencil, Trash2, X, Loader2, Save, Search, CheckSquare, Square } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
 
@@ -122,7 +124,7 @@ export default function DashboardContent() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit content" : "New content"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
@@ -166,7 +168,7 @@ export default function DashboardContent() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2 mb-4">
@@ -203,6 +205,7 @@ export default function DashboardContent() {
             </div>
           )}
 
+          <div className="space-y-3 stagger">
           {filtered.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.page;
             const sm = STATUS_META[p.status] || STATUS_META.draft;
@@ -236,18 +239,32 @@ export default function DashboardContent() {
                 {(can(role, "content", "edit") || canDelete) && (
                   <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "content", "edit") && (
-                      <button onClick={() => startEdit(p)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={() => startEdit(p)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {canDelete && (
-                      <button onClick={() => remove(p)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => remove(p)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}
               </div>
             );
           })}
-          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No content yet — create your first page.</p>}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No content matches your filters.</p>}
+          </div>
+          {items.length === 0 && (
+            <EmptyState
+              icon={FileText}
+              title="No content yet"
+              hint="Create app pages, FAQs, announcements & hero copy."
+              action={can(role, "content", "create") ? (
+                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> New page
+                </button>
+              ) : null}
+            />
+          )}
+          {items.length > 0 && filtered.length === 0 && (
+            <EmptyState icon={Search} title="No matches" hint="No content matches your search or filters." />
+          )}
         </div>
       )}
     </div>

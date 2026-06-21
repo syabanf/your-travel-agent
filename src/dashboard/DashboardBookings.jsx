@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Search, ChevronUp, ChevronDown, Briefcase, Map } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
+
+const PAGE_SIZE = 12;
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -36,6 +40,14 @@ export default function DashboardBookings() {
   const [suppliers, setSuppliers] = useState([]);
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState("all");
+  const [bSort, setBSort] = useState({ key: null, dir: "asc" });
+  const [tSort, setTSort] = useState({ key: null, dir: "asc" });
+  const [bVisible, setBVisible] = useState(PAGE_SIZE);
+  const [tVisible, setTVisible] = useState(PAGE_SIZE);
+
+  // Reset pagination when filters / tab change.
+  useEffect(() => { setBVisible(PAGE_SIZE); }, [query, statusF, tab]);
+  useEffect(() => { setTVisible(PAGE_SIZE); }, [query, statusF, tab]);
 
   const load = async () => {
     setTrips(await base44.entities.Trip.list("-created_date", 500));
@@ -128,6 +140,32 @@ export default function DashboardBookings() {
   const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF));
   const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF));
 
+  // Sort a copy of the filtered array (never mutate the source).
+  const sortRows = (rows, { key, dir }) => {
+    if (!key) return rows;
+    const sign = dir === "asc" ? 1 : -1;
+    return [...rows].sort((a, b) => {
+      let av = a[key], bv = b[key];
+      if (av == null) av = ""; if (bv == null) bv = "";
+      if (typeof av === "number" && typeof bv === "number") return (av - bv) * sign;
+      return String(av).localeCompare(String(bv), undefined, { numeric: true }) * sign;
+    });
+  };
+  const toggleSort = (set) => (key) => set((p) => p.key === key ? { key, dir: p.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" });
+  const SortHead = ({ label, field, active, dir, onSort, className = "" }) => (
+    <th className={`px-5 py-3 font-medium ${className}`}>
+      <button onClick={() => onSort(field)} className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-mora-primary transition-colors">
+        {label}
+        {active === field && (dir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+      </button>
+    </th>
+  );
+
+  const sBookings = sortRows(fBookings, bSort);
+  const sTrips = sortRows(fTrips, tSort);
+  const vBookings = sBookings.slice(0, bVisible);
+  const vTrips = sTrips.slice(0, tVisible);
+
   return (
     <div className="p-8 max-w-6xl">
       <header className="mb-6 flex items-center justify-between">
@@ -150,7 +188,7 @@ export default function DashboardBookings() {
             <h2 className="font-display font-semibold text-lg text-mora-primary">
               {d.id ? "Edit" : "New"} {editing.kind === "booking" ? "booking" : "trip"}
             </h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           {editing.kind === "booking" ? (
@@ -276,16 +314,29 @@ export default function DashboardBookings() {
 
           <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
             {(tab === "bookings" ? bookings : trips) == null ? (
-              <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+              <div className="p-5"><SkeletonRows rows={6} /></div>
             ) : tab === "bookings" ? (
+              bookings.length === 0 ? (
+                <EmptyState
+                  icon={Briefcase}
+                  title="No bookings yet"
+                  hint="Add flights, hotels and activities to start building this trip board."
+                  action={can(role, "bookings", "create") && (
+                    <button onClick={startAddBooking} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> New booking</button>
+                  )}
+                />
+              ) : (<>
               <table className="w-full text-sm">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
-                  <th className="px-5 py-3 font-medium">Title</th><th className="px-5 py-3 font-medium">Type</th>
-                  <th className="px-5 py-3 font-medium">Date</th><th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium text-right">Price</th><th className="px-5 py-3"></th>
+                  <SortHead label="Title" field="title" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
+                  <SortHead label="Type" field="type" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
+                  <SortHead label="Date" field="check_in" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
+                  <SortHead label="Status" field="status" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
+                  <SortHead label="Price" field="price" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} className="text-right" />
+                  <th className="px-5 py-3"></th>
                 </tr></thead>
-                <tbody>
-                  {fBookings.map((b) => (
+                <tbody className="stagger">
+                  {vBookings.map((b) => (
                     <tr key={b.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{b.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral capitalize">{b.type}</td>
@@ -293,23 +344,42 @@ export default function DashboardBookings() {
                       <td className="px-5 py-3"><StatusCell value={b.status} options={BOOKING_STATUSES} editable={canEditBookings} onChange={(s) => setBookingStatus(b.id, s)} /></td>
                       <td className="px-5 py-3 text-right font-semibold text-gold">{b.price ? formatIDR(b.price) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditBookings && <button onClick={() => startEditBooking(b)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Pencil className="w-4 h-4" /></button>}
-                        {canDelBookings && <button onClick={() => delBooking(b.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditBookings && <button onClick={() => startEditBooking(b)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelBookings && <button onClick={() => delBooking(b.id)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}
-                  {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">{bookings.length ? "No bookings match your filters." : "No bookings."}</td></tr>}
+                  {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No bookings match your filters.</td></tr>}
                 </tbody>
               </table>
+              {bVisible < fBookings.length && (
+                <div className="px-5 py-4 border-t border-mora-primary/5 text-center">
+                  <button onClick={() => setBVisible((v) => v + PAGE_SIZE)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({fBookings.length - bVisible} more)</button>
+                </div>
+              )}
+              </>)
             ) : (
+              trips.length === 0 ? (
+                <EmptyState
+                  icon={Map}
+                  title="No trips yet"
+                  hint="Create a trip to group bookings, travelers and budgets in one place."
+                  action={can(role, "trips", "create") && (
+                    <button onClick={startAddTrip} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> New trip</button>
+                  )}
+                />
+              ) : (<>
               <table className="w-full text-sm">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
-                  <th className="px-5 py-3 font-medium">Trip</th><th className="px-5 py-3 font-medium">Destination</th>
-                  <th className="px-5 py-3 font-medium">Dates</th><th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium text-right">Budget</th><th className="px-5 py-3"></th>
+                  <SortHead label="Trip" field="title" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
+                  <SortHead label="Destination" field="destination" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
+                  <SortHead label="Dates" field="start_date" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
+                  <SortHead label="Status" field="status" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
+                  <SortHead label="Budget" field="budget_total" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} className="text-right" />
+                  <th className="px-5 py-3"></th>
                 </tr></thead>
-                <tbody>
-                  {fTrips.map((t) => (
+                <tbody className="stagger">
+                  {vTrips.map((t) => (
                     <tr key={t.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{t.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral">{t.destination}</td>
@@ -317,14 +387,20 @@ export default function DashboardBookings() {
                       <td className="px-5 py-3"><StatusCell value={t.status} options={TRIP_STATUSES} editable={canEditTrips} onChange={(s) => setTripStatus(t.id, s)} /></td>
                       <td className="px-5 py-3 text-right font-semibold text-gold">{t.budget_total ? formatIDR(t.budget_total) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditTrips && <button onClick={() => startEditTrip(t)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Pencil className="w-4 h-4" /></button>}
-                        {canDelTrips && <button onClick={() => delTrip(t.id)} className="text-red-600 hover:bg-red-50 w-8 h-8 rounded-lg inline-flex items-center justify-center"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditTrips && <button onClick={() => startEditTrip(t)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelTrips && <button onClick={() => delTrip(t.id)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}
-                  {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">{trips.length ? "No trips match your filters." : "No trips."}</td></tr>}
+                  {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No trips match your filters.</td></tr>}
                 </tbody>
               </table>
+              {tVisible < fTrips.length && (
+                <div className="px-5 py-4 border-t border-mora-primary/5 text-center">
+                  <button onClick={() => setTVisible((v) => v + PAGE_SIZE)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({fTrips.length - tVisible} more)</button>
+                </div>
+              )}
+              </>)
             )}
           </div>
         </>

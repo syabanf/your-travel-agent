@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
 import { can } from "./rbac";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -86,7 +88,7 @@ export default function DashboardPromotions() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit entry" : "New entry"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Type">
@@ -128,7 +130,7 @@ export default function DashboardPromotions() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex gap-2 mb-4">
@@ -143,10 +145,11 @@ export default function DashboardPromotions() {
               <option value="news">News</option>
             </select>
           </div>
+          <div className="space-y-3 stagger">
           {filtered.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
-              <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
+              <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
                 <div className="w-20 h-16 rounded-xl overflow-hidden bg-mora-primary shrink-0">
                   {p.image && <img src={p.image} alt={p.title} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 </div>
@@ -164,14 +167,28 @@ export default function DashboardPromotions() {
                   {p.date ? <p className="text-xs text-mora-neutral">{moment(p.date).format("MMM D")}</p> : null}
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </Link>
             );
           })}
-          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No entries yet.</p>}
-          {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No entries match your filters.</p>}
+          </div>
+          {items.length === 0 && (
+            <EmptyState
+              icon={Megaphone}
+              title="No entries yet"
+              hint="Publish offers, events and news to show in the app's What's New."
+              action={can(role, "promotions", "create") ? (
+                <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                  <Plus className="w-4 h-4" /> New entry
+                </button>
+              ) : null}
+            />
+          )}
+          {items.length > 0 && filtered.length === 0 && (
+            <EmptyState icon={Search} title="No matches" hint="No entries match your search or filters." />
+          )}
         </div>
       )}
     </div>

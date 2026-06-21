@@ -5,6 +5,8 @@ import { useRole } from "@/dashboard/RoleContext";
 import { Image as ImageIcon, Plus, Trash2, X, Loader2, Save, Search, Copy, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import Skeleton from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = { title: "", url: "", tags: "" };
 
@@ -82,7 +84,7 @@ export default function DashboardMedia() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit media" : "New media"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -113,7 +115,17 @@ export default function DashboardMedia() {
       ) : null}
 
       {items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+              <Skeleton className="aspect-square rounded-none" />
+              <div className="p-3 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           <div className="flex gap-2 mb-4">
@@ -125,7 +137,7 @@ export default function DashboardMedia() {
 
           <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{filtered.length} {filtered.length === 1 ? "asset" : "assets"}</div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
             {filtered.map((m) => (
               <div key={m.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col">
                 <div className="aspect-square bg-mora-primary/5 relative">
@@ -150,18 +162,35 @@ export default function DashboardMedia() {
                     </button>
                     <div className="flex gap-1 ml-auto">
                       {can(role, "media", "edit") && (
-                        <button onClick={() => startEdit(m)} className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => startEdit(m)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
                       )}
                       {can(role, "media", "delete") && (
-                        <button onClick={() => remove(m)} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => remove(m)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
             ))}
-            {items.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No media yet — add your first image.</p>}
-            {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 col-span-full text-center py-10">No media matches your search.</p>}
+            {items.length === 0 && (
+              <div className="col-span-full">
+                <EmptyState
+                  icon={ImageIcon}
+                  title="No media yet"
+                  hint="Add reusable images for destinations, promotions & content."
+                  action={can(role, "media", "create") ? (
+                    <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                      <Plus className="w-4 h-4" /> Add media
+                    </button>
+                  ) : null}
+                />
+              </div>
+            )}
+            {items.length > 0 && filtered.length === 0 && (
+              <div className="col-span-full">
+                <EmptyState icon={Search} title="No matches" hint="No media matches your search." />
+              </div>
+            )}
           </div>
         </>
       )}

@@ -7,6 +7,8 @@ import { openWhatsApp } from "@/lib/whatsapp";
 import { Plus, Pencil, Trash2, X, Loader2, Save, MessageCircle, UserPlus, Users, Flame, Wallet, Trophy, Search } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -136,18 +138,22 @@ export default function DashboardLeads() {
       </header>
 
       {/* KPI row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Kpi icon={Users} label="Total leads" value={total} />
-        <Kpi icon={Flame} label="Open" value={open} />
-        <Kpi icon={Wallet} label="Pipeline value" value={formatIDR(pipeline)} />
-        <Kpi icon={Trophy} label="Won" value={won} />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 stagger">
+        {items == null ? (
+          <><SkeletonStat /><SkeletonStat /><SkeletonStat /><SkeletonStat /></>
+        ) : (<>
+          <Kpi icon={Users} label="Total leads" value={total} />
+          <Kpi icon={Flame} label="Open" value={open} />
+          <Kpi icon={Wallet} label="Pipeline value" value={formatIDR(pipeline)} />
+          <Kpi icon={Trophy} label="Won" value={won} />
+        </>)}
       </div>
 
       {editing && (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit lead" : "New lead"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Row2>
@@ -186,7 +192,7 @@ export default function DashboardLeads() {
       )}
 
       {items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <>
           {!editing && (
@@ -210,8 +216,22 @@ export default function DashboardLeads() {
               </select>
             </div>
           )}
+          {items.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-mora-primary/10">
+              <EmptyState
+                icon={Users}
+                title="No leads yet"
+                hint="Capture an enquiry to start moving it through the sales pipeline."
+                action={canCreate && (
+                  <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> New lead</button>
+                )}
+              />
+            </div>
+          ) : filtered.length === 0 ? (
+            <p className="text-mora-neutral/60 text-center py-10">No leads match your filters.</p>
+          ) : (
           <div className="overflow-x-auto pb-2 -mx-1 px-1">
-            <div className="flex gap-4 min-w-max">
+            <div className="flex gap-4 min-w-max stagger">
               {STATUSES.map((status) => {
                 const col = filtered.filter((l) => (l.status || "new") === status);
               return (
@@ -223,7 +243,7 @@ export default function DashboardLeads() {
                   </div>
                   <div className="space-y-3">
                     {col.map((l) => (
-                      <div key={l.id} className="bg-white rounded-xl border border-mora-primary/10 p-3">
+                      <div key={l.id} className="bg-white rounded-xl border border-mora-primary/10 p-3 hover:shadow-md transition-shadow">
                         <div className="font-medium text-mora-primary truncate">{l.name}</div>
                         <div className="text-xs text-mora-neutral mt-0.5 truncate">
                           {[l.destination, l.source].filter(Boolean).join(" · ") || "—"}
@@ -289,6 +309,7 @@ export default function DashboardLeads() {
               })}
             </div>
           </div>
+          )}
         </>
       )}
     </div>

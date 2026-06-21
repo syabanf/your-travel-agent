@@ -3,6 +3,10 @@ import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import moment from "moment";
 import { History, Filter, ShieldCheck } from "lucide-react";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
+
+const PAGE_SIZE = 20;
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
@@ -14,6 +18,10 @@ export default function DashboardAudit() {
   const [logs, setLogs] = useState(null);
   const [action, setAction] = useState("all");
   const [entity, setEntity] = useState("all");
+  const [visible, setVisible] = useState(PAGE_SIZE);
+
+  // Reset pagination whenever the filters change.
+  useEffect(() => { setVisible(PAGE_SIZE); }, [action, entity]);
 
   useEffect(() => {
     (async () => {
@@ -40,6 +48,8 @@ export default function DashboardAudit() {
       ),
     [logs, action, entity]
   );
+
+  const shown = filtered.slice(0, visible);
 
   return (
     <div className="p-8 max-w-5xl">
@@ -71,9 +81,7 @@ export default function DashboardAudit() {
       </div>
 
       {logs == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 flex justify-center py-16">
-          <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-        </div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={8} /></div>
       ) : (
         <>
           <p className="text-xs text-mora-neutral/70 mb-3">{filtered.length} events</p>
@@ -88,8 +96,8 @@ export default function DashboardAudit() {
                   <th className="px-5 py-3 font-medium">Details</th>
                 </tr>
               </thead>
-              <tbody>
-                {filtered.map((l) => (
+              <tbody className="stagger">
+                {shown.map((l) => (
                   <tr key={l.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                     <td className="px-5 py-3 whitespace-nowrap">
                       <div className="text-mora-primary">{moment(l.created_date).format("MMM D, HH:mm")}</div>
@@ -107,15 +115,28 @@ export default function DashboardAudit() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-5 py-12 text-center text-mora-neutral/60">
-                      <History className="w-6 h-6 mx-auto mb-2 opacity-40" />
-                      No audit events yet — changes you make in the dashboard will appear here.
+                    <td colSpan={5} className="px-5 py-6">
+                      <EmptyState
+                        icon={History}
+                        title="No audit events"
+                        hint={logs.length ? "No events match your filters." : "Changes you make in the dashboard will appear here."}
+                      />
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+          {filtered.length > visible && (
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                className="rounded-xl px-5 py-2.5 text-sm font-semibold bg-white border border-mora-primary/10 text-mora-primary hover:bg-mora-primary/5 press"
+              >
+                Show more ({filtered.length - visible} more)
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

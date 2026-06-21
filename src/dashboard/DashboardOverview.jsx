@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { MapPin, Map as MapIcon, CalendarCheck, Users, Wallet, TrendingUp, AlertCircle, ArrowUpRight, ChevronRight } from "lucide-react";
 import { formatIDR } from "@/lib/currency";
+import Skeleton, { SkeletonStat } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 import moment from "moment";
 
 const statusPill = {
@@ -64,13 +66,24 @@ export default function DashboardOverview() {
       </header>
 
       {!s ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+          </div>
+          <div className="grid lg:grid-cols-3 gap-4 mb-6">
+            {Array.from({ length: 3 }).map((_, i) => <SkeletonStat key={i} />)}
+          </div>
+          <div className="grid lg:grid-cols-3 gap-4">
+            <Skeleton className="lg:col-span-2 h-[260px] w-full rounded-2xl" />
+            <Skeleton className="h-[260px] w-full rounded-2xl" />
+          </div>
+        </>
       ) : (
         <>
           {/* Count cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
             {stats.map((c) => (
-              <Link key={c.label} to={c.to} className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow group min-w-0">
+              <Link key={c.label} to={c.to} className="press bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow group min-w-0">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center"><c.icon className="w-5 h-5 text-gold" /></div>
                   <ArrowUpRight className="w-4 h-4 text-mora-neutral/40 group-hover:text-gold transition-colors" />
@@ -82,7 +95,7 @@ export default function DashboardOverview() {
           </div>
 
           {/* Insight cards */}
-          <div className="grid lg:grid-cols-3 gap-4 mb-6">
+          <div className="grid lg:grid-cols-3 gap-4 mb-6 stagger">
             <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
               <div className="flex items-center gap-2 text-mora-neutral mb-2"><Wallet className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Confirmed revenue</span></div>
               <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{formatIDR(revenue)}</p>
@@ -93,7 +106,7 @@ export default function DashboardOverview() {
               <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary truncate">{topDest ? topDest.name : "—"}</p>
               <p className="text-xs text-mora-neutral/70 mt-1">{topDest ? `${topDest.count} trip${topDest.count > 1 ? "s" : ""} planned` : "No trips yet"}</p>
             </div>
-            <Link to="/dashboard/bookings" className="bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow min-w-0">
+            <Link to="/dashboard/bookings" className="press bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow min-w-0">
               <div className="flex items-center gap-2 text-mora-neutral mb-2"><AlertCircle className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Pending bookings</span></div>
               <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{pending}</p>
               <p className="text-xs text-gold mt-1">{pending ? "Need attention →" : "All clear"}</p>
@@ -119,7 +132,7 @@ export default function DashboardOverview() {
                       <td className="px-5 py-3 text-right font-semibold text-gold whitespace-nowrap">{b.price ? formatIDR(b.price) : "—"}</td>
                     </tr>
                   ))}
-                  {s.bookings.length === 0 && <tr><td className="px-5 py-8 text-center text-mora-neutral/60">No bookings yet.</td></tr>}
+                  {s.bookings.length === 0 && <tr><td colSpan={3}><EmptyState icon={CalendarCheck} title="No bookings yet" hint="Bookings will appear here once they're created." className="py-8" /></td></tr>}
                 </tbody>
               </table>
             </div>
@@ -141,7 +154,7 @@ export default function DashboardOverview() {
                     <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${tierPill[c.tier] || tierPill.bronze}`}>{c.tier}</span>
                   </Link>
                 ))}
-                {s.customers.length === 0 && <p className="text-center text-mora-neutral/60 py-6 text-sm">No customers yet.</p>}
+                {s.customers.length === 0 && <EmptyState icon={Users} title="No customers yet" hint="New customers will show up here." className="py-8" />}
               </div>
             </div>
           </div>

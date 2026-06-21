@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import TripCard from "../components/itinerary/TripCard";
+import { SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const tabs = [
   { id: "upcoming", label: "Upcoming" },
@@ -105,7 +107,7 @@ export default function Itinerary() {
           <h2 className="text-xs font-semibold text-mora-primary uppercase tracking-widest mb-3">My Itineraries</h2>
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
             {trips.slice(0, 5).map((trip) => (
-              <Link key={trip.id} to={`/itinerary/${trip.id}`}>
+              <Link key={trip.id} to={`/itinerary/${trip.id}`} className="press block">
                 <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-mora-primary/5 transition-all">
                  <p className="text-xs font-semibold text-mora-primary truncate">{trip.title}</p>
                  <p className="text-[10px] text-mora-neutral mt-1">{trip.destination}</p>
@@ -142,29 +144,31 @@ export default function Itinerary() {
       </div>
 
       {/* Trip List */}
-      <div className="px-6 space-y-4">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-          </div>
-        ) : filteredTrips.length === 0 ? (
-          <GlassCard className="p-8 text-center">
-            <Map className="w-10 h-10 text-mora-neutral/30 mx-auto mb-3" />
-            <p className="text-sm text-mora-neutral mb-1">No trips found</p>
-            <p className="text-xs text-mora-neutral/70">Create your first itinerary to get started</p>
-            <Link 
+      {loading ? (
+        <div className="px-6">
+          <SkeletonRows rows={4} />
+        </div>
+      ) : filteredTrips.length === 0 ? (
+        <EmptyState
+          icon={Map}
+          title="No trips found"
+          hint="Create your first itinerary to get started"
+          action={
+            <Link
               to="/itinerary/wizard"
-              className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
+              className="press inline-flex items-center gap-2 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
             >
               <Plus className="w-4 h-4" /> New Itinerary
             </Link>
-          </GlassCard>
-        ) : (
-          filteredTrips.map((trip) => (
+          }
+        />
+      ) : (
+        <div className="px-6 space-y-4 stagger">
+          {filteredTrips.map((trip) => (
             <TripCard key={trip.id} trip={trip} />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

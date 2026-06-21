@@ -26,22 +26,22 @@ export default function FeaturedDestinations() {
         </Link>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-1">
+      <div className="flex gap-3 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-1 stagger">
         {destinations.map((dest) => (
-          <Link key={dest.id} to={`/destination/${dest.id}`}>
-            <GlassCard className="min-w-[140px] overflow-hidden flex-shrink-0">
-              <div className="relative h-40">
+          <Link key={dest.id} to={`/destination/${dest.id}`} className="block press">
+            <GlassCard className="min-w-[150px] overflow-hidden flex-shrink-0">
+              <div className="relative h-44">
                 <img
                   src={dest.image}
                   alt={dest.name}
                   onError={(e) => { e.currentTarget.style.display = "none"; }}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/95 via-mora-primary/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/95 via-mora-primary/35 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-[10px] text-[#F0B7B9] tracking-widest uppercase mb-0.5">{dest.tagline}</p>
-                  <h3 className="text-sm font-display font-semibold text-white text-shadow-soft">{dest.name}</h3>
-                  <p className="text-[10px] text-white/70">{dest.country}</p>
+                  <p className="text-[10px] text-[#F0B7B9] tracking-widest uppercase mb-0.5 truncate">{dest.tagline}</p>
+                  <h3 className="text-sm font-display font-semibold text-white text-shadow-soft truncate">{dest.name}</h3>
+                  <p className="text-[10px] text-white/80 truncate">{dest.country}</p>
                 </div>
               </div>
             </GlassCard>

@@ -5,6 +5,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGri
 import { Wallet, TrendingUp, Receipt, Banknote, Landmark, Download, Scale, Building2, Users } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
+import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 
 const TAX_RATE = 0.11;   // PPN (VAT) on operating profit
 const OPEX_RATE = 0.12;  // estimated operating expenses as % of revenue
@@ -12,9 +13,6 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const AXIS = { fontSize: 11, stroke: "#5A6B85" };
 const TOOLTIP_STYLE = { background: "#fff", border: "1px solid rgba(11,27,59,0.12)", borderRadius: 12, color: "#0B1B3B", fontSize: 12 };
 
-function Spinner() {
-  return <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>;
-}
 function Kpi({ icon: Icon, label, value, sub, tone = "primary" }) {
   const toneClass = tone === "good" ? "text-emerald-600" : tone === "bad" ? "text-red-600" : "text-mora-primary";
   return (
@@ -143,7 +141,15 @@ export default function DashboardERP() {
         <button onClick={exportPL} disabled={!f} className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium btn-primary disabled:opacity-50"><Download className="w-4 h-4" /> Export P&L</button>
       </header>
 
-      {!f ? <Spinner /> : (
+      {!f ? (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonStat key={i} />)}
+          </div>
+          <Skeleton className="h-[260px] w-full rounded-2xl mb-4" />
+          <Skeleton className="h-[260px] w-full rounded-2xl" />
+        </>
+      ) : (
         <>
           <div className="flex gap-2 mb-4">
             {[{ k: "all", l: "All time" }, { k: "year", l: "This year" }].map((p) => (
@@ -152,7 +158,7 @@ export default function DashboardERP() {
           </div>
 
           {/* KPI row */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4 stagger">
             <Kpi icon={Wallet} label="Revenue" value={formatIDR(f.revenue)} sub={`${f.confirmedCount} confirmed`} />
             <Kpi icon={TrendingUp} label="Gross profit" value={formatIDR(f.gross)} sub={`${f.grossPct}% margin`} tone="good" />
             <Kpi icon={Banknote} label="Net profit" value={formatIDR(f.net)} sub="after opex & tax" tone={f.net >= 0 ? "good" : "bad"} />

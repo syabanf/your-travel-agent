@@ -119,7 +119,7 @@ export function buildSeed() {
   const Promotion = [
     { id: 'promo_villas', created_date: iso(-3), created_by: by, type: 'promo', title: 'Flash Sale: Bali Villas', description: 'Up to 35% off luxury villas in Seminyak & Ubud — book before they vanish.', discount: 35, price: 2900000, valid_until: date(14), location: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80', cta: 'Book now', featured: true },
     { id: 'promo_flights', created_date: iso(-2), created_by: by, type: 'promo', title: 'Garuda Weekend Deal', description: 'Domestic return flights from Rp 750.000. Limited seats available.', discount: 20, price: 750000, valid_until: date(7), location: 'Nationwide', image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', cta: 'Find flights', featured: false },
-    { id: 'event_arts', created_date: iso(-5), created_by: by, type: 'event', title: 'Bali Arts Festival', description: 'A month of Balinese dance, gamelan and craft markets.', date: date(30), location: 'Denpasar, Bali', image: 'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=800&q=80', cta: 'Learn more', featured: false },
+    { id: 'event_arts', created_date: iso(-5), created_by: by, type: 'event', title: 'Bali Arts Festival', description: 'A month of Balinese dance, gamelan and craft markets.', date: date(30), location: 'Denpasar, Bali', image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80', cta: 'Learn more', featured: false },
     { id: 'event_jazz', created_date: iso(-6), created_by: by, type: 'event', title: 'Java Jazz Festival', description: 'Three nights of world-class jazz in the capital.', date: date(45), location: 'Jakarta', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800&q=80', cta: 'Get tickets', featured: false },
     { id: 'news_visa', created_date: iso(-1), created_by: by, type: 'news', title: 'New visa-on-arrival countries', description: 'Indonesia adds 10 more nationalities to its visa-on-arrival list this month.', date: date(-1), location: '', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80', cta: 'Read more', featured: false },
   ];
@@ -199,7 +199,7 @@ export function buildSeed() {
     { id: 'media_flight', created_date: iso(-28), created_by: by, title: 'Airplane wing', url: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', tags: ['flight', 'sky', 'travel'] },
     { id: 'media_beach', created_date: iso(-20), created_by: by, title: 'Tropical beach', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', tags: ['beach', 'tropical', 'hero'] },
     { id: 'media_maldives', created_date: iso(-18), created_by: by, title: 'Maldives overwater', url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80', tags: ['maldives', 'luxury', 'beach'] },
-    { id: 'media_market', created_date: iso(-10), created_by: by, title: 'Bali Arts Festival', url: 'https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=800&q=80', tags: ['event', 'culture', 'market'] },
+    { id: 'media_market', created_date: iso(-10), created_by: by, title: 'Bali Arts Festival', url: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80', tags: ['event', 'culture', 'market'] },
   ];
 
   // Single app-wide settings record (brand, support, social, feature flags).

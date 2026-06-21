@@ -1,5 +1,6 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History, Sparkles, Scale, FileText, Image as ImageIcon, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History, Sparkles, Scale, FileText, Image as ImageIcon, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -38,21 +39,45 @@ const GROUPS = [
 
 function Shell() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
   const { role, setRole } = useRole();
+  const [open, setOpen] = useState(false);
+
+  // Close the mobile drawer whenever the route changes.
+  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   return (
-    <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary flex font-body">
+    <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary font-body">
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 z-30 bg-white/90 backdrop-blur border-b border-mora-primary/10 flex items-center gap-3 px-4">
+        <button onClick={() => setOpen(true)} aria-label="Open menu" className="w-10 h-10 -ml-1 rounded-xl hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary">
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
+          <span className="font-display font-bold text-mora-primary">MORA</span>
+        </div>
+      </div>
+
+      {/* Backdrop (mobile) */}
+      {open && <div onClick={() => setOpen(false)} className="lg:hidden fixed inset-0 bg-black/30 z-40" aria-hidden="true" />}
+
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 bg-white border-r border-mora-primary/10 flex flex-col fixed inset-y-0 left-0 z-20">
-        <div className="px-5 h-16 flex items-center gap-2.5 border-b border-mora-primary/10">
-          <div className="w-9 h-9 rounded-xl btn-primary flex items-center justify-center">
-            <Plane className="w-5 h-5 text-white" />
+      <aside className={`w-64 bg-white border-r border-mora-primary/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-transform duration-300 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="px-5 h-16 flex items-center justify-between border-b border-mora-primary/10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl btn-primary flex items-center justify-center">
+              <Plane className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-display font-bold leading-none text-mora-primary">MORA</p>
+              <p className="text-[10px] text-mora-neutral">Admin Console</p>
+            </div>
           </div>
-          <div>
-            <p className="font-display font-bold leading-none text-mora-primary">MORA</p>
-            <p className="text-[10px] text-mora-neutral">Admin Console</p>
-          </div>
+          <button onClick={() => setOpen(false)} aria-label="Close menu" className="lg:hidden w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         <nav className="flex-1 p-3 overflow-y-auto">
@@ -68,13 +93,14 @@ function Shell() {
                       key={item.to}
                       to={item.to}
                       end={item.end}
+                      onClick={() => setOpen(false)}
                       className={({ isActive }) =>
                         `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                           isActive ? "bg-mora-gold/10 text-gold" : "text-mora-neutral hover:bg-mora-primary/5 hover:text-mora-primary"
                         }`
                       }
                     >
-                      <item.icon className="w-4.5 h-4.5" /> {item.label}
+                      <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
                     </NavLink>
                   ))}
                 </div>
@@ -103,7 +129,7 @@ function Shell() {
       </aside>
 
       {/* Content */}
-      <main className="flex-1 ml-64 min-h-screen">
+      <main className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
         <Outlet />
       </main>
     </div>

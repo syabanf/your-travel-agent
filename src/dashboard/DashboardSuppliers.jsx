@@ -7,6 +7,8 @@ import { useRole } from "@/dashboard/RoleContext";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percent, Star, Globe, MessageCircle, Search } from "lucide-react";
 import { toast } from "sonner";
+import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
@@ -101,17 +103,21 @@ export default function DashboardSuppliers() {
       </header>
 
       {/* KPI row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <Kpi icon={Building2} label="Total suppliers" value={total} />
-        <Kpi icon={CheckCircle2} label="Active suppliers" value={activeCount} />
-        <Kpi icon={Percent} label="Avg commission" value={`${avgCommission}%`} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 stagger">
+        {items == null ? (
+          <><SkeletonStat /><SkeletonStat /><SkeletonStat /></>
+        ) : (<>
+          <Kpi icon={Building2} label="Total suppliers" value={total} />
+          <Kpi icon={CheckCircle2} label="Active suppliers" value={activeCount} />
+          <Kpi icon={Percent} label="Avg commission" value={`${avgCommission}%`} />
+        </>)}
       </div>
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit supplier" : "New supplier"}</h2>
-            <button onClick={() => setEditing(null)} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="space-y-3 max-w-2xl">
@@ -150,7 +156,7 @@ export default function DashboardSuppliers() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -172,9 +178,9 @@ export default function DashboardSuppliers() {
             <option value="inactive">Inactive</option>
           </select>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {filtered.map((s) => (
-            <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow">
+            <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow press">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <h3 className="font-display font-semibold text-mora-primary truncate">{s.name}</h3>
@@ -186,10 +192,10 @@ export default function DashboardSuppliers() {
                 {(can(role, "suppliers", "edit") || can(role, "suppliers", "delete")) && (
                   <div className="flex gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "suppliers", "edit") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(s); }} className="w-8 h-8 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(s); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {can(role, "suppliers", "delete") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(s); }} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(s); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}
@@ -216,7 +222,18 @@ export default function DashboardSuppliers() {
               )}
             </Link>
           ))}
-          {items.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers yet — add your first one.</p>}
+          {items.length === 0 && (
+            <div className="col-span-full">
+              <EmptyState
+                icon={Building2}
+                title="No suppliers yet"
+                hint="Add partner airlines, hotels and DMCs to track their commissions."
+                action={can(role, "suppliers", "create") && (
+                  <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add supplier</button>
+                )}
+              />
+            </div>
+          )}
           {items.length > 0 && filtered.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
         </>
