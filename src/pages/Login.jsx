@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Plane, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import PhoneFrame from "../components/PhoneFrame";
 
 function Field({ icon: Icon, label, children }) {
   return (
@@ -43,9 +44,8 @@ export default function Login({ register = false }) {
   const guest = () => { login({ name: "Guest" }); navigate("/", { replace: true }); };
 
   return (
-    <div className="fixed inset-0 premium-bg-light overflow-y-auto">
-      <div className="absolute -top-10 right-0 w-72 h-72 bg-[#AD1F23]/8 rounded-full blur-3xl pointer-events-none" />
-      <div className="relative min-h-full flex flex-col justify-center px-7 py-12 max-w-md mx-auto">
+    <PhoneFrame>
+      <div className="relative z-10 flex-1 overflow-y-auto hide-scrollbar px-7 py-6 flex flex-col justify-center">
         <div className="mb-8">
           <div className="w-14 h-14 rounded-2xl btn-primary flex items-center justify-center mb-5">
             <Plane className="w-7 h-7 text-white" strokeWidth={1.5} />
@@ -89,6 +89,6 @@ export default function Login({ register = false }) {
           </button>
         </p>
       </div>
-    </div>
+    </PhoneFrame>
   );
 }
