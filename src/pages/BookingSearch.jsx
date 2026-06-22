@@ -43,7 +43,7 @@ export default function BookingSearch() {
   );
 
   return (
-    <div className="animate-fade-in pb-8">
+    <div className="animate-fade-in pb-28">
       <PageHeader title={`${label} Bookings`} subtitle="All your reservations" showBack />
 
       <div className="px-6 mb-5">

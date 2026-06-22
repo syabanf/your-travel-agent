@@ -128,7 +128,12 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
     );
   }
 
-  if (!trip) return null;
+  if (!trip) return (
+    <div className="animate-fade-in">
+      <PageHeader title="Trip not found" showBack />
+      <p className="px-6 text-sm text-mora-neutral/70">This trip is no longer available.</p>
+    </div>
+  );
 
   const totalDays = trip.start_date && trip.end_date
     ? Math.max(1, moment(trip.end_date).diff(moment(trip.start_date), "days") + 1)

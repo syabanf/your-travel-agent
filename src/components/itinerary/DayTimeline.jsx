@@ -115,8 +115,10 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                       <span className="text-[10px] text-gold/70 mt-0.5 inline-block">{formatIDR(item.budget)}</span>
                     )}
                   </div>
-                  <button 
+                  <button
                     onClick={() => handleToggleComplete(item)}
+                    aria-pressed={item.is_completed}
+                    aria-label={item.is_completed ? "Mark activity as not done" : "Mark activity as done"}
                     className="flex-shrink-0 mt-1 w-11 h-11 flex items-center justify-center -mr-2"
                   >
                     {item.is_completed ? (

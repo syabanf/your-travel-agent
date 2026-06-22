@@ -22,3 +22,77 @@ export const DESTINATIONS = [
 ];
 
 export const getDestinationById = (id) => DESTINATIONS.find((d) => d.id === id);
+
+// Curated "things to do" for each destination, shown on the Map.
+// These are decoupled from any trip itinerary — they describe the place itself.
+// `dLat`/`dLng` are small offsets added to the destination's coordinates so the
+// activity markers spread around the area; `category` drives the map/list icon.
+export const DESTINATION_ACTIVITIES = {
+  bali: [
+    { name: 'Seminyak Beach Club', category: 'beach', dLat: -0.05, dLng: -0.06 },
+    { name: 'Ubud Rice Terraces', category: 'nature', dLat: 0.08, dLng: 0.05 },
+    { name: 'Uluwatu Temple', category: 'culture', dLat: -0.10, dLng: -0.10 },
+    { name: 'Jimbaran Seafood Grill', category: 'food', dLat: -0.07, dLng: -0.07 },
+  ],
+  kyoto: [
+    { name: 'Fushimi Inari Shrine', category: 'culture', dLat: -0.03, dLng: 0.04 },
+    { name: 'Arashiyama Bamboo Grove', category: 'nature', dLat: 0.02, dLng: -0.09 },
+    { name: 'Nishiki Market', category: 'food', dLat: 0.006, dLng: 0.005 },
+    { name: 'Kiyomizu-dera Viewpoint', category: 'views', dLat: -0.01, dLng: 0.03 },
+  ],
+  santorini: [
+    { name: 'Oia Sunset Point', category: 'views', dLat: 0.07, dLng: -0.03 },
+    { name: 'Red Beach', category: 'beach', dLat: -0.06, dLng: -0.01 },
+    { name: 'Fira Caldera Walk', category: 'adventure', dLat: 0, dLng: 0.012 },
+  ],
+  maldives: [
+    { name: 'Overwater Villa Reef', category: 'beach', dLat: 0.03, dLng: 0.03 },
+    { name: 'Manta Point Dive', category: 'adventure', dLat: -0.04, dLng: 0.02 },
+    { name: 'Sandbank Picnic', category: 'nature', dLat: 0.02, dLng: -0.04 },
+  ],
+  paris: [
+    { name: 'Eiffel Tower', category: 'landmark', dLat: 0, dLng: -0.02 },
+    { name: 'Louvre Museum', category: 'culture', dLat: 0.01, dLng: 0.012 },
+    { name: 'Le Marais Bistros', category: 'food', dLat: 0.006, dLng: 0.03 },
+    { name: 'Champs-Élysées Shopping', category: 'shopping', dLat: 0.005, dLng: -0.008 },
+  ],
+  tokyo: [
+    { name: 'Shibuya Crossing', category: 'city', dLat: -0.02, dLng: -0.02 },
+    { name: 'Tsukiji Outer Market', category: 'food', dLat: -0.03, dLng: 0.02 },
+    { name: 'Senso-ji Temple', category: 'culture', dLat: 0.03, dLng: 0.05 },
+    { name: 'Shinjuku Nightlife', category: 'nightlife', dLat: 0.01, dLng: -0.03 },
+  ],
+  'swiss-alps': [
+    { name: 'Matterhorn Glacier Paradise', category: 'adventure', dLat: -0.10, dLng: 0.05 },
+    { name: 'Lake Lucerne Cruise', category: 'nature', dLat: 0.12, dLng: -0.06 },
+    { name: 'Jungfraujoch Railway', category: 'views', dLat: 0.05, dLng: 0.10 },
+  ],
+  dubai: [
+    { name: 'Burj Khalifa', category: 'landmark', dLat: 0, dLng: 0.01 },
+    { name: 'The Dubai Mall', category: 'shopping', dLat: 0.005, dLng: 0.015 },
+    { name: 'Desert Safari', category: 'adventure', dLat: -0.08, dLng: 0.12 },
+    { name: 'Jumeirah Beach', category: 'beach', dLat: 0.03, dLng: -0.05 },
+  ],
+  reykjavik: [
+    { name: 'Blue Lagoon', category: 'wellness', dLat: -0.06, dLng: -0.10 },
+    { name: 'Northern Lights Lookout', category: 'nature', dLat: 0.05, dLng: 0.08 },
+    { name: 'Hallgrímskirkja', category: 'landmark', dLat: 0, dLng: 0.006 },
+  ],
+  queenstown: [
+    { name: 'Skyline Gondola', category: 'views', dLat: 0.006, dLng: -0.01 },
+    { name: 'Shotover Jet', category: 'adventure', dLat: -0.03, dLng: 0.04 },
+    { name: 'Lake Wakatipu Cruise', category: 'nature', dLat: -0.02, dLng: -0.03 },
+  ],
+  marrakech: [
+    { name: 'Jemaa el-Fnaa', category: 'culture', dLat: 0, dLng: -0.006 },
+    { name: 'Majorelle Garden', category: 'nature', dLat: 0.02, dLng: 0.01 },
+    { name: 'Souk Semmarine', category: 'shopping', dLat: 0.006, dLng: -0.008 },
+  ],
+  phuket: [
+    { name: 'Patong Beach', category: 'beach', dLat: 0, dLng: -0.03 },
+    { name: 'Bangla Road Nightlife', category: 'nightlife', dLat: 0.003, dLng: -0.028 },
+    { name: 'Phi Phi Island Tour', category: 'adventure', dLat: -0.05, dLng: 0.10 },
+  ],
+};
+
+export const getDestinationActivities = (id) => DESTINATION_ACTIVITIES[id] || [];

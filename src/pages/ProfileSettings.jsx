@@ -29,7 +29,7 @@ export default function ProfileSettings() {
                 <p className="text-xs text-mora-neutral/50">Trip reminders & updates</p>
               </div>
             </div>
-            <button onClick={() => setNotifications(!notifications)}
+            <button onClick={() => setNotifications(!notifications)} role="switch" aria-checked={notifications} aria-label="Push notifications"
               className={`w-11 h-6 rounded-full transition-all ${notifications ? "bg-mora-gold" : "bg-white/10"}`}>
               <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${notifications ? "translate-x-5" : ""}`} />
             </button>
@@ -43,7 +43,7 @@ export default function ProfileSettings() {
                 <p className="text-xs text-mora-neutral/50">Premium night interface</p>
               </div>
             </div>
-            <button onClick={() => setDarkMode(!darkMode)}
+            <button onClick={() => setDarkMode(!darkMode)} role="switch" aria-checked={darkMode} aria-label="Dark mode"
               className={`w-11 h-6 rounded-full transition-all ${darkMode ? "bg-mora-gold" : "bg-white/10"}`}>
               <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${darkMode ? "translate-x-5" : ""}`} />
             </button>

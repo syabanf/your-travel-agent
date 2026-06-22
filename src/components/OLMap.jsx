@@ -9,12 +9,18 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import { Style, Icon } from "ol/style";
+import { Style, Icon, Circle as CircleStyle, Fill, Stroke } from "ol/style";
 
 const PIN = "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="36" viewBox="0 0 24 34"><path fill="#AD1F23" stroke="#ffffff" stroke-width="1.5" d="M12 1C6.5 1 2 5.4 2 10.9 2 18 12 33 12 33s10-15 10-22.1C22 5.4 17.5 1 12 1z"/><circle cx="12" cy="11" r="3.6" fill="#ffffff"/></svg>`
 );
-const markerStyle = new Style({ image: new Icon({ src: PIN, anchor: [0.5, 1] }) });
+const pinStyle = new Style({ image: new Icon({ src: PIN, anchor: [0.5, 1] }) });
+// Activity markers: smaller amber dots, so they read as secondary to the
+// crimson destination pin while staying clearly tappable.
+const activityStyle = new Style({
+  image: new CircleStyle({ radius: 6.5, fill: new Fill({ color: "#C99A3F" }), stroke: new Stroke({ color: "#ffffff", width: 2 }) }),
+});
+const styleForFeature = (feature) => (feature.get("kind") === "activity" ? activityStyle : pinStyle);
 
 const TILES = {
   light: "https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
@@ -41,7 +47,7 @@ export default function OLMap({ center, zoom = 2, markers = [], onClick, onMarke
       target: elRef.current,
       layers: [
         new TileLayer({ source: new XYZ({ url: TILES[variant] || TILES.light, attributions: "© CARTO © OpenStreetMap", crossOrigin: "anonymous" }) }),
-        new VectorLayer({ source, style: markerStyle }),
+        new VectorLayer({ source, style: styleForFeature }),
       ],
       view: new View({ center: fromLonLat(center && center[0] != null ? center : [0, 20]), zoom }),
       controls: [],
@@ -74,6 +80,7 @@ export default function OLMap({ center, zoom = 2, markers = [], onClick, onMarke
       if (m == null || m.lng == null || m.lat == null) return;
       const f = new Feature({ geometry: new Point(fromLonLat([m.lng, m.lat])) });
       f.set("id", m.id);
+      f.set("kind", m.kind);
       source.addFeature(f);
     });
   }, [markers]);
