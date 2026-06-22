@@ -184,7 +184,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                   <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                   <input value={form.from} onChange={e => upd("from", e.target.value)}
                     placeholder="Origin"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
                 </div>
               </div>
             )}
@@ -196,53 +196,47 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                 <input value={form.to} onChange={e => upd("to", e.target.value)}
                   placeholder={activeTab === "hotel" ? "City or area" : activeTab === "car_rental" ? "City or airport" : activeTab === "attraction" ? "City or destination" : "Destination"}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
+                  className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
               </div>
             </div>
           </div>
 
-          {/* Dates */}
+          {/* Dates + travelers */}
           <div className="grid grid-cols-2 gap-3">
             {(activeTab === "hotel" || activeTab === "car_rental") ? (
-                <>
-                  <DateTimePicker 
-                    type="date"
-                    value={form.checkin}
-                    onChange={v => upd("checkin", v)}
-                    label={activeTab === "car_rental" ? "Pickup Date" : "Check-in"}
-                  />
-                  <DateTimePicker 
-                    type="date"
-                    value={form.checkout}
-                    onChange={v => upd("checkout", v)}
-                    label={activeTab === "car_rental" ? "Return Date" : "Check-out"}
-                  />
-                </>
-              ) : (
-                <DateTimePicker 
-                  type="date"
-                  value={form.date}
-                  onChange={v => upd("date", v)}
-                  label="Travel Date"
-                />
-              )}
-            <div className={(activeTab === "hotel" || activeTab === "car_rental") ? "hidden" : ""}>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
-              <div className="relative">
-                <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none" />
-              </div>
-            </div>
-            {(activeTab === "hotel" || activeTab === "car_rental") && (
-              <div className="col-span-2">
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Passengers" : "Guests"}</label>
-                <div className="relative">
-                  <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                  <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-10 pl-8 pr-3 text-sm text-mora-white outline-none" />
+              <>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
+                  <DateTimePicker type="date" value={form.checkin} onChange={v => upd("checkin", v)} label={activeTab === "car_rental" ? "Pickup Date" : "Check-in"} />
                 </div>
-              </div>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
+                  <DateTimePicker type="date" value={form.checkout} onChange={v => upd("checkout", v)} label={activeTab === "car_rental" ? "Return Date" : "Check-out"} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Passengers" : "Guests"}</label>
+                  <div className="relative">
+                    <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
+                    <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white outline-none" />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Travel Date</label>
+                  <DateTimePicker type="date" value={form.date} onChange={v => upd("date", v)} label="Travel Date" />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
+                  <div className="relative">
+                    <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
+                    <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white outline-none" />
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
