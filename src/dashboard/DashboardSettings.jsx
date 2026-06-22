@@ -61,14 +61,14 @@ export default function DashboardSettings() {
 
   if (form == null) {
     return (
-      <div className="p-8 max-w-3xl">
+      <div className="p-8">
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-8">
       <header className="mb-6">
         <h1 className="text-2xl font-display font-bold text-mora-primary">Settings</h1>
         <p className="text-sm text-mora-neutral mt-0.5">App-wide brand, support, social & feature flags.</p>

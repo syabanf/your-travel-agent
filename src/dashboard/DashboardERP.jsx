@@ -131,7 +131,7 @@ export default function DashboardERP() {
   );
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Scale className="w-3.5 h-3.5" /> Finance</p>

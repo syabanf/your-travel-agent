@@ -10,6 +10,8 @@ import { can } from "./rbac";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
@@ -21,14 +23,10 @@ export default function DashboardDestinations() {
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-  const [visible, setVisible] = useState(12);
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Destination.list("-created_date", 500));
   useEffect(() => { load(); }, []);
-
-  // Reset pagination whenever the filter/sort inputs change.
-  useEffect(() => { setVisible(12); }, [query, statusF, sortBy]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (d) => setEditing({
@@ -83,8 +81,21 @@ export default function DashboardDestinations() {
     load();
   };
 
+  const filtered = (items || []).filter((d) => {
+    const q = query.trim().toLowerCase();
+    const mq = !q || [d.name, d.country, d.tagline].some((v) => (v || "").toLowerCase().includes(q));
+    const ms = statusF === "all" || (statusF === "active" ? d.active !== false : d.active === false);
+    return mq && ms;
+  });
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
+    if (sortBy === "price") return (Number(b.fromPrice) || 0) - (Number(a.fromPrice) || 0);
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+  const pg = usePagination(sorted, 12, `${query}|${statusF}|${sortBy}`);
+
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <ReadOnlyBanner resource="destinations" />
       <header className="mb-6 flex items-center justify-between">
         <div>
@@ -178,17 +189,6 @@ export default function DashboardDestinations() {
           ))}
         </div>
       ) : (() => {
-        const filtered = (items || []).filter((d) => {
-          const q = query.trim().toLowerCase();
-          const mq = !q || [d.name, d.country, d.tagline].some((v) => (v || "").toLowerCase().includes(q));
-          const ms = statusF === "all" || (statusF === "active" ? d.active !== false : d.active === false);
-          return mq && ms;
-        });
-        const sorted = [...filtered].sort((a, b) => {
-          if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
-          if (sortBy === "price") return (Number(b.fromPrice) || 0) - (Number(a.fromPrice) || 0);
-          return new Date(b.created_date || 0) - new Date(a.created_date || 0);
-        });
         return (
         <>
         <div className="flex gap-2 mb-4">
@@ -208,7 +208,7 @@ export default function DashboardDestinations() {
           </select>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
-          {sorted.slice(0, visible).map((d) => (
+          {pg.pageItems.map((d) => (
             <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
               <div className="h-28 relative bg-mora-primary">
                 {d.image && <img src={d.image} alt={d.name} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
@@ -255,11 +255,7 @@ export default function DashboardDestinations() {
             </div>
           )}
         </div>
-        {sorted.length > visible && (
-          <div className="flex justify-center pt-4">
-            <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
-          </div>
-        )}
+        <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="destinations" />
         </>
         );
       })()}

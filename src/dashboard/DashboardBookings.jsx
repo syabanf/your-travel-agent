@@ -11,8 +11,8 @@ import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { downloadCSV } from "@/lib/csv";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
-
-const PAGE_SIZE = 12;
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -44,12 +44,6 @@ export default function DashboardBookings() {
   const [statusF, setStatusF] = useState("all");
   const [bSort, setBSort] = useState({ key: null, dir: "asc" });
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
-  const [bVisible, setBVisible] = useState(PAGE_SIZE);
-  const [tVisible, setTVisible] = useState(PAGE_SIZE);
-
-  // Reset pagination when filters / tab change.
-  useEffect(() => { setBVisible(PAGE_SIZE); }, [query, statusF, tab]);
-  useEffect(() => { setTVisible(PAGE_SIZE); }, [query, statusF, tab]);
 
   const load = async () => {
     setTrips(await base44.entities.Trip.list("-created_date", 500));
@@ -165,8 +159,8 @@ export default function DashboardBookings() {
 
   const sBookings = sortRows(fBookings, bSort);
   const sTrips = sortRows(fTrips, tSort);
-  const vBookings = sBookings.slice(0, bVisible);
-  const vTrips = sTrips.slice(0, tVisible);
+  const bookingPg = usePagination(sBookings, 10, `${query}|${statusF}|${bSort.key}|${bSort.dir}`);
+  const tripPg = usePagination(sTrips, 10, `${query}|${statusF}|${tSort.key}|${tSort.dir}`);
 
   const exportCSV = () => downloadCSV(
     "mora-bookings",
@@ -179,7 +173,7 @@ export default function DashboardBookings() {
   );
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Trips & Bookings</h1>
@@ -356,7 +350,7 @@ export default function DashboardBookings() {
                   <th className="px-5 py-3"></th>
                 </tr></thead>
                 <tbody className="stagger">
-                  {vBookings.map((b) => (
+                  {bookingPg.pageItems.map((b) => (
                     <tr key={b.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{b.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral capitalize">{b.type}</td>
@@ -372,11 +366,9 @@ export default function DashboardBookings() {
                   {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No bookings match your filters.</td></tr>}
                 </tbody>
               </table>
-              {bVisible < fBookings.length && (
-                <div className="px-5 py-4 border-t border-mora-primary/5 text-center">
-                  <button onClick={() => setBVisible((v) => v + PAGE_SIZE)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({fBookings.length - bVisible} more)</button>
-                </div>
-              )}
+              <div className="px-5 py-4 border-t border-mora-primary/5">
+                <Pagination page={bookingPg.page} pageCount={bookingPg.pageCount} total={bookingPg.total} pageSize={bookingPg.pageSize} onPage={bookingPg.setPage} noun="bookings" />
+              </div>
               </>)
             ) : (
               trips.length === 0 ? (
@@ -399,7 +391,7 @@ export default function DashboardBookings() {
                   <th className="px-5 py-3"></th>
                 </tr></thead>
                 <tbody className="stagger">
-                  {vTrips.map((t) => (
+                  {tripPg.pageItems.map((t) => (
                     <tr key={t.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                       <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-mora-primary hover:text-gold transition-colors truncate block">{t.title}</Link></td>
                       <td className="px-5 py-3 text-mora-neutral">{t.destination}</td>
@@ -415,11 +407,9 @@ export default function DashboardBookings() {
                   {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No trips match your filters.</td></tr>}
                 </tbody>
               </table>
-              {tVisible < fTrips.length && (
-                <div className="px-5 py-4 border-t border-mora-primary/5 text-center">
-                  <button onClick={() => setTVisible((v) => v + PAGE_SIZE)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({fTrips.length - tVisible} more)</button>
-                </div>
-              )}
+              <div className="px-5 py-4 border-t border-mora-primary/5">
+                <Pagination page={tripPg.page} pageCount={tripPg.pageCount} total={tripPg.total} pageSize={tripPg.pageSize} onPage={tripPg.setPage} noun="trips" />
+              </div>
               </>)
             )}
           </div>

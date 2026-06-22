@@ -53,7 +53,7 @@ export default function DashboardDestinationDetail() {
   // Loading
   if (dest === undefined) {
     return (
-      <div className="p-8 max-w-5xl">
+      <div className="p-8">
         <div className="flex justify-center py-20">
           <div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
         </div>
@@ -64,7 +64,7 @@ export default function DashboardDestinationDetail() {
   // Not found
   if (dest === null) {
     return (
-      <div className="p-8 max-w-5xl">
+      <div className="p-8">
         <p className="text-mora-neutral">Destination not found.</p>
         <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-gold mt-3 hover:underline">
           <ArrowLeft className="w-4 h-4" /> Back to destinations
@@ -95,7 +95,7 @@ export default function DashboardDestinationDetail() {
   };
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-8">
       <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-gold mb-5">
         <ArrowLeft className="w-4 h-4" /> Back to destinations
       </Link>

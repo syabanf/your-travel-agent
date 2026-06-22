@@ -58,7 +58,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6">
         <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1">Insight Center</p>
         <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>

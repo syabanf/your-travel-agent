@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -132,9 +134,10 @@ export default function DashboardLeads() {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
+  const pg = usePagination(sorted, 10, `${query}|${sourceF}|${agentF}|${sortBy}`);
 
   return (
-    <div className="p-8 max-w-7xl">
+    <div className="p-8">
       <ReadOnlyBanner resource="leads" />
       <header className="mb-6 flex items-center justify-between">
         <div>
@@ -246,10 +249,11 @@ export default function DashboardLeads() {
           ) : filtered.length === 0 ? (
             <p className="text-mora-neutral/60 text-center py-10">No leads match your filters.</p>
           ) : (
+          <>
           <div className="overflow-x-auto pb-2 -mx-1 px-1">
             <div className="flex gap-4 min-w-max stagger">
               {STATUSES.map((status) => {
-                const col = sorted.filter((l) => (l.status || "new") === status);
+                const col = pg.pageItems.filter((l) => (l.status || "new") === status);
               return (
                 <div key={status} className="w-72 shrink-0">
                   <div className="flex items-center gap-2 mb-3 px-1">
@@ -325,6 +329,8 @@ export default function DashboardLeads() {
               })}
             </div>
           </div>
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="leads" />
+          </>
           )}
         </>
       )}

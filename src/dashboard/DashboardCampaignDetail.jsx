@@ -72,7 +72,7 @@ export default function DashboardCampaignDetail() {
 
   if (campaign === undefined) {
     return (
-      <div className="p-8 max-w-4xl">
+      <div className="p-8">
         {back}
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
@@ -81,7 +81,7 @@ export default function DashboardCampaignDetail() {
 
   if (!campaign) {
     return (
-      <div className="p-8 max-w-4xl">
+      <div className="p-8">
         {back}
         <div className="bg-white rounded-2xl border border-mora-primary/10">
           <EmptyState icon={Send} title="Campaign not found" hint="This campaign may have been removed." />
@@ -97,7 +97,7 @@ export default function DashboardCampaignDetail() {
   const recipients = segmentCount(segment);
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-8">
       {back}
 
       {/* Header card */}

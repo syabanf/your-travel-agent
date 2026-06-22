@@ -68,11 +68,11 @@ export default function DashboardBookingDetail() {
   );
 
   if (loading) {
-    return <div className="p-8 max-w-3xl"><div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div></div>;
+    return <div className="p-8"><div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div></div>;
   }
   if (!b) {
     return (
-      <div className="p-8 max-w-3xl">
+      <div className="p-8">
         <div className="mb-6">{backLink}</div>
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center text-mora-neutral">Booking not found.</div>
       </div>
@@ -114,7 +114,7 @@ export default function DashboardBookingDetail() {
   const commission = supplier?.commission_rate ? Math.round((price * supplier.commission_rate) / 100) : null;
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-8">
       <div className="mb-6">{backLink}</div>
 
       {b.image_url && (

@@ -5,8 +5,8 @@ import moment from "moment";
 import { History, Filter, ShieldCheck } from "lucide-react";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
-
-const PAGE_SIZE = 20;
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
@@ -18,10 +18,6 @@ export default function DashboardAudit() {
   const [logs, setLogs] = useState(null);
   const [action, setAction] = useState("all");
   const [entity, setEntity] = useState("all");
-  const [visible, setVisible] = useState(PAGE_SIZE);
-
-  // Reset pagination whenever the filters change.
-  useEffect(() => { setVisible(PAGE_SIZE); }, [action, entity]);
 
   useEffect(() => {
     (async () => {
@@ -49,10 +45,10 @@ export default function DashboardAudit() {
     [logs, action, entity]
   );
 
-  const shown = filtered.slice(0, visible);
+  const pg = usePagination(filtered, 12, `${action}|${entity}`);
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-8">
       <header className="mb-6">
         <h1 className="text-2xl font-display font-bold text-mora-primary flex items-center gap-2">
           <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
@@ -97,7 +93,7 @@ export default function DashboardAudit() {
                 </tr>
               </thead>
               <tbody className="stagger">
-                {shown.map((l) => (
+                {pg.pageItems.map((l) => (
                   <tr key={l.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
                     <td className="px-5 py-3 whitespace-nowrap">
                       <div className="text-mora-primary">{moment(l.created_date).format("MMM D, HH:mm")}</div>
@@ -127,16 +123,7 @@ export default function DashboardAudit() {
               </tbody>
             </table>
           </div>
-          {filtered.length > visible && (
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                className="rounded-xl px-5 py-2.5 text-sm font-semibold bg-white border border-mora-primary/10 text-mora-primary hover:bg-mora-primary/5 press"
-              >
-                Show more ({filtered.length - visible} more)
-              </button>
-            </div>
-          )}
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="events" />
         </>
       )}
     </div>

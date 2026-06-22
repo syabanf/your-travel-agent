@@ -10,6 +10,8 @@ import { can } from "./rbac";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -26,7 +28,6 @@ export default function DashboardPromotions() {
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-  const [visible, setVisible] = useState(12);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const load = async () => setItems(await base44.entities.Promotion.list("-created_date", 500));
@@ -79,11 +80,10 @@ export default function DashboardPromotions() {
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
 
-  // Reset pagination whenever the filter/sort inputs change.
-  useEffect(() => { setVisible(12); }, [query, typeF, sortBy]);
+  const pg = usePagination(sorted, 12, `${query}|${typeF}|${sortBy}`);
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <ReadOnlyBanner resource="promotions" />
       <header className="mb-6 flex items-center justify-between">
         <div>
@@ -164,7 +164,7 @@ export default function DashboardPromotions() {
             </select>
           </div>
           <div className="space-y-3 stagger">
-          {sorted.slice(0, visible).map((p) => {
+          {pg.pageItems.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
               <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
@@ -192,11 +192,7 @@ export default function DashboardPromotions() {
             );
           })}
           </div>
-          {sorted.length > visible && (
-            <div className="flex justify-center pt-1">
-              <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
-            </div>
-          )}
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="promotions" />
           {items.length === 0 && (
             <EmptyState
               icon={Megaphone}

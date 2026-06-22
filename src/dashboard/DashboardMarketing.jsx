@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -39,7 +41,6 @@ export default function DashboardMarketing() {
   const [channelF, setChannelF] = useState("all");
   const [statusF, setStatusF] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-  const [visible, setVisible] = useState(12);
 
   const load = async () => {
     const [campaigns, custs] = await Promise.all([
@@ -118,12 +119,10 @@ export default function DashboardMarketing() {
     if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
-
-  // Reset pagination whenever the filter/sort inputs change.
-  useEffect(() => { setVisible(12); }, [query, channelF, statusF, sortBy]);
+  const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${sortBy}`);
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <ReadOnlyBanner resource="marketing" />
       <header className="mb-6 flex items-center justify-between">
         <div>
@@ -221,7 +220,7 @@ export default function DashboardMarketing() {
             </select>
           </div>
           <div className="space-y-3 stagger">
-          {sorted.slice(0, visible).map((c) => {
+          {pg.pageItems.map((c) => {
             const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
             const ChIcon = meta.icon;
             const recipients = segmentCount(c.segment);
@@ -269,11 +268,7 @@ export default function DashboardMarketing() {
             );
           })}
           </div>
-          {sorted.length > visible && (
-            <div className="flex justify-center pt-1">
-              <button onClick={() => setVisible((v) => v + 12)} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-mora-primary border border-mora-primary/15 hover:bg-mora-primary/5 press">Show more</button>
-            </div>
-          )}
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="campaigns" />
           {items.length === 0 && (
             <EmptyState
               icon={Megaphone}

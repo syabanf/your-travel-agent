@@ -11,6 +11,8 @@ import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percen
 import { toast } from "sonner";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
@@ -37,13 +39,9 @@ export default function DashboardSuppliers() {
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
   const [sort, setSort] = useState("newest");
-  const [visible, setVisible] = useState(12);
 
   const load = async () => setItems(await base44.entities.Supplier.list("-created_date", 500));
   useEffect(() => { load(); }, []);
-
-  // Reset pagination when the search / filters / sort change.
-  useEffect(() => { setVisible(12); }, [query, typeF, statusF, sort]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (s) => setEditing({
@@ -101,7 +99,7 @@ export default function DashboardSuppliers() {
     if (sort === "commission") return (Number(b.commission_rate) || 0) - (Number(a.commission_rate) || 0);
     return String(b.created_date || "").localeCompare(String(a.created_date || ""));
   });
-  const visibleItems = sorted.slice(0, visible);
+  const pg = usePagination(sorted, 12, `${query}|${typeF}|${statusF}|${sort}`);
 
   const exportCSV = () => downloadCSV(
     "mora-suppliers",
@@ -113,7 +111,7 @@ export default function DashboardSuppliers() {
   );
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Suppliers</h1>
@@ -217,7 +215,7 @@ export default function DashboardSuppliers() {
           </select>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
-          {visibleItems.map((s) => (
+          {pg.pageItems.map((s) => (
             <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow press">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -274,11 +272,7 @@ export default function DashboardSuppliers() {
           )}
           {items.length > 0 && sorted.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
-        {visible < sorted.length && (
-          <div className="text-center mt-4">
-            <button onClick={() => setVisible((v) => v + 12)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({sorted.length - visible} more)</button>
-          </div>
-        )}
+        <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="suppliers" />
         </>
       )}
     </div>

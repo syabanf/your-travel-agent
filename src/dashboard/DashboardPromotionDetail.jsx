@@ -45,7 +45,7 @@ export default function DashboardPromotionDetail() {
 
   if (item === undefined) {
     return (
-      <div className="p-8 max-w-4xl">
+      <div className="p-8">
         {back}
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
@@ -54,7 +54,7 @@ export default function DashboardPromotionDetail() {
 
   if (!item) {
     return (
-      <div className="p-8 max-w-4xl">
+      <div className="p-8">
         {back}
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
           <h1 className="text-xl font-display font-bold text-mora-primary">Entry not found</h1>
@@ -69,7 +69,7 @@ export default function DashboardPromotionDetail() {
   const days = item.valid_until ? moment(item.valid_until).diff(moment("2026-06-21"), "days") : null;
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-8">
       {back}
 
       {/* Banner */}

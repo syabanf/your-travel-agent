@@ -48,7 +48,7 @@ export default function DashboardAIReports() {
   };
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-8">
       <header className="mb-6">
         <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> AI · Demo</p>
         <h1 className="text-2xl font-display font-bold text-mora-primary">AI Report Generator</h1>

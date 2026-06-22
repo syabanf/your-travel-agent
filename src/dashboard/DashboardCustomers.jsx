@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -37,14 +39,10 @@ export default function DashboardCustomers() {
   const [tierF, setTierF] = useState("all");
   const [statusF, setStatusF] = useState("all");
   const [sort, setSort] = useState("newest");
-  const [visible, setVisible] = useState(12);
   const searchRef = useRef(null);
 
   const load = async () => setItems(await base44.entities.Customer.list("-created_date", 500));
   useEffect(() => { load(); }, []);
-
-  // Reset pagination when the search / filters / sort change.
-  useEffect(() => { setVisible(12); }, [listQuery, tierF, statusF, sort]);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (c) => setEditing({
@@ -109,7 +107,7 @@ export default function DashboardCustomers() {
     if (sort === "spend") return (Number(b.lifetime_spend) || 0) - (Number(a.lifetime_spend) || 0);
     return moment(b.joined_date || 0).valueOf() - moment(a.joined_date || 0).valueOf();
   });
-  const visibleItems = sorted.slice(0, visible);
+  const pg = usePagination(sorted, 10, `${listQuery}|${tierF}|${statusF}|${sort}`);
 
   const exportCSV = () => downloadCSV(
     "mora-customers",
@@ -125,7 +123,7 @@ export default function DashboardCustomers() {
   const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Customers</h1>
@@ -256,7 +254,7 @@ export default function DashboardCustomers() {
             </select>
           </div>
           <div className="space-y-3 stagger">
-          {visibleItems.map((c) => (
+          {pg.pageItems.map((c) => (
             <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
@@ -292,11 +290,7 @@ export default function DashboardCustomers() {
             </Link>
           ))}
           </div>
-          {visible < sorted.length && (
-            <div className="text-center pt-1">
-              <button onClick={() => setVisible((v) => v + 12)} className="text-sm font-medium text-gold hover:bg-mora-gold/10 rounded-lg px-4 py-2 press">Show more ({sorted.length - visible} more)</button>
-            </div>
-          )}
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="customers" />
           {items.length === 0 && (
             <EmptyState
               icon={Users}

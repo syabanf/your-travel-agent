@@ -8,8 +8,9 @@ import moment from "moment";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
+import Pagination from "@/dashboard/Pagination";
+import { usePagination } from "@/dashboard/usePagination";
 
-const PAGE_SIZE = 12;
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
 
@@ -43,7 +44,6 @@ export default function DashboardContent() {
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-  const [visible, setVisible] = useState(PAGE_SIZE);
   const [selected, setSelected] = useState(new Set());
 
   const load = async () => setItems(await base44.entities.Page.list("-created_date", 500));
@@ -117,15 +117,12 @@ export default function DashboardContent() {
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
 
-  const shown = sorted.slice(0, visible);
-
-  // Reset pagination whenever the filter/search/sort narrows the list.
-  useEffect(() => { setVisible(PAGE_SIZE); }, [query, typeF, statusF, sortBy]);
+  const pg = usePagination(sorted, 10, `${query}|${typeF}|${statusF}|${sortBy}`);
 
   const canDelete = can(role, "content", "delete");
 
   return (
-    <div className="p-8 max-w-6xl">
+    <div className="p-8">
       <header className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Content</h1>
@@ -231,7 +228,7 @@ export default function DashboardContent() {
           )}
 
           <div className="space-y-3 stagger">
-          {shown.map((p) => {
+          {pg.pageItems.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.page;
             const sm = STATUS_META[p.status] || STATUS_META.draft;
             const isSel = selected.has(p.id);
@@ -275,16 +272,7 @@ export default function DashboardContent() {
             );
           })}
           </div>
-          {shown.length < sorted.length && (
-            <div className="flex items-center justify-center pt-1">
-              <button
-                onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                className="rounded-xl px-4 py-2 text-sm font-medium text-mora-primary hover:bg-mora-primary/5 border border-mora-primary/10 press"
-              >
-                Show more ({sorted.length - shown.length})
-              </button>
-            </div>
-          )}
+          <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="pages" />
           {items.length === 0 && (
             <EmptyState
               icon={FileText}
