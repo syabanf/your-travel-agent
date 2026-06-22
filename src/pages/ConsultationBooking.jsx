@@ -8,6 +8,7 @@ import { formatIDR } from "@/lib/currency";
 import { toast } from "sonner";
 import { Star, Check, Loader2, MessageCircle, ChevronRight, CalendarDays } from "lucide-react";
 import moment from "moment";
+import PaymentMethodPicker from "@/components/PaymentMethodPicker";
 
 const TIME_SLOTS = ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00"];
 
@@ -24,6 +25,7 @@ export default function ConsultationBooking() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [confirmed, setConfirmed] = useState(null);
+  const [method, setMethod] = useState(null);
 
   useEffect(() => {
     base44.entities.PersonalAssistant.filter({ id: assistantId }).then((r) => { setAssistant(r[0] || null); setLoading(false); });
@@ -43,6 +45,7 @@ export default function ConsultationBooking() {
 
   const confirm = async () => {
     if (!date || !time) { toast.error("Pick a date and time"); return; }
+    if (!method) { toast.error("Select a payment method"); return; }
     setSaving(true);
     try {
       const dt = new Date(`${date}T${time}`);
@@ -57,6 +60,7 @@ export default function ConsultationBooking() {
         status: "confirmed",
         guests: 1,
         confirmation_code: "MORA-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        payment_method: method?.label,
         notes: `${pkg.name}${notes ? " · " + notes : ""}`,
         image_url: assistant.photo_url || undefined,
       });
@@ -85,6 +89,7 @@ export default function ConsultationBooking() {
             <Row label="Package" value={pkg.name} />
             <Row label="When" value={`${moment(date).format("MMM D, YYYY")} · ${time}`} />
             <Row label="Total" value={formatIDR(pkg.price || 0)} accent />
+            {method && <Row label="Paid with" value={method.label} />}
             {confirmed.confirmation_code && <Row label="Code" value={confirmed.confirmation_code} />}
           </GlassCard>
 
@@ -165,6 +170,12 @@ export default function ConsultationBooking() {
             className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-mora-white placeholder:text-mora-neutral/40 outline-none resize-none" />
         </GlassCard>
 
+        {/* Payment method */}
+        <div>
+          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Payment method</label>
+          <PaymentMethodPicker value={method} onChange={setMethod} />
+        </div>
+
         {/* Summary + confirm */}
         <GlassCard className="p-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm text-mora-neutral min-w-0">
@@ -174,7 +185,7 @@ export default function ConsultationBooking() {
           <span className="stat-value text-lg font-display font-bold text-gold flex-shrink-0">{formatIDR(pkg.price || 0)}</span>
         </GlassCard>
 
-        <button onClick={confirm} disabled={saving} className="w-full py-4 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+        <button onClick={confirm} disabled={saving || !date || !time || !method} className="w-full py-4 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
           {saving ? "Booking…" : `Confirm consultation · ${formatIDR(pkg.price || 0)}`}
         </button>

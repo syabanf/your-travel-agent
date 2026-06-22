@@ -8,6 +8,7 @@ import { CheckCircle, CreditCard, User, FileText, ChevronRight, Loader2, Lock } 
 import { toast } from "sonner";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
+import PaymentMethodPicker from "@/components/PaymentMethodPicker";
 
 const steps = [
   { id: 1, label: "Review", icon: FileText },
@@ -23,6 +24,7 @@ export default function BookingCheckout() {
   const [step, setStep] = useState(1);
   const [processing, setProcessing] = useState(false);
   const [confirmCode, setConfirmCode] = useState("");
+  const [method, setMethod] = useState(null);
 
   const [guestInfo, setGuestInfo] = useState({
     full_name: "",
@@ -67,6 +69,7 @@ export default function BookingCheckout() {
       await base44.entities.Booking.update(bookingId, {
         status: "confirmed",
         confirmation_code: code,
+        payment_method: method?.label || "Card",
         notes: (booking.notes || "") + `\nGuest: ${guestInfo.full_name} | ${guestInfo.email} | ${guestInfo.phone}${guestInfo.special_request ? "\nRequest: " + guestInfo.special_request : ""}`,
       });
       setConfirmCode(code);
@@ -196,49 +199,66 @@ export default function BookingCheckout() {
             <GlassCard className="p-4 space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <Lock className="w-3.5 h-3.5 text-gold" />
-                <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Secure Payment</h3>
+                <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Payment method</h3>
               </div>
-
-              <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Card Number</label>
-                <Input
-                  value={paymentInfo.card_number}
-                  onChange={e => updatePayment("card_number", formatCard(e.target.value))}
-                  placeholder="0000 0000 0000 0000"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 tracking-widest"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Cardholder Name</label>
-                <Input
-                  value={paymentInfo.card_name}
-                  onChange={e => updatePayment("card_name", e.target.value)}
-                  placeholder="Name on card"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">Expiry Date</label>
-                  <Input
-                    value={paymentInfo.expiry}
-                    onChange={e => updatePayment("expiry", formatExpiry(e.target.value))}
-                    placeholder="MM/YY"
-                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">CVV</label>
-                  <Input
-                    value={paymentInfo.cvv}
-                    onChange={e => updatePayment("cvv", e.target.value.replace(/\D/g, "").slice(0, 4))}
-                    placeholder="• • •"
-                    type="password"
-                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
-                  />
-                </div>
-              </div>
+              <PaymentMethodPicker value={method} onChange={setMethod} />
             </GlassCard>
+
+            {method?.isNewCard && (
+              <GlassCard className="p-4 space-y-3">
+                <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Card details</h3>
+                <div>
+                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">Card Number</label>
+                  <Input
+                    value={paymentInfo.card_number}
+                    onChange={e => updatePayment("card_number", formatCard(e.target.value))}
+                    placeholder="0000 0000 0000 0000"
+                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 tracking-widest"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">Cardholder Name</label>
+                  <Input
+                    value={paymentInfo.card_name}
+                    onChange={e => updatePayment("card_name", e.target.value)}
+                    placeholder="Name on card"
+                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] text-mora-neutral/50 mb-1 block">Expiry Date</label>
+                    <Input
+                      value={paymentInfo.expiry}
+                      onChange={e => updatePayment("expiry", formatExpiry(e.target.value))}
+                      placeholder="MM/YY"
+                      className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-mora-neutral/50 mb-1 block">CVV</label>
+                    <Input
+                      value={paymentInfo.cvv}
+                      onChange={e => updatePayment("cvv", e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder="• • •"
+                      type="password"
+                      className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                    />
+                  </div>
+                </div>
+              </GlassCard>
+            )}
+
+            {method && !method.isNewCard && (
+              <GlassCard className="p-4">
+                <p className="text-xs text-mora-neutral/70">
+                  {method.type === "bank"
+                    ? "A virtual-account number will be issued to complete your transfer."
+                    : `You'll be redirected to ${method.label} to approve the payment.`}
+                  <span className="text-mora-neutral/50"> Payment is simulated in this demo.</span>
+                </p>
+              </GlassCard>
+            )}
 
             <GlassCard className="p-4">
               <div className="flex items-center justify-between gap-3">
@@ -249,7 +269,7 @@ export default function BookingCheckout() {
 
             <button
               onClick={handleConfirmPayment}
-              disabled={processing || !paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv}
+              disabled={processing || !method || (method.isNewCard && (!paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv))}
               className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(booking.price || 0)}</>}
@@ -272,6 +292,7 @@ export default function BookingCheckout() {
               <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
                 <p className="text-xs text-mora-neutral/60">{booking.title}</p>
                 <p className="text-xs text-mora-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>
+                {method && <p className="text-xs text-mora-neutral/50">Paid with {method.label}</p>}
               </div>
             </GlassCard>
 
