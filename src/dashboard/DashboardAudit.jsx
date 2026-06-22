@@ -48,7 +48,7 @@ export default function DashboardAudit() {
   const pg = usePagination(filtered, 12, `${action}|${entity}`);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6">
         <h1 className="text-2xl font-display font-bold text-mora-primary flex items-center gap-2">
           <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
@@ -82,7 +82,8 @@ export default function DashboardAudit() {
         <>
           <p className="text-xs text-mora-neutral/70 mb-3">{filtered.length} events</p>
           <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
                   <th className="px-5 py-3 font-medium">When</th>
@@ -122,6 +123,7 @@ export default function DashboardAudit() {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="events" />
         </>

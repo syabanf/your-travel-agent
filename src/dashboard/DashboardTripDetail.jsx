@@ -110,7 +110,7 @@ export default function DashboardTripDetail() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <Spinner />
       </div>
@@ -119,7 +119,7 @@ export default function DashboardTripDetail() {
 
   if (!trip) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <div className="mt-6 bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
           <p className="text-mora-primary font-display font-bold text-lg">Trip not found</p>
@@ -198,7 +198,7 @@ export default function DashboardTripDetail() {
       : null;
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {back}
 
       {/* 1. Banner or plain header */}

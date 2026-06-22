@@ -58,7 +58,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6">
         <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1">Insight Center</p>
         <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>
@@ -120,7 +120,8 @@ export default function DashboardOverview() {
                 <h2 className="font-display font-semibold text-mora-primary">Recent bookings</h2>
                 <Link to="/dashboard/bookings" className="text-xs text-gold font-medium">View all</Link>
               </div>
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[480px]">
                 <tbody>
                   {s.bookings.slice(0, 6).map((b) => (
                     <tr key={b.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
@@ -135,6 +136,7 @@ export default function DashboardOverview() {
                   {s.bookings.length === 0 && <tr><td colSpan={3}><EmptyState icon={CalendarCheck} title="No bookings yet" hint="Bookings will appear here once they're created." className="py-8" /></td></tr>}
                 </tbody>
               </table>
+              </div>
             </div>
 
             {/* Recent customers */}

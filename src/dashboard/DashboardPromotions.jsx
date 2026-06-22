@@ -83,9 +83,9 @@ export default function DashboardPromotions() {
   const pg = usePagination(sorted, 12, `${query}|${typeF}|${sortBy}`);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="promotions" />
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Promotions & Events</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Publish the offers, events and news shown in the app's "What's New".</p>
@@ -114,7 +114,7 @@ export default function DashboardPromotions() {
             <Fld label="Title"><input value={editing.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Flash Sale: Bali Villas" /></Fld>
             <Fld label="Description"><textarea value={editing.description} onChange={(e) => upd("description", e.target.value)} className="dash-input !h-auto py-2" rows={2} /></Fld>
             <Fld label="Image URL"><input value={editing.image} onChange={(e) => upd("image", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {editing.type === "promo" ? (
                 <>
                   <Fld label="Discount %"><input type="number" value={editing.discount} onChange={(e) => upd("discount", e.target.value)} className="dash-input" /></Fld>
@@ -147,7 +147,7 @@ export default function DashboardPromotions() {
       ) : (
         <div className="space-y-3">
           <div className="flex gap-2 mb-4">
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-mora-neutral pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search entries…" />
             </div>

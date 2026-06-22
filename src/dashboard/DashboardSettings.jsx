@@ -61,14 +61,14 @@ export default function DashboardSettings() {
 
   if (form == null) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6">
         <h1 className="text-2xl font-display font-bold text-mora-primary">Settings</h1>
         <p className="text-sm text-mora-neutral mt-0.5">App-wide brand, support, social & feature flags.</p>
@@ -141,7 +141,7 @@ export default function DashboardSettings() {
       </div>
 
       {/* Save bar */}
-      <div className="sticky bottom-0 mt-6 -mx-8 px-8 py-4 bg-white/80 backdrop-blur border-t border-mora-primary/10 flex justify-end">
+      <div className="sticky bottom-0 mt-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 py-4 bg-white/80 backdrop-blur border-t border-mora-primary/10 flex justify-end">
         <button
           onClick={save}
           disabled={!canEdit || saving}
@@ -164,7 +164,7 @@ const Section = ({ icon: Icon, title, children }) => (
   </div>
 );
 
-const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
     <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>

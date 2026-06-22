@@ -79,8 +79,8 @@ export default function DashboardMedia() {
   const pg = usePagination(sorted, 12, `${query}|${sortBy}`);
 
   return (
-    <div className="p-8">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Media Library</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Reusable images for destinations, promotions &amp; content.</p>
@@ -142,7 +142,7 @@ export default function DashboardMedia() {
         <>
           <ReadOnlyBanner resource="media" />
           <div className="flex gap-2 mb-4">
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
             </div>

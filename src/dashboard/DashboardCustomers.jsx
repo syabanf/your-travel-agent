@@ -123,8 +123,8 @@ export default function DashboardCustomers() {
   const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
 
   return (
-    <div className="p-8">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Customers</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
@@ -226,7 +226,7 @@ export default function DashboardCustomers() {
         <div className="space-y-3">
           <ReadOnlyBanner resource="customers" />
           <div className="flex flex-wrap gap-2">
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input
                 className="dash-input pl-9"
@@ -255,7 +255,7 @@ export default function DashboardCustomers() {
           </div>
           <div className="space-y-3 stagger">
           {pg.pageItems.map((c) => (
-            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
+            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press">
               <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
               </div>
@@ -272,8 +272,11 @@ export default function DashboardCustomers() {
                   {[c.city, c.country].filter(Boolean).join(" · ") || "No location"}
                   {c.joined_date ? ` · joined ${moment(c.joined_date).format("MMM YYYY")}` : ""}
                 </p>
+                <p className="text-sm font-semibold text-gold mt-1 sm:hidden">
+                  {formatIDR(Number(c.lifetime_spend) || 0)} <span className="text-[10px] text-mora-neutral/60 uppercase tracking-wider font-normal">lifetime</span>
+                </p>
               </div>
-              <div className="text-right shrink-0">
+              <div className="text-right shrink-0 hidden sm:block">
                 <div className="text-sm font-semibold text-gold">{formatIDR(Number(c.lifetime_spend) || 0)}</div>
                 <div className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">lifetime</div>
               </div>
@@ -318,7 +321,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
     <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>

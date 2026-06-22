@@ -54,7 +54,7 @@ export default function DashboardCustomerDetail() {
 
   if (c === undefined) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
@@ -63,7 +63,7 @@ export default function DashboardCustomerDetail() {
 
   if (!c) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
           <h1 className="text-xl font-display font-bold text-mora-primary">Customer not found</h1>
@@ -78,7 +78,7 @@ export default function DashboardCustomerDetail() {
   const tenure = c.joined_date ? `${moment().diff(moment(c.joined_date), "months")} months` : "—";
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {back}
 
       {/* Header card */}
@@ -110,7 +110,7 @@ export default function DashboardCustomerDetail() {
       </div>
 
       {/* Insight KPI row */}
-      <div className="grid grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
         <Kpi icon={Wallet} label="Lifetime spend" value={formatIDR(c.lifetime_spend)} />
         <Kpi
           icon={CalendarClock}

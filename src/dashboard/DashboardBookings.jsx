@@ -173,8 +173,8 @@ export default function DashboardBookings() {
   );
 
   return (
-    <div className="p-8">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Trips & Bookings</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Create, review and manage every trip and booking.</p>
@@ -340,7 +340,8 @@ export default function DashboardBookings() {
                   )}
                 />
               ) : (<>
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[720px]">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
                   <SortHead label="Title" field="title" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
                   <SortHead label="Type" field="type" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
@@ -366,6 +367,7 @@ export default function DashboardBookings() {
                   {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No bookings match your filters.</td></tr>}
                 </tbody>
               </table>
+              </div>
               <div className="px-5 py-4 border-t border-mora-primary/5">
                 <Pagination page={bookingPg.page} pageCount={bookingPg.pageCount} total={bookingPg.total} pageSize={bookingPg.pageSize} onPage={bookingPg.setPage} noun="bookings" />
               </div>
@@ -381,7 +383,8 @@ export default function DashboardBookings() {
                   )}
                 />
               ) : (<>
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[720px]">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
                   <SortHead label="Trip" field="title" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
                   <SortHead label="Destination" field="destination" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
@@ -407,6 +410,7 @@ export default function DashboardBookings() {
                   {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-mora-neutral/60">No trips match your filters.</td></tr>}
                 </tbody>
               </table>
+              </div>
               <div className="px-5 py-4 border-t border-mora-primary/5">
                 <Pagination page={tripPg.page} pageCount={tripPg.pageCount} total={tripPg.total} pageSize={tripPg.pageSize} onPage={tripPg.setPage} noun="trips" />
               </div>
@@ -419,7 +423,7 @@ export default function DashboardBookings() {
   );
 }
 
-const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const Fld = ({ label, children }) => (
   <div>
     <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>

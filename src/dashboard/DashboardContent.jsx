@@ -122,8 +122,8 @@ export default function DashboardContent() {
   const canDelete = can(role, "content", "delete");
 
   return (
-    <div className="p-8">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Content</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage app pages, FAQs, announcements &amp; hero copy.</p>
@@ -142,7 +142,7 @@ export default function DashboardContent() {
             <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Type">
                 <select value={editing.type} onChange={(e) => upd("type", e.target.value)} className="dash-input">
                   <option value="page">Page</option>
@@ -159,7 +159,7 @@ export default function DashboardContent() {
               </Fld>
             </div>
             <Fld label="Title"><input value={editing.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Frequently Asked Questions" /></Fld>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Slug">
                 <input
                   value={editing.slug}

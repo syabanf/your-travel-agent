@@ -131,7 +131,7 @@ export default function DashboardERP() {
   );
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Scale className="w-3.5 h-3.5" /> Finance</p>
@@ -206,7 +206,8 @@ export default function DashboardERP() {
           <div className="grid lg:grid-cols-2 gap-4 mb-4">
             {/* Accounts receivable */}
             <Card icon={Receipt} title="Accounts receivable" subtitle="Pending bookings awaiting payment.">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[420px]">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5"><th className="px-5 py-2.5 font-medium">Customer</th><th className="px-5 py-2.5 font-medium">Booking</th><th className="px-5 py-2.5 font-medium text-right">Due</th></tr></thead>
                 <tbody>
                   {f.arRows.map((r, i) => (<tr key={i} className="border-b border-mora-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-mora-primary">{r[0]}</td><td className="px-5 py-2.5 text-mora-neutral truncate max-w-[160px]">{r[1]}</td><td className="px-5 py-2.5 text-right text-gold font-semibold">{r[2]}</td></tr>))}
@@ -214,11 +215,13 @@ export default function DashboardERP() {
                   {f.arRows.length > 0 && <tr className="bg-mora-primary/[0.03]"><td className="px-5 py-2.5 font-semibold" colSpan={2}>Total receivable</td><td className="px-5 py-2.5 text-right font-display font-bold text-mora-primary">{formatIDR(f.ar)}</td></tr>}
                 </tbody>
               </table>
+              </div>
             </Card>
 
             {/* Accounts payable */}
             <Card icon={Landmark} title="Accounts payable" subtitle="Supplier cost on confirmed bookings.">
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[420px]">
                 <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5"><th className="px-5 py-2.5 font-medium">Supplier</th><th className="px-5 py-2.5 font-medium text-right">Bookings</th><th className="px-5 py-2.5 font-medium text-right">Payable</th></tr></thead>
                 <tbody>
                   {f.apList.map((v, i) => (<tr key={i} className="border-b border-mora-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-mora-primary">{v.name}</td><td className="px-5 py-2.5 text-right text-mora-neutral">{v.n}</td><td className="px-5 py-2.5 text-right text-mora-primary font-semibold">{formatIDR(v.payable)}</td></tr>))}
@@ -226,6 +229,7 @@ export default function DashboardERP() {
                   {f.apList.length > 0 && <tr className="bg-mora-primary/[0.03]"><td className="px-5 py-2.5 font-semibold">Total payable</td><td /><td className="px-5 py-2.5 text-right font-display font-bold text-mora-primary">{formatIDR(f.ap)}</td></tr>}
                 </tbody>
               </table>
+              </div>
             </Card>
           </div>
 

@@ -58,7 +58,7 @@ export default function DashboardSupplierDetail() {
 
   if (s === undefined) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
       </div>
@@ -67,7 +67,7 @@ export default function DashboardSupplierDetail() {
 
   if (!s) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {back}
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
           <h1 className="text-xl font-display font-bold text-mora-primary">Supplier not found</h1>
@@ -87,7 +87,7 @@ export default function DashboardSupplierDetail() {
   const estCommission = bookings.reduce((sum, b) => sum + ((Number(b.price) || 0) * rate) / 100, 0);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {back}
 
       {/* Header card */}

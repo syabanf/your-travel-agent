@@ -137,9 +137,9 @@ export default function DashboardLeads() {
   const pg = usePagination(sorted, 10, `${query}|${sourceF}|${agentF}|${sortBy}`);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="leads" />
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Leads</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Track enquiries through the sales pipeline.</p>
@@ -348,7 +348,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
   </div>
 );
 
-const Row2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const Fld = ({ label, children }) => (
   <div>
     <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>

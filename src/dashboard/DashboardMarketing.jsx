@@ -122,9 +122,9 @@ export default function DashboardMarketing() {
   const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${sortBy}`);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="marketing" />
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Marketing Campaigns</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
@@ -158,7 +158,7 @@ export default function DashboardMarketing() {
           </div>
           <div className="space-y-3">
             <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Platinum Bali Flash Sale" /></Fld>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Channel">
                 <select value={editing.channel} onChange={(e) => upd("channel", e.target.value)} className="dash-input">
                   {CHANNELS.map((ch) => <option key={ch} value={ch}>{CHANNEL_META[ch].label}</option>)}
@@ -170,11 +170,11 @@ export default function DashboardMarketing() {
                 </select>
               </Fld>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Promo code"><input value={editing.promo_code} onChange={(e) => upd("promo_code", e.target.value)} className="dash-input" placeholder="MORA20" /></Fld>
               <Fld label="Discount %"><input type="number" value={editing.discount} onChange={(e) => upd("discount", e.target.value)} className="dash-input" placeholder="20" /></Fld>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Status">
                 <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
                   <option value="draft">Draft</option>
