@@ -7,7 +7,7 @@ import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, MapPin, Tag, FileText, Ticket, Navigation, Map } from "lucide-react";
+import { MapPin, Ticket, Navigation, Map } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const categories = ["transport", "accommodation", "dining", "attraction", "activity", "shopping", "rest", "other"];

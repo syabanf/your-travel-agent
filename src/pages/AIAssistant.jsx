@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Send, Sparkles, MapPin, Clock, Save, RefreshCw, Plus, MessageCircle, Headphones } from "lucide-react";
+import { Send, Sparkles, Save, RefreshCw, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";

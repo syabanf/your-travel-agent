@@ -68,7 +68,7 @@ export default function OLMap({ center, zoom = 2, markers = [], onClick, onMarke
       });
     }
     return () => { map.setTarget(undefined); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // markers
@@ -90,7 +90,7 @@ export default function OLMap({ center, zoom = 2, markers = [], onClick, onMarke
     if (!mapRef.current || !center || center[0] == null) return;
     const view = mapRef.current.getView();
     view.animate({ center: fromLonLat(center), zoom: Math.max(view.getZoom() || zoom, zoom), duration: 450 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [center && center[0], center && center[1]]);
 
   return <div ref={elRef} className={className} style={{ width: "100%", height: "100%", ...style }} />;

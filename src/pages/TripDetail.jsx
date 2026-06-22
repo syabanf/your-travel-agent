@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Calendar, Users, Edit, Share2, Copy, Trash2, MoreVertical, Plus, CheckCircle, Wand2, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";

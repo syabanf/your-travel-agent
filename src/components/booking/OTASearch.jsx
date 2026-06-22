@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Calendar, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
+import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import { toast } from "sonner";
 import GlassCard from "../GlassCard";
 import DateTimePicker from "../DateTimePicker";

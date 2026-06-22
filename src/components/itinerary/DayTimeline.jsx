@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, MapPin, CheckCircle, Circle, Plus, Navigation, Map } from "lucide-react";
+import { Clock, MapPin, CheckCircle, Circle, Plus, Map } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, Search, RefreshCw, Gift, ChevronRight } from "lucide-react";
+import { Bell, Search, Gift, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import QuickActions from "../components/home/QuickActions";
 import ActiveTrip from "../components/home/ActiveTrip";
