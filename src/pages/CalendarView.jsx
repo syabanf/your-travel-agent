@@ -100,7 +100,7 @@ export default function CalendarView() {
 
       {/* Trips this month */}
       <div className="px-6">
-        <h3 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">
+        <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-3">
           {currentMonth.format("MMMM")} Trips ({monthTrips.length})
         </h3>
         {monthTrips.length === 0 ? (

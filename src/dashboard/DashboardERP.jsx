@@ -132,7 +132,7 @@ export default function DashboardERP() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <header className="mb-6 flex items-start justify-between gap-4">
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Scale className="w-3.5 h-3.5" /> Finance</p>
           <h1 className="text-2xl font-display font-bold text-mora-primary">ERP Reports</h1>
@@ -143,7 +143,7 @@ export default function DashboardERP() {
 
       {!f ? (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
             {Array.from({ length: 5 }).map((_, i) => <SkeletonStat key={i} />)}
           </div>
           <Skeleton className="h-[260px] w-full rounded-2xl mb-4" />
@@ -158,7 +158,7 @@ export default function DashboardERP() {
           </div>
 
           {/* KPI row */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4 stagger">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4 stagger">
             <Kpi icon={Wallet} label="Revenue" value={formatIDR(f.revenue)} sub={`${f.confirmedCount} confirmed`} />
             <Kpi icon={TrendingUp} label="Gross profit" value={formatIDR(f.gross)} sub={`${f.grossPct}% margin`} tone="good" />
             <Kpi icon={Banknote} label="Net profit" value={formatIDR(f.net)} sub="after opex & tax" tone={f.net >= 0 ? "good" : "bad"} />
