@@ -15,6 +15,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
@@ -99,6 +100,20 @@ export default function DashboardDestinations() {
   });
   const pg = usePagination(sorted, 12, `${query}|${statusF}|${sortBy}`);
 
+  // Insight aggregations
+  const countryCount = {};
+  (items || []).forEach((d) => { const c = d.country || "—"; countryCount[c] = (countryCount[c] || 0) + 1; });
+  const byCountry = Object.entries(countryCount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  const statusMix = [
+    { name: "Active", value: (items || []).filter((d) => d.active !== false).length, color: "#10B981" },
+    { name: "Inactive", value: (items || []).filter((d) => d.active === false).length, color: "#94A3B8" },
+  ];
+  const priceByDest = (items || [])
+    .map((d) => ({ name: d.name || "—", value: Number(d.fromPrice) || 0 }))
+    .filter((d) => d.value)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="destinations" />
@@ -118,6 +133,14 @@ export default function DashboardDestinations() {
           </div>
         )}
       </header>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Destinations by country" subtitle="Where the catalog concentrates."><CategoryBars data={byCountry} money={false} /></ChartCard>
+          <ChartCard title="Active vs inactive" subtitle="Catalog visibility."><MixDonut data={statusMix} /></ChartCard>
+          <ChartCard title="Starting price by destination" subtitle="Top 8 by from-price."><CategoryBars data={priceByDest} money={true} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">

@@ -8,6 +8,7 @@ import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
@@ -48,6 +49,26 @@ export default function DashboardAudit() {
 
   const pg = usePagination(filtered, 12, `${action}|${entity}`);
 
+  // Insight aggregations
+  const actionCount = {}, entityCount = {}, dayAgg = {};
+  (logs || []).forEach((l) => {
+    const a = l.action || "other";
+    actionCount[a] = (actionCount[a] || 0) + 1;
+    const e = l.entity || "—";
+    entityCount[e] = (entityCount[e] || 0) + 1;
+    const ts = moment(l.created_date);
+    const k = ts.format("MMM D");
+    if (!dayAgg[k]) dayAgg[k] = { label: k, value: 0, ts: ts.valueOf() };
+    dayAgg[k].value += 1;
+  });
+  const actionMix = [
+    { name: "Create", value: actionCount.create || 0, color: "#10B981" },
+    { name: "Update", value: actionCount.update || 0, color: "#3B82F6" },
+    { name: "Delete", value: actionCount.delete || 0, color: "#EF4444" },
+  ];
+  const byEntity = Object.entries(entityCount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  const trend = Object.values(dayAgg).sort((a, b) => a.ts - b.ts).map(({ label, value }) => ({ label, value }));
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -81,6 +102,14 @@ export default function DashboardAudit() {
           ))}
         </select>
       </div>
+
+      {logs && logs.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Events by action" subtitle="Create · update · delete."><MixDonut data={actionMix} /></ChartCard>
+          <ChartCard title="Events by entity" subtitle="What changes most."><CategoryBars data={byEntity} money={false} /></ChartCard>
+          <ChartCard title="Activity over time" subtitle="Events per day."><TrendArea data={trend} money={false} /></ChartCard>
+        </div>
+      )}
 
       {logs == null ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={8} /></div>

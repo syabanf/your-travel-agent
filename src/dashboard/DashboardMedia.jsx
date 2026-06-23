@@ -13,6 +13,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 const EMPTY = { title: "", url: "", tags: "" };
 
@@ -82,6 +83,19 @@ export default function DashboardMedia() {
 
   const pg = usePagination(sorted, 12, `${query}|${sortBy}`);
 
+  // Insight aggregations
+  const tagCount = {};
+  (items || []).forEach((m) => {
+    (Array.isArray(m.tags) ? m.tags : []).forEach((t) => {
+      const k = (t || "").trim();
+      if (k) tagCount[k] = (tagCount[k] || 0) + 1;
+    });
+  });
+  const byTag = Object.entries(tagCount)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 8);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -134,6 +148,12 @@ export default function DashboardMedia() {
           </div>
         </div>
       ) : null}
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 mb-6">
+          <ChartCard title="Assets by tag" subtitle="Most-used tags across the library."><CategoryBars data={byTag} money={false} /></ChartCard>
+        </div>
+      )}
 
       {items == null ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

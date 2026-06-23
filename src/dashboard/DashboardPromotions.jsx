@@ -15,6 +15,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, MixDonut } from "@/dashboard/charts";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -87,6 +88,19 @@ export default function DashboardPromotions() {
 
   const pg = usePagination(sorted, 12, `${query}|${typeF}|${sortBy}`);
 
+  // Insight aggregations
+  const typeCount = { promo: 0, event: 0, news: 0 };
+  (items || []).forEach((p) => { const t = p.type || "promo"; typeCount[t] = (typeCount[t] || 0) + 1; });
+  const byType = [
+    { name: "Promotion", value: typeCount.promo, color: "#AD1F23" },
+    { name: "Event", value: typeCount.event, color: "#C99A3F" },
+    { name: "News", value: typeCount.news, color: "#05308C" },
+  ];
+  const featuredMix = [
+    { name: "Featured", value: (items || []).filter((p) => p.featured).length, color: "#AD1F23" },
+    { name: "Standard", value: (items || []).filter((p) => !p.featured).length, color: "#94A3B8" },
+  ];
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="promotions" />
@@ -106,6 +120,13 @@ export default function DashboardPromotions() {
           </div>
         )}
       </header>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <ChartCard title="By type" subtitle="Promotions, events & news."><MixDonut data={byType} /></ChartCard>
+          <ChartCard title="Featured vs standard" subtitle="Hero-banner share."><MixDonut data={featuredMix} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">

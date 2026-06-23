@@ -11,6 +11,7 @@ import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
@@ -122,6 +123,24 @@ export default function DashboardContent() {
 
   const canDelete = can(role, "content", "delete");
 
+  // Insight aggregations
+  const typeCount = {}, statusCount = {};
+  (items || []).forEach((p) => {
+    const t = p.type || "page";
+    const s = p.status || "draft";
+    typeCount[t] = (typeCount[t] || 0) + 1;
+    statusCount[s] = (statusCount[s] || 0) + 1;
+  });
+  const byType = Object.keys(TYPE_META)
+    .map((t) => ({ name: TYPE_META[t].label, value: typeCount[t] || 0 }))
+    .filter((d) => d.value);
+  const STATUS_COLOR = { published: "#10B981", draft: "#C99A3F" };
+  const byStatus = Object.keys(statusCount).map((s) => ({
+    name: STATUS_META[s]?.label || (s ? s[0].toUpperCase() + s.slice(1) : s),
+    value: statusCount[s],
+    color: STATUS_COLOR[s],
+  }));
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -140,6 +159,13 @@ export default function DashboardContent() {
           </div>
         )}
       </header>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <ChartCard title="Pages by type" subtitle="Content mix across sections."><CategoryBars data={byType} money={false} /></ChartCard>
+          <ChartCard title="By status" subtitle="Published vs draft."><MixDonut data={byStatus} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">

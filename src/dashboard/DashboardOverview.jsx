@@ -6,6 +6,7 @@ import { formatIDR } from "@/lib/currency";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, MixDonut } from "@/dashboard/charts";
 import moment from "moment";
 
 const statusPill = {
@@ -57,6 +58,21 @@ export default function DashboardOverview() {
     const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
     if (top) topDest = { name: top[0], count: top[1] };
   }
+
+  // Insight aggregations
+  const cap1 = (str) => (str ? str[0].toUpperCase() + str.slice(1) : str);
+  const BOOKING_STATUS_COLOR = { pending: "#C99A3F", confirmed: "#10B981", completed: "#0EA5E9", cancelled: "#EF4444" };
+  const TRIP_STATUS_COLOR = { draft: "#94A3B8", planned: "#3B82F6", active: "#10B981", completed: "#0EA5E9", cancelled: "#EF4444" };
+  const TIER_COLOR = { bronze: "#C99A3F", silver: "#94A3B8", gold: "#AD1F23", platinum: "#6366F1" };
+  const bookingStatusCount = {}, tripStatusCount = {}, tierCount = {};
+  if (s) {
+    s.bookings.forEach((b) => { const st = b.status || "pending"; bookingStatusCount[st] = (bookingStatusCount[st] || 0) + 1; });
+    s.trips.forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
+    s.customers.forEach((c) => { const tr = c.tier || "bronze"; tierCount[tr] = (tierCount[tr] || 0) + 1; });
+  }
+  const bookingsByStatus = Object.entries(bookingStatusCount).map(([k, value]) => ({ name: cap1(k), value, color: BOOKING_STATUS_COLOR[k] }));
+  const tripsByStatus = Object.entries(tripStatusCount).map(([k, value]) => ({ name: cap1(k), value, color: TRIP_STATUS_COLOR[k] }));
+  const customersByTier = Object.entries(tierCount).map(([k, value]) => ({ name: cap1(k), value, color: TIER_COLOR[k] }));
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -115,6 +131,13 @@ export default function DashboardOverview() {
               <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{pending}</p>
               <p className="text-xs text-gold mt-1">{pending ? "Need attention →" : "All clear"}</p>
             </Link>
+          </div>
+
+          {/* Insight charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <ChartCard title="Bookings by status" subtitle="Pipeline health."><MixDonut data={bookingsByStatus} /></ChartCard>
+            <ChartCard title="Customers by tier" subtitle="Loyalty mix."><MixDonut data={customersByTier} /></ChartCard>
+            <ChartCard title="Trips by status" subtitle="Where trips stand."><MixDonut data={tripsByStatus} /></ChartCard>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-4">

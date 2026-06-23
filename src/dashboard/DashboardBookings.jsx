@@ -14,6 +14,7 @@ import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -174,6 +175,21 @@ export default function DashboardBookings() {
     ]),
   );
 
+  // Insight aggregations
+  const cap1 = (str) => (str ? str[0].toUpperCase() + str.slice(1) : str);
+  const typeCount = {}, statusRevenue = {}, tripStatusCount = {};
+  (bookings || []).forEach((b) => {
+    const t = b.type || "other";
+    typeCount[t] = (typeCount[t] || 0) + 1;
+    const st = b.status || "pending";
+    statusRevenue[st] = (statusRevenue[st] || 0) + (Number(b.price) || 0);
+  });
+  (trips || []).forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
+  const byType = BOOKING_TYPES.map((t) => ({ name: cap1(t), value: typeCount[t] || 0 })).filter((d) => d.value);
+  const revenueByStatus = BOOKING_STATUSES.map((st) => ({ name: cap1(st), value: statusRevenue[st] || 0 })).filter((d) => d.value);
+  const TRIP_STATUS_COLOR = { draft: "#94A3B8", planned: "#3B82F6", active: "#10B981", completed: "#0EA5E9", cancelled: "#EF4444" };
+  const tripsByStatus = TRIP_STATUSES.map((st) => ({ name: cap1(st), value: tripStatusCount[st] || 0, color: TRIP_STATUS_COLOR[st] })).filter((d) => d.value);
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -197,6 +213,14 @@ export default function DashboardBookings() {
           </div>
         )}
       </header>
+
+      {!editing && bookings && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Bookings by type" subtitle="What you sell most."><CategoryBars data={byType} money={false} /></ChartCard>
+          <ChartCard title="Revenue by status" subtitle="Where revenue sits."><CategoryBars data={revenueByStatus} money={true} /></ChartCard>
+          <ChartCard title="Trips by status" subtitle="Pipeline mix."><MixDonut data={tripsByStatus} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">

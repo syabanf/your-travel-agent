@@ -16,6 +16,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -130,6 +131,16 @@ export default function DashboardLeads() {
   const pipeline = items?.filter((l) => PIPELINE.includes(l.status)).reduce((s, l) => s + (Number(l.budget) || 0), 0) || 0;
   const won = items?.filter((l) => l.status === "won").length || 0;
 
+  // Insight aggregations
+  const STATUS_COLOR = { new: "#3B82F6", contacted: "#C99A3F", qualified: "#0EA5E9", quoted: "#0EA5E9", proposal: "#9333EA", won: "#10B981", lost: "#94A3B8" };
+  const stageCount = {}, stageValue = {};
+  (items || []).forEach((l) => { const s = l.status || "new"; stageCount[s] = (stageCount[s] || 0) + 1; stageValue[s] = (stageValue[s] || 0) + (Number(l.budget) || 0); });
+  const byStage = STATUSES.map((s) => ({ name: cap(s), value: stageCount[s] || 0, color: STATUS_COLOR[s] }));
+  const valueByStage = STATUSES.map((s) => ({ name: cap(s), value: stageValue[s] || 0, color: STATUS_COLOR[s] })).filter((d) => d.value);
+  const bySrc = {};
+  (items || []).forEach((l) => { const k = l.source || "—"; if (!bySrc[k]) bySrc[k] = { name: cap(k), value: 0 }; bySrc[k].value += 1; });
+  const dataSrc = Object.values(bySrc).sort((a, b) => b.value - a.value);
+
   const sourceOptions = [...new Set((items || []).map((l) => l.source).filter(Boolean))].sort();
   const agentOptions = [...new Set((items || []).map((l) => l.assigned_to).filter(Boolean))].sort();
 
@@ -180,6 +191,14 @@ export default function DashboardLeads() {
           <Kpi icon={Trophy} label="Won" value={won} />
         </>)}
       </div>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Leads by stage" subtitle="Pipeline distribution."><MixDonut data={byStage} /></ChartCard>
+          <ChartCard title="Leads by source" subtitle="Where enquiries come from."><CategoryBars data={dataSrc} money={false} /></ChartCard>
+          <ChartCard title="Pipeline value by stage" subtitle="Budget by stage."><CategoryBars data={valueByStage} money={true} /></ChartCard>
+        </div>
+      )}
 
       {editing && (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6 max-w-2xl">

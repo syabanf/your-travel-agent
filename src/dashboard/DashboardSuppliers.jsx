@@ -16,6 +16,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
@@ -90,6 +91,15 @@ export default function DashboardSuppliers() {
     ? Math.round((items.reduce((sum, s) => sum + (Number(s.commission_rate) || 0), 0) / total) * 10) / 10
     : 0;
 
+  // Insight aggregations
+  const byType = {};
+  (items || []).forEach((s) => { const k = s.type || "dmc"; if (!byType[k]) byType[k] = { name: cap(k), value: 0 }; byType[k].value += 1; });
+  const dataType = Object.values(byType).sort((a, b) => b.value - a.value);
+  const statusMix = [
+    { name: "Active", value: (items || []).filter((s) => (s.status || "active") === "active").length, color: "#10B981" },
+    { name: "Inactive", value: (items || []).filter((s) => (s.status || "active") !== "active").length, color: "#94A3B8" },
+  ];
+
   const q = query.trim().toLowerCase();
   const filtered = (items || []).filter((s) => {
     const matchesQ = !q || [s.name, s.country].some((v) => (v || "").toLowerCase().includes(q));
@@ -147,6 +157,13 @@ export default function DashboardSuppliers() {
           <Kpi icon={Percent} label="Avg commission" value={`${avgCommission}%`} />
         </>)}
       </div>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <ChartCard title="Suppliers by type" subtitle="Partner mix."><CategoryBars data={dataType} money={false} /></ChartCard>
+          <ChartCard title="Suppliers by status" subtitle="Active vs inactive."><MixDonut data={statusMix} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">

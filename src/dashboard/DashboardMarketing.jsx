@@ -14,6 +14,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -126,6 +127,20 @@ export default function DashboardMarketing() {
   });
   const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${sortBy}`);
 
+  // Insight aggregations
+  const channelCount = {}, channelSent = {}, statusCount = {};
+  (items || []).forEach((c) => {
+    const ch = c.channel || "email";
+    channelCount[ch] = (channelCount[ch] || 0) + 1;
+    channelSent[ch] = (channelSent[ch] || 0) + (Number(c.sent_count) || 0);
+    const st = c.status || "draft";
+    statusCount[st] = (statusCount[st] || 0) + 1;
+  });
+  const byChannel = CHANNELS.map((ch) => ({ name: CHANNEL_META[ch].label, value: channelCount[ch] || 0 })).filter((d) => d.value);
+  const sentByChannel = CHANNELS.map((ch) => ({ name: CHANNEL_META[ch].label, value: channelSent[ch] || 0 })).filter((d) => d.value);
+  const STATUS_COLOR = { draft: "#94A3B8", scheduled: "#C99A3F", sent: "#10B981" };
+  const byStatus = Object.entries(statusCount).map(([k, value]) => ({ name: cap(k), value, color: STATUS_COLOR[k] }));
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="marketing" />
@@ -157,6 +172,14 @@ export default function DashboardMarketing() {
           <Kpi icon={CheckCircle2} label="Sent" value={sentCount} />
           <Kpi icon={Users} label="Recipients reached" value={reached} />
           <Kpi icon={CalendarClock} label="Scheduled" value={scheduledCount} />
+        </div>
+      )}
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Campaigns by channel" subtitle="Where you reach travelers."><CategoryBars data={byChannel} money={false} /></ChartCard>
+          <ChartCard title="Campaigns by status" subtitle="Pipeline state."><MixDonut data={byStatus} /></ChartCard>
+          <ChartCard title="Messages sent by channel" subtitle="Recipients reached."><CategoryBars data={sentByChannel} money={false} /></ChartCard>
         </div>
       )}
 

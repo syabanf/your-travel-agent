@@ -17,6 +17,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -128,6 +129,18 @@ export default function DashboardCustomers() {
   const activeCount = items?.filter((c) => c.status === "active").length || 0;
   const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
 
+  // Insight aggregations
+  const TIER_COLOR = { bronze: "#C99A3F", silver: "#94A3B8", gold: "#AD1F23", platinum: "#6366F1" };
+  const tierCount = {}, tierLtv = {};
+  (items || []).forEach((c) => { const t = c.tier || "bronze"; tierCount[t] = (tierCount[t] || 0) + 1; tierLtv[t] = (tierLtv[t] || 0) + (Number(c.lifetime_spend) || 0); });
+  const cap1 = (s) => s[0].toUpperCase() + s.slice(1);
+  const byTier = TIERS.map((t) => ({ name: cap1(t), value: tierCount[t] || 0, color: TIER_COLOR[t] }));
+  const ltvByTier = TIERS.map((t) => ({ name: cap1(t), value: tierLtv[t] || 0, color: TIER_COLOR[t] })).filter((d) => d.value);
+  const statusMix = [
+    { name: "Active", value: (items || []).filter((c) => c.status === "active").length, color: "#10B981" },
+    { name: "Inactive", value: (items || []).filter((c) => c.status !== "active").length, color: "#94A3B8" },
+  ];
+
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -160,6 +173,14 @@ export default function DashboardCustomers() {
           <Kpi icon={Wallet} label="Total lifetime value" value={formatIDR(ltv)} />
         </>)}
       </div>
+
+      {!editing && items && items.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <ChartCard title="Customers by tier" subtitle="Loyalty mix."><MixDonut data={byTier} /></ChartCard>
+          <ChartCard title="Lifetime value by tier" subtitle="Where value concentrates."><CategoryBars data={ltvByTier} /></ChartCard>
+          <ChartCard title="Active vs inactive" subtitle="Engagement."><MixDonut data={statusMix} /></ChartCard>
+        </div>
+      )}
 
       {editing ? (
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">

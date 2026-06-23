@@ -11,6 +11,7 @@ import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import { ChartCard, MixDonut } from "@/dashboard/charts";
 
 const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
@@ -69,6 +70,13 @@ export default function DashboardTeam() {
   });
 
   const pg = usePagination(sorted, 10, `${query}|${roleF}|${sortKey}|${sortDir}`);
+
+  // Insight aggregations
+  const roleCount = {};
+  (members || []).forEach((m) => { const r = m.role || "viewer"; roleCount[r] = (roleCount[r] || 0) + 1; });
+  const byRole = ROLES
+    .map((r) => ({ name: r.label, value: roleCount[r.key] || 0 }))
+    .filter((d) => d.value);
 
   const toggleSort = (key) => {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -149,6 +157,12 @@ export default function DashboardTeam() {
         <div className="mb-5 flex items-center gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           <Lock className="w-4 h-4 shrink-0" />
           You have read-only access to team management.
+        </div>
+      )}
+
+      {members && members.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 mb-6">
+          <ChartCard title="Members by role" subtitle="Access distribution across the team."><MixDonut data={byRole} /></ChartCard>
         </div>
       )}
 
