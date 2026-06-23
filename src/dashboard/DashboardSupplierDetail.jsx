@@ -32,6 +32,8 @@ export default function DashboardSupplierDetail() {
   const { role } = useRole();
   const [s, setS] = useState(undefined); // undefined = loading, null = not found
   const [bookings, setBookings] = useState([]);
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     base44.entities.Supplier.filter({ id }).then((r) => setS(r[0] || null));
@@ -85,6 +87,13 @@ export default function DashboardSupplierDetail() {
   const totalSales = bookings.reduce((sum, b) => sum + (Number(b.price) || 0), 0);
   const totalCost = bookings.reduce((sum, b) => sum + (Number(b.cost_price) || 0), 0);
   const estCommission = bookings.reduce((sum, b) => sum + ((Number(b.price) || 0) * rate) / 100, 0);
+
+  const needle = q.trim().toLowerCase();
+  const bookingStatuses = [...new Set(bookings.map((b) => b.status).filter(Boolean))];
+  const filteredBookings = bookings.filter((b) => {
+    if (statusFilter && b.status !== statusFilter) return false;
+    return !needle || `${b.title || ""} ${b.package_name || ""}`.toLowerCase().includes(needle);
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -151,6 +160,21 @@ export default function DashboardSupplierDetail() {
         {count === 0 ? (
           <p className="text-mora-neutral/60 text-sm py-6 text-center">No bookings yet</p>
         ) : (
+          <>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className="dash-input flex-1 min-w-[140px]"
+              placeholder="Search bookings…"
+            />
+            {bookingStatuses.length > 0 && (
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="dash-input max-w-[150px] capitalize">
+                <option value="">All statuses</option>
+                {bookingStatuses.map((st) => <option key={st} value={st}>{st}</option>)}
+              </select>
+            )}
+          </div>
           <div className="overflow-x-auto -mx-2">
             <table className="w-full text-sm">
               <thead>
@@ -161,7 +185,7 @@ export default function DashboardSupplierDetail() {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((b) => (
+                {filteredBookings.map((b) => (
                   <tr key={b.id} className="border-b border-mora-primary/5 last:border-0">
                     <td className="py-2.5 px-2">
                       <Link to={`/dashboard/bookings/${b.id}`} className="text-mora-primary hover:text-gold font-medium">
@@ -176,7 +200,11 @@ export default function DashboardSupplierDetail() {
                 ))}
               </tbody>
             </table>
+            {filteredBookings.length === 0 && (
+              <p className="text-mora-neutral/60 text-sm py-6 text-center">No bookings match your filter.</p>
+            )}
           </div>
+          </>
         )}
       </div>
     </div>

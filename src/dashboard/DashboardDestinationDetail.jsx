@@ -29,6 +29,8 @@ export default function DashboardDestinationDetail() {
   const [trips, setTrips] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [imgIdx, setImgIdx] = useState(0);
+  const [tripQ, setTripQ] = useState("");
+  const [tripStatus, setTripStatus] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -79,6 +81,13 @@ export default function DashboardDestinationDetail() {
   const matchTrips = trips.filter((t) => (t.destination || "").toLowerCase().includes(needle));
   const matchBookings = bookings.filter((b) => `${b.location || ""} ${b.title || ""}`.toLowerCase().includes(needle));
   const revenue = matchBookings.filter((b) => b.status === "confirmed").reduce((s, b) => s + (b.price || 0), 0);
+
+  const tripNeedle = tripQ.trim().toLowerCase();
+  const tripStatuses = [...new Set(matchTrips.map((t) => t.status).filter(Boolean))];
+  const filteredTrips = matchTrips.filter((t) => {
+    if (tripStatus && t.status !== tripStatus) return false;
+    return !tripNeedle || `${t.title || ""} ${t.destination || ""}`.toLowerCase().includes(tripNeedle);
+  });
 
   const vibes = Array.isArray(dest.vibes) ? dest.vibes : String(dest.vibes || "").split(",").map((v) => v.trim()).filter(Boolean);
   const hasCoords = dest.lat != null && dest.lng != null;
@@ -202,6 +211,21 @@ export default function DashboardDestinationDetail() {
         {matchTrips.length === 0 ? (
           <p className="text-mora-neutral/60 text-sm py-4">No trips yet.</p>
         ) : (
+          <>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <input
+              value={tripQ}
+              onChange={(e) => setTripQ(e.target.value)}
+              className="dash-input flex-1 min-w-[140px]"
+              placeholder="Search trips…"
+            />
+            {tripStatuses.length > 0 && (
+              <select value={tripStatus} onChange={(e) => setTripStatus(e.target.value)} className="dash-input max-w-[150px] capitalize">
+                <option value="">All statuses</option>
+                {tripStatuses.map((st) => <option key={st} value={st}>{st}</option>)}
+              </select>
+            )}
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -212,7 +236,7 @@ export default function DashboardDestinationDetail() {
                 </tr>
               </thead>
               <tbody>
-                {matchTrips.map((t) => (
+                {filteredTrips.map((t) => (
                   <tr key={t.id} className="border-b border-mora-primary/5 last:border-0">
                     <td className="py-3 pr-4 font-medium text-mora-primary">{t.title}</td>
                     <td className="py-3 pr-4">
@@ -226,7 +250,11 @@ export default function DashboardDestinationDetail() {
                 ))}
               </tbody>
             </table>
+            {filteredTrips.length === 0 && (
+              <p className="text-mora-neutral/60 text-sm py-4">No trips match your filter.</p>
+            )}
           </div>
+          </>
         )}
       </div>
     </div>

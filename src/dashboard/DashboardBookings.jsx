@@ -15,6 +15,8 @@ import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -46,6 +48,7 @@ export default function DashboardBookings() {
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [statusF, setStatusF] = useState(searchParams.get("status") || "all");
   const [typeF, setTypeF] = useState("all");
+  const [range, setRange] = useState("all");
   const [bSort, setBSort] = useState({ key: null, dir: "asc" });
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
 
@@ -137,8 +140,8 @@ export default function DashboardBookings() {
   const d = editing?.data;
 
   const q = query.trim().toLowerCase();
-  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF) && (typeF === "all" || b.type === typeF));
-  const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF));
+  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF) && (typeF === "all" || b.type === typeF) && inRange(b.created_date, range));
+  const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF) && inRange(t.created_date, range));
 
   // Sort a copy of the filtered array (never mutate the source).
   const sortRows = (rows, { key, dir }) => {
@@ -163,8 +166,8 @@ export default function DashboardBookings() {
 
   const sBookings = sortRows(fBookings, bSort);
   const sTrips = sortRows(fTrips, tSort);
-  const bookingPg = usePagination(sBookings, 10, `${query}|${statusF}|${typeF}|${bSort.key}|${bSort.dir}`);
-  const tripPg = usePagination(sTrips, 10, `${query}|${statusF}|${tSort.key}|${tSort.dir}`);
+  const bookingPg = usePagination(sBookings, 10, `${query}|${statusF}|${typeF}|${range}|${bSort.key}|${bSort.dir}`);
+  const tripPg = usePagination(sTrips, 10, `${query}|${statusF}|${range}|${tSort.key}|${tSort.dir}`);
 
   const exportCSV = () => downloadCSV(
     "mora-bookings",
@@ -176,16 +179,18 @@ export default function DashboardBookings() {
     ]),
   );
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped so charts follow the range)
   const cap1 = (str) => (str ? str[0].toUpperCase() + str.slice(1) : str);
+  const scopedBookings = (bookings || []).filter((b) => inRange(b.created_date, range));
+  const scopedTrips = (trips || []).filter((t) => inRange(t.created_date, range));
   const typeCount = {}, statusRevenue = {}, tripStatusCount = {};
-  (bookings || []).forEach((b) => {
+  scopedBookings.forEach((b) => {
     const t = b.type || "other";
     typeCount[t] = (typeCount[t] || 0) + 1;
     const st = b.status || "pending";
     statusRevenue[st] = (statusRevenue[st] || 0) + (Number(b.price) || 0);
   });
-  (trips || []).forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
+  scopedTrips.forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
   const byType = BOOKING_TYPES.map((t) => ({ name: cap1(t), value: typeCount[t] || 0 })).filter((d) => d.value);
   const revenueByStatus = BOOKING_STATUSES.map((st) => ({ name: cap1(st), value: statusRevenue[st] || 0 })).filter((d) => d.value);
   const TRIP_STATUS_COLOR = { draft: "#94A3B8", planned: "#3B82F6", active: "#10B981", completed: "#0EA5E9", cancelled: "#EF4444" };
@@ -355,8 +360,9 @@ export default function DashboardBookings() {
             {tab === "bookings" && (
               <select value={typeF} onChange={(e)=>setTypeF(e.target.value)} className="dash-input max-w-[150px] capitalize"><option value="all">All types</option>{BOOKING_TYPES.map((t)=><option key={t} value={t}>{t}</option>)}</select>
             )}
-            {(query || statusF !== "all" || typeF !== "all") && (
-              <button onClick={() => { setQuery(""); setStatusF("all"); setTypeF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            <DateRangeSelect value={range} onChange={setRange} />
+            {(query || statusF !== "all" || typeF !== "all" || range !== "all") && (
+              <button onClick={() => { setQuery(""); setStatusF("all"); setTypeF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}

@@ -78,10 +78,13 @@ const DashboardPMS = lazy(() => import('./dashboard/DashboardPMS'));
 const DashboardOTATransactions = lazy(() => import('./dashboard/DashboardOTATransactions'));
 const DashboardPMSTransactions = lazy(() => import('./dashboard/DashboardPMSTransactions'));
 const DashboardContent = lazy(() => import('./dashboard/DashboardContent'));
+const DashboardContentDetail = lazy(() => import('./dashboard/DashboardContentDetail'));
 const DashboardMedia = lazy(() => import('./dashboard/DashboardMedia'));
+const DashboardMediaDetail = lazy(() => import('./dashboard/DashboardMediaDetail'));
 const DashboardSettings = lazy(() => import('./dashboard/DashboardSettings'));
 const DashboardAudit = lazy(() => import('./dashboard/DashboardAudit'));
 const DashboardTeam = lazy(() => import('./dashboard/DashboardTeam'));
+const DashboardTeamDetail = lazy(() => import('./dashboard/DashboardTeamDetail'));
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -141,10 +144,13 @@ const AppRoutes = () => (
           <Route path="pms" element={<DashboardPMS />} />
           <Route path="pms/transactions" element={<DashboardPMSTransactions />} />
           <Route path="content" element={<DashboardContent />} />
+          <Route path="content/:id" element={<DashboardContentDetail />} />
           <Route path="media" element={<DashboardMedia />} />
+          <Route path="media/:id" element={<DashboardMediaDetail />} />
           <Route path="settings" element={<DashboardSettings />} />
           <Route path="audit" element={<DashboardAudit />} />
           <Route path="team" element={<DashboardTeam />} />
+          <Route path="team/:id" element={<DashboardTeamDetail />} />
         </Route>
 
         {/* Mobile app */}

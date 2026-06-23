@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -12,6 +13,8 @@ import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
@@ -39,12 +42,14 @@ const slugify = (s) =>
 
 export default function DashboardContent() {
   const { role } = useRole();
+  const navigate = useNavigate();
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [selected, setSelected] = useState(new Set());
 
@@ -103,7 +108,10 @@ export default function DashboardContent() {
     } catch { toast.error("Couldn't delete selection"); }
   };
 
-  const filtered = (items || []).filter((p) => {
+  // Date range scopes the whole view (charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((p) => inRange(p.created_date, range));
+
+  const filtered = scoped.filter((p) => {
     const q = query.trim().toLowerCase();
     const matchesQ = !q || [p.title, p.slug, p.excerpt].some((v) => (v || "").toLowerCase().includes(q));
     const matchesType = typeF === "all" || (p.type || "page") === typeF;
@@ -119,13 +127,13 @@ export default function DashboardContent() {
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
 
-  const pg = usePagination(sorted, 10, `${query}|${typeF}|${statusF}|${sortBy}`);
+  const pg = usePagination(sorted, 10, `${query}|${typeF}|${statusF}|${range}|${sortBy}`);
 
   const canDelete = can(role, "content", "delete");
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const typeCount = {}, statusCount = {};
-  (items || []).forEach((p) => {
+  scoped.forEach((p) => {
     const t = p.type || "page";
     const s = p.status || "draft";
     typeCount[t] = (typeCount[t] || 0) + 1;
@@ -241,14 +249,15 @@ export default function DashboardContent() {
               <option value="published">Published</option>
               <option value="draft">Draft</option>
             </select>
+            <DateRangeSelect value={range} onChange={setRange} />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
               <option value="newest">Newest</option>
               <option value="title">Title A–Z</option>
               <option value="status">Status</option>
               <option value="type">Type</option>
             </select>
-            {(query || typeF !== "all" || statusF !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            {(query || typeF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -270,9 +279,9 @@ export default function DashboardContent() {
             const sm = STATUS_META[p.status] || STATUS_META.draft;
             const isSel = selected.has(p.id);
             return (
-              <div key={p.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow">
+              <div key={p.id} onClick={() => navigate(`/dashboard/content/${p.id}`)} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow cursor-pointer press">
                 <button
-                  onClick={() => toggleSelect(p.id)}
+                  onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}
                   className={`shrink-0 ${isSel ? "text-gold" : "text-mora-neutral/40 hover:text-mora-neutral"}`}
                   aria-label={isSel ? "Deselect" : "Select"}
                 >
@@ -298,10 +307,10 @@ export default function DashboardContent() {
                 {(can(role, "content", "edit") || canDelete) && (
                   <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "content", "edit") && (
-                      <button onClick={() => startEdit(p)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); startEdit(p); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {canDelete && (
-                      <button onClick={() => remove(p)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(p); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}

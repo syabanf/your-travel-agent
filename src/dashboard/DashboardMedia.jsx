@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -14,16 +15,20 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = { title: "", url: "", tags: "" };
 
 export default function DashboardMedia() {
   const { role } = useRole();
+  const navigate = useNavigate();
   const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
   const load = async () => setItems(await base44.entities.MediaAsset.list("-created_date", 500));
@@ -67,7 +72,10 @@ export default function DashboardMedia() {
     } catch { toast.error("Couldn't copy URL"); }
   };
 
-  const filtered = (items || []).filter((m) => {
+  // Date range scopes the whole view (chart & table); search refines the table.
+  const scoped = (items || []).filter((m) => inRange(m.created_date, range));
+
+  const filtered = scoped.filter((m) => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
     const inTitle = (m.title || "").toLowerCase().includes(q);
@@ -81,11 +89,11 @@ export default function DashboardMedia() {
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
 
-  const pg = usePagination(sorted, 12, `${query}|${sortBy}`);
+  const pg = usePagination(sorted, 12, `${query}|${range}|${sortBy}`);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const tagCount = {};
-  (items || []).forEach((m) => {
+  scoped.forEach((m) => {
     (Array.isArray(m.tags) ? m.tags : []).forEach((t) => {
       const k = (t || "").trim();
       if (k) tagCount[k] = (tagCount[k] || 0) + 1;
@@ -175,12 +183,13 @@ export default function DashboardMedia() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
             </div>
+            <DateRangeSelect value={range} onChange={setRange} />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
               <option value="newest">Newest</option>
               <option value="title">Title A–Z</option>
             </select>
-            {(query || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            {(query || range !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -200,12 +209,13 @@ export default function DashboardMedia() {
                 { key: "url", label: "URL", render: (a) => <span className="text-mora-neutral/70 truncate block max-w-[280px]">{a.url}</span> },
               ]}
               rows={pg.pageItems}
+              onRowClick={(a) => navigate(`/dashboard/media/${a.id}`)}
               empty="No media matches your search."
             />
           ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
             {pg.pageItems.map((m) => (
-              <div key={m.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col">
+              <div key={m.id} onClick={() => navigate(`/dashboard/media/${m.id}`)} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow press">
                 <div className="aspect-square bg-mora-primary/5 relative">
                   {m.url && <img src={m.url} alt={m.title} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} className="w-full h-full object-cover rounded-t-2xl" />}
                   <div className="absolute inset-0 items-center justify-center text-mora-neutral/40" style={{ display: m.url ? "none" : "flex" }}>
@@ -223,15 +233,15 @@ export default function DashboardMedia() {
                     </div>
                   )}
                   <div className="flex items-center gap-1.5 mt-auto pt-2">
-                    <button onClick={() => copyUrl(m.url)} className="flex items-center gap-1 text-[11px] font-medium text-mora-neutral hover:text-gold">
+                    <button onClick={(e) => { e.stopPropagation(); copyUrl(m.url); }} className="flex items-center gap-1 text-[11px] font-medium text-mora-neutral hover:text-gold">
                       <Copy className="w-3.5 h-3.5" /> Copy URL
                     </button>
                     <div className="flex gap-1 ml-auto">
                       {can(role, "media", "edit") && (
-                        <button onClick={() => startEdit(m)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); startEdit(m); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
                       )}
                       {can(role, "media", "delete") && (
-                        <button onClick={() => remove(m)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); remove(m); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
                       )}
                     </div>
                   </div>

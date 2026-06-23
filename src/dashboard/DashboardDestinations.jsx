@@ -16,6 +16,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
@@ -28,6 +30,8 @@ export default function DashboardDestinations() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState("all");
+  const [countryF, setCountryF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const searchRef = useRef(null);
 
@@ -87,28 +91,32 @@ export default function DashboardDestinations() {
     load();
   };
 
-  const filtered = (items || []).filter((d) => {
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((d) => inRange(d.created_date, range));
+  const countryOptions = [...new Set((items || []).map((d) => d.country).filter(Boolean))].sort();
+
+  const filtered = scoped.filter((d) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [d.name, d.country, d.tagline].some((v) => (v || "").toLowerCase().includes(q));
     const ms = statusF === "all" || (statusF === "active" ? d.active !== false : d.active === false);
-    return mq && ms;
+    return mq && ms && (countryF === "all" || d.country === countryF);
   });
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     if (sortBy === "price") return (Number(b.fromPrice) || 0) - (Number(a.fromPrice) || 0);
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
-  const pg = usePagination(sorted, 12, `${query}|${statusF}|${sortBy}`);
+  const pg = usePagination(sorted, 12, `${query}|${statusF}|${countryF}|${range}|${sortBy}`);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const countryCount = {};
-  (items || []).forEach((d) => { const c = d.country || "—"; countryCount[c] = (countryCount[c] || 0) + 1; });
+  scoped.forEach((d) => { const c = d.country || "—"; countryCount[c] = (countryCount[c] || 0) + 1; });
   const byCountry = Object.entries(countryCount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   const statusMix = [
-    { name: "Active", value: (items || []).filter((d) => d.active !== false).length, color: "#10B981" },
-    { name: "Inactive", value: (items || []).filter((d) => d.active === false).length, color: "#94A3B8" },
+    { name: "Active", value: scoped.filter((d) => d.active !== false).length, color: "#10B981" },
+    { name: "Inactive", value: scoped.filter((d) => d.active === false).length, color: "#94A3B8" },
   ];
-  const priceByDest = (items || [])
+  const priceByDest = scoped
     .map((d) => ({ name: d.name || "—", value: Number(d.fromPrice) || 0 }))
     .filter((d) => d.value)
     .sort((a, b) => b.value - a.value)
@@ -234,13 +242,20 @@ export default function DashboardDestinations() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+          {countryOptions.length > 1 && (
+            <select value={countryF} onChange={(e) => setCountryF(e.target.value)} className="dash-input max-w-[170px]">
+              <option value="all">All countries</option>
+              {countryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          )}
+          <DateRangeSelect value={range} onChange={setRange} />
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
             <option value="newest">Newest</option>
             <option value="name">Name A–Z</option>
             <option value="price">Price</option>
           </select>
-          {(query || statusF !== "all" || sortBy !== "newest") && (
-            <button onClick={() => { setQuery(""); setStatusF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+          {(query || statusF !== "all" || countryF !== "all" || range !== "all" || sortBy !== "newest") && (
+            <button onClick={() => { setQuery(""); setStatusF("all"); setCountryF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
               <X className="w-3.5 h-3.5" /> Clear
             </button>
           )}

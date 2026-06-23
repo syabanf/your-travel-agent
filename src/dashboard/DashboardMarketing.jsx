@@ -15,6 +15,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -46,6 +48,7 @@ export default function DashboardMarketing() {
   const [query, setQuery] = useState("");
   const [channelF, setChannelF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
   const load = async () => {
@@ -107,13 +110,16 @@ export default function DashboardMarketing() {
     load();
   };
 
-  const total = items?.length || 0;
-  const sentCount = items?.filter((c) => c.status === "sent").length || 0;
-  const reached = items?.reduce((s, c) => s + (Number(c.sent_count) || 0), 0) || 0;
-  const scheduledCount = items?.filter((c) => c.status === "scheduled").length || 0;
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((c) => inRange(c.created_date, range));
+
+  const total = scoped.length;
+  const sentCount = scoped.filter((c) => c.status === "sent").length;
+  const reached = scoped.reduce((s, c) => s + (Number(c.sent_count) || 0), 0);
+  const scheduledCount = scoped.filter((c) => c.status === "scheduled").length;
 
   const q = query.trim().toLowerCase();
-  const filtered = (items || []).filter((c) => {
+  const filtered = scoped.filter((c) => {
     const matchesQ = !q || [c.name, c.promo_code].some((v) => (v || "").toLowerCase().includes(q));
     const matchesChannel = channelF === "all" || c.channel === channelF;
     const matchesStatus = statusF === "all" || c.status === statusF;
@@ -125,11 +131,11 @@ export default function DashboardMarketing() {
     if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
-  const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${sortBy}`);
+  const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${range}|${sortBy}`);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const channelCount = {}, channelSent = {}, statusCount = {};
-  (items || []).forEach((c) => {
+  scoped.forEach((c) => {
     const ch = c.channel || "email";
     channelCount[ch] = (channelCount[ch] || 0) + 1;
     channelSent[ch] = (channelSent[ch] || 0) + (Number(c.sent_count) || 0);
@@ -246,13 +252,14 @@ export default function DashboardMarketing() {
               <option value="scheduled">Scheduled</option>
               <option value="sent">Sent</option>
             </select>
+            <DateRangeSelect value={range} onChange={setRange} />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
               <option value="newest">Newest</option>
               <option value="name">Name A–Z</option>
               <option value="status">Status</option>
             </select>
-            {(query || channelF !== "all" || statusF !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            {(query || channelF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}

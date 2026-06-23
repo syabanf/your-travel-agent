@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -12,6 +13,8 @@ import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
@@ -32,6 +35,7 @@ const EMPTY_INVITE = { name: "", email: "", role: "viewer" };
 
 export default function DashboardTeam() {
   const { role } = useRole();
+  const navigate = useNavigate();
   const canManage = can(role, "team", "edit");
   const canCreate = can(role, "team", "create");
   const canDelete = can(role, "team", "delete");
@@ -42,10 +46,14 @@ export default function DashboardTeam() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [roleF, setRoleF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortKey, setSortKey] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
 
-  const filtered = (members || []).filter((member) => {
+  // Date range scopes the whole view (chart & table); search/selects refine the table.
+  const scoped = (members || []).filter((member) => inRange(member.created_date, range));
+
+  const filtered = scoped.filter((member) => {
     const q = query.trim().toLowerCase();
     const matchesQ = !q || [member.name, member.email].some((f) => (f || "").toLowerCase().includes(q));
     const matchesRole = roleF === "all" || member.role === roleF;
@@ -69,11 +77,11 @@ export default function DashboardTeam() {
     return sortDir === "asc" ? cmp : -cmp;
   });
 
-  const pg = usePagination(sorted, 10, `${query}|${roleF}|${sortKey}|${sortDir}`);
+  const pg = usePagination(sorted, 10, `${query}|${roleF}|${range}|${sortKey}|${sortDir}`);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const roleCount = {};
-  (members || []).forEach((m) => { const r = m.role || "viewer"; roleCount[r] = (roleCount[r] || 0) + 1; });
+  scoped.forEach((m) => { const r = m.role || "viewer"; roleCount[r] = (roleCount[r] || 0) + 1; });
   const byRole = ROLES
     .map((r) => ({ name: r.label, value: roleCount[r.key] || 0 }))
     .filter((d) => d.value);
@@ -230,8 +238,9 @@ export default function DashboardTeam() {
                 <option value="all">All roles</option>
                 {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
-              {(query || roleF !== "all" || sortKey !== "name" || sortDir !== "asc") && (
-                <button onClick={() => { setQuery(""); setRoleF("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              <DateRangeSelect value={range} onChange={setRange} />
+              {(query || roleF !== "all" || range !== "all" || sortKey !== "name" || sortDir !== "asc") && (
+                <button onClick={() => { setQuery(""); setRoleF("all"); setRange("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                   <X className="w-3.5 h-3.5" /> Clear
                 </button>
               )}
@@ -247,7 +256,7 @@ export default function DashboardTeam() {
             </tr></thead>
             <tbody className="stagger">
               {pg.pageItems.map((m) => (
-                <tr key={m.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02] press">
+                <tr key={m.id} onClick={() => navigate(`/dashboard/team/${m.id}`)} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02] cursor-pointer press">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-semibold text-sm shrink-0 uppercase">
@@ -262,7 +271,8 @@ export default function DashboardTeam() {
                   <td className="px-5 py-3">
                     <select
                       value={m.role}
-                      onChange={(e) => changeRole(m.id, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => { e.stopPropagation(); changeRole(m.id, e.target.value); }}
                       disabled={!canManage}
                       className="dash-input !h-9 !w-auto !text-xs pr-7 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
@@ -273,7 +283,7 @@ export default function DashboardTeam() {
                   <td className="px-5 py-3 text-mora-neutral">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>
                   <td className="px-5 py-3 text-right">
                     {canDelete && (
-                      <button onClick={() => remove(m)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(m); }} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </td>
                 </tr>

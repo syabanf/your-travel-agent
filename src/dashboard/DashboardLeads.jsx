@@ -17,6 +17,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -55,6 +57,7 @@ export default function DashboardLeads() {
   const [query, setQuery] = useState("");
   const [sourceF, setSourceF] = useState("all");
   const [agentF, setAgentF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
   const load = async () => setItems(await base44.entities.Lead.list("-created_date", 500));
@@ -126,26 +129,29 @@ export default function DashboardLeads() {
     } catch { toast.error("Couldn't convert lead"); }
   };
 
-  const total = items?.length || 0;
-  const open = items?.filter((l) => l.status !== "won" && l.status !== "lost").length || 0;
-  const pipeline = items?.filter((l) => PIPELINE.includes(l.status)).reduce((s, l) => s + (Number(l.budget) || 0), 0) || 0;
-  const won = items?.filter((l) => l.status === "won").length || 0;
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((l) => inRange(l.created_date, range));
 
-  // Insight aggregations
+  const total = scoped.length;
+  const open = scoped.filter((l) => l.status !== "won" && l.status !== "lost").length;
+  const pipeline = scoped.filter((l) => PIPELINE.includes(l.status)).reduce((s, l) => s + (Number(l.budget) || 0), 0);
+  const won = scoped.filter((l) => l.status === "won").length;
+
+  // Insight aggregations (date-scoped)
   const STATUS_COLOR = { new: "#3B82F6", contacted: "#C99A3F", qualified: "#0EA5E9", quoted: "#0EA5E9", proposal: "#9333EA", won: "#10B981", lost: "#94A3B8" };
   const stageCount = {}, stageValue = {};
-  (items || []).forEach((l) => { const s = l.status || "new"; stageCount[s] = (stageCount[s] || 0) + 1; stageValue[s] = (stageValue[s] || 0) + (Number(l.budget) || 0); });
+  scoped.forEach((l) => { const s = l.status || "new"; stageCount[s] = (stageCount[s] || 0) + 1; stageValue[s] = (stageValue[s] || 0) + (Number(l.budget) || 0); });
   const byStage = STATUSES.map((s) => ({ name: cap(s), value: stageCount[s] || 0, color: STATUS_COLOR[s] }));
   const valueByStage = STATUSES.map((s) => ({ name: cap(s), value: stageValue[s] || 0, color: STATUS_COLOR[s] })).filter((d) => d.value);
   const bySrc = {};
-  (items || []).forEach((l) => { const k = l.source || "—"; if (!bySrc[k]) bySrc[k] = { name: cap(k), value: 0 }; bySrc[k].value += 1; });
+  scoped.forEach((l) => { const k = l.source || "—"; if (!bySrc[k]) bySrc[k] = { name: cap(k), value: 0 }; bySrc[k].value += 1; });
   const dataSrc = Object.values(bySrc).sort((a, b) => b.value - a.value);
 
   const sourceOptions = [...new Set((items || []).map((l) => l.source).filter(Boolean))].sort();
   const agentOptions = [...new Set((items || []).map((l) => l.assigned_to).filter(Boolean))].sort();
 
   const q = query.trim().toLowerCase();
-  const filtered = (items || []).filter((l) => {
+  const filtered = scoped.filter((l) => {
     const matchesQ = !q || [l.name, l.email, l.destination].some((f) => (f || "").toLowerCase().includes(q));
     const matchesSource = sourceF === "all" || l.source === sourceF;
     const matchesAgent = agentF === "all" || l.assigned_to === agentF;
@@ -158,7 +164,7 @@ export default function DashboardLeads() {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
-  const pg = usePagination(sorted, 10, `${query}|${sourceF}|${agentF}|${sortBy}`);
+  const pg = usePagination(sorted, 10, `${query}|${sourceF}|${agentF}|${range}|${sortBy}`);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -265,13 +271,14 @@ export default function DashboardLeads() {
                 <option value="all">All agents</option>
                 {agentOptions.map((a) => <option key={a} value={a}>{a}</option>)}
               </select>
+              <DateRangeSelect value={range} onChange={setRange} />
               <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[170px]">
                 <option value="newest">Newest</option>
                 <option value="budget">Budget high–low</option>
                 <option value="name">Name</option>
               </select>
-              {(query || sourceF !== "all" || agentF !== "all" || sortBy !== "newest") && (
-                <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              {(query || sourceF !== "all" || agentF !== "all" || range !== "all" || sortBy !== "newest") && (
+                <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                   <X className="w-3.5 h-3.5" /> Clear
                 </button>
               )}

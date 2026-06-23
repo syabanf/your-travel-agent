@@ -29,6 +29,8 @@ export default function DashboardCustomerDetail() {
   const [c, setC] = useState(undefined); // undefined = loading, null = not found
   const [trips, setTrips] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [q, setQ] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
 
   useEffect(() => {
     base44.entities.Customer.filter({ id }).then((r) => setC(r[0] || null));
@@ -76,6 +78,16 @@ export default function DashboardCustomerDetail() {
   const tier = c.tier || "bronze";
   const status = c.status || "active";
   const tenure = c.joined_date ? `${moment().diff(moment(c.joined_date), "months")} months` : "—";
+
+  const needle = q.trim().toLowerCase();
+  const bookingTypes = [...new Set(bookings.map((b) => b.type).filter(Boolean))];
+  const filteredTrips = trips.filter((t) =>
+    !needle || `${t.title || ""} ${t.destination || ""}`.toLowerCase().includes(needle)
+  );
+  const filteredBookings = bookings.filter((b) => {
+    if (typeFilter && b.type !== typeFilter) return false;
+    return !needle || `${b.title || ""} ${b.type || ""}`.toLowerCase().includes(needle);
+  });
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -159,11 +171,25 @@ export default function DashboardCustomerDetail() {
           <p className="text-sm text-mora-neutral/70">No trips or bookings linked to this customer yet.</p>
         ) : (
           <div className="space-y-4">
-            {trips.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className="dash-input flex-1 min-w-[140px]"
+                placeholder="Search trips & bookings…"
+              />
+              {bookingTypes.length > 0 && (
+                <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="dash-input max-w-[150px] capitalize">
+                  <option value="">All types</option>
+                  {bookingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              )}
+            </div>
+            {filteredTrips.length > 0 && (
               <div>
                 <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Trips</p>
                 <ul className="divide-y divide-mora-primary/5">
-                  {trips.map((t) => (
+                  {filteredTrips.map((t) => (
                     <li key={t.id}>
                       <Link to={`/dashboard/trips/${t.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
                         <Plane className="w-4 h-4 text-gold shrink-0" />
@@ -176,11 +202,11 @@ export default function DashboardCustomerDetail() {
                 </ul>
               </div>
             )}
-            {bookings.length > 0 && (
+            {filteredBookings.length > 0 && (
               <div>
-                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Bookings · {formatIDR(bookings.reduce((s, b) => s + (b.price || 0), 0))} total</p>
+                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Bookings · {formatIDR(filteredBookings.reduce((s, b) => s + (b.price || 0), 0))} total</p>
                 <ul className="divide-y divide-mora-primary/5">
-                  {bookings.map((b) => (
+                  {filteredBookings.map((b) => (
                     <li key={b.id}>
                       <Link to={`/dashboard/bookings/${b.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
                         <CalendarCheck className="w-4 h-4 text-gold shrink-0" />
@@ -192,6 +218,9 @@ export default function DashboardCustomerDetail() {
                   ))}
                 </ul>
               </div>
+            )}
+            {filteredTrips.length === 0 && filteredBookings.length === 0 && (
+              <p className="text-sm text-mora-neutral/70">No matches.</p>
             )}
           </div>
         )}

@@ -9,6 +9,8 @@ import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
@@ -20,6 +22,7 @@ export default function DashboardAudit() {
   const [logs, setLogs] = useState(null);
   const [action, setAction] = useState("all");
   const [entity, setEntity] = useState("all");
+  const [range, setRange] = useState("all");
 
   useEffect(() => {
     (async () => {
@@ -42,16 +45,17 @@ export default function DashboardAudit() {
       (logs || []).filter(
         (l) =>
           (action === "all" || l.action === action) &&
-          (entity === "all" || l.entity === entity)
+          (entity === "all" || l.entity === entity) &&
+          inRange(l.created_date, range)
       ),
-    [logs, action, entity]
+    [logs, action, entity, range]
   );
 
-  const pg = usePagination(filtered, 12, `${action}|${entity}`);
+  const pg = usePagination(filtered, 12, `${action}|${entity}|${range}`);
 
-  // Insight aggregations
+  // Insight aggregations (follow the active filters incl. range)
   const actionCount = {}, entityCount = {}, dayAgg = {};
-  (logs || []).forEach((l) => {
+  filtered.forEach((l) => {
     const a = l.action || "other";
     actionCount[a] = (actionCount[a] || 0) + 1;
     const e = l.entity || "—";
@@ -101,8 +105,9 @@ export default function DashboardAudit() {
             <option key={e} value={e}>{e}</option>
           ))}
         </select>
-        {(action !== "all" || entity !== "all") && (
-          <button onClick={() => { setAction("all"); setEntity("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+        <DateRangeSelect value={range} onChange={setRange} />
+        {(action !== "all" || entity !== "all" || range !== "all") && (
+          <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}

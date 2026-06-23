@@ -10,6 +10,8 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const RES_BADGE = { confirmed: "bg-blue-100 text-blue-700", checked_in: "bg-emerald-100 text-emerald-700", checked_out: "bg-slate-100 text-slate-500", cancelled: "bg-red-100 text-red-600" };
 const RES_DOT = { confirmed: "bg-blue-500", checked_in: "bg-emerald-500", checked_out: "bg-slate-400", cancelled: "bg-red-500" };
@@ -20,17 +22,18 @@ export default function DashboardPMSTransactions() {
   const [query, setQuery] = useState("");
   const [propertyF, setPropertyF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [range, setRange] = useState("all");
   const [view, setView] = useState("table");
 
   const scoped = PMS_RESERVATIONS.filter((t) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [t.res, t.guest, t.roomType].some((v) => (v || "").toLowerCase().includes(q));
-    return mq && (propertyF === "all" || t.property === propertyF);
+    return mq && (propertyF === "all" || t.property === propertyF) && inRange(t.created, range);
   });
   const statusCounts = {};
   scoped.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
   const filtered = scoped.filter((t) => statusF === "all" || t.status === statusF);
-  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${propertyF}|${statusF}|${view}`);
+  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${propertyF}|${statusF}|${range}|${view}`);
 
   const active = filtered.filter((t) => t.status !== "cancelled");
   const revenue = active.reduce((s, t) => s + t.amount, 0);
@@ -117,8 +120,9 @@ export default function DashboardPMSTransactions() {
           <option value="all">All properties</option>
           {PMS_PROPERTY_NAMES.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
-        {(query || propertyF !== "all" || statusF !== "all") && (
-          <button onClick={() => { setQuery(""); setPropertyF("all"); setStatusF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+        <DateRangeSelect value={range} onChange={setRange} />
+        {(query || propertyF !== "all" || statusF !== "all" || range !== "all") && (
+          <button onClick={() => { setQuery(""); setPropertyF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}

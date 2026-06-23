@@ -10,6 +10,8 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
 const DOT = { paid: "bg-emerald-500", pending: "bg-mora-gold", refunded: "bg-slate-400" };
@@ -18,18 +20,19 @@ export default function DashboardOTATransactions() {
   const [query, setQuery] = useState("");
   const [channelF, setChannelF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [range, setRange] = useState("all");
   const [view, setView] = useState("table");
 
   // Scope = everything except the status filter, so the status chips show live counts.
   const scoped = OTA_TRANSACTIONS.filter((t) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [t.ref, t.guest, t.listing].some((v) => (v || "").toLowerCase().includes(q));
-    return mq && (channelF === "all" || t.channel === channelF);
+    return mq && (channelF === "all" || t.channel === channelF) && inRange(t.created, range);
   });
   const statusCounts = {};
   scoped.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
   const filtered = scoped.filter((t) => statusF === "all" || t.status === statusF);
-  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${channelF}|${statusF}|${view}`);
+  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${channelF}|${statusF}|${range}|${view}`);
 
   const gross = filtered.reduce((s, t) => s + t.gross, 0);
   const commission = filtered.reduce((s, t) => s + t.commission, 0);
@@ -115,8 +118,9 @@ export default function DashboardOTATransactions() {
           <option value="all">All channels</option>
           {OTA_CHANNEL_NAMES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        {(query || channelF !== "all" || statusF !== "all") && (
-          <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+        <DateRangeSelect value={range} onChange={setRange} />
+        {(query || channelF !== "all" || statusF !== "all" || range !== "all") && (
+          <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}

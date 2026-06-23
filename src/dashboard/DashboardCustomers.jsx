@@ -18,6 +18,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -38,6 +40,8 @@ export default function DashboardCustomers() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState("table");
+  const [countryF, setCountryF] = useState("all");
+  const [range, setRange] = useState("all");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -101,12 +105,17 @@ export default function DashboardCustomers() {
     load();
   };
 
-  const filtered = (items || []).filter((c) => {
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((c) => inRange(c.created_date, range));
+  const countryOptions = [...new Set((items || []).map((c) => c.country).filter(Boolean))].sort();
+
+  const filtered = scoped.filter((c) => {
     const q = listQuery.trim().toLowerCase();
     const matchesQ = !q || [c.name, c.email, c.city, c.country].some((v) => (v || "").toLowerCase().includes(q));
     const matchesTier = tierF === "all" || (c.tier || "bronze") === tierF;
     const matchesStatus = statusF === "all" || (c.status || "active") === statusF;
-    return matchesQ && matchesTier && matchesStatus;
+    const matchesCountry = countryF === "all" || c.country === countryF;
+    return matchesQ && matchesTier && matchesStatus && matchesCountry;
   });
 
   const sorted = [...filtered].sort((a, b) => {
@@ -114,7 +123,7 @@ export default function DashboardCustomers() {
     if (sort === "spend") return (Number(b.lifetime_spend) || 0) - (Number(a.lifetime_spend) || 0);
     return moment(b.joined_date || 0).valueOf() - moment(a.joined_date || 0).valueOf();
   });
-  const pg = usePagination(sorted, 10, `${listQuery}|${tierF}|${statusF}|${sort}`);
+  const pg = usePagination(sorted, 10, `${listQuery}|${tierF}|${statusF}|${countryF}|${range}|${sort}`);
 
   const exportCSV = () => downloadCSV(
     "mora-customers",
@@ -125,20 +134,20 @@ export default function DashboardCustomers() {
     ]),
   );
 
-  const total = items?.length || 0;
-  const activeCount = items?.filter((c) => c.status === "active").length || 0;
-  const ltv = items?.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0) || 0;
+  const total = scoped.length;
+  const activeCount = scoped.filter((c) => c.status === "active").length;
+  const ltv = scoped.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const TIER_COLOR = { bronze: "#C99A3F", silver: "#94A3B8", gold: "#AD1F23", platinum: "#6366F1" };
   const tierCount = {}, tierLtv = {};
-  (items || []).forEach((c) => { const t = c.tier || "bronze"; tierCount[t] = (tierCount[t] || 0) + 1; tierLtv[t] = (tierLtv[t] || 0) + (Number(c.lifetime_spend) || 0); });
+  scoped.forEach((c) => { const t = c.tier || "bronze"; tierCount[t] = (tierCount[t] || 0) + 1; tierLtv[t] = (tierLtv[t] || 0) + (Number(c.lifetime_spend) || 0); });
   const cap1 = (s) => s[0].toUpperCase() + s.slice(1);
   const byTier = TIERS.map((t) => ({ name: cap1(t), value: tierCount[t] || 0, color: TIER_COLOR[t] }));
   const ltvByTier = TIERS.map((t) => ({ name: cap1(t), value: tierLtv[t] || 0, color: TIER_COLOR[t] })).filter((d) => d.value);
   const statusMix = [
-    { name: "Active", value: (items || []).filter((c) => c.status === "active").length, color: "#10B981" },
-    { name: "Inactive", value: (items || []).filter((c) => c.status !== "active").length, color: "#94A3B8" },
+    { name: "Active", value: scoped.filter((c) => c.status === "active").length, color: "#10B981" },
+    { name: "Inactive", value: scoped.filter((c) => c.status !== "active").length, color: "#94A3B8" },
   ];
 
   return (
@@ -275,13 +284,20 @@ export default function DashboardCustomers() {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
+            {countryOptions.length > 1 && (
+              <select value={countryF} onChange={(e) => setCountryF(e.target.value)} className="dash-input max-w-[170px]">
+                <option value="all">All countries</option>
+                {countryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            )}
+            <DateRangeSelect value={range} onChange={setRange} />
             <select value={sort} onChange={(e) => setSort(e.target.value)} className="dash-input max-w-[160px]">
               <option value="newest">Newest</option>
               <option value="name">Name A–Z</option>
               <option value="spend">Lifetime spend</option>
             </select>
-            {(listQuery || tierF !== "all" || statusF !== "all" || sort !== "newest") && (
-              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            {(listQuery || tierF !== "all" || statusF !== "all" || countryF !== "all" || range !== "all" || sort !== "newest") && (
+              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}

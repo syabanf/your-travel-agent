@@ -72,6 +72,8 @@ export default function DashboardTripDetail() {
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bannerOk, setBannerOk] = useState(true);
+  const [relatedQ, setRelatedQ] = useState("");
+  const [relatedType, setRelatedType] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -190,6 +192,13 @@ export default function DashboardTripDetail() {
     return acc;
   }, {});
   const dayKeys = Object.keys(groups).sort((a, b) => Number(a) - Number(b));
+
+  const relatedNeedle = relatedQ.trim().toLowerCase();
+  const relatedTypes = [...new Set(related.map((b) => b.type).filter(Boolean))];
+  const filteredRelated = related.filter((b) => {
+    if (relatedType && b.type !== relatedType) return false;
+    return !relatedNeedle || `${b.title || ""} ${b.type || ""}`.toLowerCase().includes(relatedNeedle);
+  });
 
   const dateRange = trip.start_date && trip.end_date
     ? `${moment(trip.start_date).format("MMM D")} – ${moment(trip.end_date).format("MMM D, YYYY")}`
@@ -361,8 +370,26 @@ export default function DashboardTripDetail() {
         {related.length === 0 ? (
           <p className="text-sm text-mora-neutral">No linked bookings</p>
         ) : (
+          <>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <input
+              value={relatedQ}
+              onChange={(e) => setRelatedQ(e.target.value)}
+              className="dash-input flex-1 min-w-[140px]"
+              placeholder="Search bookings…"
+            />
+            {relatedTypes.length > 0 && (
+              <select value={relatedType} onChange={(e) => setRelatedType(e.target.value)} className="dash-input max-w-[150px] capitalize">
+                <option value="">All types</option>
+                {relatedTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            )}
+          </div>
+          {filteredRelated.length === 0 ? (
+            <p className="text-sm text-mora-neutral">No bookings match your filter.</p>
+          ) : (
           <ul className="divide-y divide-mora-primary/5">
-            {related.map((b) => (
+            {filteredRelated.map((b) => (
               <li key={b.id}>
                 <Link
                   to={`/dashboard/bookings/${b.id}`}
@@ -378,6 +405,8 @@ export default function DashboardTripDetail() {
               </li>
             ))}
           </ul>
+          )}
+          </>
         )}
       </div>
 

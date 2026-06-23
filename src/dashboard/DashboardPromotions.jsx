@@ -16,6 +16,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -33,6 +35,7 @@ export default function DashboardPromotions() {
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,7 +76,10 @@ export default function DashboardPromotions() {
 
   const remove = async (p) => { await base44.entities.Promotion.delete(p.id); toast.success("Removed"); load(); };
 
-  const filtered = (items || []).filter((p) => {
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((p) => inRange(p.created_date, range));
+
+  const filtered = scoped.filter((p) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [p.title, p.description, p.location].some((v) => (v || "").toLowerCase().includes(q));
     const mt = typeF === "all" || (p.type || "promo") === typeF;
@@ -86,19 +92,19 @@ export default function DashboardPromotions() {
     return new Date(b.created_date || 0) - new Date(a.created_date || 0);
   });
 
-  const pg = usePagination(sorted, 12, `${query}|${typeF}|${sortBy}`);
+  const pg = usePagination(sorted, 12, `${query}|${typeF}|${range}|${sortBy}`);
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const typeCount = { promo: 0, event: 0, news: 0 };
-  (items || []).forEach((p) => { const t = p.type || "promo"; typeCount[t] = (typeCount[t] || 0) + 1; });
+  scoped.forEach((p) => { const t = p.type || "promo"; typeCount[t] = (typeCount[t] || 0) + 1; });
   const byType = [
     { name: "Promotion", value: typeCount.promo, color: "#AD1F23" },
     { name: "Event", value: typeCount.event, color: "#C99A3F" },
     { name: "News", value: typeCount.news, color: "#05308C" },
   ];
   const featuredMix = [
-    { name: "Featured", value: (items || []).filter((p) => p.featured).length, color: "#AD1F23" },
-    { name: "Standard", value: (items || []).filter((p) => !p.featured).length, color: "#94A3B8" },
+    { name: "Featured", value: scoped.filter((p) => p.featured).length, color: "#AD1F23" },
+    { name: "Standard", value: scoped.filter((p) => !p.featured).length, color: "#94A3B8" },
   ];
 
   return (
@@ -188,13 +194,14 @@ export default function DashboardPromotions() {
               <option value="event">Event</option>
               <option value="news">News</option>
             </select>
+            <DateRangeSelect value={range} onChange={setRange} />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
               <option value="newest">Newest</option>
               <option value="title">Title A–Z</option>
               <option value="type">Type</option>
             </select>
-            {(query || typeF !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setTypeF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            {(query || typeF !== "all" || range !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setTypeF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}

@@ -17,6 +17,8 @@ import DataTable from "@/dashboard/DataTable";
 import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
+import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
@@ -44,6 +46,7 @@ export default function DashboardSuppliers() {
   const [query, setQuery] = useState("");
   const [typeF, setTypeF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [range, setRange] = useState("all");
   const [sort, setSort] = useState("newest");
 
   const load = async () => setItems(await base44.entities.Supplier.list("-created_date", 500));
@@ -85,23 +88,26 @@ export default function DashboardSuppliers() {
     load();
   };
 
-  const total = items?.length || 0;
-  const activeCount = items?.filter((s) => s.status === "active").length || 0;
+  // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
+  const scoped = (items || []).filter((s) => inRange(s.created_date, range));
+
+  const total = scoped.length;
+  const activeCount = scoped.filter((s) => s.status === "active").length;
   const avgCommission = total
-    ? Math.round((items.reduce((sum, s) => sum + (Number(s.commission_rate) || 0), 0) / total) * 10) / 10
+    ? Math.round((scoped.reduce((sum, s) => sum + (Number(s.commission_rate) || 0), 0) / total) * 10) / 10
     : 0;
 
-  // Insight aggregations
+  // Insight aggregations (date-scoped)
   const byType = {};
-  (items || []).forEach((s) => { const k = s.type || "dmc"; if (!byType[k]) byType[k] = { name: cap(k), value: 0 }; byType[k].value += 1; });
+  scoped.forEach((s) => { const k = s.type || "dmc"; if (!byType[k]) byType[k] = { name: cap(k), value: 0 }; byType[k].value += 1; });
   const dataType = Object.values(byType).sort((a, b) => b.value - a.value);
   const statusMix = [
-    { name: "Active", value: (items || []).filter((s) => (s.status || "active") === "active").length, color: "#10B981" },
-    { name: "Inactive", value: (items || []).filter((s) => (s.status || "active") !== "active").length, color: "#94A3B8" },
+    { name: "Active", value: scoped.filter((s) => (s.status || "active") === "active").length, color: "#10B981" },
+    { name: "Inactive", value: scoped.filter((s) => (s.status || "active") !== "active").length, color: "#94A3B8" },
   ];
 
   const q = query.trim().toLowerCase();
-  const filtered = (items || []).filter((s) => {
+  const filtered = scoped.filter((s) => {
     const matchesQ = !q || [s.name, s.country].some((v) => (v || "").toLowerCase().includes(q));
     const matchesType = typeF === "all" || s.type === typeF;
     const matchesStatus = statusF === "all" || (s.status || "active") === statusF;
@@ -114,7 +120,7 @@ export default function DashboardSuppliers() {
     if (sort === "commission") return (Number(b.commission_rate) || 0) - (Number(a.commission_rate) || 0);
     return String(b.created_date || "").localeCompare(String(a.created_date || ""));
   });
-  const pg = usePagination(sorted, 12, `${query}|${typeF}|${statusF}|${sort}`);
+  const pg = usePagination(sorted, 12, `${query}|${typeF}|${statusF}|${range}|${sort}`);
 
   const exportCSV = () => downloadCSV(
     "mora-suppliers",
@@ -230,14 +236,15 @@ export default function DashboardSuppliers() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+          <DateRangeSelect value={range} onChange={setRange} />
           <select value={sort} onChange={(e) => setSort(e.target.value)} className="dash-input max-w-[160px]">
             <option value="newest">Newest</option>
             <option value="name">Name A–Z</option>
             <option value="rating">Rating</option>
             <option value="commission">Commission</option>
           </select>
-          {(query || typeF !== "all" || statusF !== "all" || sort !== "newest") && (
-            <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+          {(query || typeF !== "all" || statusF !== "all" || range !== "all" || sort !== "newest") && (
+            <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
               <X className="w-3.5 h-3.5" /> Clear
             </button>
           )}
