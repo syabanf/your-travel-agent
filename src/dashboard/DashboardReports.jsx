@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
+import { CategoryBars } from "@/dashboard/charts";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -301,6 +302,34 @@ export default function DashboardReports() {
     return acc;
   }, [data]);
 
+  // --- Analytical metrics ---
+  const confirmedCost = confirmed.reduce((s, b) => s + (Number(b.cost_price) || 0), 0);
+  const grossProfit = revenue - confirmedCost;
+  const marginPct = revenue ? Math.round((grossProfit / revenue) * 100) : 0;
+  const confirmedRate = bookings.length ? Math.round((confirmed.length / bookings.length) * 100) : 0;
+  const customerCount = data?.customers.length || 0;
+  const revPerCustomer = customerCount ? Math.round(revenue / customerCount) : 0;
+  const profitAcc = {};
+  confirmed.forEach((b) => { const k = b.type || "other"; profitAcc[k] = (profitAcc[k] || 0) + ((Number(b.price) || 0) - (Number(b.cost_price) || 0)); });
+  const profitByType = Object.entries(profitAcc).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+  const topCustomers = (data?.customers || []).slice().sort((a, b) => (Number(b.lifetime_spend) || 0) - (Number(a.lifetime_spend) || 0)).slice(0, 8).map((c) => ({ name: c.name, value: Number(c.lifetime_spend) || 0 }));
+  const totalTierSpend = Object.values(tierStats).reduce((s, t) => s + t.spend, 0);
+  const hiTierShare = totalTierSpend ? Math.round((((tierStats.platinum?.spend || 0) + (tierStats.gold?.spend || 0)) / totalTierSpend) * 100) : 0;
+  const topTrip = topDestinations[0];
+  const tripShare = (trips.length && topTrip) ? Math.round((topTrip.count / trips.length) * 100) : 0;
+  const ratios = data ? [
+    { label: "Confirmed rate", value: `${confirmedRate}%`, hint: `${confirmed.length} of ${bookings.length} bookings` },
+    { label: "Gross margin", value: `${marginPct}%`, hint: `${formatIDR(grossProfit)} profit` },
+    { label: "Avg booking value", value: formatIDR(avgBooking), hint: "per confirmed booking" },
+    { label: "Revenue / customer", value: formatIDR(revPerCustomer), hint: `${customerCount} customers` },
+  ] : [];
+  const insights = data ? [
+    `Confirmed bookings convert at ${confirmedRate}% of all bookings.`,
+    marginPct ? `Gross margin is ${marginPct}% — ${formatIDR(grossProfit)} profit on ${formatIDR(revenue)} revenue.` : `Confirmed revenue totals ${formatIDR(revenue)}.`,
+    topTrip ? `${topTrip.name} leads demand at ${tripShare}% of planned trips.` : "No trips planned yet.",
+    `Platinum & gold customers hold ${hiTierShare}% of lifetime value.`,
+  ] : [];
+
   // Generalized CSV export shared by every table.
   function downloadCSV(filename, header, rows) {
     const esc = (v) => {
@@ -404,6 +433,17 @@ export default function DashboardReports() {
             ))}
           </div>
 
+          {/* Key ratios */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {ratios.map((r) => (
+              <div key={r.label} className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
+                <p className="text-xs text-mora-neutral uppercase tracking-wider">{r.label}</p>
+                <p className="stat-value text-xl font-display font-bold text-mora-primary mt-1">{r.value}</p>
+                <p className="text-[11px] text-mora-neutral/60 mt-0.5 truncate">{r.hint}</p>
+              </div>
+            ))}
+          </div>
+
           {/* Tab switcher */}
           <div className="flex gap-2 mb-4">
             {[
@@ -471,6 +511,22 @@ export default function DashboardReports() {
                 No data yet
               </div>
             )}
+          </div>
+
+          {/* Profitability & auto-insights */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+            <ChartCard title="Profit by booking type" subtitle="Revenue minus supplier cost." hasData={profitByType.length > 0}>
+              <CategoryBars data={profitByType} />
+            </ChartCard>
+            <ChartCard title="Top customers by value" subtitle="Lifetime spend." hasData={topCustomers.length > 0}>
+              <CategoryBars data={topCustomers} />
+            </ChartCard>
+            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+              <div className="mb-3"><h2 className="font-display font-semibold text-mora-primary">Insights</h2><p className="text-xs text-mora-neutral mt-0.5">Auto-generated observations.</p></div>
+              <ul className="space-y-2.5">
+                {insights.map((t, i) => <li key={i} className="flex gap-2.5 text-sm text-mora-primary"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /><span>{t}</span></li>)}
+              </ul>
+            </div>
           </div>
 
           {/* Two-column chart grid */}
