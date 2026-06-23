@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -11,6 +11,9 @@ import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -33,6 +36,8 @@ const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 export default function DashboardMarketing() {
   const { role } = useRole();
+  const navigate = useNavigate();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [editing, setEditing] = useState(null); // form object or null
@@ -129,10 +134,15 @@ export default function DashboardMarketing() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Marketing Campaigns</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
         </div>
-        {!editing && can(role, "marketing", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New campaign
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="marketing" />
+            {can(role, "marketing", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> New campaign
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -218,7 +228,27 @@ export default function DashboardMarketing() {
               <option value="name">Name A–Z</option>
               <option value="status">Status</option>
             </select>
+            <ViewToggle value={view} onChange={setView} />
           </div>
+          {view === "table" ? (
+            <DataTable
+              columns={[
+                { key: "name", label: "Name", className: "font-medium text-mora-primary", render: (c) => c.name },
+                { key: "channel", label: "Channel", render: (c) => {
+                  const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
+                  return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>;
+                } },
+                { key: "segment", label: "Segment", render: (c) => cap(c.segment || "all") },
+                { key: "promo_code", label: "Promo code", render: (c) => c.promo_code ? <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-mora-primary/5 text-mora-primary">{c.promo_code}</span> : "—" },
+                { key: "discount", label: "Discount", align: "right", className: "text-right font-semibold text-gold", render: (c) => `${Number(c.discount) || 0}%` },
+                { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || "draft"}</span> },
+                { key: "sent_count", label: "Sent", align: "right", className: "text-right", render: (c) => Number(c.sent_count) || 0 },
+              ]}
+              rows={pg.pageItems}
+              onRowClick={(c) => navigate(`/dashboard/marketing/${c.id}`)}
+              empty="No campaigns match your search or filters."
+            />
+          ) : (
           <div className="space-y-3 stagger">
           {pg.pageItems.map((c) => {
             const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
@@ -268,6 +298,7 @@ export default function DashboardMarketing() {
             );
           })}
           </div>
+          )}
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="campaigns" />
           {items.length === 0 && (
             <EmptyState

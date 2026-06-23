@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, TrendingUp, History, Sparkles, Scale, FileText, Image as ImageIcon, Settings, Menu, X } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, History, FileText, Image as ImageIcon, Settings, Menu, X } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -9,14 +9,15 @@ const GROUPS = [
   { title: "Insight Center", items: [
     { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Overview", res: "overview" },
     { to: "/dashboard/reports", icon: BarChart3, label: "Reports", res: "reports" },
-    { to: "/dashboard/business", icon: TrendingUp, label: "Business", res: "reports" },
-    { to: "/dashboard/ai-reports", icon: Sparkles, label: "AI Reports", res: "reports" },
-    { to: "/dashboard/erp", icon: Scale, label: "ERP Reports", res: "erp" },
   ] },
   { title: "Sales & CRM", items: [
     { to: "/dashboard/leads", icon: Target, label: "Leads", res: "leads" },
     { to: "/dashboard/customers", icon: Users, label: "Customers", res: "customers" },
     { to: "/dashboard/bookings", icon: CalendarCheck, label: "Trips & Bookings", res: "bookings" },
+  ] },
+  { title: "Operations", items: [
+    { to: "/dashboard/ota", icon: Globe, label: "OTA Channels", res: "ota" },
+    { to: "/dashboard/pms", icon: Hotel, label: "Property (PMS)", res: "pms" },
   ] },
   { title: "Catalog", items: [
     { to: "/dashboard/destinations", icon: MapPin, label: "Destinations", res: "destinations" },

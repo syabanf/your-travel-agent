@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper, Search, Star } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRole } from "./RoleContext";
@@ -12,6 +12,9 @@ import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
 const TYPE_META = {
@@ -22,6 +25,8 @@ const TYPE_META = {
 
 export default function DashboardPromotions() {
   const { role } = useRole();
+  const navigate = useNavigate();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -90,10 +95,15 @@ export default function DashboardPromotions() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Promotions & Events</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Publish the offers, events and news shown in the app's "What's New".</p>
         </div>
-        {!editing && can(role, "promotions", "create") && (
-          <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New entry
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="promotions" />
+            {can(role, "promotions", "create") && (
+              <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> New entry
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -162,7 +172,24 @@ export default function DashboardPromotions() {
               <option value="title">Title A–Z</option>
               <option value="type">Type</option>
             </select>
+            <ViewToggle value={view} onChange={setView} />
           </div>
+          {view === "table" ? (
+            <DataTable
+              columns={[
+                { key: "title", label: "Title", className: "font-medium text-mora-primary", render: (p) => (
+                  <span className="block min-w-0"><span className="block truncate">{p.title}</span>{p.description ? <span className="block text-[11px] text-mora-neutral/60 truncate">{p.description}</span> : null}</span>
+                ) },
+                { key: "type", label: "Type", render: (p) => { const meta = TYPE_META[p.type] || TYPE_META.promo; return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.pill}`}>{p.type || "promo"}</span>; } },
+                { key: "value", label: "Discount / Price", align: "right", className: "text-right font-semibold text-gold", render: (p) => p.discount ? `${p.discount}% off` : (p.price ? formatIDR(p.price) : "—") },
+                { key: "date", label: "Date", render: (p) => p.valid_until ? `Until ${moment(p.valid_until).format("MMM D")}` : (p.date ? moment(p.date).format("MMM D, YYYY") : "—") },
+                { key: "featured", label: "Featured", render: (p) => p.featured ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mora-gold/15 text-gold"><Star className="w-3 h-3 fill-gold" /> Featured</span> : <span className="text-mora-neutral/40">—</span> },
+              ]}
+              rows={pg.pageItems}
+              onRowClick={(p) => navigate(`/dashboard/promotions/${p.id}`)}
+              empty="No entries match your filters."
+            />
+          ) : (
           <div className="space-y-3 stagger">
           {pg.pageItems.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
@@ -192,6 +219,7 @@ export default function DashboardPromotions() {
             );
           })}
           </div>
+          )}
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="promotions" />
           {items.length === 0 && (
             <EmptyState

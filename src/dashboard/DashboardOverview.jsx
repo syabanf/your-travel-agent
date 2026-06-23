@@ -5,6 +5,7 @@ import { MapPin, Map as MapIcon, CalendarCheck, Users, Wallet, TrendingUp, Alert
 import { formatIDR } from "@/lib/currency";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import moment from "moment";
 
 const statusPill = {
@@ -59,10 +60,13 @@ export default function DashboardOverview() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <header className="mb-6">
-        <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1">Insight Center</p>
-        <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>
-        <p className="text-sm text-mora-neutral mt-0.5">Your data & trends across the MORA platform at a glance.</p>
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1">Insight Center</p>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>
+          <p className="text-sm text-mora-neutral mt-0.5">Your data & trends across the MORA platform at a glance.</p>
+        </div>
+        <DashboardAiStub resource="overview" />
       </header>
 
       {!s ? (

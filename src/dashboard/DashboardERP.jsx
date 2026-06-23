@@ -135,7 +135,7 @@ export default function DashboardERP() {
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Scale className="w-3.5 h-3.5" /> Finance</p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">ERP Reports</h1>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Financial Report</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Income statement, receivables, payables, cash flow & tax — derived from your bookings.</p>
         </div>
         <button onClick={exportPL} disabled={!f} className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium btn-primary disabled:opacity-50"><Download className="w-4 h-4" /> Export P&L</button>

@@ -10,6 +10,7 @@ import EmptyState from "@/components/EmptyState";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
@@ -128,10 +129,15 @@ export default function DashboardContent() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Content</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage app pages, FAQs, announcements &amp; hero copy.</p>
         </div>
-        {!editing && can(role, "content", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New page
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="content" />
+            {can(role, "content", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> New page
+              </button>
+            )}
+          </div>
         )}
       </header>
 

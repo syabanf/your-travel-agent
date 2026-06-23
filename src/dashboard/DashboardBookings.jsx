@@ -13,6 +13,7 @@ import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -181,7 +182,8 @@ export default function DashboardBookings() {
           <p className="text-sm text-mora-neutral mt-0.5">Create, review and manage every trip and booking.</p>
         </div>
         {!editing && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="bookings" />
             <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>

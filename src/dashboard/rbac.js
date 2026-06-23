@@ -8,7 +8,7 @@ export const ROLES = [
   { key: "viewer", label: "Viewer", desc: "Read-only access" },
 ];
 
-export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "content", "media", "settings", "reports", "erp", "audit", "team"];
+export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "content", "media", "settings", "reports", "erp", "ota", "pms", "audit", "team"];
 
 const ALL = ["view", "create", "edit", "delete"];
 const VIEW = ["view"];
@@ -30,6 +30,8 @@ const PERMS = {
     settings: ALL,
     reports: VIEW,
     erp: VIEW,
+    ota: ALL,
+    pms: ALL,
     audit: VIEW,
     team: [],
   },
@@ -48,6 +50,8 @@ const PERMS = {
     settings: [],
     reports: VIEW,
     erp: VIEW,
+    ota: ["view", "edit"],
+    pms: ["view", "edit"],
     audit: [],
     team: [],
   },

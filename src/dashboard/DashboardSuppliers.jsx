@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
@@ -13,6 +13,9 @@ import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
@@ -32,6 +35,8 @@ const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
 export default function DashboardSuppliers() {
   const { role } = useRole();
+  const navigate = useNavigate();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -118,7 +123,8 @@ export default function DashboardSuppliers() {
           <p className="text-sm text-mora-neutral mt-0.5">Manage partner airlines, hotels, DMCs & their commissions.</p>
         </div>
         {!editing && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="suppliers" />
             <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
@@ -213,7 +219,27 @@ export default function DashboardSuppliers() {
             <option value="rating">Rating</option>
             <option value="commission">Commission</option>
           </select>
+          <ViewToggle value={view} onChange={setView} />
         </div>
+        {view === "table" ? (
+          <DataTable
+            columns={[
+              { key: "name", label: "Supplier", className: "font-medium text-mora-primary", render: (s) => (
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-8 h-8 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(s.name || "?").trim().charAt(0)}</span>
+                  <span className="min-w-0"><span className="block truncate">{s.name}</span><span className="block text-[11px] text-mora-neutral/60 truncate">{s.country || "—"}</span></span>
+                </span>
+              ) },
+              { key: "type", label: "Type", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.dmc}`}>{s.type || "dmc"}</span> },
+              { key: "status", label: "Status", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.status || "active"}</span> },
+              { key: "contact", label: "Contact", render: (s) => s.contact_email || s.contact_phone || "—" },
+              { key: "commission", label: "Commission", align: "right", className: "text-right font-semibold text-gold", render: (s) => `${Number(s.commission_rate || 0)}%` },
+            ]}
+            rows={pg.pageItems}
+            onRowClick={(s) => navigate(`/dashboard/suppliers/${s.id}`)}
+            empty="No suppliers match your filters."
+          />
+        ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {pg.pageItems.map((s) => (
             <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-mora-primary/10 p-5 group hover:shadow-md transition-shadow press">
@@ -272,6 +298,7 @@ export default function DashboardSuppliers() {
           )}
           {items.length > 0 && sorted.length === 0 && <p className="text-mora-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
+        )}
         <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="suppliers" />
         </>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
@@ -12,11 +12,16 @@ import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
 
 export default function DashboardDestinations() {
   const { role } = useRole();
+  const navigate = useNavigate();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -102,10 +107,15 @@ export default function DashboardDestinations() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Destinations</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Manage the places travelers discover & swipe in the app.</p>
         </div>
-        {!editing && can(role, "destinations", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Add destination
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="destinations" />
+            {can(role, "destinations", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Add destination
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -206,7 +216,27 @@ export default function DashboardDestinations() {
             <option value="name">Name A–Z</option>
             <option value="price">Price</option>
           </select>
+          <ViewToggle value={view} onChange={setView} />
         </div>
+        {view === "table" ? (
+          <DataTable
+            columns={[
+              { key: "name", label: "Destination", className: "font-medium text-mora-primary", render: (d) => (
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-8 h-8 rounded-full bg-mora-gold/10 flex items-center justify-center text-base shrink-0">{d.emoji || "🌍"}</span>
+                  <span className="min-w-0"><span className="block truncate">{d.name}</span>{d.tagline ? <span className="block text-[11px] text-mora-neutral/60 truncate">{d.tagline}</span> : null}</span>
+                </span>
+              ) },
+              { key: "country", label: "Country", render: (d) => d.country || "—" },
+              { key: "vibes", label: "Vibes", render: (d) => (Array.isArray(d.vibes) ? d.vibes.slice(0, 3).join(", ") : "") || "—" },
+              { key: "status", label: "Status", render: (d) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${d.active !== false ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{d.active !== false ? "active" : "inactive"}</span> },
+              { key: "fromPrice", label: "From", align: "right", className: "text-right font-semibold text-gold", render: (d) => d.fromPrice > 0 ? formatIDR(d.fromPrice) : "—" },
+            ]}
+            rows={pg.pageItems}
+            onRowClick={(d) => navigate(`/dashboard/destinations/${d.id}`)}
+            empty="No destinations match your filters."
+          />
+        ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {pg.pageItems.map((d) => (
             <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
@@ -255,6 +285,7 @@ export default function DashboardDestinations() {
             </div>
           )}
         </div>
+        )}
         <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="destinations" />
         </>
         );

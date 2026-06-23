@@ -7,6 +7,7 @@ import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
@@ -49,13 +50,18 @@ export default function DashboardAudit() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-mora-primary flex items-center gap-2">
-          <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
-        </h1>
-        <p className="text-sm text-mora-neutral mt-0.5">
-          Every change made in the admin console is recorded here.
-        </p>
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-mora-primary flex items-center gap-2">
+            <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
+          </h1>
+          <p className="text-sm text-mora-neutral mt-0.5">
+            Every change made in the admin console is recorded here.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <DashboardAiStub resource="audit" />
+        </div>
       </header>
 
       <div className="flex items-center gap-3 mb-4">

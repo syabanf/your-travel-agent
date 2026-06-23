@@ -68,10 +68,13 @@ const DashboardSuppliers = lazy(() => import('./dashboard/DashboardSuppliers'));
 const DashboardSupplierDetail = lazy(() => import('./dashboard/DashboardSupplierDetail'));
 const DashboardMarketing = lazy(() => import('./dashboard/DashboardMarketing'));
 const DashboardCampaignDetail = lazy(() => import('./dashboard/DashboardCampaignDetail'));
+const DashboardReportsHub = lazy(() => import('./dashboard/DashboardReportsHub'));
 const DashboardReports = lazy(() => import('./dashboard/DashboardReports'));
 const DashboardBusiness = lazy(() => import('./dashboard/DashboardBusiness'));
 const DashboardAIReports = lazy(() => import('./dashboard/DashboardAIReports'));
 const DashboardERP = lazy(() => import('./dashboard/DashboardERP'));
+const DashboardOTA = lazy(() => import('./dashboard/DashboardOTA'));
+const DashboardPMS = lazy(() => import('./dashboard/DashboardPMS'));
 const DashboardContent = lazy(() => import('./dashboard/DashboardContent'));
 const DashboardMedia = lazy(() => import('./dashboard/DashboardMedia'));
 const DashboardSettings = lazy(() => import('./dashboard/DashboardSettings'));
@@ -119,10 +122,20 @@ const AppRoutes = () => (
           <Route path="suppliers/:id" element={<DashboardSupplierDetail />} />
           <Route path="marketing" element={<DashboardMarketing />} />
           <Route path="marketing/:id" element={<DashboardCampaignDetail />} />
-          <Route path="reports" element={<DashboardReports />} />
-          <Route path="business" element={<DashboardBusiness />} />
-          <Route path="ai-reports" element={<DashboardAIReports />} />
-          <Route path="erp" element={<DashboardERP />} />
+          {/* Unified reports hub (Analytics / Business / Finance / AI) */}
+          <Route path="reports" element={<DashboardReportsHub />}>
+            <Route index element={<DashboardReports />} />
+            <Route path="business" element={<DashboardBusiness />} />
+            <Route path="finance" element={<DashboardERP />} />
+            <Route path="ai" element={<DashboardAIReports />} />
+          </Route>
+          {/* Legacy paths → unified hub */}
+          <Route path="business" element={<Navigate to="/dashboard/reports/business" replace />} />
+          <Route path="ai-reports" element={<Navigate to="/dashboard/reports/ai" replace />} />
+          <Route path="erp" element={<Navigate to="/dashboard/reports/finance" replace />} />
+          {/* Operations */}
+          <Route path="ota" element={<DashboardOTA />} />
+          <Route path="pms" element={<DashboardPMS />} />
           <Route path="content" element={<DashboardContent />} />
           <Route path="media" element={<DashboardMedia />} />
           <Route path="settings" element={<DashboardSettings />} />

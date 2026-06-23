@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
@@ -13,6 +13,9 @@ import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -26,6 +29,14 @@ const STATUS_DOT = {
   lost: "bg-red-500",
 };
 
+const STATUS_BADGE = {
+  new: "bg-blue-100 text-blue-700",
+  contacted: "bg-amber-100 text-amber-700",
+  quoted: "bg-indigo-100 text-indigo-700",
+  won: "bg-emerald-100 text-emerald-700",
+  lost: "bg-red-100 text-red-700",
+};
+
 const EMPTY = {
   name: "", email: "", phone: "", source: "website", destination: "",
   budget: "", status: "new", assigned_to: "", notes: "",
@@ -35,6 +46,8 @@ const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 export default function DashboardLeads() {
   const { role } = useRole();
+  const navigate = useNavigate();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -144,10 +157,15 @@ export default function DashboardLeads() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Leads</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Track enquiries through the sales pipeline.</p>
         </div>
-        {!editing && canCreate && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> New lead
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="leads" />
+            {canCreate && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> New lead
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -233,6 +251,7 @@ export default function DashboardLeads() {
                 <option value="budget">Budget high–low</option>
                 <option value="name">Name</option>
               </select>
+              <ViewToggle value={view} onChange={setView} />
             </div>
           )}
           {items.length === 0 ? (
@@ -250,6 +269,21 @@ export default function DashboardLeads() {
             <p className="text-mora-neutral/60 text-center py-10">No leads match your filters.</p>
           ) : (
           <>
+          {view === "table" ? (
+            <DataTable
+              columns={[
+                { key: "name", label: "Name", className: "font-medium text-mora-primary", render: (l) => l.name },
+                { key: "status", label: "Status", render: (l) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[l.status] || STATUS_BADGE.new}`}>{l.status || "new"}</span> },
+                { key: "source", label: "Source", render: (l) => cap(l.source || "—") },
+                { key: "assigned_to", label: "Assigned to", render: (l) => l.assigned_to || "—" },
+                { key: "budget", label: "Budget", align: "right", className: "text-right font-semibold text-gold", render: (l) => formatIDR(Number(l.budget) || 0) },
+                { key: "created", label: "Created", render: (l) => l.created_date ? moment(l.created_date).format("MMM D, YYYY") : "—" },
+              ]}
+              rows={pg.pageItems}
+              onRowClick={(l) => navigate(`/dashboard/leads/${l.id}`)}
+              empty="No leads match your filters."
+            />
+          ) : (
           <div className="overflow-x-auto pb-2 -mx-1 px-1">
             <div className="flex gap-4 min-w-max stagger">
               {STATUSES.map((status) => {
@@ -329,6 +363,7 @@ export default function DashboardLeads() {
               })}
             </div>
           </div>
+          )}
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="leads" />
           </>
           )}

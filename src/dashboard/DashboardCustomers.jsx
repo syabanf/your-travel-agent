@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
@@ -14,6 +14,9 @@ import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -31,7 +34,9 @@ const TIER_BADGE = {
 
 export default function DashboardCustomers() {
   const { role } = useRole();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -131,7 +136,8 @@ export default function DashboardCustomers() {
           <p className="text-sm text-mora-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
         </div>
         {!editing && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="customers" />
             <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
@@ -253,7 +259,27 @@ export default function DashboardCustomers() {
               <option value="name">Name A–Z</option>
               <option value="spend">Lifetime spend</option>
             </select>
+            <ViewToggle value={view} onChange={setView} />
           </div>
+          {view === "table" ? (
+            <DataTable
+              columns={[
+                { key: "name", label: "Customer", className: "font-medium text-mora-primary", render: (c) => (
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <span className="w-8 h-8 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(c.name || "?").trim().charAt(0)}</span>
+                    <span className="min-w-0"><span className="block truncate">{c.name}</span><span className="block text-[11px] text-mora-neutral/60 truncate">{c.email}</span></span>
+                  </span>
+                ) },
+                { key: "tier", label: "Tier", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span> },
+                { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span> },
+                { key: "location", label: "Location", render: (c) => [c.city, c.country].filter(Boolean).join(", ") || "—" },
+                { key: "spend", label: "Lifetime", align: "right", className: "text-right font-semibold text-gold", render: (c) => formatIDR(Number(c.lifetime_spend) || 0) },
+              ]}
+              rows={pg.pageItems}
+              onRowClick={(c) => navigate(`/dashboard/customers/${c.id}`)}
+              empty="No customers match your filters."
+            />
+          ) : (
           <div className="space-y-3 stagger">
           {pg.pageItems.map((c) => (
             <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press">
@@ -294,6 +320,7 @@ export default function DashboardCustomers() {
             </Link>
           ))}
           </div>
+          )}
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="customers" />
           {items.length === 0 && (
             <EmptyState

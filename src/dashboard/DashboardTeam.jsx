@@ -10,6 +10,7 @@ import EmptyState from "@/components/EmptyState";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
@@ -132,9 +133,14 @@ export default function DashboardTeam() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-mora-primary">Team &amp; Roles</h1>
-        <p className="text-sm text-mora-neutral mt-0.5">Manage who can access what.</p>
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-mora-primary">Team &amp; Roles</h1>
+          <p className="text-sm text-mora-neutral mt-0.5">Manage who can access what.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <DashboardAiStub resource="team" />
+        </div>
       </header>
 
       <ReadOnlyBanner resource="team" />

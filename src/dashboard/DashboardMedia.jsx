@@ -10,11 +10,15 @@ import EmptyState from "@/components/EmptyState";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
+import DashboardAiStub from "@/dashboard/DashboardAiStub";
 
 const EMPTY = { title: "", url: "", tags: "" };
 
 export default function DashboardMedia() {
   const { role } = useRole();
+  const [view, setView] = useState("table");
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
@@ -85,10 +89,15 @@ export default function DashboardMedia() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Media Library</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Reusable images for destinations, promotions &amp; content.</p>
         </div>
-        {!editing && can(role, "media", "create") && (
-          <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Add media
-          </button>
+        {!editing && (
+          <div className="flex flex-wrap items-center gap-2">
+            <DashboardAiStub resource="media" />
+            {can(role, "media", "create") && (
+              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+                <Plus className="w-4 h-4" /> Add media
+              </button>
+            )}
+          </div>
         )}
       </header>
 
@@ -150,10 +159,25 @@ export default function DashboardMedia() {
               <option value="newest">Newest</option>
               <option value="title">Title A–Z</option>
             </select>
+            <ViewToggle value={view} onChange={setView} />
           </div>
 
           <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{sorted.length} {sorted.length === 1 ? "asset" : "assets"}</div>
 
+          {view === "table" ? (
+            <DataTable
+              columns={[
+                { key: "thumb", label: "", render: (a) => a.url ? <img src={a.url} alt="" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-mora-primary/5 flex items-center justify-center text-mora-neutral/40"><ImageIcon className="w-4 h-4" /></span> },
+                { key: "title", label: "Title", className: "font-medium text-mora-primary", render: (a) => a.title },
+                { key: "type", label: "Tags", render: (a) => Array.isArray(a.tags) && a.tags.length ? (
+                  <span className="flex flex-wrap gap-1">{a.tags.map((t, i) => <span key={i} className="text-[10px] bg-mora-primary/5 text-mora-neutral rounded-full px-1.5 py-0.5">{t}</span>)}</span>
+                ) : "—" },
+                { key: "url", label: "URL", render: (a) => <span className="text-mora-neutral/70 truncate block max-w-[280px]">{a.url}</span> },
+              ]}
+              rows={pg.pageItems}
+              empty="No media matches your search."
+            />
+          ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
             {pg.pageItems.map((m) => (
               <div key={m.id} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col">
@@ -209,6 +233,7 @@ export default function DashboardMedia() {
               </div>
             )}
           </div>
+          )}
           <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="assets" />
         </>
       )}
