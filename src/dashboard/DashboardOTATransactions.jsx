@@ -1,7 +1,7 @@
 import { useState } from "react";
 import moment from "moment";
 import { formatIDR } from "@/lib/currency";
-import { Search, Download, Receipt, Wallet, Percent, TrendingUp } from "lucide-react";
+import { Search, Download, Receipt, Wallet, Percent, TrendingUp, X } from "lucide-react";
 import { OTA_TRANSACTIONS, OTA_CHANNEL_NAMES, OTA_STATUSES } from "@/dashboard/opsData";
 import { downloadCSV } from "@/lib/csv";
 import DataTable from "@/dashboard/DataTable";
@@ -75,7 +75,7 @@ export default function DashboardOTATransactions() {
           <p className="text-sm text-mora-neutral mt-0.5">Real-time monitoring of every booking across your channels.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <DashboardAiStub resource="ota" />
+          <DashboardAiStub resource="ota" data={filtered} />
           <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
             <Download className="w-4 h-4" /> Export CSV
           </button>
@@ -115,6 +115,11 @@ export default function DashboardOTATransactions() {
           <option value="all">All channels</option>
           {OTA_CHANNEL_NAMES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
+        {(query || channelF !== "all" || statusF !== "all") && (
+          <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            <X className="w-3.5 h-3.5" /> Clear
+          </button>
+        )}
         <ViewToggle value={view} onChange={setView} />
       </div>
 

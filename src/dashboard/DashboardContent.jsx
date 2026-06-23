@@ -150,7 +150,7 @@ export default function DashboardContent() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="content" />
+            <DashboardAiStub resource="content" data={items} />
             {can(role, "content", "create") && (
               <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
                 <Plus className="w-4 h-4" /> New page
@@ -247,6 +247,11 @@ export default function DashboardContent() {
               <option value="status">Status</option>
               <option value="type">Type</option>
             </select>
+            {(query || typeF !== "all" || statusF !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            )}
           </div>
 
           {selected.size > 0 && canDelete && (

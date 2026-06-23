@@ -147,7 +147,7 @@ export default function DashboardTeam() {
           <p className="text-sm text-mora-neutral mt-0.5">Manage who can access what.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <DashboardAiStub resource="team" />
+          <DashboardAiStub resource="team" data={members} />
         </div>
       </header>
 
@@ -230,6 +230,11 @@ export default function DashboardTeam() {
                 <option value="all">All roles</option>
                 {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
+              {(query || roleF !== "all" || sortKey !== "name" || sortDir !== "asc") && (
+                <button onClick={() => { setQuery(""); setRoleF("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                  <X className="w-3.5 h-3.5" /> Clear
+                </button>
+              )}
             </div>
           </div>
           <table className="w-full text-sm">

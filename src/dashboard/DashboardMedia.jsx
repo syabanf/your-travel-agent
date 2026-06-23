@@ -105,7 +105,7 @@ export default function DashboardMedia() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="media" />
+            <DashboardAiStub resource="media" data={items} />
             {can(role, "media", "create") && (
               <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
                 <Plus className="w-4 h-4" /> Add media
@@ -179,6 +179,11 @@ export default function DashboardMedia() {
               <option value="newest">Newest</option>
               <option value="title">Title A–Z</option>
             </select>
+            {(query || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            )}
             <ViewToggle value={view} onChange={setView} />
           </div>
 

@@ -88,7 +88,7 @@ export default function DashboardOverview() {
           <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>
           <p className="text-sm text-mora-neutral mt-0.5">Your data & trends across the MORA platform at a glance.</p>
         </div>
-        <DashboardAiStub resource="overview" />
+        <DashboardAiStub resource="overview" data={s ? s.bookings : []} />
       </header>
 
       {!s ? (

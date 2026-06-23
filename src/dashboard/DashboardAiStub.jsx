@@ -1,6 +1,31 @@
 import { useState } from "react";
 import { Sparkles, Loader2, X, ArrowRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { formatIDR } from "@/lib/currency";
+
+// Fields the mock AI knows how to summarise from a page's data.
+const MONEY = ["price", "amount", "lifetime_spend", "budget", "budget_total", "revenue", "net", "gross", "fromPrice", "adr", "cost_price"];
+const CATS = ["status", "tier", "type", "role", "channel", "category", "country", "payment", "action", "entity"];
+
+// Derive a quick, real summary from the page's records so the "AI" reflects
+// what's actually on screen (count, dominant category, money totals).
+function analyze(data) {
+  const rows = Array.isArray(data) ? data.filter(Boolean) : [];
+  const n = rows.length;
+  if (!n) return null;
+  const sample = rows[0] || {};
+  const catField = CATS.find((f) => sample[f] != null);
+  const moneyField = MONEY.find((f) => rows.some((r) => Number(r[f]) > 0));
+  let top = null;
+  if (catField) {
+    const d = {};
+    rows.forEach((r) => { const k = String(r[catField] ?? "—").replace(/_/g, " "); d[k] = (d[k] || 0) + 1; });
+    top = Object.entries(d).sort((a, b) => b[1] - a[1])[0];
+  }
+  let sum = 0;
+  if (moneyField) rows.forEach((r) => { sum += Number(r[moneyField]) || 0; });
+  return { n, catField, top, moneyField: moneyField && moneyField.replace(/_/g, " "), sum, avg: n ? Math.round(sum / n) : 0 };
+}
 
 // Per-resource canned "AI insights" for the demo (the real InvokeLLM seam is
 // called for latency/feel; swap configureLLM() to wire a real model later).
@@ -22,25 +47,36 @@ const CANNED = {
 };
 const DEFAULT = { insights: ["This view looks healthy. Use the filters to spot outliers.", "Export the data to dig deeper in a spreadsheet.", "Ask a specific question below for a tailored answer."], actions: ["Summarise this page", "What stands out?", "What should I do next?"] };
 
-export default function DashboardAiStub({ resource, label = "Ask AI", context = "" }) {
+export default function DashboardAiStub({ resource, data, label = "Ask AI", context = "" }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [result, setResult] = useState(null);
   const [answer, setAnswer] = useState(null);
 
+  const build = () => {
+    const a = analyze(data);
+    const canned = CANNED[resource] || DEFAULT;
+    const lead = [];
+    if (a) {
+      lead.push(`You're viewing ${a.n} ${resource}${a.top ? ` — the largest group is "${a.top[0]}" (${a.top[1]}).` : "."}`);
+      if (a.moneyField) lead.push(`Total ${a.moneyField} is ${formatIDR(a.sum)} — averaging ${formatIDR(a.avg)} each.`);
+    }
+    return { insights: [...lead, ...canned.insights].slice(0, 4), actions: canned.actions, a };
+  };
+
   const run = async () => {
-    setOpen(true); setLoading(true); setData(null); setAnswer(null);
-    try {
-      await base44.integrations.Core.InvokeLLM({ prompt: `Give admin insights for the ${resource} view. ${context}` });
-    } catch { /* stubbed */ }
-    setData(CANNED[resource] || DEFAULT);
+    setOpen(true); setLoading(true); setResult(null); setAnswer(null);
+    try { await base44.integrations.Core.InvokeLLM({ prompt: `Give admin insights for ${resource} (${Array.isArray(data) ? data.length : 0} records). ${context}` }); } catch { /* stubbed */ }
+    setResult(build());
     setLoading(false);
   };
 
   const ask = async (q) => {
     setLoading(true); setAnswer(null);
     try { await base44.integrations.Core.InvokeLLM({ prompt: q }); } catch { /* stubbed */ }
-    setAnswer(`Here's a quick take on “${q}”: based on the current ${resource} data, focus on the highlighted items above first, then revisit next week. (Demo AI — connect a model via configureLLM to make this live.)`);
+    const a = result?.a;
+    const ctx = a ? `Across ${a.n} ${resource}${a.top ? `, "${a.top[0]}" leads (${a.top[1]})` : ""}${a.moneyField ? ` and total ${a.moneyField} is ${formatIDR(a.sum)}` : ""}.` : "";
+    setAnswer(`${ctx} On “${q}” — prioritise the highlighted items first, then review weekly. (Demo AI — connect a model via configureLLM() to go live.)`);
     setLoading(false);
   };
 
@@ -60,12 +96,12 @@ export default function DashboardAiStub({ resource, label = "Ask AI", context = 
             </div>
 
             <div className="p-5 space-y-4">
-              {loading && !data ? (
+              {loading && !result ? (
                 <div className="flex items-center gap-2 text-sm text-mora-neutral py-6 justify-center"><Loader2 className="w-4 h-4 animate-spin" /> Analysing {resource}…</div>
-              ) : data && (
+              ) : result && (
                 <>
                   <ul className="space-y-2.5">
-                    {data.insights.map((t, i) => (
+                    {result.insights.map((t, i) => (
                       <li key={i} className="flex gap-2.5 text-sm text-mora-primary">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /> <span>{t}</span>
                       </li>
@@ -74,7 +110,7 @@ export default function DashboardAiStub({ resource, label = "Ask AI", context = 
                   <div>
                     <p className="text-[11px] uppercase tracking-wider text-mora-neutral/60 mb-2">Suggested</p>
                     <div className="flex flex-wrap gap-2">
-                      {data.actions.map((a) => (
+                      {result.actions.map((a) => (
                         <button key={a} onClick={() => ask(a)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
                           {a} <ArrowRight className="w-3 h-3" />
                         </button>

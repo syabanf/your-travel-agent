@@ -111,7 +111,7 @@ export default function DashboardPromotions() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="promotions" />
+            <DashboardAiStub resource="promotions" data={items} />
             {can(role, "promotions", "create") && (
               <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
                 <Plus className="w-4 h-4" /> New entry
@@ -193,6 +193,11 @@ export default function DashboardPromotions() {
               <option value="title">Title A–Z</option>
               <option value="type">Type</option>
             </select>
+            {(query || typeF !== "all" || sortBy !== "newest") && (
+              <button onClick={() => { setQuery(""); setTypeF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            )}
             <ViewToggle value={view} onChange={setView} />
           </div>
           {view === "table" ? (

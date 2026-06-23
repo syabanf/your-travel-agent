@@ -101,7 +101,7 @@ export default function DashboardOTA() {
           <p className="text-sm text-mora-neutral mt-0.5">Connect and sync listings across online travel agencies.</p>
         </div>
         <div className="flex items-center gap-2">
-          <DashboardAiStub resource="ota" />
+          <DashboardAiStub resource="ota" data={channels} />
           <button onClick={syncAll} disabled={syncing} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press disabled:opacity-50">
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> Sync all
           </button>

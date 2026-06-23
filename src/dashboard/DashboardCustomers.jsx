@@ -150,7 +150,7 @@ export default function DashboardCustomers() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="customers" />
+            <DashboardAiStub resource="customers" data={items} />
             <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
@@ -280,6 +280,11 @@ export default function DashboardCustomers() {
               <option value="name">Name A–Z</option>
               <option value="spend">Lifetime spend</option>
             </select>
+            {(listQuery || tierF !== "all" || statusF !== "all" || sort !== "newest") && (
+              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            )}
             <ViewToggle value={view} onChange={setView} />
           </div>
           {view === "table" ? (

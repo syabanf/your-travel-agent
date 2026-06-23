@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import moment from "moment";
-import { History, Filter, ShieldCheck } from "lucide-react";
+import { History, Filter, ShieldCheck, X } from "lucide-react";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/dashboard/Pagination";
@@ -81,7 +81,7 @@ export default function DashboardAudit() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <DashboardAiStub resource="audit" />
+          <DashboardAiStub resource="audit" data={logs} />
         </div>
       </header>
 
@@ -101,6 +101,11 @@ export default function DashboardAudit() {
             <option key={e} value={e}>{e}</option>
           ))}
         </select>
+        {(action !== "all" || entity !== "all") && (
+          <button onClick={() => { setAction("all"); setEntity("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            <X className="w-3.5 h-3.5" /> Clear
+          </button>
+        )}
       </div>
 
       {logs && logs.length > 0 && (

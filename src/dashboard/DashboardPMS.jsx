@@ -110,7 +110,7 @@ export default function DashboardPMS() {
           <p className="text-sm text-mora-neutral mt-0.5">Rooms, availability, occupancy and rates across your properties.</p>
         </div>
         <div className="flex items-center gap-2">
-          <DashboardAiStub resource="pms" />
+          <DashboardAiStub resource="pms" data={rows} />
           <button onClick={() => toast("Add a property (demo)")} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2"><Plus className="w-4 h-4" /> Add property</button>
         </div>
       </header>

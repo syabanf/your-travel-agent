@@ -170,7 +170,7 @@ export default function DashboardLeads() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="leads" />
+            <DashboardAiStub resource="leads" data={items} />
             {canCreate && (
               <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
                 <Plus className="w-4 h-4" /> New lead
@@ -270,6 +270,11 @@ export default function DashboardLeads() {
                 <option value="budget">Budget high–low</option>
                 <option value="name">Name</option>
               </select>
+              {(query || sourceF !== "all" || agentF !== "all" || sortBy !== "newest") && (
+                <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                  <X className="w-3.5 h-3.5" /> Clear
+                </button>
+              )}
               <ViewToggle value={view} onChange={setView} />
             </div>
           )}

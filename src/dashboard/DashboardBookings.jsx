@@ -45,6 +45,7 @@ export default function DashboardBookings() {
   const [suppliers, setSuppliers] = useState([]);
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [statusF, setStatusF] = useState(searchParams.get("status") || "all");
+  const [typeF, setTypeF] = useState("all");
   const [bSort, setBSort] = useState({ key: null, dir: "asc" });
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
 
@@ -136,7 +137,7 @@ export default function DashboardBookings() {
   const d = editing?.data;
 
   const q = query.trim().toLowerCase();
-  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF));
+  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF) && (typeF === "all" || b.type === typeF));
   const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF));
 
   // Sort a copy of the filtered array (never mutate the source).
@@ -162,7 +163,7 @@ export default function DashboardBookings() {
 
   const sBookings = sortRows(fBookings, bSort);
   const sTrips = sortRows(fTrips, tSort);
-  const bookingPg = usePagination(sBookings, 10, `${query}|${statusF}|${bSort.key}|${bSort.dir}`);
+  const bookingPg = usePagination(sBookings, 10, `${query}|${statusF}|${typeF}|${bSort.key}|${bSort.dir}`);
   const tripPg = usePagination(sTrips, 10, `${query}|${statusF}|${tSort.key}|${tSort.dir}`);
 
   const exportCSV = () => downloadCSV(
@@ -199,7 +200,7 @@ export default function DashboardBookings() {
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
-            <DashboardAiStub resource="bookings" />
+            <DashboardAiStub resource="bookings" data={bookings} />
             <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
@@ -351,6 +352,14 @@ export default function DashboardBookings() {
               <option value="all">All status</option>
               {(tab === "bookings" ? BOOKING_STATUSES : TRIP_STATUSES).map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
+            {tab === "bookings" && (
+              <select value={typeF} onChange={(e)=>setTypeF(e.target.value)} className="dash-input max-w-[150px] capitalize"><option value="all">All types</option>{BOOKING_TYPES.map((t)=><option key={t} value={t}>{t}</option>)}</select>
+            )}
+            {(query || statusF !== "all" || typeF !== "all") && (
+              <button onClick={() => { setQuery(""); setStatusF("all"); setTypeF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            )}
           </div>
 
           <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
