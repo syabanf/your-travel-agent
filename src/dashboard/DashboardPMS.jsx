@@ -47,9 +47,20 @@ function syncFor(room) {
 export default function DashboardPMS() {
   const [rows, setRows] = useState(SEED);
   const [detail, setDetail] = useState(null);
-  const sync = detail ? syncFor(detail) : [];
+  const [sync, setSync] = useState([]);
+  const [syncing, setSyncing] = useState(false);
   const inSync = sync.filter((s) => s.status === "in_sync").length;
-  const syncNow = (r) => toast.success(`${r.roomType} pushed to ${SYNC_CHANNELS.length} channels`);
+
+  const openDetail = (r) => { setDetail(r); setSync(syncFor(r)); setSyncing(false); };
+  const syncNow = () => {
+    setSyncing(true);
+    setSync((prev) => prev.map((s) => ({ ...s, status: "pending", lastSync: "syncing…" })));
+    setTimeout(() => {
+      setSync((prev) => prev.map((s) => ({ ...s, status: "in_sync", availability: true, rate: true, lastSync: "just now" })));
+      setSyncing(false);
+      toast.success(`${detail?.roomType || "Room"} synced to ${SYNC_CHANNELS.length} channels`);
+    }, 1200);
+  };
 
   const properties = new Set(rows.map((r) => r.property)).size;
   const totalRooms = rows.reduce((s, r) => s + r.total, 0);
@@ -107,7 +118,7 @@ export default function DashboardPMS() {
         <Kpi icon={TrendingUp} label="RevPAR" value={formatIDR(revpar)} />
       </div>
 
-      <DataTable columns={columns} rows={rows} onRowClick={(r) => setDetail(r)} empty="No rooms in inventory." />
+      <DataTable columns={columns} rows={rows} onRowClick={openDetail} empty="No rooms in inventory." />
 
       <Drawer
         open={!!detail}
@@ -124,7 +135,7 @@ export default function DashboardPMS() {
                 <p className="stat-value text-lg font-display font-bold text-mora-primary">{inSync} / {sync.length}</p>
                 <p className="text-[11px] text-mora-neutral">channels in sync</p>
               </div>
-              <button onClick={() => syncNow(detail)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2"><RefreshCw className="w-4 h-4" /> Sync now</button>
+              <button onClick={syncNow} disabled={syncing} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-60"><RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Syncing…" : "Sync now"}</button>
             </div>
             <DataTable
               columns={[

@@ -5,11 +5,13 @@ import { Search, Download, ClipboardList, BedDouble, Wallet, AlertCircle } from 
 import { PMS_RESERVATIONS, PMS_PROPERTY_NAMES, PMS_STATUSES } from "@/dashboard/opsData";
 import { downloadCSV } from "@/lib/csv";
 import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 
 const RES_BADGE = { confirmed: "bg-blue-100 text-blue-700", checked_in: "bg-emerald-100 text-emerald-700", checked_out: "bg-slate-100 text-slate-500", cancelled: "bg-red-100 text-red-600" };
+const RES_DOT = { confirmed: "bg-blue-500", checked_in: "bg-emerald-500", checked_out: "bg-slate-400", cancelled: "bg-red-500" };
 const PAY_BADGE = { paid: "bg-emerald-100 text-emerald-700", deposit: "bg-mora-gold/15 text-gold", unpaid: "bg-red-100 text-red-600" };
 const label = (s) => (s || "").replace("_", " ");
 
@@ -17,13 +19,17 @@ export default function DashboardPMSTransactions() {
   const [query, setQuery] = useState("");
   const [propertyF, setPropertyF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [view, setView] = useState("table");
 
-  const filtered = PMS_RESERVATIONS.filter((t) => {
+  const scoped = PMS_RESERVATIONS.filter((t) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [t.res, t.guest, t.roomType].some((v) => (v || "").toLowerCase().includes(q));
-    return mq && (propertyF === "all" || t.property === propertyF) && (statusF === "all" || t.status === statusF);
+    return mq && (propertyF === "all" || t.property === propertyF);
   });
-  const pg = usePagination(filtered, 12, `${query}|${propertyF}|${statusF}`);
+  const statusCounts = {};
+  scoped.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+  const filtered = scoped.filter((t) => statusF === "all" || t.status === statusF);
+  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${propertyF}|${statusF}|${view}`);
 
   const active = filtered.filter((t) => t.status !== "cancelled");
   const revenue = active.reduce((s, t) => s + t.amount, 0);
@@ -53,9 +59,12 @@ export default function DashboardPMSTransactions() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><ClipboardList className="w-3.5 h-3.5" /> Operations</p>
+          <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-2">
+            <ClipboardList className="w-3.5 h-3.5" /> Operations
+            <span className="inline-flex items-center gap-1 text-emerald-600 normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
+          </p>
           <h1 className="text-2xl font-display font-bold text-mora-primary">PMS Transactions</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Reservations, stays and folio across your properties.</p>
+          <p className="text-sm text-mora-neutral mt-0.5">Real-time monitoring of reservations, stays and folio.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DashboardAiStub resource="pms" />
@@ -65,11 +74,21 @@ export default function DashboardPMSTransactions() {
         </div>
       </header>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 stagger">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 stagger">
         <Kpi icon={ClipboardList} label="Reservations" value={filtered.length} />
         <Kpi icon={Wallet} label="Room revenue" value={formatIDR(revenue)} />
         <Kpi icon={BedDouble} label="Room nights" value={nights} />
         <Kpi icon={AlertCircle} label="Outstanding" value={formatIDR(outstanding)} />
+      </div>
+
+      {/* Status monitor — click a chip to filter */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {PMS_STATUSES.map((st) => (
+          <button key={st} onClick={() => setStatusF(statusF === st ? "all" : st)}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${statusF === st ? "border-mora-gold/40 bg-mora-gold/10 text-gold" : "border-mora-primary/10 bg-white text-mora-neutral hover:bg-mora-primary/5"}`}>
+            <span className={`w-2 h-2 rounded-full ${RES_DOT[st]}`} /> <span className="capitalize">{label(st)}</span> <span className="font-bold text-mora-primary">{statusCounts[st] || 0}</span>
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4">
@@ -81,13 +100,34 @@ export default function DashboardPMSTransactions() {
           <option value="all">All properties</option>
           {PMS_PROPERTY_NAMES.map((p) => <option key={p} value={p}>{p}</option>)}
         </select>
-        <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[160px] capitalize">
-          <option value="all">All status</option>
-          {PMS_STATUSES.map((s) => <option key={s} value={s}>{label(s)}</option>)}
-        </select>
+        <ViewToggle value={view} onChange={setView} />
       </div>
 
-      <DataTable columns={columns} rows={pg.pageItems} minWidth={920} empty="No reservations match your filters." />
+      {view === "table" ? (
+        <DataTable columns={columns} rows={pg.pageItems} minWidth={920} empty="No reservations match your filters." />
+      ) : pg.pageItems.length === 0 ? (
+        <p className="text-mora-neutral/60 text-center py-10">No reservations match your filters.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 stagger">
+          {pg.pageItems.map((t) => (
+            <div key={t.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 hover:shadow-md transition-shadow min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="text-sm font-semibold text-mora-primary truncate">{t.res}</span>
+                <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize shrink-0 ${RES_BADGE[t.status]}`}>{label(t.status)}</span>
+              </div>
+              <p className="text-xs text-mora-neutral mb-0.5">{t.guest}</p>
+              <p className="text-xs text-mora-neutral/60 truncate">{t.roomType} · {t.property}</p>
+              <p className="text-[11px] text-mora-neutral/60 mt-1">{moment(t.checkIn).format("MMM D")} – {moment(t.checkOut).format("MMM D")} · {t.nights} nts · {t.source}</p>
+              <div className="flex items-center justify-between gap-2 border-t border-mora-primary/5 pt-3 mt-3">
+                <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${PAY_BADGE[t.payment]}`}>{t.payment}</span>
+                <div className="text-right">
+                  <div className="stat-value text-base font-display font-bold text-gold">{formatIDR(t.amount)}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="reservations" />
     </div>
   );

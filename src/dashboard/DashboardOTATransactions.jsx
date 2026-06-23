@@ -5,23 +5,30 @@ import { Search, Download, Receipt, Wallet, Percent, TrendingUp } from "lucide-r
 import { OTA_TRANSACTIONS, OTA_CHANNEL_NAMES, OTA_STATUSES } from "@/dashboard/opsData";
 import { downloadCSV } from "@/lib/csv";
 import DataTable from "@/dashboard/DataTable";
+import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 
 const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
+const DOT = { paid: "bg-emerald-500", pending: "bg-mora-gold", refunded: "bg-slate-400" };
 
 export default function DashboardOTATransactions() {
   const [query, setQuery] = useState("");
   const [channelF, setChannelF] = useState("all");
   const [statusF, setStatusF] = useState("all");
+  const [view, setView] = useState("table");
 
-  const filtered = OTA_TRANSACTIONS.filter((t) => {
+  // Scope = everything except the status filter, so the status chips show live counts.
+  const scoped = OTA_TRANSACTIONS.filter((t) => {
     const q = query.trim().toLowerCase();
     const mq = !q || [t.ref, t.guest, t.listing].some((v) => (v || "").toLowerCase().includes(q));
-    return mq && (channelF === "all" || t.channel === channelF) && (statusF === "all" || t.status === statusF);
+    return mq && (channelF === "all" || t.channel === channelF);
   });
-  const pg = usePagination(filtered, 12, `${query}|${channelF}|${statusF}`);
+  const statusCounts = {};
+  scoped.forEach((t) => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+  const filtered = scoped.filter((t) => statusF === "all" || t.status === statusF);
+  const pg = usePagination(filtered, view === "cards" ? 9 : 12, `${query}|${channelF}|${statusF}|${view}`);
 
   const gross = filtered.reduce((s, t) => s + t.gross, 0);
   const commission = filtered.reduce((s, t) => s + t.commission, 0);
@@ -50,9 +57,12 @@ export default function DashboardOTATransactions() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Receipt className="w-3.5 h-3.5" /> Distribution</p>
+          <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-2">
+            <Receipt className="w-3.5 h-3.5" /> Distribution
+            <span className="inline-flex items-center gap-1 text-emerald-600 normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
+          </p>
           <h1 className="text-2xl font-display font-bold text-mora-primary">OTA Transactions</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Every booking transaction across your connected channels.</p>
+          <p className="text-sm text-mora-neutral mt-0.5">Real-time monitoring of every booking across your channels.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DashboardAiStub resource="ota" />
@@ -62,11 +72,21 @@ export default function DashboardOTATransactions() {
         </div>
       </header>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 stagger">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 stagger">
         <Kpi icon={Receipt} label="Transactions" value={filtered.length} />
         <Kpi icon={Wallet} label="Gross revenue" value={formatIDR(gross)} />
         <Kpi icon={Percent} label="Commission" value={formatIDR(commission)} />
         <Kpi icon={TrendingUp} label="Net revenue" value={formatIDR(net)} />
+      </div>
+
+      {/* Status monitor — click a chip to filter */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {OTA_STATUSES.map((st) => (
+          <button key={st} onClick={() => setStatusF(statusF === st ? "all" : st)}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${statusF === st ? "border-mora-gold/40 bg-mora-gold/10 text-gold" : "border-mora-primary/10 bg-white text-mora-neutral hover:bg-mora-primary/5"}`}>
+            <span className={`w-2 h-2 rounded-full ${DOT[st]}`} /> <span className="capitalize">{st}</span> <span className="font-bold text-mora-primary">{statusCounts[st] || 0}</span>
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4">
@@ -78,13 +98,40 @@ export default function DashboardOTATransactions() {
           <option value="all">All channels</option>
           {OTA_CHANNEL_NAMES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px] capitalize">
-          <option value="all">All status</option>
-          {OTA_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <ViewToggle value={view} onChange={setView} />
       </div>
 
-      <DataTable columns={columns} rows={pg.pageItems} minWidth={860} empty="No transactions match your filters." />
+      {view === "table" ? (
+        <DataTable columns={columns} rows={pg.pageItems} minWidth={860} empty="No transactions match your filters." />
+      ) : pg.pageItems.length === 0 ? (
+        <p className="text-mora-neutral/60 text-center py-10">No transactions match your filters.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 stagger">
+          {pg.pageItems.map((t) => (
+            <div key={t.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 hover:shadow-md transition-shadow min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <span className="inline-flex items-center gap-2 min-w-0">
+                  <span className="w-7 h-7 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center text-[11px] font-bold uppercase shrink-0">{t.channel[0]}</span>
+                  <span className="text-sm font-semibold text-mora-primary truncate">{t.channel}</span>
+                </span>
+                <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize shrink-0 ${TX_BADGE[t.status]}`}>{t.status}</span>
+              </div>
+              <p className="text-xs text-mora-neutral mb-0.5"><span className="font-medium text-mora-primary">{t.ref}</span> · {t.guest}</p>
+              <p className="text-xs text-mora-neutral/60 truncate mb-3">{t.listing}</p>
+              <div className="flex items-end justify-between gap-2 border-t border-mora-primary/5 pt-3">
+                <div className="text-[11px] text-mora-neutral/60 leading-relaxed">
+                  <div>{moment(t.created).format("MMM D")} · stay {moment(t.checkIn).format("MMM D")}</div>
+                  <div>commission −{formatIDR(t.commission)}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="stat-value text-base font-display font-bold text-gold">{formatIDR(t.net)}</div>
+                  <div className="text-[10px] text-mora-neutral/50 uppercase tracking-wider">net</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="transactions" />
     </div>
   );
