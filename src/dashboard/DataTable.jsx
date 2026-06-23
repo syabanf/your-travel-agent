@@ -1,10 +1,10 @@
 // Reusable dashboard table. columns: [{ key, label, align?, render?(row), className? }].
 // Wrapped in overflow-x-auto + min-width so it scrolls within its card on mobile.
-export default function DataTable({ columns, rows, rowKey = (r) => r.id, onRowClick, empty = "No records." }) {
+export default function DataTable({ columns, rows, rowKey = (r) => r.id, onRowClick, empty = "No records.", minWidth = 640 }) {
   return (
     <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm min-w-[640px]">
+        <table className="w-full text-sm" style={{ minWidth }}>
           <thead>
             <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
               {columns.map((c) => (

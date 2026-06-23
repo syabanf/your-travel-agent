@@ -1,9 +1,11 @@
 import { useState } from "react";
+import moment from "moment";
 import { formatIDR } from "@/lib/currency";
 import { toast } from "sonner";
-import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus } from "lucide-react";
+import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus, Receipt } from "lucide-react";
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import Drawer from "@/dashboard/Drawer";
 
 // Mock OTA channel-manager data (no backend — demo only).
 const SEED = [
@@ -21,9 +23,34 @@ const STATUS = {
   disconnected: "bg-slate-100 text-slate-500",
 };
 
+// Deterministic mock booking transactions for a channel's detail drawer.
+const GUESTS = ["Putri W.", "Andi P.", "Maria S.", "Kenji S.", "Sarah L.", "Budi H.", "Dewi A.", "Rio M."];
+const LISTINGS = ["Ocean Suite · Azure Bay", "Pool Villa · Azure Bay", "Garden Villa · Ubud", "Studio Loft · Seminyak", "Spa Suite · Ubud"];
+const TX_STATUS = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
+function txnsFor(ch) {
+  if (!ch || !ch.bookings) return [];
+  const n = Math.min(8, Math.max(3, Math.round(ch.bookings / 10)));
+  const avg = Math.max(1000000, Math.round(ch.revenue / ch.bookings / 50000) * 50000);
+  const sts = ["paid", "paid", "pending", "paid", "refunded"];
+  return Array.from({ length: n }, (_, i) => {
+    const gross = avg + ((i % 3) - 1) * 500000;
+    const commission = Math.round((gross * ch.commission) / 100);
+    return {
+      id: `${ch.id}-tx${i + 1}`,
+      ref: `${ch.name.replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase()}-${((i * 271) % 8000) + 1000}`,
+      guest: GUESTS[(i + ch.name.length) % GUESTS.length],
+      listing: LISTINGS[i % LISTINGS.length],
+      checkIn: moment().add(i * 4 - 6, "days").format("MMM D"),
+      gross, commission, net: gross - commission,
+      status: sts[(i + ch.commission) % sts.length],
+    };
+  });
+}
+
 export default function DashboardOTA() {
   const [channels, setChannels] = useState(SEED);
   const [syncing, setSyncing] = useState(false);
+  const [detail, setDetail] = useState(null);
 
   const connected = channels.filter((c) => c.status === "connected").length;
   const listings = channels.reduce((s, c) => s + c.listings, 0);
@@ -85,10 +112,53 @@ export default function DashboardOTA() {
         <Kpi icon={Wallet} label="Channel revenue" value={formatIDR(revenue)} />
       </div>
 
-      <DataTable columns={columns} rows={channels} empty="No channels connected." />
+      <DataTable columns={columns} rows={channels} onRowClick={(c) => setDetail(c)} empty="No channels connected." />
+
+      <Drawer
+        open={!!detail}
+        onClose={() => setDetail(null)}
+        icon={Receipt}
+        width="max-w-2xl"
+        title={detail ? `${detail.name} · booking transactions` : ""}
+        subtitle={detail ? `${detail.bookings} bookings · ${detail.commission}% commission · last 30 days` : ""}
+      >
+        {detail && (
+          <>
+            <div className="grid grid-cols-3 gap-3">
+              <Mini label="Bookings (30d)" value={detail.bookings} />
+              <Mini label="Gross revenue" value={detail.revenue ? formatIDR(detail.revenue) : "—"} />
+              <Mini label="Commission" value={detail.revenue ? formatIDR(Math.round(detail.revenue * detail.commission / 100)) : "—"} />
+            </div>
+            <DataTable
+              columns={[
+                { key: "ref", label: "Ref", className: "font-medium text-mora-primary" },
+                { key: "guest", label: "Guest" },
+                { key: "listing", label: "Listing" },
+                { key: "checkIn", label: "Check-in" },
+                { key: "gross", label: "Gross", align: "right", className: "text-right", render: (t) => formatIDR(t.gross) },
+                { key: "commission", label: "Commission", align: "right", className: "text-right text-mora-neutral", render: (t) => `−${formatIDR(t.commission)}` },
+                { key: "net", label: "Net", align: "right", className: "text-right font-semibold text-gold", render: (t) => formatIDR(t.net) },
+                { key: "status", label: "Status", render: (t) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${TX_STATUS[t.status]}`}>{t.status}</span> },
+              ]}
+              rows={txnsFor(detail)}
+              rowKey={(t) => t.id}
+              minWidth={600}
+              empty="No transactions for this channel yet."
+            />
+            <p className="text-[11px] text-mora-neutral/50">Demo data — transactions are simulated.</p>
+          </>
+        )}
+      </Drawer>
     </div>
   );
 }
+
+const Mini = ({ label, value }) => (
+  <div className="bg-white rounded-xl border border-mora-primary/10 p-3 min-w-0">
+    <p className="stat-value text-sm font-display font-bold text-mora-primary">{value}</p>
+    <p className="text-[11px] text-mora-neutral mt-0.5">{label}</p>
+  </div>
+);
 
 const Kpi = ({ icon: Icon, label, value }) => (
   <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">

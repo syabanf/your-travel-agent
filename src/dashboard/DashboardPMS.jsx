@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { formatIDR } from "@/lib/currency";
 import { toast } from "sonner";
-import { Building2, BedDouble, Percent, TrendingUp, Plus } from "lucide-react";
+import { Building2, BedDouble, Percent, TrendingUp, Plus, RefreshCw, Check, Minus } from "lucide-react";
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
+import Drawer from "@/dashboard/Drawer";
 
 // Mock property-management inventory (no backend — demo only).
 const SEED = [
@@ -22,8 +23,33 @@ const STATUS = {
 };
 const occ = (r) => (r.total ? Math.round(((r.total - r.available) / r.total) * 100) : 0);
 
+// Channel-sync status for a room's detail drawer (sync only — no guest/booking data).
+const SYNC_CHANNELS = ["Booking.com", "Agoda", "Traveloka", "Expedia", "Tiket.com"];
+const SYNC_BADGE = { in_sync: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", paused: "bg-slate-100 text-slate-500", error: "bg-red-100 text-red-600" };
+const SYNC_LABEL = { in_sync: "in sync", pending: "syncing", paused: "paused", error: "error" };
+function syncFor(room) {
+  if (!room) return [];
+  return SYNC_CHANNELS.map((name, i) => {
+    let status;
+    if (room.status === "maintenance") status = "paused";
+    else if ((i + room.total) % 7 === 0) status = "error";
+    else if (room.status === "soldout" && i % 2 === 0) status = "pending";
+    else status = "in_sync";
+    const ok = status === "in_sync";
+    return {
+      id: `${room.id}-${i}`, channel: name, availability: ok, rate: ok,
+      lastSync: status === "in_sync" ? `${(i + 1) * 4}m ago` : status === "paused" ? "—" : status === "error" ? "failed" : "queued",
+      status,
+    };
+  });
+}
+
 export default function DashboardPMS() {
   const [rows, setRows] = useState(SEED);
+  const [detail, setDetail] = useState(null);
+  const sync = detail ? syncFor(detail) : [];
+  const inSync = sync.filter((s) => s.status === "in_sync").length;
+  const syncNow = (r) => toast.success(`${r.roomType} pushed to ${SYNC_CHANNELS.length} channels`);
 
   const properties = new Set(rows.map((r) => r.property)).size;
   const totalRooms = rows.reduce((s, r) => s + r.total, 0);
@@ -81,7 +107,42 @@ export default function DashboardPMS() {
         <Kpi icon={TrendingUp} label="RevPAR" value={formatIDR(revpar)} />
       </div>
 
-      <DataTable columns={columns} rows={rows} empty="No rooms in inventory." />
+      <DataTable columns={columns} rows={rows} onRowClick={(r) => setDetail(r)} empty="No rooms in inventory." />
+
+      <Drawer
+        open={!!detail}
+        onClose={() => setDetail(null)}
+        icon={RefreshCw}
+        width="max-w-xl"
+        title={detail ? `${detail.roomType} · channel sync` : ""}
+        subtitle={detail ? detail.property : ""}
+      >
+        {detail && (
+          <>
+            <div className="flex items-center justify-between gap-3 rounded-xl bg-white border border-mora-primary/10 p-4">
+              <div>
+                <p className="stat-value text-lg font-display font-bold text-mora-primary">{inSync} / {sync.length}</p>
+                <p className="text-[11px] text-mora-neutral">channels in sync</p>
+              </div>
+              <button onClick={() => syncNow(detail)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2"><RefreshCw className="w-4 h-4" /> Sync now</button>
+            </div>
+            <DataTable
+              columns={[
+                { key: "channel", label: "Channel", className: "font-medium text-mora-primary" },
+                { key: "availability", label: "Availability", render: (s) => s.availability ? <Check className="w-4 h-4 text-emerald-600" /> : <Minus className="w-4 h-4 text-mora-neutral/40" /> },
+                { key: "rate", label: "Rate", render: (s) => s.rate ? <Check className="w-4 h-4 text-emerald-600" /> : <Minus className="w-4 h-4 text-mora-neutral/40" /> },
+                { key: "lastSync", label: "Last sync" },
+                { key: "status", label: "Status", render: (s) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${SYNC_BADGE[s.status]}`}>{SYNC_LABEL[s.status]}</span> },
+              ]}
+              rows={sync}
+              rowKey={(s) => s.id}
+              minWidth={440}
+              empty="No channels configured."
+            />
+            <p className="text-[11px] text-mora-neutral/50">Sync status is simulated for the demo.</p>
+          </>
+        )}
+      </Drawer>
     </div>
   );
 }
