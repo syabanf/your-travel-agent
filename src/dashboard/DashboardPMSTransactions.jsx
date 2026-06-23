@@ -9,6 +9,7 @@ import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 
 const RES_BADGE = { confirmed: "bg-blue-100 text-blue-700", checked_in: "bg-emerald-100 text-emerald-700", checked_out: "bg-slate-100 text-slate-500", cancelled: "bg-red-100 text-red-600" };
 const RES_DOT = { confirmed: "bg-blue-500", checked_in: "bg-emerald-500", checked_out: "bg-slate-400", cancelled: "bg-red-500" };
@@ -35,6 +36,15 @@ export default function DashboardPMSTransactions() {
   const revenue = active.reduce((s, t) => s + t.amount, 0);
   const nights = active.reduce((s, t) => s + t.nights, 0);
   const outstanding = active.filter((t) => t.payment !== "paid").reduce((s, t) => s + t.amount, 0);
+
+  // Insight aggregations
+  const propAgg = {};
+  active.forEach((t) => { if (!propAgg[t.property]) propAgg[t.property] = { name: t.property, value: 0 }; propAgg[t.property].value += t.amount; });
+  const byProperty = Object.values(propAgg).sort((a, b) => b.value - a.value);
+  const dayAgg = {};
+  active.forEach((t) => { const k = moment(t.created).format("MMM D"); if (!dayAgg[k]) dayAgg[k] = { label: k, value: 0, ts: t.created }; dayAgg[k].value += t.amount; });
+  const trend = Object.values(dayAgg).sort((a, b) => a.ts - b.ts);
+  const statusMix = PMS_STATUSES.map((st) => ({ name: label(st), value: statusCounts[st] || 0, color: { confirmed: "#3B82F6", checked_in: "#10B981", checked_out: "#94A3B8", cancelled: "#EF4444" }[st] }));
 
   const exportCSV = () => downloadCSV(
     "mora-pms-reservations",
@@ -79,6 +89,13 @@ export default function DashboardPMSTransactions() {
         <Kpi icon={Wallet} label="Room revenue" value={formatIDR(revenue)} />
         <Kpi icon={BedDouble} label="Room nights" value={nights} />
         <Kpi icon={AlertCircle} label="Outstanding" value={formatIDR(outstanding)} />
+      </div>
+
+      {/* Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <ChartCard title="Revenue by property" subtitle="Room revenue per property."><CategoryBars data={byProperty} /></ChartCard>
+        <ChartCard title="Revenue over time" subtitle="Daily booked revenue."><TrendArea data={trend} color="#05308C" /></ChartCard>
+        <ChartCard title="Reservation status" subtitle="Across the current view."><MixDonut data={statusMix} /></ChartCard>
       </div>
 
       {/* Status monitor — click a chip to filter */}

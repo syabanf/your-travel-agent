@@ -5,6 +5,7 @@ import { Building2, BedDouble, Percent, TrendingUp, Plus, RefreshCw, Check, Minu
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
+import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 // Mock property-management inventory (no backend — demo only).
 const SEED = [
@@ -69,6 +70,9 @@ export default function DashboardPMS() {
   const adrAvg = rows.length ? Math.round(rows.reduce((s, r) => s + r.adr, 0) / rows.length) : 0;
   const revpar = Math.round(adrAvg * (occupancy / 100));
 
+  const occByRoom = rows.map((r) => ({ name: r.roomType, value: occ(r) })).sort((a, b) => b.value - a.value);
+  const adrByRoom = rows.map((r) => ({ name: r.roomType, value: r.adr })).sort((a, b) => b.value - a.value);
+
   const adjust = (r, delta) => {
     setRows((prev) => prev.map((x) => x.id === r.id ? { ...x, adr: Math.max(0, x.adr + delta) } : x));
     toast(`${r.roomType} rate ${delta > 0 ? "raised" : "lowered"}`);
@@ -116,6 +120,11 @@ export default function DashboardPMS() {
         <Kpi icon={BedDouble} label="Total rooms" value={totalRooms} />
         <Kpi icon={Percent} label="Occupancy" value={`${occupancy}%`} />
         <Kpi icon={TrendingUp} label="RevPAR" value={formatIDR(revpar)} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <ChartCard title="Occupancy by room" subtitle="Current occupancy %."><CategoryBars data={occByRoom} money={false} /></ChartCard>
+        <ChartCard title="ADR by room" subtitle="Average daily rate."><CategoryBars data={adrByRoom} /></ChartCard>
       </div>
 
       <DataTable columns={columns} rows={rows} onRowClick={openDetail} empty="No rooms in inventory." />

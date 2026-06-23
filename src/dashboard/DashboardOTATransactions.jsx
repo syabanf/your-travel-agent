@@ -9,6 +9,7 @@ import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
+import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 
 const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
 const DOT = { paid: "bg-emerald-500", pending: "bg-mora-gold", refunded: "bg-slate-400" };
@@ -33,6 +34,15 @@ export default function DashboardOTATransactions() {
   const gross = filtered.reduce((s, t) => s + t.gross, 0);
   const commission = filtered.reduce((s, t) => s + t.commission, 0);
   const net = filtered.reduce((s, t) => s + t.net, 0);
+
+  // Insight aggregations
+  const channelAgg = {};
+  filtered.forEach((t) => { if (!channelAgg[t.channel]) channelAgg[t.channel] = { name: t.channel, value: 0 }; channelAgg[t.channel].value += t.net; });
+  const byChannel = Object.values(channelAgg).sort((a, b) => b.value - a.value);
+  const dayAgg = {};
+  filtered.forEach((t) => { const k = moment(t.created).format("MMM D"); if (!dayAgg[k]) dayAgg[k] = { label: k, value: 0, ts: t.created }; dayAgg[k].value += t.net; });
+  const trend = Object.values(dayAgg).sort((a, b) => a.ts - b.ts);
+  const statusMix = OTA_STATUSES.map((st) => ({ name: st, value: statusCounts[st] || 0, color: { paid: "#10B981", pending: "#C99A3F", refunded: "#94A3B8" }[st] }));
 
   const exportCSV = () => downloadCSV(
     "mora-ota-transactions",
@@ -77,6 +87,13 @@ export default function DashboardOTATransactions() {
         <Kpi icon={Wallet} label="Gross revenue" value={formatIDR(gross)} />
         <Kpi icon={Percent} label="Commission" value={formatIDR(commission)} />
         <Kpi icon={TrendingUp} label="Net revenue" value={formatIDR(net)} />
+      </div>
+
+      {/* Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <ChartCard title="Net revenue by channel" subtitle="Where your bookings come from."><CategoryBars data={byChannel} /></ChartCard>
+        <ChartCard title="Net revenue over time" subtitle="Daily net across the period."><TrendArea data={trend} /></ChartCard>
+        <ChartCard title="Status mix" subtitle="Paid · pending · refunded."><MixDonut data={statusMix} /></ChartCard>
       </div>
 
       {/* Status monitor — click a chip to filter */}

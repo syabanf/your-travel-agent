@@ -6,6 +6,7 @@ import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus, Receipt } from "lu
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
+import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 // Mock OTA channel-manager data (no backend — demo only).
 const SEED = [
@@ -56,6 +57,9 @@ export default function DashboardOTA() {
   const listings = channels.reduce((s, c) => s + c.listings, 0);
   const bookings = channels.reduce((s, c) => s + c.bookings, 0);
   const revenue = channels.reduce((s, c) => s + c.revenue, 0);
+
+  const revByChannel = channels.filter((c) => c.revenue > 0).map((c) => ({ name: c.name, value: c.revenue })).sort((a, b) => b.value - a.value);
+  const bookByChannel = channels.filter((c) => c.bookings > 0).map((c) => ({ name: c.name, value: c.bookings })).sort((a, b) => b.value - a.value);
 
   const syncAll = () => {
     setSyncing(true);
@@ -110,6 +114,11 @@ export default function DashboardOTA() {
         <Kpi icon={Globe} label="Active listings" value={listings} />
         <Kpi icon={CalendarCheck} label="Bookings (30d)" value={bookings} />
         <Kpi icon={Wallet} label="Channel revenue" value={formatIDR(revenue)} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <ChartCard title="Revenue by channel" subtitle="30-day channel revenue."><CategoryBars data={revByChannel} /></ChartCard>
+        <ChartCard title="Bookings by channel" subtitle="30-day booking volume."><CategoryBars data={bookByChannel} money={false} /></ChartCard>
       </div>
 
       <DataTable columns={columns} rows={channels} onRowClick={(c) => setDetail(c)} empty="No channels connected." />
