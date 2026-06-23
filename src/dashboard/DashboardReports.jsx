@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import {
@@ -48,16 +49,20 @@ const TIERS = ["bronze", "silver", "gold", "platinum"];
 
 /* ---------------------------- small building blocks ---------------------------- */
 
-function KpiCard({ icon: Icon, value, label }) {
-  return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
+function KpiCard({ icon: Icon, value, label, to }) {
+  const inner = (
+    <>
       <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3">
         <Icon className="w-5 h-5 text-gold" />
       </div>
       <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
-      <p className="text-xs text-mora-neutral mt-1">{label}</p>
-    </div>
+      <p className="text-xs text-mora-neutral mt-1 flex items-center gap-1">{label}{to && <span className="text-mora-neutral/40">→</span>}</p>
+    </>
   );
+  const base = "bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0 block";
+  return to
+    ? <Link to={to} className={`${base} hover:shadow-md hover:border-mora-gold/30 transition-all press`}>{inner}</Link>
+    : <div className={base}>{inner}</div>;
 }
 
 function ChartCard({ title, subtitle, hasData, children }) {
@@ -150,6 +155,9 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
 /* ---------------------------------- page ---------------------------------- */
 
 export default function DashboardReports() {
+  const navigate = useNavigate();
+  // Drill from a chart segment into the matching filtered list.
+  const drill = (path) => navigate(path);
   const [data, setData] = useState(null);
   const [period, setPeriod] = useState("all"); // "all" | "year"
   const [tab, setTab] = useState("analytics"); // "analytics" | "tables"
@@ -329,11 +337,11 @@ export default function DashboardReports() {
 
   const kpis = data
     ? [
-        { icon: Wallet, value: formatIDR(revenue), label: "Total revenue" },
-        { icon: CalendarCheck, value: bookings.length, label: "Total bookings" },
-        { icon: Users, value: data.customers.length, label: "Customers" },
-        { icon: TrendingUp, value: formatIDR(avgBooking), label: "Avg booking value" },
-        { icon: MapIcon, value: trips.length, label: "Trips" },
+        { icon: Wallet, value: formatIDR(revenue), label: "Total revenue", to: "/dashboard/bookings" },
+        { icon: CalendarCheck, value: bookings.length, label: "Total bookings", to: "/dashboard/bookings" },
+        { icon: Users, value: data.customers.length, label: "Customers", to: "/dashboard/customers" },
+        { icon: TrendingUp, value: formatIDR(avgBooking), label: "Avg booking value", to: "/dashboard/bookings" },
+        { icon: MapIcon, value: trips.length, label: "Trips", to: "/dashboard/bookings?tab=trips" },
       ]
     : [];
 
@@ -389,10 +397,10 @@ export default function DashboardReports() {
             ))}
           </div>
 
-          {/* KPI cards */}
+          {/* KPI cards — click to drill into the underlying records */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
             {kpis.map((k) => (
-              <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} />
+              <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} to={k.to} />
             ))}
           </div>
 
@@ -479,6 +487,8 @@ export default function DashboardReports() {
                     data={bookingsByType}
                     dataKey="value"
                     nameKey="name"
+                    className="cursor-pointer"
+                    onClick={(d) => { const n = d?.name ?? d?.payload?.name; if (n) drill(`/dashboard/bookings?q=${encodeURIComponent(n)}`); }}
                     cx="50%"
                     cy="50%"
                     outerRadius={90}
@@ -508,7 +518,7 @@ export default function DashboardReports() {
                   <XAxis dataKey="status" tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} />
                   <YAxis tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} allowDecimals={false} width={32} />
                   <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(11,27,59,0.04)" }} />
-                  <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="count" radius={[6, 6, 0, 0]} className="cursor-pointer" onClick={(d) => { const st = d?.status ?? d?.payload?.status; if (st) drill(`/dashboard/bookings?tab=trips&status=${encodeURIComponent(st)}`); }}>
                     {tripsByStatus.map((entry, i) => (
                       <Cell key={entry.status} fill={PALETTE[i % PALETTE.length]} />
                     ))}
@@ -529,6 +539,8 @@ export default function DashboardReports() {
                     data={customersByTier}
                     dataKey="value"
                     nameKey="name"
+                    className="cursor-pointer"
+                    onClick={(d) => { const n = d?.name ?? d?.payload?.name; if (n) drill(`/dashboard/customers?tier=${encodeURIComponent(n)}`); }}
                     cx="50%"
                     cy="50%"
                     outerRadius={90}

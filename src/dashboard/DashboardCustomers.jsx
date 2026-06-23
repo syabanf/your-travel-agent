@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
@@ -31,13 +31,14 @@ const TIER_BADGE = {
 
 export default function DashboardCustomers() {
   const { role } = useRole();
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState(null);
   const [editing, setEditing] = useState(null); // form object or null
   const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
-  const [listQuery, setListQuery] = useState("");
-  const [tierF, setTierF] = useState("all");
-  const [statusF, setStatusF] = useState("all");
+  const [listQuery, setListQuery] = useState(searchParams.get("q") || "");
+  const [tierF, setTierF] = useState(searchParams.get("tier") || "all");
+  const [statusF, setStatusF] = useState(searchParams.get("status") || "all");
   const [sort, setSort] = useState("newest");
   const searchRef = useRef(null);
 

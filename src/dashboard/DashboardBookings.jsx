@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Search, ChevronUp, ChevronDown, Briefcase, Map, Download } from "lucide-react";
@@ -33,15 +33,16 @@ const EMPTY_TRIP = { title: "", destination: "", customer_id: "", status: "draft
 
 export default function DashboardBookings() {
   const { role } = useRole();
-  const [tab, setTab] = useState("bookings");
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState(searchParams.get("tab") === "trips" ? "trips" : "bookings");
   const [trips, setTrips] = useState(null);
   const [bookings, setBookings] = useState(null);
   const [editing, setEditing] = useState(null); // { kind: 'booking'|'trip', data } | null
   const [saving, setSaving] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [query, setQuery] = useState("");
-  const [statusF, setStatusF] = useState("all");
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [statusF, setStatusF] = useState(searchParams.get("status") || "all");
   const [bSort, setBSort] = useState({ key: null, dir: "asc" });
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
 

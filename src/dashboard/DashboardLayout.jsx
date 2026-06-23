@@ -129,8 +129,8 @@ function Shell() {
         </div>
       </aside>
 
-      {/* Content */}
-      <main id="main" className="lg:ml-64 min-h-screen pt-14 lg:pt-0">
+      {/* Content — own scroll container because the global body is position:fixed (mobile-app lock) */}
+      <main id="main" className="lg:ml-64 h-screen overflow-y-auto pt-14 lg:pt-0">
         <Outlet />
       </main>
     </div>
