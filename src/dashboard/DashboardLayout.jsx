@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, Menu, X } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, Menu, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -50,6 +50,48 @@ function Shell() {
   // Close the mobile drawer whenever the route changes.
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
+  // Which section contains the current route (longest-prefix match) — for the
+  // active highlight and to keep that section drilled open while navigating.
+  const activeGroup = useMemo(() => {
+    let best = null, bestLen = -1;
+    for (const g of GROUPS) {
+      for (const it of g.items) {
+        const match = it.end ? location.pathname === it.to : location.pathname.startsWith(it.to);
+        if (match && it.to.length > bestLen) { best = g.title; bestLen = it.to.length; }
+      }
+    }
+    return best;
+  }, [location.pathname]);
+
+  // Collapsible drill-down sections. Persist the user's open/closed choices.
+  const [openGroups, setOpenGroups] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("mora_dash_nav_open") || "null");
+      if (Array.isArray(saved)) return new Set(saved);
+    } catch { /* ignore */ }
+    return new Set(["Insight Center", "Sales & CRM"]); // sensible drilled-open defaults
+  });
+
+  // Always keep the active section open so the current page stays reachable.
+  useEffect(() => {
+    if (activeGroup) setOpenGroups((prev) => (prev.has(activeGroup) ? prev : new Set(prev).add(activeGroup)));
+  }, [activeGroup]);
+
+  const toggleGroup = (title) =>
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(title)) next.delete(title); else next.add(title);
+      try { localStorage.setItem("mora_dash_nav_open", JSON.stringify([...next])); } catch { /* ignore */ }
+      return next;
+    });
+
+  const allOpen = openGroups.size >= GROUPS.length;
+  const toggleAll = () => {
+    const next = allOpen ? new Set(activeGroup ? [activeGroup] : []) : new Set(GROUPS.map((g) => g.title));
+    setOpenGroups(next);
+    try { localStorage.setItem("mora_dash_nav_open", JSON.stringify([...next])); } catch { /* ignore */ }
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary font-body">
       <a href="#main" className="skip-link">Skip to content</a>
@@ -85,29 +127,54 @@ function Shell() {
         </div>
 
         <nav className="flex-1 p-3 overflow-y-auto">
+          <div className="flex items-center justify-between px-3 mb-1">
+            <span className="text-[10px] uppercase tracking-wider text-mora-neutral/40 font-semibold">Menu</span>
+            <button onClick={toggleAll} className="text-[10px] uppercase tracking-wider font-semibold text-gold/80 hover:text-gold">
+              {allOpen ? "Collapse all" : "Expand all"}
+            </button>
+          </div>
           {GROUPS.map((group) => {
             const visible = group.items.filter((n) => can(role, n.res, "view"));
             if (!visible.length) return null;
+            const isOpen = openGroups.has(group.title);
+            const isActiveGroup = activeGroup === group.title;
             return (
-              <div key={group.title} className="mb-3">
-                <p className="text-[10px] uppercase tracking-wider text-mora-neutral/50 font-semibold px-3 mb-1.5">{group.title}</p>
-                <div className="space-y-1">
-                  {visible.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      end={item.end}
-                      onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                          isActive ? "bg-mora-gold/10 text-gold" : "text-mora-neutral hover:bg-mora-primary/5 hover:text-mora-primary"
-                        }`
-                      }
-                    >
-                      <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
-                    </NavLink>
-                  ))}
-                </div>
+              <div key={group.title} className="mb-1.5">
+                <button
+                  onClick={() => toggleGroup(group.title)}
+                  aria-expanded={isOpen}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-semibold transition-colors ${
+                    isActiveGroup ? "text-gold" : "text-mora-neutral/50 hover:text-mora-primary"
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    {group.title}
+                    {!isOpen && isActiveGroup && <span className="w-1.5 h-1.5 rounded-full bg-gold" />}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-mora-neutral/30 font-medium normal-case tracking-normal">{visible.length}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "" : "-rotate-90"}`} />
+                  </span>
+                </button>
+                {isOpen && (
+                  <div className="space-y-1 mt-1">
+                    {visible.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.end}
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                            isActive ? "bg-mora-gold/10 text-gold" : "text-mora-neutral hover:bg-mora-primary/5 hover:text-mora-primary"
+                          }`
+                        }
+                      >
+                        <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}

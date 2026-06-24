@@ -6,7 +6,9 @@ import { formatIDR } from "@/lib/currency";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
-import { ChartCard, MixDonut, TrendArea } from "@/dashboard/charts";
+import { ChartCard, MixDonut, TrendArea, Delta } from "@/dashboard/charts";
+import PeriodControls from "@/dashboard/PeriodControls";
+import { periodRange, comparisonRange, inSpan, pctDelta, comparisonLabel } from "@/dashboard/periodCompare";
 import moment from "moment";
 
 const statusPill = {
@@ -24,6 +26,8 @@ const tierPill = {
 
 export default function DashboardOverview() {
   const [s, setS] = useState(null);
+  const [period, setPeriod] = useState("all"); // periodCompare keys
+  const [comparison, setComparison] = useState("prev"); // none | prev | year
 
   useEffect(() => {
     (async () => {
@@ -38,23 +42,48 @@ export default function DashboardOverview() {
     })();
   }, []);
 
+  // Current + comparison windows; "scoped" means a bounded period is selected.
+  const curRange = periodRange(period);
+  const cmpRange = comparisonRange(period, comparison);
+  const cmpLabel = comparisonLabel(comparison);
+  const scoped = period !== "all";
+
+  // Period-filtered bookings & trips power the cards, charts and trend.
+  const periodBookings = s ? s.bookings.filter((b) => inSpan(b.created_date, curRange)) : [];
+  const periodTrips = s ? s.trips.filter((t) => inSpan(t.created_date, curRange)) : [];
+
+  const metricsFor = (span) => {
+    if (!s) return null;
+    const conf = s.bookings.filter((b) => b.status === "confirmed" && inSpan(b.created_date, span));
+    return {
+      customers: s.customers.filter((c) => inSpan(c.joined_date || c.created_date, span)).length,
+      trips: s.trips.filter((t) => inSpan(t.created_date, span)).length,
+      bookings: s.bookings.filter((b) => inSpan(b.created_date, span)).length,
+      revenue: conf.reduce((sum, b) => sum + (Number(b.price) || 0), 0),
+      confirmed: conf.length,
+    };
+  };
+  const cur = metricsFor(curRange);
+  const cmp = cmpRange ? metricsFor(cmpRange) : null;
+  const dlt = (a, b) => (cmp ? pctDelta(a, b) : undefined);
+
   const stats = s ? [
-    { label: "Customers", value: s.customers.length, icon: Users, to: "/dashboard/customers" },
-    { label: "Trips", value: s.trips.length, icon: MapIcon, to: "/dashboard/bookings" },
-    { label: "Bookings", value: s.bookings.length, icon: CalendarCheck, to: "/dashboard/bookings" },
+    { label: scoped ? "New customers" : "Customers", value: scoped ? cur.customers : s.customers.length, icon: Users, to: "/dashboard/customers", delta: dlt(cur.customers, cmp?.customers) },
+    { label: scoped ? "New trips" : "Trips", value: scoped ? cur.trips : s.trips.length, icon: MapIcon, to: "/dashboard/bookings", delta: dlt(cur.trips, cmp?.trips) },
+    { label: scoped ? "New bookings" : "Bookings", value: scoped ? cur.bookings : s.bookings.length, icon: CalendarCheck, to: "/dashboard/bookings", delta: dlt(cur.bookings, cmp?.bookings) },
     { label: "Destinations", value: s.dest.length, icon: MapPin, to: "/dashboard/destinations" },
   ] : [];
 
-  const revenue = s ? s.bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + (b.price || 0), 0) : 0;
-  const confirmedCount = s ? s.bookings.filter((b) => b.status === "confirmed").length : 0;
-  const avgValue = confirmedCount ? Math.round(revenue / confirmedCount) : 0;
+  const revenue = cur ? cur.revenue : 0;
+  const avgValue = cur && cur.confirmed ? Math.round(cur.revenue / cur.confirmed) : 0;
+  const revDelta = dlt(cur?.revenue || 0, cmp?.revenue || 0);
   const pending = s ? s.bookings.filter((b) => b.status === "pending").length : 0;
 
-  // Top destination by trip count
+  // Top destination by trip count (within the selected period)
   let topDest = null;
   if (s) {
     const counts = {};
-    s.trips.forEach((t) => { if (t.destination) counts[t.destination] = (counts[t.destination] || 0) + 1; });
+    periodTrips.forEach((t) => { if (t.destination) counts[t.destination] = (counts[t.destination] || 0) + 1; });
     const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
     if (top) topDest = { name: top[0], count: top[1] };
   }
@@ -66,8 +95,8 @@ export default function DashboardOverview() {
   const TIER_COLOR = { bronze: "#C99A3F", silver: "#94A3B8", gold: "#AD1F23", platinum: "#6366F1" };
   const bookingStatusCount = {}, tripStatusCount = {}, tierCount = {};
   if (s) {
-    s.bookings.forEach((b) => { const st = b.status || "pending"; bookingStatusCount[st] = (bookingStatusCount[st] || 0) + 1; });
-    s.trips.forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
+    periodBookings.forEach((b) => { const st = b.status || "pending"; bookingStatusCount[st] = (bookingStatusCount[st] || 0) + 1; });
+    periodTrips.forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
     s.customers.forEach((c) => { const tr = c.tier || "bronze"; tierCount[tr] = (tierCount[tr] || 0) + 1; });
   }
   const bookingsByStatus = Object.entries(bookingStatusCount).map(([k, value]) => ({ name: cap1(k), value, color: BOOKING_STATUS_COLOR[k] }));
@@ -76,7 +105,7 @@ export default function DashboardOverview() {
   const revByMonth = (() => {
     if (!s) return [];
     const acc = {};
-    s.bookings.filter((b) => b.status === "confirmed").forEach((b) => { const m = moment(b.check_in || b.created_date); const k = m.format("YYYY-MM"); if (!acc[k]) acc[k] = { label: m.format("MMM"), value: 0, k }; acc[k].value += Number(b.price) || 0; });
+    periodBookings.filter((b) => b.status === "confirmed").forEach((b) => { const m = moment(b.check_in || b.created_date); const k = m.format("YYYY-MM"); if (!acc[k]) acc[k] = { label: m.format("MMM"), value: 0, k }; acc[k].value += Number(b.price) || 0; });
     return Object.values(acc).sort((a, b) => a.k.localeCompare(b.k));
   })();
 
@@ -106,13 +135,27 @@ export default function DashboardOverview() {
         </>
       ) : (
         <>
+          {/* Period + comparison controls */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <PeriodControls period={period} onPeriod={setPeriod} comparison={comparison} onComparison={setComparison} />
+            <p className="text-xs text-mora-neutral">
+              {cmp
+                ? <>Deltas compare to the {comparison === "year" ? "same period last year" : "previous period"}.</>
+                : scoped
+                  ? <>Turn on a comparison to see change vs another period.</>
+                  : <>Showing all-time figures. Pick a period to compare.</>}
+            </p>
+          </div>
+
           {/* Count cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
             {stats.map((c) => (
               <Link key={c.label} to={c.to} className="press bg-white rounded-2xl border border-mora-primary/10 p-5 hover:shadow-md transition-shadow group min-w-0">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center"><c.icon className="w-5 h-5 text-gold" /></div>
-                  <ArrowUpRight className="w-4 h-4 text-mora-neutral/40 group-hover:text-gold transition-colors" />
+                  {c.delta !== undefined
+                    ? <Delta pct={c.delta} label={cmpLabel} />
+                    : <ArrowUpRight className="w-4 h-4 text-mora-neutral/40 group-hover:text-gold transition-colors" />}
                 </div>
                 <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{c.value}</p>
                 <p className="text-xs text-mora-neutral mt-1">{c.label}</p>
@@ -123,7 +166,10 @@ export default function DashboardOverview() {
           {/* Insight cards */}
           <div className="grid lg:grid-cols-3 gap-4 mb-6 stagger">
             <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
-              <div className="flex items-center gap-2 text-mora-neutral mb-2"><Wallet className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Confirmed revenue</span></div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 text-mora-neutral"><Wallet className="w-4 h-4 text-gold" /><span className="text-xs uppercase tracking-wider">Confirmed revenue</span></div>
+                {revDelta !== undefined && <Delta pct={revDelta} label={cmpLabel} />}
+              </div>
               <p className="stat-value text-xl lg:text-2xl font-display font-bold text-mora-primary">{formatIDR(revenue)}</p>
               <p className="text-xs text-mora-neutral/70 mt-1">Avg {formatIDR(avgValue)} / booking</p>
             </div>

@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
-import { CategoryBars } from "@/dashboard/charts";
+import { CategoryBars, Delta } from "@/dashboard/charts";
+import PeriodControls from "@/dashboard/PeriodControls";
+import { periodRange, comparisonRange, inSpan, pctDelta, comparisonLabel } from "@/dashboard/periodCompare";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -20,9 +22,13 @@ import {
 import {
   Wallet,
   CalendarCheck,
-  Users,
+  UserPlus,
   TrendingUp,
   Map as MapIcon,
+  Percent,
+  Receipt,
+  Coins,
+  Target,
   Download,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -50,11 +56,14 @@ const TIERS = ["bronze", "silver", "gold", "platinum"];
 
 /* ---------------------------- small building blocks ---------------------------- */
 
-function KpiCard({ icon: Icon, value, label, to }) {
+function KpiCard({ icon: Icon, value, label, to, delta, deltaLabel, higherIsBetter = true }) {
   const inner = (
     <>
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3">
-        <Icon className="w-5 h-5 text-gold" />
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center">
+          <Icon className="w-5 h-5 text-gold" />
+        </div>
+        {delta !== undefined && <Delta pct={delta} label={deltaLabel} higherIsBetter={higherIsBetter} />}
       </div>
       <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
       <p className="text-xs text-mora-neutral mt-1 flex items-center gap-1">{label}{to && <span className="text-mora-neutral/40">→</span>}</p>
@@ -160,46 +169,71 @@ export default function DashboardReports() {
   // Drill from a chart segment into the matching filtered list.
   const drill = (path) => navigate(path);
   const [data, setData] = useState(null);
-  const [period, setPeriod] = useState("all"); // "all" | "year"
+  const [period, setPeriod] = useState("all"); // periodCompare keys
+  const [comparison, setComparison] = useState("prev"); // none | prev | year
   const [tab, setTab] = useState("analytics"); // "analytics" | "tables"
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [bookings, trips, customers, destinations, promotions] = await Promise.all([
+        const [bookings, trips, customers, destinations, promotions, leads] = await Promise.all([
           base44.entities.Booking.list("-created_date", 500),
           base44.entities.Trip.list("-created_date", 500),
           base44.entities.Customer.list("-created_date", 500),
           base44.entities.Destination.list("-created_date", 500),
           base44.entities.Promotion.list("-created_date", 500),
+          base44.entities.Lead.list("-created_date", 500),
         ]);
-        if (!cancelled) setData({ bookings, trips, customers, destinations, promotions });
+        if (!cancelled) setData({ bookings, trips, customers, destinations, promotions, leads });
       } catch (err) {
         console.error("Failed to load report data", err);
         if (!cancelled) {
           toast.error("Couldn't load report data");
-          setData({ bookings: [], trips: [], customers: [], destinations: [], promotions: [] });
+          setData({ bookings: [], trips: [], customers: [], destinations: [], promotions: [], leads: [] });
         }
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  const thisYear = moment().year();
+  // Current + comparison windows for the selected period.
+  const curRange = useMemo(() => periodRange(period), [period]);
+  const cmpRange = useMemo(() => comparisonRange(period, comparison), [period, comparison]);
+  const cmpLabel = comparisonLabel(comparison);
 
   // Period-filtered bookings & trips (customers/destinations/promos shown in full).
-  const bookings = useMemo(() => {
-    if (!data) return [];
-    if (period === "all") return data.bookings;
-    return data.bookings.filter((b) => moment(b.created_date).year() === thisYear);
-  }, [data, period, thisYear]);
+  const bookings = useMemo(() => (data ? data.bookings.filter((b) => inSpan(b.created_date, curRange)) : []), [data, curRange]);
+  const trips = useMemo(() => (data ? data.trips.filter((t) => inSpan(t.created_date, curRange)) : []), [data, curRange]);
 
-  const trips = useMemo(() => {
-    if (!data) return [];
-    if (period === "all") return data.trips;
-    return data.trips.filter((t) => moment(t.created_date).year() === thisYear);
-  }, [data, period, thisYear]);
+  // Comparable scalar metrics for an arbitrary window — drives the period-over-period deltas.
+  const { cur, cmp } = useMemo(() => {
+    const calc = (span) => {
+      if (!data) return null;
+      const bk = data.bookings.filter((b) => inSpan(b.created_date, span));
+      const tr = data.trips.filter((t) => inSpan(t.created_date, span));
+      const conf = bk.filter((b) => b.status === "confirmed");
+      const rev = conf.reduce((s, b) => s + (Number(b.price) || 0), 0);
+      const cost = conf.reduce((s, b) => s + (Number(b.cost_price) || 0), 0);
+      const commission = conf.reduce((s, b) => s + (Number(b.commission) || 0), 0);
+      const outstanding = bk
+        .filter((b) => b.payment_status && b.payment_status !== "paid" && b.status !== "cancelled")
+        .reduce((s, b) => s + (Number(b.price) || 0), 0);
+      const newCustomers = data.customers.filter((c) => inSpan(c.joined_date || c.created_date, span)).length;
+      const lds = data.leads.filter((l) => inSpan(l.created_date, span));
+      const won = lds.filter((l) => l.status === "won").length;
+      return {
+        revenue: rev, cost, commission, outstanding, newCustomers,
+        bookingCount: bk.length, confirmedCount: conf.length, tripCount: tr.length,
+        grossProfit: rev - cost, avgBooking: conf.length ? rev / conf.length : 0,
+        leadCount: lds.length, wonLeads: won, conversion: lds.length ? Math.round((won / lds.length) * 100) : 0,
+      };
+    };
+    return { cur: calc(curRange), cmp: cmpRange ? calc(cmpRange) : null };
+  }, [data, curRange, cmpRange]);
+
+  // pctDelta only when a comparison window is active; undefined hides the pill entirely.
+  const d = (a, b) => (cmp ? pctDelta(a, b) : undefined);
 
   const confirmed = useMemo(() => bookings.filter((b) => b.status === "confirmed"), [bookings]);
 
@@ -366,11 +400,21 @@ export default function DashboardReports() {
 
   const kpis = data
     ? [
-        { icon: Wallet, value: formatIDR(revenue), label: "Total revenue", to: "/dashboard/bookings" },
-        { icon: CalendarCheck, value: bookings.length, label: "Total bookings", to: "/dashboard/bookings" },
-        { icon: Users, value: data.customers.length, label: "Customers", to: "/dashboard/customers" },
-        { icon: TrendingUp, value: formatIDR(avgBooking), label: "Avg booking value", to: "/dashboard/bookings" },
-        { icon: MapIcon, value: trips.length, label: "Trips", to: "/dashboard/bookings?tab=trips" },
+        { icon: Wallet, value: formatIDR(cur.revenue), label: "Confirmed revenue", to: "/dashboard/bookings", delta: d(cur.revenue, cmp?.revenue), deltaLabel: cmpLabel },
+        { icon: CalendarCheck, value: cur.bookingCount, label: "Bookings", to: "/dashboard/bookings", delta: d(cur.bookingCount, cmp?.bookingCount), deltaLabel: cmpLabel },
+        { icon: UserPlus, value: cur.newCustomers, label: period === "all" ? "Customers" : "New customers", to: "/dashboard/customers", delta: d(cur.newCustomers, cmp?.newCustomers), deltaLabel: cmpLabel },
+        { icon: TrendingUp, value: formatIDR(cur.avgBooking), label: "Avg booking value", to: "/dashboard/bookings", delta: d(Math.round(cur.avgBooking), Math.round(cmp?.avgBooking || 0)), deltaLabel: cmpLabel },
+        { icon: MapIcon, value: cur.tripCount, label: "Trips", to: "/dashboard/bookings?tab=trips", delta: d(cur.tripCount, cmp?.tripCount), deltaLabel: cmpLabel },
+      ]
+    : [];
+
+  // Second KPI row — financial & funnel metrics built on the newer entity fields.
+  const metrics2 = data
+    ? [
+        { icon: Coins, value: formatIDR(cur.grossProfit), label: "Gross profit", delta: d(cur.grossProfit, cmp?.grossProfit), deltaLabel: cmpLabel },
+        { icon: Percent, value: formatIDR(cur.commission), label: "Commission earned", delta: d(cur.commission, cmp?.commission), deltaLabel: cmpLabel },
+        { icon: Receipt, value: formatIDR(cur.outstanding), label: "Outstanding payments", delta: d(cur.outstanding, cmp?.outstanding), deltaLabel: cmpLabel, higherIsBetter: false },
+        { icon: Target, value: `${cur.conversion}%`, label: "Lead conversion", to: "/dashboard/leads", delta: d(cur.conversion, cmp?.conversion), deltaLabel: cmpLabel },
       ]
     : [];
 
@@ -406,30 +450,29 @@ export default function DashboardReports() {
         </>
       ) : (
         <>
-          {/* Period toggle */}
-          <div className="flex gap-2 mb-4">
-            {[
-              { key: "all", label: "All time" },
-              { key: "year", label: "This year" },
-            ].map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setPeriod(p.key)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                  period === p.key
-                    ? "bg-mora-gold/10 text-gold"
-                    : "text-mora-neutral hover:bg-mora-primary/5"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
+          {/* Period + comparison controls */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <PeriodControls period={period} onPeriod={setPeriod} comparison={comparison} onComparison={setComparison} />
+            <p className="text-xs text-mora-neutral">
+              {cmp
+                ? <>Comparing against the {comparison === "year" ? "same period last year" : "previous period"}.</>
+                : period === "all"
+                  ? <>Showing all-time figures. Pick a period to compare.</>
+                  : <>Turn on a comparison to see period-over-period change.</>}
+            </p>
           </div>
 
           {/* KPI cards — click to drill into the underlying records */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
             {kpis.map((k) => (
-              <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} to={k.to} />
+              <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} to={k.to} delta={k.delta} deltaLabel={k.deltaLabel} />
+            ))}
+          </div>
+
+          {/* Financial & funnel metrics (newer fields) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 stagger">
+            {metrics2.map((k) => (
+              <KpiCard key={k.label} icon={k.icon} value={k.value} label={k.label} to={k.to} delta={k.delta} deltaLabel={k.deltaLabel} higherIsBetter={k.higherIsBetter} />
             ))}
           </div>
 

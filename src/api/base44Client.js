@@ -180,7 +180,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v5`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v6`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -259,6 +259,17 @@ function runMigrations() {
         return r;
       });
       if (changed) writeCollection(nm, next);
+    }
+
+    // v6: insert seed rows added after the user first seeded (the spread-out
+    // historical demo data). Match by id so anything the user created/edited is
+    // left untouched; empty collections are already handled by ensureSeeded.
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Lead']) {
+      const existing = readCollection(nm);
+      if (!existing.length) continue;
+      const have = new Set(existing.map((r) => r.id));
+      const additions = (seed[nm] || []).filter((r) => !have.has(r.id));
+      if (additions.length) writeCollection(nm, [...existing, ...additions]);
     }
   } catch {
     /* best-effort — never block app startup on a migration */

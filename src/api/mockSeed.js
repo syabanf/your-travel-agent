@@ -233,5 +233,103 @@ export function buildSeed() {
     { id: 'app', created_date: iso(-400), created_by: by, brand_name: 'MORA', tagline: 'Your Travel Agent', support_email: 'support@mora.app', support_phone: '+62 21 5000 1234', support_whatsapp: '+62 811 2233 4455', currency: 'IDR', instagram: '@mora.travel', facebook: 'MORA Travel', hero_title: 'Your journey begins with MORA', hero_subtitle: 'Plan, book and travel — beautifully.', flag_promotions: true, flag_ai_assistant: true, flag_consultations: true, flag_ota: true },
   ];
 
+  /* ----------------------------------------------------------------------------
+   * Generated history — spreads bookings, trips, customers and leads across the
+   * past ~18 months so the analytics pages and the period-over-period comparison
+   * have real data in every window (this month vs last, YoY, last 30 days, …).
+   * Tagged created_by: agency so they fill the admin dashboard without crowding
+   * the mobile traveller's personal lists.
+   * -------------------------------------------------------------------------- */
+  const cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const agencyBy = 'agency@mora.app';
+  const custIds = Customer.map((c) => c.id);
+  const firstNames = ['Rizki', 'Ayu', 'Hendra', 'Nadia', 'Fajar', 'Lina', 'Bayu', 'Citra', 'Galih', 'Sari', 'Dewa', 'Indah', 'Reza', 'Maya', 'Yoga', 'Wulan'];
+  const lastNames = ['Saputra', 'Wibowo', 'Halim', 'Kusuma', 'Permata', 'Anggraini', 'Nugroho', 'Pertiwi', 'Santoso', 'Wijaya'];
+  const sources = ['referral', 'website', 'instagram', 'ota', 'walk-in'];
+  const histDest = ['Bali, Indonesia', 'Kyoto, Japan', 'Santorini, Greece', 'Maldives', 'Phuket, Thailand', 'Dubai, UAE', 'Paris, France', 'Tokyo, Japan'];
+
+  const bookingKinds = [
+    { type: 'flight', sup: 'sup_garuda', prov: 'Garuda Indonesia', base: 6500000, ch: 'Direct' },
+    { type: 'hotel', sup: 'sup_azure', prov: 'Azure Bay Resort', base: 4200000, ch: 'Booking.com' },
+    { type: 'activity', sup: 'sup_baliadv', prov: 'Bali Adventures', base: 950000, ch: 'Traveloka' },
+    { type: 'hotel', sup: 'sup_hotelbeds', prov: 'Hotelbeds', base: 5200000, ch: 'Agoda' },
+    { type: 'activity', sup: 'sup_viator', prov: 'Viator', base: 1300000, ch: 'Expedia' },
+    { type: 'transport', sup: 'sup_railink', prov: 'Railink Express', base: 380000, ch: 'Direct' },
+  ];
+  const bkStatusCycle = ['confirmed', 'confirmed', 'confirmed', 'completed', 'pending', 'cancelled'];
+  const payCycle = ['paid', 'paid', 'paid', 'deposit', 'unpaid'];
+  for (let i = 0; i < 40; i++) {
+    const off = -16 - i * 13;                       // ~13 days apart → spans ~16–520 days ago
+    const k = bookingKinds[i % bookingKinds.length];
+    const dst = histDest[i % histDest.length];
+    const price = Math.round((k.base * (1 + ((i * 17) % 13) / 20)) / 50000) * 50000; // ×1.0–1.6
+    const status = bkStatusCycle[i % bkStatusCycle.length];
+    Booking.push({
+      id: `bk_h${i}`, created_date: iso(off), updated_date: iso(off + 1), created_by: agencyBy,
+      trip_id: '', type: k.type, title: `${cap(k.type)} · ${dst.split(',')[0]}`,
+      provider: k.prov, check_in: iso(off + 18), location: dst,
+      confirmation_code: `MORA-H${1000 + i}`, price, currency: 'IDR', status,
+      guests: 1 + (i % 4), notes: 'Past booking.',
+      customer_id: custIds[i % custIds.length], supplier_id: k.sup, cost_price: cost(price),
+      payment_status: status === 'cancelled' ? 'refunded' : payCycle[i % payCycle.length],
+      channel: k.ch, supplier_ref: `REF-H${1000 + i}`, commission: Math.round(price * 0.1),
+    });
+  }
+
+  const tripStyles = ['luxury', 'cultural', 'relaxation', 'adventure', 'family', 'beach'];
+  const accomPrefs = ['hotel', 'resort', 'villa'];
+  for (let i = 0; i < 22; i++) {
+    const off = -18 - i * 22;                       // ~22 days apart → spans ~18–480 days ago
+    const dst = histDest[i % histDest.length];
+    const c = Customer[i % custIds.length];
+    const status = off < -30 ? 'completed' : (i % 2 ? 'active' : 'planned');
+    Trip.push({
+      id: `trip_h${i}`, created_date: iso(off), updated_date: iso(off + 2), created_by: agencyBy,
+      title: `${dst.split(',')[0]} ${cap(tripStyles[i % tripStyles.length])} Escape`,
+      destination: dst, cover_image: '',
+      start_date: date(off + 25), end_date: date(off + 32), status,
+      travelers: 1 + (i % 5), travel_style: tripStyles[i % tripStyles.length],
+      budget_total: 18000000 + (i % 6) * 9000000, budget_currency: 'IDR',
+      notes: 'Past trip.', pace: 'moderate', trip_type: 'couple', is_ai_generated: i % 3 === 0,
+      customer_id: c.id, lead_traveler: c.name, adults: 1 + (i % 4), children: i % 2,
+      accommodation_pref: accomPrefs[i % accomPrefs.length], special_requests: '',
+    });
+  }
+
+  const cities = [['Jakarta', 'Indonesia'], ['Bandung', 'Indonesia'], ['Surabaya', 'Indonesia'], ['Singapore', 'Singapore'], ['Kuala Lumpur', 'Malaysia'], ['Tokyo', 'Japan'], ['Sydney', 'Australia'], ['Seoul', 'South Korea']];
+  const tiers = ['bronze', 'silver', 'gold', 'platinum'];
+  for (let i = 0; i < 14; i++) {
+    const off = -18 - i * 27;                       // ~27 days apart → spans ~18–370 days ago
+    const [city, country] = cities[i % cities.length];
+    const name = `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`;
+    Customer.push({
+      id: `cust_h${i}`, created_date: iso(off), updated_date: iso(off + 3), created_by: agencyBy,
+      name, email: `${name.toLowerCase().replace(/ /g, '.')}@example.com`,
+      phone: `+62 81${10 + i} ${1000 + i} ${2000 + i}`, city, country, lat: null, lng: null,
+      tier: tiers[i % tiers.length], status: i % 7 === 0 ? 'inactive' : 'active',
+      lifetime_spend: 4500000 + (i % 8) * 7500000, joined_date: date(off),
+      notes: '', company: '', date_of_birth: '', passport_no: '', nationality: country,
+      preferred_language: country === 'Indonesia' ? 'Indonesian' : 'English',
+      address: '', marketing_opt_in: i % 2 === 0, source: sources[i % sources.length],
+    });
+  }
+
+  const leadStatuses = ['new', 'contacted', 'quoted', 'won', 'lost'];
+  const priorities = ['low', 'medium', 'high'];
+  for (let i = 0; i < 18; i++) {
+    const off = -10 - i * 16;                       // ~16 days apart → spans ~10–300 days ago
+    const dst = histDest[i % histDest.length];
+    const name = `${firstNames[(i + 5) % firstNames.length]} ${lastNames[(i + 3) % lastNames.length]}`;
+    Lead.push({
+      id: `lead_h${i}`, created_date: iso(off), created_by: agencyBy, name,
+      email: `${name.toLowerCase().replace(/ /g, '.')}@example.com`,
+      phone: `+62 82${10 + i} ${3000 + i} ${4000 + i}`, source: sources[i % sources.length],
+      destination: dst.split(',')[0], budget: 18000000 + (i % 6) * 10000000,
+      status: leadStatuses[i % leadStatuses.length], assigned_to: ['Dewi Lestari', 'Tom Becker'][i % 2],
+      notes: 'Past enquiry.', expected_travel_date: date(off + 60),
+      party_size: 1 + (i % 6), priority: priorities[i % priorities.length],
+    });
+  }
+
   return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting };
 }

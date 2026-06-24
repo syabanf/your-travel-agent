@@ -1,5 +1,25 @@
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { formatIDR } from "@/lib/currency";
+
+// Period-over-period delta pill. pct: signed integer % (null = nothing to compare).
+// higherIsBetter flips the colour for "good when it goes down" metrics (e.g. outstanding).
+export function Delta({ pct, label, higherIsBetter = true, className = "" }) {
+  if (pct == null) {
+    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium text-mora-neutral/40 ${className}`}>—{label && <span className="text-mora-neutral/40"> {label}</span>}</span>;
+  }
+  if (pct === 0) {
+    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold text-mora-neutral/60 ${className}`}><Minus className="w-3 h-3" />0%{label && <span className="font-medium text-mora-neutral/50"> {label}</span>}</span>;
+  }
+  const up = pct > 0;
+  const good = higherIsBetter ? up : !up;
+  const Icon = up ? ArrowUp : ArrowDown;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${good ? "text-emerald-600" : "text-red-600"} ${className}`}>
+      <Icon className="w-3 h-3" />{Math.abs(pct)}%{label && <span className="font-medium opacity-70"> {label}</span>}
+    </span>
+  );
+}
 
 // Shared chart theme + reusable chart cards for the dashboard.
 export const PALETTE = ["#AD1F23", "#C99A3F", "#05308C", "#0EA5E9", "#14B8A6", "#9333EA", "#EC4899", "#F59E0B"];
