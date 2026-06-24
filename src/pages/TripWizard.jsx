@@ -163,7 +163,7 @@ export default function TripWizard() {
       {/* Header + progress */}
       <div className="px-6 pt-4 pb-3">
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={back} className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors">
+          <button onClick={back} aria-label="Go back" className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">

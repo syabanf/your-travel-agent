@@ -142,7 +142,7 @@ export default function DashboardPromotions() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit entry" : "New entry"}</h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Type">
@@ -285,8 +285,8 @@ export default function DashboardPromotions() {
                   {p.date ? <p className="text-xs text-mora-neutral">{moment(p.date).format("MMM D")}</p> : null}
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </Link>
             );

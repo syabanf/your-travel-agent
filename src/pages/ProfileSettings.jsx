@@ -93,6 +93,7 @@ export default function ProfileSettings() {
               <p className="text-xs text-mora-neutral/60 mb-3">Type <span className="text-red-400 font-mono font-semibold">DELETE</span> to confirm:</p>
               <input value={deleteInput} onChange={e => setDeleteInput(e.target.value)}
                 placeholder="Type DELETE"
+                aria-label="Type to confirm"
                 className="w-full bg-white/5 border border-white/10 rounded-xl h-10 px-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none mb-3 font-mono" />
               <div className="flex gap-2">
                 <button onClick={() => { setShowDeleteConfirm(false); setDeleteInput(""); }}

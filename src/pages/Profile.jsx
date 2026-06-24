@@ -59,8 +59,8 @@ export default function Profile() {
                 {user?.full_name?.[0] || "M"}
               </span>
             </div>
-            <div className="flex-1">
-              <h2 className="text-lg font-display font-semibold text-mora-primary">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-display font-semibold text-mora-primary truncate">
                 {user?.full_name || "Traveler"}
               </h2>
               <p className="text-xs text-mora-neutral mt-0.5">{user?.email}</p>

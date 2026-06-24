@@ -193,7 +193,7 @@ export default function DashboardTeam() {
           <div className="px-5 py-4 border-b border-mora-primary/5 bg-mora-primary/[0.02]">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-mora-primary">Invite a new member</h3>
-              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
@@ -291,7 +291,7 @@ export default function DashboardTeam() {
                   <td className="px-5 py-3 text-mora-neutral">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>
                   <td className="px-5 py-3 text-right">
                     {canDelete && (
-                      <button onClick={(e) => { e.stopPropagation(); remove(m); }} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(m); }} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </td>
                 </tr>

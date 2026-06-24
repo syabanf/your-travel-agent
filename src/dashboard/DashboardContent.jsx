@@ -180,7 +180,7 @@ export default function DashboardContent() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit content" : "New content"}</h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -336,10 +336,10 @@ export default function DashboardContent() {
                 {(can(role, "content", "edit") || canDelete) && (
                   <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "content", "edit") && (
-                      <button onClick={(e) => { e.stopPropagation(); startEdit(p); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); startEdit(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {canDelete && (
-                      <button onClick={(e) => { e.stopPropagation(); remove(p); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}

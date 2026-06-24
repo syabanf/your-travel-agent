@@ -253,7 +253,7 @@ export default function DashboardBookings() {
             <h2 className="font-display font-semibold text-lg text-mora-primary">
               {d.id ? "Edit" : "New"} {editing.kind === "booking" ? "booking" : "trip"}
             </h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           {editing.kind === "booking" ? (
@@ -426,8 +426,8 @@ export default function DashboardBookings() {
                       <td className="px-5 py-3"><StatusCell value={b.status} options={BOOKING_STATUSES} editable={canEditBookings} onChange={(s) => setBookingStatus(b.id, s)} /></td>
                       <td className="px-5 py-3 text-right font-semibold text-gold">{b.price ? formatIDR(b.price) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditBookings && <button onClick={() => startEditBooking(b)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
-                        {canDelBookings && <button onClick={() => delBooking(b.id)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditBookings && <button onClick={() => startEditBooking(b)} aria-label="Edit" className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelBookings && <button onClick={() => delBooking(b.id)} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}
@@ -469,8 +469,8 @@ export default function DashboardBookings() {
                       <td className="px-5 py-3"><StatusCell value={t.status} options={TRIP_STATUSES} editable={canEditTrips} onChange={(s) => setTripStatus(t.id, s)} /></td>
                       <td className="px-5 py-3 text-right font-semibold text-gold">{t.budget_total ? formatIDR(t.budget_total) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditTrips && <button onClick={() => startEditTrip(t)} className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
-                        {canDelTrips && <button onClick={() => delTrip(t.id)} className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditTrips && <button onClick={() => startEditTrip(t)} aria-label="Edit" className="text-mora-primary hover:text-gold hover:bg-mora-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelTrips && <button onClick={() => delTrip(t.id)} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}

@@ -272,9 +272,9 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           ))}
           {showInvite && (
             <div className="p-3 mt-1 border-t border-mora-primary/10 space-y-2">
-              <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} placeholder="Name" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
-              <input value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} placeholder="Email (optional)" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
-              <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary outline-none capitalize">
+              <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} placeholder="Name" aria-label="Guest name" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
+              <input value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} placeholder="Email (optional)" aria-label="Guest email" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none" />
+              <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} aria-label="Guest role" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-mora-primary outline-none capitalize">
                 <option value="traveler">Traveler</option>
                 <option value="organizer">Organizer</option>
                 <option value="guest">Guest</option>

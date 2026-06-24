@@ -176,7 +176,7 @@ export default function ChecklistView() {
                 <div className="space-y-2">
                   {cat.items.map(item => (
                     <div key={item.id} className="flex items-center gap-3 group">
-                      <button onClick={() => toggle(cat.id, item.id)} className="flex-shrink-0">
+                      <button onClick={() => toggle(cat.id, item.id)} aria-label="Toggle item" className="flex-shrink-0">
                         {item.checked
                           ? <CheckSquare className="w-4 h-4 text-emerald-400" />
                           : <Square className="w-4 h-4 text-mora-neutral/30" />}
@@ -184,7 +184,7 @@ export default function ChecklistView() {
                       <span className={`flex-1 text-sm transition-all ${item.checked ? "text-mora-neutral/40 line-through" : "text-mora-white"}`}>
                         {item.label}
                       </span>
-                      <button onClick={() => deleteItem(cat.id, item.id)}
+                      <button onClick={() => deleteItem(cat.id, item.id)} aria-label="Delete item"
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400/60 hover:text-red-400">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -199,7 +199,7 @@ export default function ChecklistView() {
                     placeholder="Add item..."
                     className="flex-1 bg-transparent text-xs text-mora-white placeholder:text-mora-neutral/30 outline-none"
                   />
-                  <button onClick={() => addItem(cat.id)}
+                  <button onClick={() => addItem(cat.id)} aria-label="Add item"
                     className="w-6 h-6 glass-light rounded-md flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors">
                     <Plus className="w-3.5 h-3.5" />
                   </button>

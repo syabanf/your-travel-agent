@@ -220,7 +220,7 @@ export default function DashboardLeads() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit lead" : "New lead"}</h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Row2>
@@ -367,6 +367,7 @@ export default function DashboardLeads() {
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}
                             className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
+                            aria-label="WhatsApp"
                             title="WhatsApp"
                           >
                             <MessageCircle className="w-4 h-4" />
@@ -375,6 +376,7 @@ export default function DashboardLeads() {
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); convert(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
+                              aria-label="Convert to customer"
                               title="Convert to customer"
                             >
                               <UserPlus className="w-4 h-4" />
@@ -384,6 +386,7 @@ export default function DashboardLeads() {
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
+                              aria-label="Edit"
                               title="Edit"
                             >
                               <Pencil className="w-4 h-4" />
@@ -393,6 +396,7 @@ export default function DashboardLeads() {
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l); }}
                               className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 shrink-0"
+                              aria-label="Delete"
                               title="Delete"
                             >
                               <Trash2 className="w-4 h-4" />

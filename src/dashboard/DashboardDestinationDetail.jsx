@@ -166,7 +166,7 @@ export default function DashboardDestinationDetail() {
                       onClick={() => setImgIdx(i)}
                       className={`w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 ${i === imgIdx ? "border-gold" : "border-transparent opacity-70 hover:opacity-100"}`}
                     >
-                      <img src={url} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
+                      <img src={url} alt={url || "Destination image"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>

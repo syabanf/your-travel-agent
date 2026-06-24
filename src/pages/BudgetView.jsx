@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { Wallet } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import EmptyState from "@/components/EmptyState";
 import { Link } from "react-router-dom";
 import { formatIDR } from "@/lib/currency";
 
@@ -147,6 +149,9 @@ export default function BudgetView() {
       {/* All trips overview */}
       <div className="px-6">
         <h3 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">All Trips</h3>
+        {trips.length === 0 ? (
+          <EmptyState icon={Wallet} title="No trips yet" hint="Create a trip to track its budget." />
+        ) : (
         <div className="space-y-3">
           {trips.map(trip => {
             const s = getSpent(trip.id);
@@ -168,6 +173,7 @@ export default function BudgetView() {
             );
           })}
         </div>
+        )}
       </div>
     </div>
   );

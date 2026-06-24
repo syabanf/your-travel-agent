@@ -216,7 +216,7 @@ export default function DashboardCustomers() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -301,7 +301,7 @@ export default function DashboardCustomers() {
             <div>
               <div className="flex gap-2 mb-2">
                 <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && geocode()} placeholder="Search a place…" className="dash-input flex-1" />
-                <button onClick={geocode} className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
+                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
               </div>
               <div className="rounded-xl overflow-hidden border border-mora-primary/10" style={{ height: 300 }}>
                 <OLMap
@@ -437,10 +437,10 @@ export default function DashboardCustomers() {
               {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
                 <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   {can(role, "customers", "edit") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                   )}
                   {can(role, "customers", "delete") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
                   )}
                 </div>
               )}

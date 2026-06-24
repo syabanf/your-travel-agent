@@ -92,6 +92,7 @@ export default function ProfileTravelers() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Full name *"
+                aria-label="Full name"
                 autoFocus
                 className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
               />
@@ -100,12 +101,14 @@ export default function ProfileTravelers() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="Email (optional)"
+                aria-label="Email (optional)"
                 className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
               />
               <input
                 value={relation}
                 onChange={(e) => setRelation(e.target.value)}
                 placeholder="Relation (e.g. Spouse, Child)"
+                aria-label="Relation"
                 className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
               />
               <button

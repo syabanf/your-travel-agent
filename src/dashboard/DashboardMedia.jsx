@@ -128,7 +128,7 @@ export default function DashboardMedia() {
         <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit media" : "New media"}</h2>
-            <button onClick={() => setEditing(null)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -150,7 +150,7 @@ export default function DashboardMedia() {
               <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Preview</label>
               <div className="rounded-xl overflow-hidden border border-mora-primary/10 bg-mora-primary/5 aspect-video flex items-center justify-center">
                 {editing.url
-                  ? <img src={editing.url} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
+                  ? <img src={editing.url} alt={editing.title || "Media preview"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
                   : <ImageIcon className="w-8 h-8 text-mora-neutral/40" />}
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function DashboardMedia() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "thumb", label: "", render: (a) => a.url ? <img src={a.url} alt="" loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-mora-primary/5 flex items-center justify-center text-mora-neutral/40"><ImageIcon className="w-4 h-4" /></span> },
+                { key: "thumb", label: "", render: (a) => a.url ? <img src={a.url} alt={a.title || "Media"} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-mora-primary/5 flex items-center justify-center text-mora-neutral/40"><ImageIcon className="w-4 h-4" /></span> },
                 { key: "title", label: "Title", className: "font-medium text-mora-primary", render: (a) => a.title },
                 { key: "type", label: "Tags", render: (a) => Array.isArray(a.tags) && a.tags.length ? (
                   <span className="flex flex-wrap gap-1">{a.tags.map((t, i) => <span key={i} className="text-[10px] bg-mora-primary/5 text-mora-neutral rounded-full px-1.5 py-0.5">{t}</span>)}</span>
@@ -246,10 +246,10 @@ export default function DashboardMedia() {
                     </button>
                     <div className="flex gap-1 ml-auto">
                       {can(role, "media", "edit") && (
-                        <button onClick={(e) => { e.stopPropagation(); startEdit(m); }} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); startEdit(m); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
                       )}
                       {can(role, "media", "delete") && (
-                        <button onClick={(e) => { e.stopPropagation(); remove(m); }} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); remove(m); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
                       )}
                     </div>
                   </div>
