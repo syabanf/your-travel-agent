@@ -1,10 +1,17 @@
+import { CalendarRange } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 import { RANGES } from "./dateRange";
 
 // Reusable "added within" date-range filter dropdown for dashboard pages.
 export default function DateRangeSelect({ value, onChange, className = "" }) {
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} className={`dash-input max-w-[150px] ${className}`} aria-label="Date range">
-      {RANGES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-    </select>
+    <SearchableSelect
+      value={value}
+      onChange={onChange}
+      options={RANGES.map((r) => ({ value: r.key, label: r.label }))}
+      leadingIcon={CalendarRange}
+      ariaLabel="Date range"
+      className={`min-w-[150px] ${className}`}
+    />
   );
 }

@@ -16,6 +16,7 @@ import ViewToggle from "@/dashboard/ViewToggle";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = { title: "", url: "", tags: "" };
@@ -184,10 +185,17 @@ export default function DashboardMedia() {
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
             </div>
             <DateRangeSelect value={range} onChange={setRange} />
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="newest">Newest</option>
-              <option value="title">Title A–Z</option>
-            </select>
+            <SearchableSelect
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "newest", label: "Newest" },
+                { value: "title", label: "Title A–Z" },
+              ]}
+              placeholder="Newest"
+              ariaLabel="Sort by"
+              className="max-w-[160px]"
+            />
             {(query || range !== "all" || sortBy !== "newest") && (
               <button onClick={() => { setQuery(""); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear

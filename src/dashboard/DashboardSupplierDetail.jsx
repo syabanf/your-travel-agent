@@ -10,6 +10,9 @@ import {
   ChevronLeft, Trash2, Star, ShoppingBag, Wallet, Receipt, Percent,
   Mail, Phone, MessageCircle,
 } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
+
+const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const TYPE_BADGE = {
   flight: "bg-blue-100 text-blue-700",
@@ -181,10 +184,14 @@ export default function DashboardSupplierDetail() {
               placeholder="Search bookings…"
             />
             {bookingStatuses.length > 0 && (
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="dash-input max-w-[150px] capitalize">
-                <option value="">All statuses</option>
-                {bookingStatuses.map((st) => <option key={st} value={st}>{st}</option>)}
-              </select>
+              <SearchableSelect
+                value={statusFilter}
+                onChange={setStatusFilter}
+                options={[{ value: "", label: "All statuses" }, ...bookingStatuses.map((st) => ({ value: String(st), label: cap(st) }))]}
+                placeholder="All statuses"
+                ariaLabel="Filter by status"
+                className="max-w-[150px]"
+              />
             )}
           </div>
           <div className="overflow-x-auto -mx-2">

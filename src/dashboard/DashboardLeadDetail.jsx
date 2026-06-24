@@ -12,6 +12,7 @@ import {
   ChevronLeft, Trash2, Target, Wallet, Activity, UserCog, Mail, Phone,
   MapPin, Compass, CalendarDays, StickyNote, MessageCircle, UserPlus, Users, Flag,
 } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const STATUS_BADGE = {
   new: "bg-blue-100 text-blue-700",
@@ -157,9 +158,13 @@ export default function DashboardLeadDetail() {
             {can(role, "leads", "edit") && (
               <div>
                 <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Stage</label>
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className="dash-input max-w-xs capitalize">
-                  {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
-                </select>
+                <SearchableSelect
+                  value={status}
+                  onChange={(v) => setStatus(v)}
+                  options={STATUSES.map((s) => ({ value: s, label: cap(s) }))}
+                  ariaLabel="Stage"
+                  className="max-w-xs"
+                />
               </div>
             )}
             {can(role, "customers", "create") && (

@@ -8,6 +8,9 @@ import { printDocument, tripItineraryHTML } from "@/lib/voucher";
 import { toast } from "sonner";
 import moment from "moment";
 import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save, Printer, User, UserCircle, Baby, BedDouble, Sparkles } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
+
+const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -349,14 +352,20 @@ export default function DashboardTripDetail() {
               <Field label="Email"><input value={memberForm.email} onChange={(e) => updMember("email", e.target.value)} className="dash-input" placeholder="jane@example.com" /></Field>
               <Field label="Phone"><input value={memberForm.phone} onChange={(e) => updMember("phone", e.target.value)} className="dash-input" placeholder="+62…" /></Field>
               <Field label="Role">
-                <select value={memberForm.role} onChange={(e) => updMember("role", e.target.value)} className="dash-input capitalize">
-                  {MEMBER_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-                </select>
+                <SearchableSelect
+                  value={memberForm.role}
+                  onChange={(v) => updMember("role", v)}
+                  options={MEMBER_ROLES.map((r) => ({ value: r, label: cap(r) }))}
+                  ariaLabel="Role"
+                />
               </Field>
               <Field label="Status">
-                <select value={memberForm.status} onChange={(e) => updMember("status", e.target.value)} className="dash-input capitalize">
-                  {MEMBER_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <SearchableSelect
+                  value={memberForm.status}
+                  onChange={(v) => updMember("status", v)}
+                  options={MEMBER_STATUSES.map((s) => ({ value: s, label: cap(s) }))}
+                  ariaLabel="Status"
+                />
               </Field>
             </div>
             <div className="flex gap-2 mt-3">
@@ -408,10 +417,14 @@ export default function DashboardTripDetail() {
               placeholder="Search bookings…"
             />
             {relatedTypes.length > 0 && (
-              <select value={relatedType} onChange={(e) => setRelatedType(e.target.value)} className="dash-input max-w-[150px] capitalize">
-                <option value="">All types</option>
-                {relatedTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SearchableSelect
+                value={relatedType}
+                onChange={setRelatedType}
+                options={[{ value: "", label: "All types" }, ...relatedTypes.map((t) => ({ value: String(t), label: cap(t) }))]}
+                placeholder="All types"
+                ariaLabel="Filter by type"
+                className="max-w-[150px]"
+              />
             )}
           </div>
           {filteredRelated.length === 0 ? (
@@ -447,15 +460,13 @@ export default function DashboardTripDetail() {
             {can(role, "trips", "edit") && (
               <div>
                 <label className="block text-xs font-medium text-mora-neutral mb-1">Status</label>
-                <select
+                <SearchableSelect
                   value={trip.status || "draft"}
-                  onChange={(e) => updateStatus(e.target.value)}
-                  className="dash-input max-w-xs capitalize"
-                >
-                  {TRIP_STATUSES.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
+                  onChange={(v) => updateStatus(v)}
+                  options={TRIP_STATUSES.map((s) => ({ value: s, label: cap(s) }))}
+                  ariaLabel="Status"
+                  className="max-w-xs"
+                />
               </div>
             )}
             {can(role, "trips", "delete") && (

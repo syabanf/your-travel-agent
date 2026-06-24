@@ -13,6 +13,7 @@ import {
   MapPin, Globe, CalendarDays, StickyNote, MapPinned, MessageCircle, Plane, CalendarCheck,
   Building2, Cake, BookUser, Flag, Languages, Home, Megaphone, GitBranch,
 } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const TIER_BADGE = {
   platinum: "bg-indigo-100 text-indigo-700",
@@ -190,10 +191,14 @@ export default function DashboardCustomerDetail() {
                 placeholder="Search trips & bookings…"
               />
               {bookingTypes.length > 0 && (
-                <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="dash-input max-w-[150px] capitalize">
-                  <option value="">All types</option>
-                  {bookingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <SearchableSelect
+                  value={typeFilter}
+                  onChange={setTypeFilter}
+                  options={[{ value: "", label: "All types" }, ...bookingTypes.map((t) => ({ value: String(t), label: cap(t) }))]}
+                  placeholder="All types"
+                  ariaLabel="Filter by type"
+                  className="max-w-[150px]"
+                />
               )}
             </div>
             {filteredTrips.length > 0 && (

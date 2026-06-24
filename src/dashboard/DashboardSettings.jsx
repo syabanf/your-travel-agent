@@ -4,6 +4,7 @@ import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
 import { Save, Loader2, Building2, LifeBuoy, Share2, ToggleRight, Lock } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const DEFAULTS = {
   id: "app",
@@ -110,11 +111,18 @@ export default function DashboardSettings() {
             <FieldD label="Facebook"><input value={form.facebook || ""} onChange={(e) => upd("facebook", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="facebook.com/moratravel" /></FieldD>
           </Row2>
           <FieldD label="Currency">
-            <select value={form.currency || "IDR"} onChange={(e) => upd("currency", e.target.value)} disabled={!canEdit} className="dash-input">
-              <option value="IDR">IDR — Indonesian Rupiah</option>
-              <option value="USD">USD — US Dollar</option>
-              <option value="EUR">EUR — Euro</option>
-            </select>
+            <SearchableSelect
+              value={form.currency || "IDR"}
+              onChange={(v) => upd("currency", v)}
+              disabled={!canEdit}
+              options={[
+                { value: "IDR", label: "IDR — Indonesian Rupiah" },
+                { value: "USD", label: "USD — US Dollar" },
+                { value: "EUR", label: "EUR — Euro" },
+              ]}
+              placeholder="IDR — Indonesian Rupiah"
+              ariaLabel="Currency"
+            />
           </FieldD>
         </Section>
 

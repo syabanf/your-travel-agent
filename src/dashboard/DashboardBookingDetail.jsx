@@ -12,6 +12,9 @@ import {
   ArrowLeft, Building2, MapPin, CalendarDays, Users, Wallet, Hash, StickyNote,
   Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp, Globe, Tag, CreditCard,
 } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
+
+const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -192,9 +195,13 @@ export default function DashboardBookingDetail() {
             {canEdit && (
               <div>
                 <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Status</label>
-                <select value={b.status} onChange={(e) => updateStatus(e.target.value)} className="dash-input max-w-xs capitalize">
-                  {BOOKING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <SearchableSelect
+                  value={b.status}
+                  onChange={(v) => updateStatus(v)}
+                  options={BOOKING_STATUSES.map((s) => ({ value: s, label: cap(s) }))}
+                  ariaLabel="Status"
+                  className="max-w-xs"
+                />
               </div>
             )}
 

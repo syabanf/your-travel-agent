@@ -14,6 +14,7 @@ export default function SearchableSelect({
   disabled = false,
   allowClear = false,
   ariaLabel,
+  leadingIcon: LeadingIcon,
 }) {
   const opts = useMemo(
     () => options.map((o) => (typeof o === "string" ? { value: o, label: o } : o)),
@@ -22,6 +23,7 @@ export default function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
+  const [dropUp, setDropUp] = useState(false);
   const boxRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -40,7 +42,12 @@ export default function SearchableSelect({
   }, [open]);
 
   useEffect(() => {
-    if (open) { setQ(""); setActive(0); setTimeout(() => inputRef.current?.focus(), 0); }
+    if (open) {
+      setQ(""); setActive(0);
+      const rect = boxRef.current?.getBoundingClientRect();
+      if (rect) setDropUp(rect.bottom > window.innerHeight - 300 && rect.top > 300);
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
   }, [open]);
 
   const pick = (o) => { onChange(o.value); setOpen(false); };
@@ -65,7 +72,7 @@ export default function SearchableSelect({
         onClick={() => !disabled && setOpen((v) => !v)}
         className={`dash-input flex items-center gap-2 text-left ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
       >
-        {SelIcon && <SelIcon className="w-4 h-4 text-gold shrink-0" />}
+        {LeadingIcon ? <LeadingIcon className="w-4 h-4 text-gold shrink-0" /> : SelIcon ? <SelIcon className="w-4 h-4 text-gold shrink-0" /> : null}
         <span className={`flex-1 truncate ${selected ? "text-mora-primary" : "text-mora-neutral/50"}`}>
           {selected ? selected.label : placeholder}
         </span>
@@ -77,7 +84,7 @@ export default function SearchableSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1.5 w-full min-w-[180px] bg-white rounded-xl border border-mora-primary/15 shadow-xl overflow-hidden">
+        <div className={`absolute z-50 w-full min-w-[180px] bg-white rounded-xl border border-mora-primary/15 shadow-xl overflow-hidden ${dropUp ? "bottom-full mb-1.5" : "mt-1.5"}`}>
           <div className="p-2 border-b border-mora-primary/10">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-mora-neutral/40 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />

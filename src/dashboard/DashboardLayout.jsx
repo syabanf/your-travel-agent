@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
 import DashboardHeader from "./DashboardHeader";
+import SearchableSelect from "./SearchableSelect";
 
 const GROUPS = [
   { title: "Insight Center", items: [
@@ -180,9 +181,7 @@ function Shell() {
             <label className="text-[10px] text-mora-neutral uppercase tracking-wider mb-1 flex items-center gap-1 px-1">
               <Shield className="w-3 h-3" /> Viewing as
             </label>
-            <select value={role} onChange={(e) => setRole(e.target.value)} className="dash-input">
-              {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-            </select>
+            <SearchableSelect value={role} onChange={setRole} options={ROLES.map((r) => ({ value: r.key, label: r.label }))} ariaLabel="Viewing as role" />
           </div>
           <button onClick={() => navigate("/")} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold btn-primary">
             <Smartphone className="w-4 h-4" /> Open Mobile App

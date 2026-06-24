@@ -9,6 +9,9 @@ import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
 import moment from "moment";
 import { ArrowLeft, Trash2, MapPin, Plane, Receipt, Wallet, Sparkles, Sun, Coins, Clock, Languages, FileText } from "lucide-react";
+import SearchableSelect from "@/dashboard/SearchableSelect";
+
+const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -227,10 +230,14 @@ export default function DashboardDestinationDetail() {
               placeholder="Search trips…"
             />
             {tripStatuses.length > 0 && (
-              <select value={tripStatus} onChange={(e) => setTripStatus(e.target.value)} className="dash-input max-w-[150px] capitalize">
-                <option value="">All statuses</option>
-                {tripStatuses.map((st) => <option key={st} value={st}>{st}</option>)}
-              </select>
+              <SearchableSelect
+                value={tripStatus}
+                onChange={setTripStatus}
+                options={[{ value: "", label: "All statuses" }, ...tripStatuses.map((st) => ({ value: String(st), label: cap(st) }))]}
+                placeholder="All statuses"
+                ariaLabel="Filter by status"
+                className="max-w-[150px]"
+              />
             )}
           </div>
           <div className="overflow-x-auto">

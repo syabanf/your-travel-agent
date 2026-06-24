@@ -10,6 +10,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 import { inRange } from "@/dashboard/dateRange";
 
 const ACTION_BADGE = {
@@ -93,18 +94,30 @@ export default function DashboardAudit() {
         <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-mora-neutral/70">
           <Filter className="w-3.5 h-3.5" /> Filter
         </span>
-        <select value={action} onChange={(e) => setAction(e.target.value)} className="dash-input max-w-[180px] capitalize">
-          <option value="all">All actions</option>
-          <option value="create">create</option>
-          <option value="update">update</option>
-          <option value="delete">delete</option>
-        </select>
-        <select value={entity} onChange={(e) => setEntity(e.target.value)} className="dash-input max-w-[180px]">
-          <option value="all">All entities</option>
-          {entities.map((e) => (
-            <option key={e} value={e}>{e}</option>
-          ))}
-        </select>
+        <SearchableSelect
+          value={action}
+          onChange={setAction}
+          options={[
+            { value: "all", label: "All actions" },
+            { value: "create", label: "create" },
+            { value: "update", label: "update" },
+            { value: "delete", label: "delete" },
+          ]}
+          placeholder="All actions"
+          ariaLabel="Filter by action"
+          className="max-w-[180px] capitalize"
+        />
+        <SearchableSelect
+          value={entity}
+          onChange={setEntity}
+          options={[
+            { value: "all", label: "All entities" },
+            ...entities.map((e) => ({ value: String(e), label: String(e) })),
+          ]}
+          placeholder="All entities"
+          ariaLabel="Filter by entity"
+          className="max-w-[180px]"
+        />
         <DateRangeSelect value={range} onChange={setRange} />
         {(action !== "all" || entity !== "all" || range !== "all") && (
           <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
