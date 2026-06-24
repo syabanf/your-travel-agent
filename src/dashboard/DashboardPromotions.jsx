@@ -19,7 +19,7 @@ import { ChartCard, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 
-const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false };
+const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false, terms: "", promo_code: "", max_redemptions: "", audience: "all" };
 const TYPE_META = {
   promo: { label: "Promotion", icon: Megaphone, pill: "bg-mora-gold/10 text-gold" },
   event: { label: "Event", icon: CalendarDays, pill: "bg-blue-500/15 text-blue-600" },
@@ -64,6 +64,9 @@ export default function DashboardPromotions() {
         price: editing.price ? Number(editing.price) : undefined,
         valid_until: editing.valid_until || undefined, date: editing.date || undefined,
         location: editing.location, cta: editing.cta || "Learn more", featured: !!editing.featured,
+        terms: editing.terms, promo_code: editing.promo_code,
+        max_redemptions: editing.max_redemptions !== "" && editing.max_redemptions != null ? Number(editing.max_redemptions) : undefined,
+        audience: editing.audience || "all",
       };
       if (editing.id) await base44.entities.Promotion.update(editing.id, payload);
       else await base44.entities.Promotion.create(payload);
@@ -167,6 +170,20 @@ export default function DashboardPromotions() {
               )}
             </div>
             <Fld label="Button label"><input value={editing.cta} onChange={(e) => upd("cta", e.target.value)} className="dash-input" /></Fld>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Fld label="Promo code"><input value={editing.promo_code ?? ""} onChange={(e) => upd("promo_code", e.target.value)} className="dash-input" placeholder="SUMMER25" /></Fld>
+              <Fld label="Max redemptions"><input type="number" value={editing.max_redemptions ?? ""} onChange={(e) => upd("max_redemptions", e.target.value)} className="dash-input" placeholder="500" /></Fld>
+            </div>
+            <Fld label="Audience">
+              <select value={editing.audience ?? "all"} onChange={(e) => upd("audience", e.target.value)} className="dash-input">
+                <option value="all">All users</option>
+                <option value="platinum">Platinum</option>
+                <option value="gold">Gold</option>
+                <option value="new">New users</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </Fld>
+            <Fld label="Terms & conditions"><textarea value={editing.terms ?? ""} onChange={(e) => upd("terms", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Terms that apply to this offer…" /></Fld>
             <label className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
               <input type="checkbox" checked={!!editing.featured} onChange={(e) => upd("featured", e.target.checked)} className="accent-[#AD1F23] w-4 h-4" />
               Feature this as the hero banner

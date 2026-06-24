@@ -7,7 +7,7 @@ import { useRole } from "@/dashboard/RoleContext";
 import { printDocument, tripItineraryHTML } from "@/lib/voucher";
 import { toast } from "sonner";
 import moment from "moment";
-import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save, Printer, User } from "lucide-react";
+import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save, Printer, User, UserCircle, Baby, BedDouble, Sparkles } from "lucide-react";
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -54,6 +54,17 @@ function Field({ label, children }) {
     <div>
       <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
       {children}
+    </div>
+  );
+}
+
+function Detail({ icon: Icon, label, children }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1">
+        <Icon className="w-3.5 h-3.5" /> {label}
+      </dt>
+      <dd className="text-sm text-mora-primary mt-0.5 truncate">{children}</dd>
     </div>
   );
 }
@@ -257,6 +268,24 @@ export default function DashboardTripDetail() {
         <Kpi icon={Activity} label="Activities" value={items.length} />
         <Kpi icon={ListChecks} label="Completed" value={`${completedCount}/${items.length}`} />
         <Kpi icon={Users} label="Travelers" value={members.length || trip.travelers || "—"} />
+      </div>
+
+      {/* 3b. Trip details */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6">
+        <h2 className="font-display font-bold text-mora-primary mb-3">Trip details</h2>
+        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Detail icon={UserCircle} label="Lead traveler">{trip.lead_traveler || "—"}</Detail>
+          <Detail icon={Users} label="Adults">{trip.adults ?? "—"}</Detail>
+          <Detail icon={Baby} label="Children">{trip.children ?? "—"}</Detail>
+          <Detail icon={BedDouble} label="Accommodation"><span className="capitalize">{trip.accommodation_pref || "—"}</span></Detail>
+        </dl>
+        <div className="mt-4 pt-4 border-t border-mora-primary/5 flex items-start gap-2">
+          <Sparkles className="w-4 h-4 text-mora-neutral/60 mt-0.5 shrink-0" />
+          <div className="min-w-0">
+            <div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Special requests</div>
+            <div className="text-sm text-mora-primary mt-0.5 whitespace-pre-wrap">{trip.special_requests || "—"}</div>
+          </div>
+        </div>
       </div>
 
       {/* 4. Itinerary */}

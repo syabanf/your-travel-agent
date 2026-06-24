@@ -34,6 +34,8 @@ export function buildSeed() {
       travel_style: 'luxury', budget_total: 48000000, budget_currency: 'IDR',
       notes: 'Anniversary trip — focus on beaches, spas and fine dining.',
       pace: 'moderate', trip_type: 'couple', is_ai_generated: false, customer_id: 'cust_putri',
+      lead_traveler: 'Putri Wijaya', adults: 2, children: 0, accommodation_pref: 'resort',
+      special_requests: 'Ocean-view room, late checkout, anniversary cake.',
     },
     {
       id: 'trip_kyoto', created_date: iso(-8), updated_date: iso(-3), created_by: by,
@@ -43,6 +45,8 @@ export function buildSeed() {
       travel_style: 'cultural', budget_total: 62000000, budget_currency: 'IDR',
       notes: 'Temples, tea ceremonies, and autumn gardens.',
       pace: 'relaxed', trip_type: 'couple', is_ai_generated: true, customer_id: 'cust_kenji',
+      lead_traveler: 'Kenji Sato', adults: 2, children: 0, accommodation_pref: 'hotel',
+      special_requests: 'Tatami room with futon, vegetarian breakfast option.',
     },
     {
       id: 'trip_santorini', created_date: iso(-4), updated_date: iso(-4), created_by: by,
@@ -52,6 +56,8 @@ export function buildSeed() {
       travel_style: 'relaxation', budget_total: 54000000, budget_currency: 'IDR',
       notes: 'Caldera views, white villages, sunsets in Oia.',
       pace: 'relaxed', trip_type: 'group', is_ai_generated: false, customer_id: 'cust_andi',
+      lead_traveler: 'Andi Pratama', adults: 3, children: 1, accommodation_pref: 'villa',
+      special_requests: 'Connecting rooms, airport transfer, cliffside sunset dinner.',
     },
   ];
 
@@ -63,6 +69,7 @@ export function buildSeed() {
       confirmation_code: 'GA-7Q2K', price: 6800000, currency: 'IDR', status: 'confirmed',
       guests: 2, notes: 'GA407 · Business · Direct',
       customer_id: 'cust_putri', supplier_id: 'sup_garuda', cost_price: cost(6800000),
+      payment_status: 'paid', channel: 'Direct', supplier_ref: 'GA-PNR-7Q2K', commission: Math.round(6800000 * 0.1),
     },
     {
       id: 'bk_hotel', created_date: iso(-10), updated_date: iso(-10), created_by: by,
@@ -73,6 +80,7 @@ export function buildSeed() {
       image_url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
       notes: 'Ocean Suite · Infinity pool, Spa, Free breakfast',
       customer_id: 'cust_putri', supplier_id: 'sup_azure', cost_price: cost(4200000),
+      payment_status: 'deposit', channel: 'Booking.com', supplier_ref: 'AB-558210', commission: Math.round(4200000 * 0.12),
     },
     {
       id: 'bk_attraction', created_date: iso(-6), updated_date: iso(-6), created_by: by,
@@ -81,6 +89,7 @@ export function buildSeed() {
       price: 980000, currency: 'IDR', status: 'pending', guests: 2,
       notes: 'Adventure · 6h · Guide, Transport',
       customer_id: 'cust_putri', supplier_id: 'sup_baliadv', cost_price: cost(980000),
+      payment_status: 'unpaid', channel: 'Traveloka', supplier_ref: 'BA-MTB-0091', commission: Math.round(980000 * 0.15),
     },
   ];
 
@@ -105,6 +114,22 @@ export function buildSeed() {
     { id: 'pa_sofia', created_date: iso(-25), created_by: by, name: 'Sofia Rossi', specialization: 'Family & Relaxation', photo_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80', languages: ['English', 'Italian', 'French'], rating: 4.7, reviews_count: 132, bio: 'Helping families travel smoothly and actually relax.', is_available: false, hourly_rate: 500000, currency: 'IDR', specialties: ['Family-friendly', 'Resorts', 'Slow travel'], packages: [{ name: 'Family Day', description: 'Kid-friendly day plan', price: 500000 }, { name: 'Relaxation Week', description: 'A full week, fully unwound', price: 2900000 }] },
   ];
 
+  // Per-destination travel metadata (keyed by destination id, see DEST_COORDS above).
+  const DEST_META = {
+    bali: { best_season: 'Apr–Oct (dry)', currency: 'IDR', timezone: 'WITA (UTC+8)', languages: 'Indonesian, English', visa_note: 'Visa on arrival for many nationalities.' },
+    kyoto: { best_season: 'Mar–May & Oct–Nov', currency: 'JPY', timezone: 'JST (UTC+9)', languages: 'Japanese', visa_note: 'Visa-free short stays for many passports.' },
+    santorini: { best_season: 'May–Oct (warm, dry)', currency: 'EUR', timezone: 'EET (UTC+2)', languages: 'Greek, English', visa_note: 'Schengen visa rules apply.' },
+    maldives: { best_season: 'Nov–Apr (dry)', currency: 'MVR', timezone: 'MVT (UTC+5)', languages: 'Dhivehi, English', visa_note: 'Free 30-day visa on arrival for all.' },
+    paris: { best_season: 'Apr–Jun & Sep–Oct', currency: 'EUR', timezone: 'CET (UTC+1)', languages: 'French', visa_note: 'Schengen visa rules apply.' },
+    tokyo: { best_season: 'Mar–May & Oct–Nov', currency: 'JPY', timezone: 'JST (UTC+9)', languages: 'Japanese', visa_note: 'Visa-free short stays for many passports.' },
+    'swiss-alps': { best_season: 'Dec–Mar (ski) & Jun–Sep (hike)', currency: 'CHF', timezone: 'CET (UTC+1)', languages: 'German, French, Italian', visa_note: 'Schengen visa rules apply.' },
+    dubai: { best_season: 'Nov–Mar (cooler)', currency: 'AED', timezone: 'GST (UTC+4)', languages: 'Arabic, English', visa_note: 'Visa on arrival or e-visa for many nationalities.' },
+    reykjavik: { best_season: 'Jun–Aug (midnight sun)', currency: 'ISK', timezone: 'GMT (UTC+0)', languages: 'Icelandic, English', visa_note: 'Schengen visa rules apply.' },
+    queenstown: { best_season: 'Dec–Feb (summer) & Jun–Aug (ski)', currency: 'NZD', timezone: 'NZST (UTC+12)', languages: 'English, Māori', visa_note: 'NZeTA required before arrival for many nationalities.' },
+    marrakech: { best_season: 'Mar–May & Sep–Nov', currency: 'MAD', timezone: 'WET (UTC+1)', languages: 'Arabic, Berber, French', visa_note: 'Visa-free short stays for many passports.' },
+    phuket: { best_season: 'Nov–Apr (dry)', currency: 'THB', timezone: 'ICT (UTC+7)', languages: 'Thai, English', visa_note: 'Visa exemption or visa on arrival for many nationalities.' },
+  };
+
   const Destination = DESTINATIONS.map((d, i) => ({
     id: `dest_${d.id}`,
     created_date: iso(-50 + i), updated_date: iso(-50 + i), created_by: by,
@@ -114,23 +139,24 @@ export function buildSeed() {
     lat: DEST_COORDS[d.id] ? DEST_COORDS[d.id][0] : null,
     lng: DEST_COORDS[d.id] ? DEST_COORDS[d.id][1] : null,
     active: true,
+    ...(DEST_META[d.id] || {}),
   }));
 
   const Promotion = [
-    { id: 'promo_villas', created_date: iso(-3), created_by: by, type: 'promo', title: 'Flash Sale: Bali Villas', description: 'Up to 35% off luxury villas in Seminyak & Ubud — book before they vanish.', discount: 35, price: 2900000, valid_until: date(14), location: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80', cta: 'Book now', featured: true },
-    { id: 'promo_flights', created_date: iso(-2), created_by: by, type: 'promo', title: 'Garuda Weekend Deal', description: 'Domestic return flights from Rp 750.000. Limited seats available.', discount: 20, price: 750000, valid_until: date(7), location: 'Nationwide', image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', cta: 'Find flights', featured: false },
-    { id: 'event_arts', created_date: iso(-5), created_by: by, type: 'event', title: 'Bali Arts Festival', description: 'A month of Balinese dance, gamelan and craft markets.', date: date(30), location: 'Denpasar, Bali', image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80', cta: 'Learn more', featured: false },
-    { id: 'event_jazz', created_date: iso(-6), created_by: by, type: 'event', title: 'Java Jazz Festival', description: 'Three nights of world-class jazz in the capital.', date: date(45), location: 'Jakarta', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800&q=80', cta: 'Get tickets', featured: false },
-    { id: 'news_visa', created_date: iso(-1), created_by: by, type: 'news', title: 'New visa-on-arrival countries', description: 'Indonesia adds 10 more nationalities to its visa-on-arrival list this month.', date: date(-1), location: '', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80', cta: 'Read more', featured: false },
+    { id: 'promo_villas', created_date: iso(-3), created_by: by, type: 'promo', title: 'Flash Sale: Bali Villas', description: 'Up to 35% off luxury villas in Seminyak & Ubud — book before they vanish.', discount: 35, price: 2900000, valid_until: date(14), location: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80', cta: 'Book now', featured: true, terms: 'New bookings only. Min. 3 nights. Subject to availability.', promo_code: 'BALI35', max_redemptions: 200, audience: 'all' },
+    { id: 'promo_flights', created_date: iso(-2), created_by: by, type: 'promo', title: 'Garuda Weekend Deal', description: 'Domestic return flights from Rp 750.000. Limited seats available.', discount: 20, price: 750000, valid_until: date(7), location: 'Nationwide', image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80', cta: 'Find flights', featured: false, terms: 'Travel on weekends only. Non-refundable fare class.', promo_code: 'GARUDAWKND', max_redemptions: 500, audience: 'all' },
+    { id: 'event_arts', created_date: iso(-5), created_by: by, type: 'event', title: 'Bali Arts Festival', description: 'A month of Balinese dance, gamelan and craft markets.', date: date(30), location: 'Denpasar, Bali', image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80', cta: 'Learn more', featured: false, terms: 'Free public event. Some performances ticketed separately.', promo_code: '', max_redemptions: 0, audience: 'all' },
+    { id: 'event_jazz', created_date: iso(-6), created_by: by, type: 'event', title: 'Java Jazz Festival', description: 'Three nights of world-class jazz in the capital.', date: date(45), location: 'Jakarta', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800&q=80', cta: 'Get tickets', featured: false, terms: 'Tickets sold via official partners. 18+ for evening sets.', promo_code: '', max_redemptions: 0, audience: 'all' },
+    { id: 'news_visa', created_date: iso(-1), created_by: by, type: 'news', title: 'New visa-on-arrival countries', description: 'Indonesia adds 10 more nationalities to its visa-on-arrival list this month.', date: date(-1), location: '', image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80', cta: 'Read more', featured: false, terms: 'Informational only. Check official immigration guidance.', promo_code: '', max_redemptions: 0, audience: 'all' },
   ];
 
   const Customer = [
-    { id: 'cust_putri', created_date: iso(-300), updated_date: iso(-2), created_by: by, name: 'Putri Wijaya', email: 'putri.wijaya@example.com', phone: '+62 812 1100 2200', city: 'Jakarta', country: 'Indonesia', lat: -6.2088, lng: 106.8456, tier: 'platinum', status: 'active', lifetime_spend: 86500000, joined_date: date(-300), notes: 'Frequent business traveler — prefers window seats.' },
-    { id: 'cust_andi', created_date: iso(-240), updated_date: iso(-10), created_by: by, name: 'Andi Pratama', email: 'andi.pratama@example.com', phone: '+62 813 3300 4400', city: 'Surabaya', country: 'Indonesia', lat: -7.2575, lng: 112.7521, tier: 'gold', status: 'active', lifetime_spend: 42300000, joined_date: date(-240), notes: '' },
-    { id: 'cust_maria', created_date: iso(-180), updated_date: iso(-5), created_by: by, name: 'Maria Santos', email: 'maria.santos@example.com', phone: '+62 821 5500 6600', city: 'Denpasar', country: 'Indonesia', lat: -8.6705, lng: 115.2126, tier: 'silver', status: 'active', lifetime_spend: 18900000, joined_date: date(-180), notes: 'Loves beach & wellness trips.' },
-    { id: 'cust_kenji', created_date: iso(-150), updated_date: iso(-20), created_by: by, name: 'Kenji Sato', email: 'kenji.sato@example.com', phone: '+81 90 1234 5678', city: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, tier: 'gold', status: 'active', lifetime_spend: 51200000, joined_date: date(-150), notes: '' },
-    { id: 'cust_sarah', created_date: iso(-90), updated_date: iso(-40), created_by: by, name: 'Sarah Lee', email: 'sarah.lee@example.com', phone: '+65 8123 4567', city: 'Singapore', country: 'Singapore', lat: 1.3521, lng: 103.8198, tier: 'bronze', status: 'inactive', lifetime_spend: 6400000, joined_date: date(-90), notes: 'Dormant since last quarter.' },
-    { id: 'cust_budi', created_date: iso(-45), updated_date: iso(-1), created_by: by, name: 'Budi Hartono', email: 'budi.hartono@example.com', phone: '+62 856 7700 8800', city: 'Bandung', country: 'Indonesia', lat: -6.9175, lng: 107.6191, tier: 'silver', status: 'active', lifetime_spend: 22750000, joined_date: date(-45), notes: '' },
+    { id: 'cust_putri', created_date: iso(-300), updated_date: iso(-2), created_by: by, name: 'Putri Wijaya', email: 'putri.wijaya@example.com', phone: '+62 812 1100 2200', city: 'Jakarta', country: 'Indonesia', lat: -6.2088, lng: 106.8456, tier: 'platinum', status: 'active', lifetime_spend: 86500000, joined_date: date(-300), notes: 'Frequent business traveler — prefers window seats.', company: 'Nusantara Capital', date_of_birth: '1985-09-21', passport_no: 'C1234567', nationality: 'Indonesian', preferred_language: 'Indonesian', address: 'Jl. Sudirman No. 45, Jakarta 10210, Indonesia', marketing_opt_in: true, source: 'referral' },
+    { id: 'cust_andi', created_date: iso(-240), updated_date: iso(-10), created_by: by, name: 'Andi Pratama', email: 'andi.pratama@example.com', phone: '+62 813 3300 4400', city: 'Surabaya', country: 'Indonesia', lat: -7.2575, lng: 112.7521, tier: 'gold', status: 'active', lifetime_spend: 42300000, joined_date: date(-240), notes: '', company: 'Pratama Logistics', date_of_birth: '1990-02-14', passport_no: 'C2345678', nationality: 'Indonesian', preferred_language: 'Indonesian', address: 'Jl. Pemuda No. 12, Surabaya 60271, Indonesia', marketing_opt_in: false, source: 'website' },
+    { id: 'cust_maria', created_date: iso(-180), updated_date: iso(-5), created_by: by, name: 'Maria Santos', email: 'maria.santos@example.com', phone: '+62 821 5500 6600', city: 'Denpasar', country: 'Indonesia', lat: -8.6705, lng: 115.2126, tier: 'silver', status: 'active', lifetime_spend: 18900000, joined_date: date(-180), notes: 'Loves beach & wellness trips.', company: '', date_of_birth: '1993-11-30', passport_no: 'C3456789', nationality: 'Indonesian', preferred_language: 'English', address: 'Jl. Danau Tamblingan No. 88, Sanur, Denpasar 80228, Indonesia', marketing_opt_in: true, source: 'instagram' },
+    { id: 'cust_kenji', created_date: iso(-150), updated_date: iso(-20), created_by: by, name: 'Kenji Sato', email: 'kenji.sato@example.com', phone: '+81 90 1234 5678', city: 'Tokyo', country: 'Japan', lat: 35.6762, lng: 139.6503, tier: 'gold', status: 'active', lifetime_spend: 51200000, joined_date: date(-150), notes: '', company: 'Sato Trading K.K.', date_of_birth: '1982-06-07', passport_no: 'TR1029384', nationality: 'Japanese', preferred_language: 'Japanese', address: '2-7-1 Marunouchi, Chiyoda-ku, Tokyo 100-0005, Japan', marketing_opt_in: true, source: 'ota' },
+    { id: 'cust_sarah', created_date: iso(-90), updated_date: iso(-40), created_by: by, name: 'Sarah Lee', email: 'sarah.lee@example.com', phone: '+65 8123 4567', city: 'Singapore', country: 'Singapore', lat: 1.3521, lng: 103.8198, tier: 'bronze', status: 'inactive', lifetime_spend: 6400000, joined_date: date(-90), notes: 'Dormant since last quarter.', company: '', date_of_birth: '1996-03-18', passport_no: 'E7654321', nationality: 'Singaporean', preferred_language: 'English', address: '10 Marina Boulevard, #14-02, Singapore 018983', marketing_opt_in: false, source: 'walk-in' },
+    { id: 'cust_budi', created_date: iso(-45), updated_date: iso(-1), created_by: by, name: 'Budi Hartono', email: 'budi.hartono@example.com', phone: '+62 856 7700 8800', city: 'Bandung', country: 'Indonesia', lat: -6.9175, lng: 107.6191, tier: 'silver', status: 'active', lifetime_spend: 22750000, joined_date: date(-45), notes: '', company: 'Hartono Textiles', date_of_birth: '1988-04-12', passport_no: 'C4567890', nationality: 'Indonesian', preferred_language: 'Indonesian', address: 'Jl. Asia Afrika No. 100, Bandung 40111, Indonesia', marketing_opt_in: true, source: 'website' },
   ];
 
   const StaffMember = [
@@ -154,22 +180,22 @@ export function buildSeed() {
 
   // Suppliers travel products are sourced from (flights, hotels, activities, DMCs).
   const Supplier = [
-    { id: 'sup_garuda', created_date: iso(-200), created_by: by, name: 'Garuda Indonesia', type: 'flight', contact_email: 'agency@garuda.example', contact_phone: '+62 21 2351 9999', country: 'Indonesia', commission_rate: 7, rating: 4.6, status: 'active', notes: 'National carrier — strong domestic network.' },
-    { id: 'sup_azure', created_date: iso(-180), created_by: by, name: 'Azure Bay Resort', type: 'hotel', contact_email: 'sales@azurebay.example', contact_phone: '+62 361 555 200', country: 'Indonesia', commission_rate: 12, rating: 4.8, status: 'active', notes: 'Preferred Seminyak partner.' },
-    { id: 'sup_baliadv', created_date: iso(-160), created_by: by, name: 'Bali Adventures', type: 'activity', contact_email: 'book@baliadv.example', contact_phone: '+62 361 555 311', country: 'Indonesia', commission_rate: 15, rating: 4.7, status: 'active', notes: 'Treks, rafting, sunrise tours.' },
-    { id: 'sup_hotelbeds', created_date: iso(-140), created_by: by, name: 'Hotelbeds (DMC)', type: 'dmc', contact_email: 'partners@hotelbeds.example', contact_phone: '+34 971 000 000', country: 'Spain', commission_rate: 10, rating: 4.5, status: 'active', notes: 'Global hotel & transfer aggregator.' },
-    { id: 'sup_viator', created_date: iso(-120), created_by: by, name: 'Viator', type: 'activity', contact_email: 'supply@viator.example', contact_phone: '+1 415 000 0000', country: 'United States', commission_rate: 18, rating: 4.4, status: 'active', notes: 'Worldwide tours & experiences.' },
-    { id: 'sup_railink', created_date: iso(-90), created_by: by, name: 'Railink Express', type: 'transport', contact_email: 'b2b@railink.example', contact_phone: '+62 21 2555 700', country: 'Indonesia', commission_rate: 6, rating: 4.2, status: 'inactive', notes: 'Airport & intercity rail.' },
+    { id: 'sup_garuda', created_date: iso(-200), created_by: by, name: 'Garuda Indonesia', type: 'flight', contact_email: 'agency@garuda.example', contact_phone: '+62 21 2351 9999', country: 'Indonesia', commission_rate: 7, rating: 4.6, status: 'active', notes: 'National carrier — strong domestic network.', contact_person: 'Rama Saputra', website: 'https://www.garuda-indonesia.com', payment_terms: 'Net 14', address: 'Garuda City Center, Soekarno-Hatta Airport, Tangerang 19120, Indonesia' },
+    { id: 'sup_azure', created_date: iso(-180), created_by: by, name: 'Azure Bay Resort', type: 'hotel', contact_email: 'sales@azurebay.example', contact_phone: '+62 361 555 200', country: 'Indonesia', commission_rate: 12, rating: 4.8, status: 'active', notes: 'Preferred Seminyak partner.', contact_person: 'Wayan Adnyana', website: 'https://www.azurebayresort.example', payment_terms: 'Net 30', address: 'Jl. Kayu Aya No. 9, Seminyak, Bali 80361, Indonesia' },
+    { id: 'sup_baliadv', created_date: iso(-160), created_by: by, name: 'Bali Adventures', type: 'activity', contact_email: 'book@baliadv.example', contact_phone: '+62 361 555 311', country: 'Indonesia', commission_rate: 15, rating: 4.7, status: 'active', notes: 'Treks, rafting, sunrise tours.', contact_person: 'Komang Restu', website: 'https://www.baliadventures.example', payment_terms: 'Net 7', address: 'Jl. Raya Kintamani No. 21, Bangli, Bali 80652, Indonesia' },
+    { id: 'sup_hotelbeds', created_date: iso(-140), created_by: by, name: 'Hotelbeds (DMC)', type: 'dmc', contact_email: 'partners@hotelbeds.example', contact_phone: '+34 971 000 000', country: 'Spain', commission_rate: 10, rating: 4.5, status: 'active', notes: 'Global hotel & transfer aggregator.', contact_person: 'Marta Gómez', website: 'https://www.hotelbeds.com', payment_terms: 'Net 45', address: "Carrer de l'Anella Mediterrània 2, 07014 Palma, Spain" },
+    { id: 'sup_viator', created_date: iso(-120), created_by: by, name: 'Viator', type: 'activity', contact_email: 'supply@viator.example', contact_phone: '+1 415 000 0000', country: 'United States', commission_rate: 18, rating: 4.4, status: 'active', notes: 'Worldwide tours & experiences.', contact_person: 'Jordan Miller', website: 'https://www.viator.com', payment_terms: 'Net 30', address: '400 1st Avenue North, Suite 100, Seattle, WA 98109, USA' },
+    { id: 'sup_railink', created_date: iso(-90), created_by: by, name: 'Railink Express', type: 'transport', contact_email: 'b2b@railink.example', contact_phone: '+62 21 2555 700', country: 'Indonesia', commission_rate: 6, rating: 4.2, status: 'inactive', notes: 'Airport & intercity rail.', contact_person: 'Siti Rahmawati', website: 'https://www.railink.example', payment_terms: 'Net 30', address: 'Stasiun BNI City, Jl. Tanah Abang, Jakarta 10250, Indonesia' },
   ];
 
   // Sales pipeline — enquiries that have not yet converted to customers/trips.
   const Lead = [
-    { id: 'lead_dimas', created_date: iso(-9), created_by: by, name: 'Dimas Aji', email: 'dimas.aji@example.com', phone: '+62 812 7777 1234', source: 'website', destination: 'Maldives', budget: 60000000, status: 'new', assigned_to: 'Dewi Lestari', notes: 'Honeymoon, overwater villa, July.' },
-    { id: 'lead_clara', created_date: iso(-7), created_by: by, name: 'Clara Wijaya', email: 'clara.w@example.com', phone: '+62 813 2222 8899', source: 'instagram', destination: 'Japan', budget: 45000000, status: 'contacted', assigned_to: 'Tom Becker', notes: 'Family of 4, cherry blossom season.' },
-    { id: 'lead_arjun', created_date: iso(-6), created_by: by, name: 'Arjun Mehta', email: 'arjun.m@example.com', phone: '+91 98 1010 2020', source: 'referral', destination: 'Bali', budget: 30000000, status: 'quoted', assigned_to: 'Dewi Lestari', notes: 'Group of 6, villa + activities. Quote sent.' },
-    { id: 'lead_sophie', created_date: iso(-4), created_by: by, name: 'Sophie Martin', email: 'sophie.m@example.com', phone: '+33 6 12 34 56 78', source: 'whatsapp', destination: 'Switzerland', budget: 80000000, status: 'won', assigned_to: 'Tom Becker', notes: 'Booked alpine tour — converted.' },
-    { id: 'lead_budi', created_date: iso(-3), created_by: by, name: 'Budi Santoso', email: 'budi.s@example.com', phone: '+62 856 4545 6767', source: 'walk-in', destination: 'Dubai', budget: 25000000, status: 'lost', assigned_to: 'Dewi Lestari', notes: 'Went with another agency on price.' },
-    { id: 'lead_mei', created_date: iso(-2), created_by: by, name: 'Mei Lin', email: 'mei.lin@example.com', phone: '+65 9123 4567', source: 'website', destination: 'Santorini', budget: 55000000, status: 'contacted', assigned_to: 'Dewi Lestari', notes: 'Anniversary, sunset suite.' },
+    { id: 'lead_dimas', created_date: iso(-9), created_by: by, name: 'Dimas Aji', email: 'dimas.aji@example.com', phone: '+62 812 7777 1234', source: 'website', destination: 'Maldives', budget: 60000000, status: 'new', assigned_to: 'Dewi Lestari', notes: 'Honeymoon, overwater villa, July.', expected_travel_date: date(38), party_size: 2, priority: 'high' },
+    { id: 'lead_clara', created_date: iso(-7), created_by: by, name: 'Clara Wijaya', email: 'clara.w@example.com', phone: '+62 813 2222 8899', source: 'instagram', destination: 'Japan', budget: 45000000, status: 'contacted', assigned_to: 'Tom Becker', notes: 'Family of 4, cherry blossom season.', expected_travel_date: date(95), party_size: 4, priority: 'medium' },
+    { id: 'lead_arjun', created_date: iso(-6), created_by: by, name: 'Arjun Mehta', email: 'arjun.m@example.com', phone: '+91 98 1010 2020', source: 'referral', destination: 'Bali', budget: 30000000, status: 'quoted', assigned_to: 'Dewi Lestari', notes: 'Group of 6, villa + activities. Quote sent.', expected_travel_date: date(52), party_size: 6, priority: 'high' },
+    { id: 'lead_sophie', created_date: iso(-4), created_by: by, name: 'Sophie Martin', email: 'sophie.m@example.com', phone: '+33 6 12 34 56 78', source: 'whatsapp', destination: 'Switzerland', budget: 80000000, status: 'won', assigned_to: 'Tom Becker', notes: 'Booked alpine tour — converted.', expected_travel_date: date(120), party_size: 2, priority: 'medium' },
+    { id: 'lead_budi', created_date: iso(-3), created_by: by, name: 'Budi Santoso', email: 'budi.s@example.com', phone: '+62 856 4545 6767', source: 'walk-in', destination: 'Dubai', budget: 25000000, status: 'lost', assigned_to: 'Dewi Lestari', notes: 'Went with another agency on price.', expected_travel_date: date(28), party_size: 3, priority: 'low' },
+    { id: 'lead_mei', created_date: iso(-2), created_by: by, name: 'Mei Lin', email: 'mei.lin@example.com', phone: '+65 9123 4567', source: 'website', destination: 'Santorini', budget: 55000000, status: 'contacted', assigned_to: 'Dewi Lestari', notes: 'Anniversary, sunset suite.', expected_travel_date: date(75), party_size: 2, priority: 'medium' },
   ];
 
   // Marketing campaigns across channels.

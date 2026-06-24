@@ -8,7 +8,7 @@ import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
 import moment from "moment";
-import { ArrowLeft, Trash2, MapPin, Plane, Receipt, Wallet, Sparkles } from "lucide-react";
+import { ArrowLeft, Trash2, MapPin, Plane, Receipt, Wallet, Sparkles, Sun, Coins, Clock, Languages, FileText } from "lucide-react";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -181,6 +181,13 @@ export default function DashboardDestinationDetail() {
             <MapPin className="w-4 h-4 text-gold" />
             {hasCoords ? <span>{dest.lat.toFixed(4)}, {dest.lng.toFixed(4)}</span> : <span className="text-mora-neutral/60">No coordinates</span>}
           </div>
+          <div className="mt-4 pt-4 border-t border-mora-primary/5 space-y-1">
+            <InfoRow icon={Sun} label="Best season" value={dest.best_season} />
+            <InfoRow icon={Coins} label="Currency" value={dest.currency} />
+            <InfoRow icon={Clock} label="Timezone" value={dest.timezone} />
+            <InfoRow icon={Languages} label="Languages" value={dest.languages} />
+            <InfoRow icon={FileText} label="Visa note" value={dest.visa_note} multiline />
+          </div>
         </div>
 
         {/* Right — On the map */}
@@ -256,6 +263,18 @@ export default function DashboardDestinationDetail() {
           </div>
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+function InfoRow({ icon: Icon, label, value, multiline }) {
+  return (
+    <div className="flex items-start gap-3 py-2 border-b border-mora-primary/5 last:border-0">
+      <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+      <div className="min-w-0">
+        <div className="text-[11px] text-mora-neutral uppercase tracking-wider">{label}</div>
+        <div className={`text-sm text-mora-primary break-words ${multiline ? "whitespace-pre-line" : ""}`}>{value || "—"}</div>
       </div>
     </div>
   );

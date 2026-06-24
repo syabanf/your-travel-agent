@@ -11,6 +11,7 @@ import moment from "moment";
 import {
   ChevronLeft, Trash2, Wallet, CalendarClock, Award, Phone, Mail,
   MapPin, Globe, CalendarDays, StickyNote, MapPinned, MessageCircle, Plane, CalendarCheck,
+  Building2, Cake, BookUser, Flag, Languages, Home, Megaphone, GitBranch,
 } from "lucide-react";
 
 const TIER_BADGE = {
@@ -144,6 +145,16 @@ export default function DashboardCustomerDetail() {
             <DetailRow icon={MapPin} label="City" value={c.city} />
             <DetailRow icon={Globe} label="Country" value={c.country} />
             <DetailRow icon={CalendarDays} label="Joined date" value={c.joined_date ? moment(c.joined_date).format("D MMM YYYY") : null} />
+            <DetailRow icon={Building2} label="Company" value={c.company} />
+            <DetailRow icon={Cake} label="Date of birth" value={c.date_of_birth ? moment(c.date_of_birth).format("D MMM YYYY") : null} />
+            <DetailRow icon={BookUser} label="Passport no." value={c.passport_no} />
+            <DetailRow icon={Flag} label="Nationality" value={c.nationality} />
+            <DetailRow icon={Languages} label="Preferred language" value={c.preferred_language} />
+            <DetailRow icon={Home} label="Address" value={c.address} />
+            <DetailRow icon={GitBranch} label="Source" value={c.source ? cap(c.source) : null} />
+            <DetailRow icon={Megaphone} label="Marketing opt-in" value={
+              <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.marketing_opt_in ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.marketing_opt_in ? "Yes" : "No"}</span>
+            } />
             {c.notes && <DetailRow icon={StickyNote} label="Notes" value={c.notes} />}
           </div>
         </div>
@@ -245,7 +256,7 @@ const DetailRow = ({ icon: Icon, label, value }) => (
     <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
     <div className="min-w-0">
       <div className="text-[11px] text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-sm text-mora-primary break-words">{value || <span className="text-mora-neutral/50">Not set</span>}</div>
+      <div className="text-sm text-mora-primary break-words">{value || <span className="text-mora-neutral/50">—</span>}</div>
     </div>
   </div>
 );

@@ -25,7 +25,11 @@ const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
   lat: null, lng: null, tier: "bronze", status: "active",
   lifetime_spend: "", joined_date: moment().format("YYYY-MM-DD"), notes: "",
+  company: "", date_of_birth: "", passport_no: "", nationality: "",
+  preferred_language: "", address: "", marketing_opt_in: false, source: "",
 };
+
+const SOURCES = ["referral", "website", "instagram", "ota", "walk-in"];
 
 const TIERS = ["bronze", "silver", "gold", "platinum"];
 const TIER_BADGE = {
@@ -60,6 +64,14 @@ export default function DashboardCustomers() {
     ...EMPTY, ...c,
     lifetime_spend: c.lifetime_spend ?? "",
     joined_date: c.joined_date || moment().format("YYYY-MM-DD"),
+    company: c.company || "",
+    date_of_birth: c.date_of_birth || "",
+    passport_no: c.passport_no || "",
+    nationality: c.nationality || "",
+    preferred_language: c.preferred_language || "",
+    address: c.address || "",
+    marketing_opt_in: !!c.marketing_opt_in,
+    source: c.source || "",
   });
   const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
 
@@ -89,6 +101,14 @@ export default function DashboardCustomers() {
         lifetime_spend: editing.lifetime_spend ? Number(editing.lifetime_spend) : 0,
         joined_date: editing.joined_date || moment().format("YYYY-MM-DD"),
         notes: editing.notes || "",
+        company: editing.company || "",
+        date_of_birth: editing.date_of_birth || "",
+        passport_no: editing.passport_no || "",
+        nationality: editing.nationality || "",
+        preferred_language: editing.preferred_language || "",
+        address: editing.address || "",
+        marketing_opt_in: !!editing.marketing_opt_in,
+        source: editing.source || "",
       };
       if (editing.id) await base44.entities.Customer.update(editing.id, payload);
       else await base44.entities.Customer.create(payload);
@@ -226,7 +246,29 @@ export default function DashboardCustomers() {
                 </FieldD>
                 <FieldD label="Lifetime spend (IDR)"><input type="number" value={editing.lifetime_spend} onChange={(e) => upd("lifetime_spend", e.target.value)} className="dash-input" placeholder="25000000" /></FieldD>
               </Row2>
-              <FieldD label="Joined date"><input type="date" value={editing.joined_date} onChange={(e) => upd("joined_date", e.target.value)} className="dash-input" /></FieldD>
+              <Row2>
+                <FieldD label="Joined date"><input type="date" value={editing.joined_date} onChange={(e) => upd("joined_date", e.target.value)} className="dash-input" /></FieldD>
+                <FieldD label="Date of birth"><input type="date" value={editing.date_of_birth} onChange={(e) => upd("date_of_birth", e.target.value)} className="dash-input" /></FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Company"><input value={editing.company} onChange={(e) => upd("company", e.target.value)} className="dash-input" placeholder="Acme Corp" /></FieldD>
+                <FieldD label="Nationality"><input value={editing.nationality} onChange={(e) => upd("nationality", e.target.value)} className="dash-input" placeholder="Indonesian" /></FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Passport no."><input value={editing.passport_no} onChange={(e) => upd("passport_no", e.target.value)} className="dash-input" placeholder="A1234567" /></FieldD>
+                <FieldD label="Preferred language"><input value={editing.preferred_language} onChange={(e) => upd("preferred_language", e.target.value)} className="dash-input" placeholder="English" /></FieldD>
+              </Row2>
+              <FieldD label="Address"><input value={editing.address} onChange={(e) => upd("address", e.target.value)} className="dash-input" placeholder="Street, city, postal code" /></FieldD>
+              <FieldD label="Source">
+                <select value={editing.source} onChange={(e) => upd("source", e.target.value)} className="dash-input">
+                  <option value="">Select source…</option>
+                  {SOURCES.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
+                </select>
+              </FieldD>
+              <label className="flex items-center gap-2 text-sm text-mora-primary cursor-pointer pt-1">
+                <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-mora-primary/30 text-gold focus:ring-gold" />
+                Marketing opt-in
+              </label>
               <FieldD label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input" rows={3} placeholder="Preferences, VIP notes…" /></FieldD>
               <div className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
                 <MapPin className="w-4 h-4 text-gold" />

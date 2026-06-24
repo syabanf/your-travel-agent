@@ -21,7 +21,8 @@ import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 
 const EMPTY = {
-  name: "", type: "flight", country: "", contact_email: "", contact_phone: "",
+  name: "", type: "flight", country: "", contact_person: "", contact_email: "", contact_phone: "",
+  website: "", payment_terms: "", address: "",
   commission_rate: "", rating: "", status: "active", notes: "",
 };
 
@@ -55,6 +56,10 @@ export default function DashboardSuppliers() {
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (s) => setEditing({
     ...EMPTY, ...s,
+    contact_person: s.contact_person ?? "",
+    website: s.website ?? "",
+    payment_terms: s.payment_terms ?? "",
+    address: s.address ?? "",
     commission_rate: s.commission_rate ?? "",
     rating: s.rating ?? "",
   });
@@ -66,8 +71,12 @@ export default function DashboardSuppliers() {
     try {
       const payload = {
         name: editing.name, type: editing.type || "flight",
-        country: editing.country, contact_email: editing.contact_email,
+        country: editing.country, contact_person: editing.contact_person || "",
+        contact_email: editing.contact_email,
         contact_phone: editing.contact_phone,
+        website: editing.website || "",
+        payment_terms: editing.payment_terms || "",
+        address: editing.address || "",
         commission_rate: editing.commission_rate !== "" ? Number(editing.commission_rate) : 0,
         rating: editing.rating !== "" ? Number(editing.rating) : 0,
         status: editing.status || "active",
@@ -189,14 +198,22 @@ export default function DashboardSuppliers() {
             </Row2>
             <Row2>
               <FieldD label="Country"><input value={editing.country} onChange={(e) => upd("country", e.target.value)} className="dash-input" placeholder="Indonesia" /></FieldD>
+              <FieldD label="Contact person"><input value={editing.contact_person} onChange={(e) => upd("contact_person", e.target.value)} className="dash-input" placeholder="Account manager name" /></FieldD>
+            </Row2>
+            <Row2>
               <FieldD label="Contact email"><input type="email" value={editing.contact_email} onChange={(e) => upd("contact_email", e.target.value)} className="dash-input" placeholder="partners@example.com" /></FieldD>
-            </Row2>
-            <Row2>
               <FieldD label="Contact phone"><input value={editing.contact_phone} onChange={(e) => upd("contact_phone", e.target.value)} className="dash-input" placeholder="+62…" /></FieldD>
-              <FieldD label="Commission %"><input type="number" value={editing.commission_rate} onChange={(e) => upd("commission_rate", e.target.value)} className="dash-input" placeholder="10" /></FieldD>
             </Row2>
             <Row2>
+              <FieldD label="Website"><input value={editing.website} onChange={(e) => upd("website", e.target.value)} className="dash-input" placeholder="https://example.com" /></FieldD>
+              <FieldD label="Payment terms"><input value={editing.payment_terms} onChange={(e) => upd("payment_terms", e.target.value)} className="dash-input" placeholder="Net 30" /></FieldD>
+            </Row2>
+            <FieldD label="Address"><input value={editing.address} onChange={(e) => upd("address", e.target.value)} className="dash-input" placeholder="Street, city, postal code" /></FieldD>
+            <Row2>
+              <FieldD label="Commission %"><input type="number" value={editing.commission_rate} onChange={(e) => upd("commission_rate", e.target.value)} className="dash-input" placeholder="10" /></FieldD>
               <FieldD label="Rating"><input type="number" step="0.1" min="0" max="5" value={editing.rating} onChange={(e) => upd("rating", e.target.value)} className="dash-input" placeholder="4.5" /></FieldD>
+            </Row2>
+            <Row2>
               <FieldD label="Status">
                 <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
                   <option value="active">Active</option>

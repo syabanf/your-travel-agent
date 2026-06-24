@@ -180,7 +180,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v4`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v5`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -242,6 +242,23 @@ function runMigrations() {
     // 5. Seed CMS collections (pages, media, settings) if empty.
     for (const nm of ['Page', 'MediaAsset', 'Setting']) {
       if (readCollection(nm).length === 0 && (seed[nm] || []).length) writeCollection(nm, seed[nm]);
+    }
+
+    // v5: backfill newly-added fields from the seed onto existing rows.
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Supplier', 'Lead', 'Promotion', 'Destination']) {
+      const sMap = Object.fromEntries((seed[nm] || []).map((r) => [r.id, r]));
+      const rows = readCollection(nm);
+      if (!rows.length) continue;
+      let changed = false;
+      const next = rows.map((r) => {
+        const s = sMap[r.id];
+        if (!s) return r;
+        const patch = {};
+        for (const k of Object.keys(s)) { if (!(k in r)) patch[k] = s[k]; }
+        if (Object.keys(patch).length) { changed = true; return { ...r, ...patch }; }
+        return r;
+      });
+      if (changed) writeCollection(nm, next);
     }
   } catch {
     /* best-effort — never block app startup on a migration */

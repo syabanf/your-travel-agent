@@ -42,8 +42,11 @@ const STATUS_BADGE = {
 
 const EMPTY = {
   name: "", email: "", phone: "", source: "website", destination: "",
-  budget: "", status: "new", assigned_to: "", notes: "",
+  budget: "", expected_travel_date: "", party_size: "", priority: "medium",
+  status: "new", assigned_to: "", notes: "",
 };
+
+const PRIORITIES = ["low", "medium", "high"];
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
@@ -67,6 +70,9 @@ export default function DashboardLeads() {
   const startEdit = (l) => setEditing({
     ...EMPTY, ...l,
     budget: l.budget ?? "",
+    expected_travel_date: l.expected_travel_date ?? "",
+    party_size: l.party_size ?? "",
+    priority: l.priority || "medium",
     source: l.source || "website",
     status: l.status || "new",
   });
@@ -85,6 +91,9 @@ export default function DashboardLeads() {
         name: editing.name, email: editing.email, phone: editing.phone,
         source: editing.source || "website", destination: editing.destination,
         budget: editing.budget ? Number(editing.budget) : 0,
+        expected_travel_date: editing.expected_travel_date || "",
+        party_size: editing.party_size !== "" ? Number(editing.party_size) : "",
+        priority: editing.priority || "medium",
         status: editing.status || "new",
         assigned_to: editing.assigned_to || "",
         notes: editing.notes || "",
@@ -230,11 +239,22 @@ export default function DashboardLeads() {
               <Fld label="Budget (IDR)"><input type="number" value={editing.budget} onChange={(e) => upd("budget", e.target.value)} className="dash-input" placeholder="25000000" /></Fld>
             </Row2>
             <Row2>
+              <Fld label="Expected travel date"><input type="date" value={editing.expected_travel_date} onChange={(e) => upd("expected_travel_date", e.target.value)} className="dash-input" /></Fld>
+              <Fld label="Party size"><input type="number" min="1" value={editing.party_size} onChange={(e) => upd("party_size", e.target.value)} className="dash-input" placeholder="2" /></Fld>
+            </Row2>
+            <Row2>
+              <Fld label="Priority">
+                <select value={editing.priority} onChange={(e) => upd("priority", e.target.value)} className="dash-input capitalize">
+                  {PRIORITIES.map((p) => <option key={p} value={p}>{cap(p)}</option>)}
+                </select>
+              </Fld>
               <Fld label="Status">
                 <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input capitalize">
                   {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
                 </select>
               </Fld>
+            </Row2>
+            <Row2>
               <Fld label="Assigned to"><input value={editing.assigned_to} onChange={(e) => upd("assigned_to", e.target.value)} className="dash-input" placeholder="Staff name" /></Fld>
             </Row2>
             <Fld label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Enquiry details, preferences…" /></Fld>

@@ -146,6 +146,18 @@ export default function DashboardSupplierDetail() {
         </div>
       </div>
 
+      {/* Supplier details */}
+      <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6">
+        <h2 className="font-display font-semibold text-mora-primary mb-3">Supplier details</h2>
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm">
+          <Row label="Contact person" value={s.contact_person} />
+          <Row label="Website" value={s.website} href={s.website ? (s.website.startsWith("http") ? s.website : `https://${s.website}`) : null} />
+          <Row label="Payment terms" value={s.payment_terms} />
+          <Row label="Commission rate" value={s.commission_rate != null ? `${s.commission_rate}%` : ""} />
+          <Row label="Address" value={s.address} />
+        </div>
+      </div>
+
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <Kpi icon={ShoppingBag} label="Bookings" value={count} />
@@ -218,5 +230,16 @@ const Kpi = ({ icon: Icon, label, value }) => (
       <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
     </div>
     <div className="text-xl font-display font-bold text-mora-primary mt-3 truncate">{value}</div>
+  </div>
+);
+
+const Row = ({ label, value, href }) => (
+  <div className="flex items-baseline justify-between gap-3 border-b border-mora-primary/5 pb-2 last:border-0">
+    <span className="text-mora-neutral/60 shrink-0">{label}</span>
+    {value
+      ? (href
+        ? <a href={href} target="_blank" rel="noreferrer" className="text-mora-primary hover:text-gold text-right break-all">{value}</a>
+        : <span className="text-mora-primary font-medium text-right">{value}</span>)
+      : <span className="text-mora-neutral/40">—</span>}
   </div>
 );

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import {
   ArrowLeft, Building2, MapPin, CalendarDays, Users, Wallet, Hash, StickyNote,
-  Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp,
+  Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp, Globe, Tag, CreditCard,
 } from "lucide-react";
 
 const statusPill = {
@@ -18,6 +18,11 @@ const statusPill = {
   pending: "bg-mora-gold/10 text-gold",
   cancelled: "bg-red-500/15 text-red-600",
   completed: "bg-blue-500/15 text-blue-600",
+};
+const paymentPill = {
+  paid: "bg-emerald-500/15 text-emerald-600",
+  deposit: "bg-mora-gold/10 text-gold",
+  unpaid: "bg-red-500/15 text-red-600",
 };
 const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
 
@@ -142,6 +147,8 @@ export default function DashboardBookingDetail() {
         <Row icon={User} label="Customer">{customer ? <Link to={`/dashboard/customers/${customer.id}`} className="text-mora-primary hover:text-gold font-medium">{customer.name}</Link> : (b.customer_id ? "—" : null)}</Row>
         <Row icon={Truck} label="Supplier">{supplier ? <Link to={`/dashboard/suppliers/${supplier.id}`} className="text-mora-primary hover:text-gold font-medium">{supplier.name}</Link> : (b.supplier_id ? "—" : null)}</Row>
         <Row icon={MapPin} label="Location">{b.location}</Row>
+        <Row icon={Globe} label="Channel">{b.channel || "—"}</Row>
+        <Row icon={Tag} label="Supplier ref">{b.supplier_ref ? <span className="font-mono">{b.supplier_ref}</span> : "—"}</Row>
         <Row icon={CalendarDays} label="Dates">{dates}</Row>
         <Row icon={Users} label="Guests">{b.guests}</Row>
         <Row icon={Hash} label="Confirmation code">{b.confirmation_code ? <span className="font-mono">{b.confirmation_code}</span> : null}</Row>
@@ -155,7 +162,14 @@ export default function DashboardBookingDetail() {
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Sell price</div><div className="stat-value text-base lg:text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Cost</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{formatIDR(costPrice)}</div></div>
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-mora-neutral">({marginPct}%)</span></div></div>
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{commission != null ? formatIDR(commission) : "—"}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{b.commission ? formatIDR(b.commission) : (commission != null ? formatIDR(commission) : "—")}</div></div>
+        </div>
+        <div className="mt-4 pt-4 border-t border-mora-primary/5 flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-mora-neutral/60 shrink-0" />
+          <span className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Payment status</span>
+          {b.payment_status
+            ? <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${paymentPill[b.payment_status] || paymentPill.unpaid}`}>{b.payment_status}</span>
+            : <span className="text-sm text-mora-neutral">—</span>}
         </div>
       </div>
 

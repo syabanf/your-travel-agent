@@ -19,7 +19,7 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 
-const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true };
+const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true, best_season: "", currency: "", timezone: "", languages: "", visa_note: "" };
 
 export default function DashboardDestinations() {
   const { role } = useRole();
@@ -43,6 +43,11 @@ export default function DashboardDestinations() {
     ...d,
     vibes: Array.isArray(d.vibes) ? d.vibes.join(", ") : (d.vibes || ""),
     images: (Array.isArray(d.images) && d.images.length) ? d.images : (d.image ? [d.image] : [""]),
+    best_season: d.best_season ?? "",
+    currency: d.currency ?? "",
+    timezone: d.timezone ?? "",
+    languages: d.languages ?? "",
+    visa_note: d.visa_note ?? "",
   });
   const upd = (k, v) => setEditing((p) => ({ ...p, [k]: v }));
   const updImage = (i, v) => setEditing((p) => { const images = [...(p.images || [])]; images[i] = v; return { ...p, images }; });
@@ -75,6 +80,8 @@ export default function DashboardDestinations() {
         fromPrice: editing.fromPrice ? Number(editing.fromPrice) : 0,
         vibes: String(editing.vibes || "").split(",").map((v) => v.trim()).filter(Boolean),
         lat: editing.lat, lng: editing.lng, gradient: editing.gradient || ["#0EA5E9", "#14B8A6"], active: editing.active !== false,
+        best_season: editing.best_season, currency: editing.currency, timezone: editing.timezone,
+        languages: editing.languages, visa_note: editing.visa_note,
       };
       if (editing.id) await base44.entities.Destination.update(editing.id, payload);
       else await base44.entities.Destination.create(payload);
@@ -187,6 +194,15 @@ export default function DashboardDestinations() {
                 <FieldD label="From price (IDR)"><input type="number" value={editing.fromPrice} onChange={(e) => upd("fromPrice", e.target.value)} className="dash-input" placeholder="1500000" /></FieldD>
               </Row2>
               <FieldD label="Vibes (comma separated)"><input value={editing.vibes} onChange={(e) => upd("vibes", e.target.value)} className="dash-input" placeholder="Beach, Relax, Culture" /></FieldD>
+              <Row2>
+                <FieldD label="Best season"><input value={editing.best_season ?? ""} onChange={(e) => upd("best_season", e.target.value)} className="dash-input" placeholder="Apr – Oct" /></FieldD>
+                <FieldD label="Currency"><input value={editing.currency ?? ""} onChange={(e) => upd("currency", e.target.value)} className="dash-input" placeholder="IDR" /></FieldD>
+              </Row2>
+              <Row2>
+                <FieldD label="Timezone"><input value={editing.timezone ?? ""} onChange={(e) => upd("timezone", e.target.value)} className="dash-input" placeholder="GMT+8" /></FieldD>
+                <FieldD label="Languages"><input value={editing.languages ?? ""} onChange={(e) => upd("languages", e.target.value)} className="dash-input" placeholder="Indonesian, English" /></FieldD>
+              </Row2>
+              <FieldD label="Visa note"><textarea value={editing.visa_note ?? ""} onChange={(e) => upd("visa_note", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Visa-on-arrival for 30 days…" /></FieldD>
               <div className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
                 <MapPin className="w-4 h-4 text-gold" />
                 {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-mora-neutral/60">Click the map or search to set coordinates</span>}

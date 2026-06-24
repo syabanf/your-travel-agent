@@ -32,8 +32,12 @@ const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
 const BOOKING_TYPES = ["flight", "hotel", "train", "bus", "car", "attraction", "restaurant", "activity"];
 const TRAVEL_STYLES = ["luxury", "cultural", "relaxation", "adventure", "budget", "family"];
 
-const EMPTY_BOOKING = { type: "hotel", title: "", provider: "", status: "pending", trip_id: "", customer_id: "", supplier_id: "", location: "", check_in: "", check_out: "", guests: "", price: "", cost_price: "", confirmation_code: "", image_url: "", notes: "" };
-const EMPTY_TRIP = { title: "", destination: "", customer_id: "", status: "draft", start_date: "", end_date: "", travelers: "", budget_total: "", travel_style: "", cover_image: "", notes: "" };
+const PAYMENT_STATUSES = ["paid", "deposit", "unpaid"];
+const CHANNELS = ["Direct", "Booking.com", "Agoda", "Traveloka", "Expedia"];
+const ACCOMMODATION_PREFS = ["hotel", "villa", "resort", "apartment"];
+
+const EMPTY_BOOKING = { type: "hotel", title: "", provider: "", status: "pending", payment_status: "unpaid", channel: "Direct", trip_id: "", customer_id: "", supplier_id: "", supplier_ref: "", location: "", check_in: "", check_out: "", guests: "", price: "", cost_price: "", commission: "", confirmation_code: "", image_url: "", notes: "" };
+const EMPTY_TRIP = { title: "", destination: "", customer_id: "", status: "draft", lead_traveler: "", start_date: "", end_date: "", travelers: "", adults: "", children: "", budget_total: "", travel_style: "", accommodation_pref: "", cover_image: "", special_requests: "", notes: "" };
 
 export default function DashboardBookings() {
   const { role } = useRole();
@@ -69,19 +73,21 @@ export default function DashboardBookings() {
   const startAddTrip = () => setEditing({ kind: "trip", data: { ...EMPTY_TRIP } });
   const startEditBooking = (b) => setEditing({ kind: "booking", data: {
     ...EMPTY_BOOKING, ...b,
+    payment_status: b.payment_status ?? "", channel: b.channel ?? "", supplier_ref: b.supplier_ref ?? "",
     trip_id: b.trip_id || "", customer_id: b.customer_id || "", supplier_id: b.supplier_id || "",
     check_in: b.check_in ? moment(b.check_in).format("YYYY-MM-DD") : "",
     check_out: b.check_out ? moment(b.check_out).format("YYYY-MM-DD") : "",
-    guests: b.guests ?? "", price: b.price ?? "", cost_price: b.cost_price ?? "",
+    guests: b.guests ?? "", price: b.price ?? "", cost_price: b.cost_price ?? "", commission: b.commission ?? "",
     confirmation_code: b.confirmation_code || "", image_url: b.image_url || "", notes: b.notes || "",
   } });
   const startEditTrip = (t) => setEditing({ kind: "trip", data: {
     ...EMPTY_TRIP, ...t,
-    customer_id: t.customer_id || "",
+    customer_id: t.customer_id || "", lead_traveler: t.lead_traveler ?? "",
     start_date: t.start_date ? moment(t.start_date).format("YYYY-MM-DD") : "",
     end_date: t.end_date ? moment(t.end_date).format("YYYY-MM-DD") : "",
-    travelers: t.travelers ?? "", budget_total: t.budget_total ?? "",
-    travel_style: t.travel_style || "", cover_image: t.cover_image || "", notes: t.notes || "",
+    travelers: t.travelers ?? "", adults: t.adults ?? "", children: t.children ?? "", budget_total: t.budget_total ?? "",
+    travel_style: t.travel_style || "", accommodation_pref: t.accommodation_pref ?? "",
+    cover_image: t.cover_image || "", special_requests: t.special_requests ?? "", notes: t.notes || "",
   } });
 
   const upd = (k, v) => setEditing((p) => ({ ...p, data: { ...p.data, [k]: v } }));
@@ -95,12 +101,15 @@ export default function DashboardBookings() {
       if (kind === "booking") {
         const payload = {
           type: data.type, title: data.title, provider: data.provider, status: data.status || "pending",
+          payment_status: data.payment_status || undefined, channel: data.channel || undefined,
           trip_id: data.trip_id || undefined, customer_id: data.customer_id || undefined, supplier_id: data.supplier_id || undefined,
+          supplier_ref: data.supplier_ref || undefined,
           location: data.location,
           check_in: data.check_in || undefined, check_out: data.check_out || undefined,
           guests: data.guests ? Number(data.guests) : undefined,
           price: data.price ? Number(data.price) : 0,
           cost_price: data.cost_price ? Number(data.cost_price) : 0, currency: "IDR",
+          commission: data.commission ? Number(data.commission) : 0,
           confirmation_code: data.confirmation_code || undefined,
           image_url: data.image_url || undefined, notes: data.notes || "",
         };
@@ -109,10 +118,15 @@ export default function DashboardBookings() {
       } else {
         const payload = {
           title: data.title, destination: data.destination, customer_id: data.customer_id || undefined, status: data.status || "draft",
+          lead_traveler: data.lead_traveler || undefined,
           start_date: data.start_date || undefined, end_date: data.end_date || undefined,
           travelers: data.travelers ? Number(data.travelers) : undefined,
+          adults: data.adults ? Number(data.adults) : undefined,
+          children: data.children ? Number(data.children) : undefined,
           budget_total: data.budget_total ? Number(data.budget_total) : 0, budget_currency: "IDR",
           travel_style: data.travel_style || undefined,
+          accommodation_pref: data.accommodation_pref || undefined,
+          special_requests: data.special_requests || undefined,
           cover_image: data.cover_image || undefined, notes: data.notes || "",
         };
         if (data.id) await base44.entities.Trip.update(data.id, payload);
@@ -275,6 +289,15 @@ export default function DashboardBookings() {
                   </select>
                 </Fld>
               </Row2>
+              <Row2>
+                <Fld label="Channel">
+                  <select value={d.channel} onChange={(e) => upd("channel", e.target.value)} className="dash-input">
+                    <option value="">—</option>
+                    {CHANNELS.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </Fld>
+                <Fld label="Supplier ref"><input value={d.supplier_ref} onChange={(e) => upd("supplier_ref", e.target.value)} className="dash-input" placeholder="REF-12345" /></Fld>
+              </Row2>
               <Fld label="Location"><input value={d.location} onChange={(e) => upd("location", e.target.value)} className="dash-input" placeholder="Seminyak, Bali" /></Fld>
               <Row2>
                 <Fld label="Check-in"><input type="date" value={d.check_in} onChange={(e) => upd("check_in", e.target.value)} className="dash-input" /></Fld>
@@ -286,6 +309,15 @@ export default function DashboardBookings() {
               </Row2>
               <Row2>
                 <Fld label="Cost price (IDR)"><input type="number" value={d.cost_price} onChange={(e) => upd("cost_price", e.target.value)} className="dash-input" placeholder="3300000" /></Fld>
+                <Fld label="Commission (IDR)"><input type="number" value={d.commission} onChange={(e) => upd("commission", e.target.value)} className="dash-input" placeholder="420000" /></Fld>
+              </Row2>
+              <Row2>
+                <Fld label="Payment status">
+                  <select value={d.payment_status} onChange={(e) => upd("payment_status", e.target.value)} className="dash-input capitalize">
+                    <option value="">—</option>
+                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </Fld>
                 <Fld label="Confirmation code"><input value={d.confirmation_code} onChange={(e) => upd("confirmation_code", e.target.value)} className="dash-input" placeholder="AB-558210" /></Fld>
               </Row2>
               <Fld label="Image URL"><input value={d.image_url} onChange={(e) => upd("image_url", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
@@ -302,12 +334,15 @@ export default function DashboardBookings() {
                   </select>
                 </Fld>
               </Row2>
-              <Fld label="Customer">
-                <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
-                  <option value="">— None —</option>
-                  {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </Fld>
+              <Row2>
+                <Fld label="Customer">
+                  <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
+                    <option value="">— None —</option>
+                    {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </Fld>
+                <Fld label="Lead traveler"><input value={d.lead_traveler} onChange={(e) => upd("lead_traveler", e.target.value)} className="dash-input" placeholder="Jane Doe" /></Fld>
+              </Row2>
               <Row2>
                 <Fld label="Start date"><input type="date" value={d.start_date} onChange={(e) => upd("start_date", e.target.value)} className="dash-input" /></Fld>
                 <Fld label="End date"><input type="date" value={d.end_date} onChange={(e) => upd("end_date", e.target.value)} className="dash-input" /></Fld>
@@ -317,14 +352,25 @@ export default function DashboardBookings() {
                 <Fld label="Budget (IDR)"><input type="number" value={d.budget_total} onChange={(e) => upd("budget_total", e.target.value)} className="dash-input" placeholder="48000000" /></Fld>
               </Row2>
               <Row2>
+                <Fld label="Adults"><input type="number" value={d.adults} onChange={(e) => upd("adults", e.target.value)} className="dash-input" placeholder="2" /></Fld>
+                <Fld label="Children"><input type="number" value={d.children} onChange={(e) => upd("children", e.target.value)} className="dash-input" placeholder="0" /></Fld>
+              </Row2>
+              <Row2>
                 <Fld label="Travel style">
                   <select value={d.travel_style} onChange={(e) => upd("travel_style", e.target.value)} className="dash-input capitalize">
                     <option value="">—</option>
                     {TRAVEL_STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </Fld>
-                <Fld label="Cover image URL"><input value={d.cover_image} onChange={(e) => upd("cover_image", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
+                <Fld label="Accommodation preference">
+                  <select value={d.accommodation_pref} onChange={(e) => upd("accommodation_pref", e.target.value)} className="dash-input capitalize">
+                    <option value="">—</option>
+                    {ACCOMMODATION_PREFS.map((a) => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </Fld>
               </Row2>
+              <Fld label="Cover image URL"><input value={d.cover_image} onChange={(e) => upd("cover_image", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
+              <Fld label="Special requests"><textarea value={d.special_requests} onChange={(e) => upd("special_requests", e.target.value)} className="dash-input !h-auto py-2" rows={2} placeholder="Dietary needs, accessibility, celebrations…" /></Fld>
               <Fld label="Notes"><textarea value={d.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input !h-auto py-2" rows={2} /></Fld>
             </div>
           )}

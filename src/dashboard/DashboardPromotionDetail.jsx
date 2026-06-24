@@ -9,7 +9,16 @@ import moment from "moment";
 import {
   ChevronLeft, Pencil, Trash2, Megaphone, CalendarDays, Newspaper,
   Percent, Wallet, CalendarClock, MapPin, MousePointerClick, Clock,
+  Tag, Hash, Users, FileText,
 } from "lucide-react";
+
+const AUDIENCE_META = {
+  all: { label: "All users", pill: "bg-mora-primary/10 text-mora-primary" },
+  platinum: { label: "Platinum", pill: "bg-slate-500/15 text-slate-600" },
+  gold: { label: "Gold", pill: "bg-mora-gold/15 text-gold" },
+  new: { label: "New users", pill: "bg-emerald-500/15 text-emerald-600" },
+  inactive: { label: "Inactive", pill: "bg-blue-500/15 text-blue-600" },
+};
 
 const TYPE_META = {
   promo: { label: "Promotion", pill: "bg-mora-gold/10 text-gold", icon: Megaphone },
@@ -129,9 +138,13 @@ export default function DashboardPromotionDetail() {
         <div className="space-y-1">
           {item.location && <DetailRow icon={MapPin} label="Location" value={item.location} />}
           {item.cta && <DetailRow icon={MousePointerClick} label="Call-to-action button" value={item.cta} />}
+          <DetailRow icon={Tag} label="Promo code" value={item.promo_code ? <span className="font-mono text-xs bg-mora-primary/5 border border-mora-primary/10 rounded-md px-2 py-0.5 inline-block">{item.promo_code}</span> : "—"} />
+          <DetailRow icon={Hash} label="Max redemptions" value={item.max_redemptions != null && item.max_redemptions !== "" ? Number(item.max_redemptions).toLocaleString() : "—"} />
+          <DetailRow icon={Users} label="Audience" value={item.audience ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${(AUDIENCE_META[item.audience] || AUDIENCE_META.all).pill}`}>{(AUDIENCE_META[item.audience] || AUDIENCE_META.all).label}</span> : "—"} />
           {isPromo && item.valid_until && <DetailRow icon={CalendarClock} label="Valid until" value={moment(item.valid_until).format("MMM D, YYYY")} />}
           {!isPromo && item.date && <DetailRow icon={CalendarDays} label="Date" value={moment(item.date).format("MMM D, YYYY")} />}
           {item.created_date && <DetailRow icon={Clock} label="Created" value={moment(item.created_date).format("MMM D, YYYY")} />}
+          <DetailRow icon={FileText} label="Terms & conditions" value={item.terms ? <span className="whitespace-pre-line">{item.terms}</span> : "—"} />
         </div>
       </div>
     </div>

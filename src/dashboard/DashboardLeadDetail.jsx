@@ -10,7 +10,7 @@ import moment from "moment";
 import EmptyState from "@/components/EmptyState";
 import {
   ChevronLeft, Trash2, Target, Wallet, Activity, UserCog, Mail, Phone,
-  MapPin, Compass, CalendarDays, StickyNote, MessageCircle, UserPlus,
+  MapPin, Compass, CalendarDays, StickyNote, MessageCircle, UserPlus, Users, Flag,
 } from "lucide-react";
 
 const STATUS_BADGE = {
@@ -20,6 +20,8 @@ const STATUS_BADGE = {
   won: "bg-emerald-100 text-emerald-700",
   lost: "bg-red-100 text-red-700",
 };
+
+const PRIORITY_BADGE = { low: "bg-slate-100 text-slate-500", medium: "bg-mora-gold/15 text-gold", high: "bg-red-100 text-red-700" };
 
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
 
@@ -139,6 +141,9 @@ export default function DashboardLeadDetail() {
           <DetailRow icon={Phone} label="Phone" value={lead.phone} />
           <DetailRow icon={MapPin} label="Source" value={lead.source ? cap(lead.source) : null} />
           <DetailRow icon={Compass} label="Destination" value={lead.destination} />
+          <DetailRow icon={CalendarDays} label="Expected travel date" value={lead.expected_travel_date ? moment(lead.expected_travel_date).format("D MMM YYYY") : null} />
+          <DetailRow icon={Users} label="Party size" value={lead.party_size ? `${lead.party_size} ${Number(lead.party_size) > 1 ? "travellers" : "traveller"}` : null} />
+          <DetailRow icon={Flag} label="Priority" value={lead.priority ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${PRIORITY_BADGE[lead.priority] || "bg-slate-100 text-slate-500"}`}>{lead.priority}</span> : null} />
           <DetailRow icon={CalendarDays} label="Created" value={lead.created_date ? moment(lead.created_date).format("D MMM YYYY") : null} />
           {lead.notes && <DetailRow icon={StickyNote} label="Notes" value={lead.notes} />}
         </div>
