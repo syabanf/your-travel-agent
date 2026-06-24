@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
@@ -44,6 +45,7 @@ const GROUPS = [
 function Shell() {
   const navigate = useNavigate();
   const location = useLocation();
+  const reduce = useReducedMotion();
   const { logout } = useAuth();
   const { role, setRole } = useRole();
   const [open, setOpen] = useState(false);
@@ -193,7 +195,14 @@ function Shell() {
       {/* Content — own scroll container because the global body is position:fixed (mobile-app lock) */}
       <main id="main" className="lg:ml-64 h-screen overflow-y-auto">
         <DashboardHeader onMenu={() => setOpen(true)} role={role} groups={GROUPS} />
-        <Outlet />
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.24, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <Outlet />
+        </motion.div>
       </main>
     </div>
   );
