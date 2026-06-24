@@ -265,6 +265,61 @@
 .bg-amber-soft { background-color: rgba(201, 154, 63, 0.12); }
 .border-amber-soft { border-color: rgba(201, 154, 63, 0.30); }
 
+/* ----------------- Modern visual layer (mobile app) ----------------- *
+ * Large soft shadows, clean surfaces, gradient accents and springy
+ * micro-interactions for a more contemporary feel.                     */
+@layer utilities {
+  /* Layered, low-opacity elevation */
+  .shadow-soft  { box-shadow: 0 2px 8px rgba(11,27,59,0.05), 0 10px 26px rgba(11,27,59,0.06); }
+  .shadow-lift  { box-shadow: 0 4px 14px rgba(11,27,59,0.06), 0 20px 48px rgba(11,27,59,0.11); }
+  .shadow-float { box-shadow: 0 10px 30px rgba(11,27,59,0.10), 0 34px 70px rgba(11,27,59,0.14); }
+
+  /* Clean modern surface */
+  .card-modern {
+    background: #ffffff;
+    border: 1px solid rgba(11,27,59,0.06);
+    box-shadow: 0 1px 2px rgba(11,27,59,0.04), 0 12px 30px rgba(11,27,59,0.06);
+  }
+
+  /* Crimson→navy gradient text for display headings */
+  .text-gradient {
+    background: linear-gradient(115deg, #AD1F23 0%, #0B1B3B 78%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  /* Section label with a small gradient tick before it */
+  .eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; }
+  .eyebrow::before {
+    content: ""; width: 1.15rem; height: 2px; border-radius: 2px; flex: none;
+    background: linear-gradient(90deg, #AD1F23, rgba(173,31,35,0.15));
+  }
+
+  /* Springy tap feedback (overshoot) */
+  .press-spring { transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease; }
+  .press-spring:active { transform: scale(0.955); }
+
+  /* Ken-burns style zoom when the parent .group is pressed/hovered */
+  .img-zoom { transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); will-change: transform; }
+  .group:hover .img-zoom, .group:active .img-zoom { transform: scale(1.07); }
+
+  /* Frosted pill used over imagery */
+  .chip-glass {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.2rem 0.55rem; border-radius: 999px;
+    font-size: 0.6875rem; font-weight: 600; line-height: 1;
+    background: rgba(255,255,255,0.18); color: #fff;
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-spring:active { transform: none; }
+  .img-zoom { transition: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-rise, .stagger > *, .animate-fade-in { animation: none !important; }
   .skeleton::after { animation: none; }

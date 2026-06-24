@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { MapPin, Calendar, Users, ChevronRight } from "lucide-react";
-import GlassCard from "../GlassCard";
 import moment from "moment";
 
 export default function ActiveTrip({ trip }) {
@@ -12,38 +11,34 @@ export default function ActiveTrip({ trip }) {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-mora-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-mora-primary tracking-wide uppercase">
           {isActive ? "Active Trip" : "Upcoming Trip"}
         </h2>
-        <Link to="/itinerary" className="text-xs text-gold flex items-center gap-1">
+        <Link to="/itinerary" className="text-xs text-gold flex items-center gap-1 press-spring">
           View All <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
-      
-      <Link to={`/itinerary/${trip.id}`} className="block press">
-        <GlassCard className="overflow-hidden">
-          <div className="relative h-36">
-            <img 
-              src={trip.cover_image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"} 
-              alt={trip.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/90 via-mora-primary/40 to-transparent" />
-            
-            {daysUntil > 0 && !isActive && (
-              <div className="absolute top-3 right-3 glass-gold px-3 py-1 rounded-full">
-                <span className="text-[11px] font-semibold text-white">
-                  In {daysUntil} days
-                </span>
-              </div>
-            )}
-            {isActive && (
-              <div className="absolute top-3 right-3 bg-amber-soft border border-amber-soft px-3 py-1 rounded-full">
-                <span className="text-[11px] font-semibold text-amber-accent">Active Now</span>
-              </div>
-            )}
-            
-            <div className="absolute bottom-0 left-0 right-0 p-4">
+
+      <Link to={`/itinerary/${trip.id}`} className="block press-spring group">
+        <div className="relative h-44 rounded-3xl overflow-hidden shadow-lift">
+          <img
+            src={trip.cover_image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
+            alt={trip.title}
+            className="w-full h-full object-cover img-zoom"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/35 to-transparent" />
+          <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
+
+          {daysUntil > 0 && !isActive && (
+            <div className="absolute top-3 right-3 chip-glass">In {daysUntil} days</div>
+          )}
+          {isActive && (
+            <div className="absolute top-3 right-3 chip-glass !bg-emerald-400/20 !border-emerald-300/40 text-emerald-50">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" /> Active now
+            </div>
+          )}
+
+          <div className="absolute bottom-0 left-0 right-0 p-4">
               <h3 className="text-xl font-display font-semibold text-white mb-1.5 text-shadow-soft">
                 {trip.title}
               </h3>
@@ -67,7 +62,6 @@ export default function ActiveTrip({ trip }) {
               </div>
             </div>
           </div>
-        </GlassCard>
       </Link>
     </div>
   );

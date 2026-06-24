@@ -113,24 +113,25 @@ export default function Home() {
       )}
       {/* Greeting */}
       <div className="px-6 pt-4 pb-2">
-        <p className="text-xs text-gold tracking-widest uppercase mb-1">{greeting()}</p>
-        <h1 className="text-2xl font-display font-semibold text-mora-primary">
+        <p className="text-xs text-gold tracking-[0.2em] uppercase mb-1">{greeting()}</p>
+        <h1 className="text-[28px] leading-none font-display font-bold text-gradient pb-1">
           {user?.full_name?.split(" ")[0] || "Traveler"}
         </h1>
       </div>
 
       <div className="space-y-8 pt-4 stagger">
         <QuickActions />
-        <Link to="/promotions" className="block px-6">
-          <div className="rounded-2xl btn-primary p-4 flex items-center gap-3 press">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+        <Link to="/promotions" className="block px-6 press-spring">
+          <div className="relative overflow-hidden rounded-3xl btn-primary p-4 flex items-center gap-3.5 shadow-lift">
+            <div className="absolute -top-8 -right-6 w-32 h-32 rounded-full blur-2xl" style={{ background: "rgba(255,255,255,0.12)" }} />
+            <div className="relative w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ring-1 ring-white/30" style={{ background: "rgba(255,255,255,0.18)" }}>
               <Gift className="w-5 h-5 text-white" />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="relative flex-1 min-w-0">
               <p className="text-sm font-semibold text-white">What's New</p>
               <p className="text-xs text-white/80">Promotions, events & travel news</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-white/80" />
+            <ChevronRight className="relative w-5 h-5 text-white/90" />
           </div>
         </Link>
         <ActiveTrip trip={activeTrip} />

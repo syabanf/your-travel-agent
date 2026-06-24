@@ -4,26 +4,30 @@ import { Link } from "react-router-dom";
 export default function ConciergeOffer() {
   return (
     <div className="px-6">
-      <Link to="/assistant">
-        <div className="relative overflow-hidden rounded-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-mora-gold/20 via-mora-primary/40 to-mora-gold/10 backdrop-blur-xl" />
-          <div className="absolute inset-0 border border-mora-gold/20 rounded-2xl" />
-          <div className="absolute top-0 right-0 w-32 h-32 bg-mora-gold/10 rounded-full blur-2xl" />
+      <Link to="/assistant" className="block press-spring">
+        <div className="relative overflow-hidden rounded-3xl shadow-lift">
+          <div className="absolute inset-0 premium-bg-dark" />
+          <div className="absolute -top-10 -right-10 w-44 h-44 bg-mora-gold/25 rounded-full blur-3xl" />
+          <div className="absolute -bottom-12 -left-8 w-40 h-40 bg-mora-crimson/20 rounded-full blur-3xl" />
+          <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
 
           <div className="relative p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
-              <Crown className="w-6 h-6 text-gold" strokeWidth={1.5} />
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-soft flex-shrink-0"
+              style={{ backgroundImage: "linear-gradient(135deg, #D4A24C, #B9842C)" }}
+            >
+              <Crown className="w-6 h-6 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-gold tracking-widest uppercase mb-0.5">Premium Service</p>
-              <h3 className="text-sm font-display font-semibold text-mora-white mb-0.5">
+              <p className="text-[10px] text-amber-300/90 tracking-widest uppercase mb-0.5">Premium Service</p>
+              <h3 className="text-base font-display font-semibold text-white mb-0.5">
                 Personal Concierge
               </h3>
-              <p className="text-xs text-mora-neutral/70 leading-relaxed">
+              <p className="text-xs text-white/60 leading-relaxed">
                 Expert travel advisors for your perfect journey
               </p>
             </div>
-            <ArrowRight className="w-5 h-5 text-gold flex-shrink-0" />
+            <ArrowRight className="w-5 h-5 text-amber-300 flex-shrink-0" />
           </div>
         </div>
       </Link>
