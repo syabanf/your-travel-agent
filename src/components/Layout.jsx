@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import PhoneFrame from "./PhoneFrame";
 import BottomNav from "./BottomNav";
 import AppHeader from "./AppHeader";
+import ErrorBoundary from "./ErrorBoundary";
 
 // Main tab screens get the persistent brand app-bar + horizontal swipe nav.
 const TAB_ROOTS = ["/", "/itinerary", "/booking", "/assistant", "/profile"];
@@ -90,7 +91,9 @@ export default function Layout() {
             transition={{ duration: 0.24, ease: [0.25, 0.1, 0.25, 1] }}
             style={{ minHeight: "100%" }}
           >
-            <Outlet />
+            <ErrorBoundary inline resetKey={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
           </motion.div>
         </AnimatePresence>
       </main>

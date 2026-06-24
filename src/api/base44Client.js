@@ -45,8 +45,16 @@ function readRaw(key) {
   return memory.has(key) ? memory.get(key) : null;
 }
 function writeRaw(key, value) {
-  if (hasLocalStorage) window.localStorage.setItem(key, value);
-  else memory.set(key, value);
+  if (hasLocalStorage) {
+    try {
+      window.localStorage.setItem(key, value);
+      return;
+    } catch {
+      // Quota exceeded or storage blocked mid-session — keep the app working
+      // by falling back to the in-memory store instead of throwing.
+    }
+  }
+  memory.set(key, value);
 }
 
 function readCollection(name) {

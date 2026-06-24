@@ -7,6 +7,7 @@ import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
 import DashboardHeader from "./DashboardHeader";
 import SearchableSelect from "./SearchableSelect";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const GROUPS = [
   { title: "Insight Center", items: [
@@ -201,7 +202,9 @@ function Shell() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.24, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <Outlet />
+          <ErrorBoundary inline resetKey={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </motion.div>
       </main>
     </div>

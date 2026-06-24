@@ -51,9 +51,14 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
 
   const loadMyBookings = async () => {
     setLoadingBookings(true);
-    const data = await base44.entities.Booking.list("-created_date", 50);
-    setMyBookings(data);
-    setLoadingBookings(false);
+    try {
+      const data = await base44.entities.Booking.list("-created_date", 50);
+      setMyBookings(data || []);
+    } catch {
+      setMyBookings([]);
+    } finally {
+      setLoadingBookings(false);
+    }
   };
 
   useEffect(() => { loadMyBookings(); }, []);
@@ -88,16 +93,21 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
       prompt = `Generate 5 realistic tourist attractions or activities in ${form.to || form.from || "the destination"} on ${form.date || "a visit date"} for ${form.guests} person(s). Return as JSON array with fields: name, location, category (Museum/Theme Park/Tour/Adventure/Cultural/Nature), duration_hours (number), price_per_person (number IDR), rating (number 1-5), description (one sentence), includes (array of 2 strings).`;
     }
 
-    const res = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: {
-        type: "object",
-        properties: { results: { type: "array", items: { type: "object" } } }
-      }
-    });
-    setResults(res.results || []);
-    setLoading(false);
-    setSearched(true);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: "object",
+          properties: { results: { type: "array", items: { type: "object" } } }
+        }
+      });
+      setResults(res.results || []);
+      setSearched(true);
+    } catch {
+      toast.error("Search failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const safeDate = (dateStr, timeStr) => {
