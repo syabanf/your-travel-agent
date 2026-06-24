@@ -15,6 +15,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
@@ -205,9 +206,12 @@ export default function DashboardTeam() {
               </div>
               <div>
                 <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Role</label>
-                <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} className="dash-input">
-                  {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-                </select>
+                <SearchableSelect
+                  value={invite.role}
+                  onChange={(v) => setInvite((p) => ({ ...p, role: v }))}
+                  options={ROLES.map((r) => ({ value: String(r.key), label: r.label }))}
+                  ariaLabel="Role"
+                />
               </div>
             </div>
             <div className="flex gap-2 mt-4">
@@ -234,10 +238,13 @@ export default function DashboardTeam() {
                   placeholder="Search team…"
                 />
               </div>
-              <select value={roleF} onChange={(e) => setRoleF(e.target.value)} className="dash-input max-w-[160px]">
-                <option value="all">All roles</option>
-                {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-              </select>
+              <SearchableSelect
+                value={roleF}
+                onChange={setRoleF}
+                options={[{ value: "all", label: "All roles" }, ...ROLES.map((r) => ({ value: String(r.key), label: r.label }))]}
+                ariaLabel="Filter by role"
+                className="max-w-[160px]"
+              />
               <DateRangeSelect value={range} onChange={setRange} />
               {(query || roleF !== "all" || range !== "all" || sortKey !== "name" || sortDir !== "asc") && (
                 <button onClick={() => { setQuery(""); setRoleF("all"); setRange("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
@@ -269,15 +276,16 @@ export default function DashboardTeam() {
                     </div>
                   </td>
                   <td className="px-5 py-3">
-                    <select
-                      value={m.role}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => { e.stopPropagation(); changeRole(m.id, e.target.value); }}
-                      disabled={!canManage}
-                      className="dash-input !h-9 !w-auto !text-xs pr-7 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {ROLES.map((r) => <option key={r.key} value={r.key}>{r.label}</option>)}
-                    </select>
+                    <span onClick={(e) => e.stopPropagation()} className="inline-block">
+                      <SearchableSelect
+                        value={m.role}
+                        onChange={(v) => changeRole(m.id, v)}
+                        options={ROLES.map((r) => ({ value: String(r.key), label: r.label }))}
+                        disabled={!canManage}
+                        ariaLabel="Change role"
+                        className="!h-9 !w-auto !text-xs pr-7 disabled:opacity-60 disabled:cursor-not-allowed"
+                      />
+                    </span>
                   </td>
                   <td className="px-5 py-3"><Pill s={m.status} /></td>
                   <td className="px-5 py-3 text-mora-neutral">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>

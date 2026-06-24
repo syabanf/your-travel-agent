@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import moment from "moment";
 import { formatIDR } from "@/lib/currency";
 import { toast } from "sonner";
-import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus, Receipt } from "lucide-react";
+import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus, Receipt, Tags, Pencil, Trash2 } from "lucide-react";
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
@@ -52,18 +53,31 @@ export default function DashboardOTA() {
   const [channels, setChannels] = useState(SEED);
   const [syncing, setSyncing] = useState(false);
   const [detail, setDetail] = useState(null);
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ name: "", commission: 15 });
+  const [editing, setEditing] = useState(null); // null | { id?, name, commission }
+  const openNew = () => setEditing({ name: "", commission: 15 });
+  const openEdit = (c) => setEditing({ id: c.id, name: c.name, commission: c.commission });
 
-  const addChannel = (e) => {
+  const save = (e) => {
     e.preventDefault();
-    const name = form.name.trim();
+    const name = (editing.name || "").trim();
     if (!name) { toast.error("Enter a channel name"); return; }
-    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `ch-${channels.length + 1}`;
-    if (channels.some((c) => c.id === id || c.name.toLowerCase() === name.toLowerCase())) { toast.error("That channel is already connected"); return; }
-    setChannels((prev) => [...prev, { id, name, status: "connected", listings: 0, bookings: 0, revenue: 0, commission: Math.max(0, Number(form.commission) || 0), lastSync: "just now" }]);
-    setAdding(false); setForm({ name: "", commission: 15 });
-    toast.success(`${name} connected`);
+    const commission = Math.max(0, Number(editing.commission) || 0);
+    if (editing.id) {
+      setChannels((prev) => prev.map((c) => (c.id === editing.id ? { ...c, name, commission } : c)));
+      toast.success("Channel updated");
+    } else {
+      const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `ch-${channels.length + 1}`;
+      if (channels.some((c) => c.id === id || c.name.toLowerCase() === name.toLowerCase())) { toast.error("That channel already exists"); return; }
+      setChannels((prev) => [...prev, { id, name, status: "connected", listings: 0, bookings: 0, revenue: 0, commission, lastSync: "just now" }]);
+      toast.success(`${name} connected`);
+    }
+    setEditing(null);
+  };
+
+  const removeChannel = (c) => {
+    if (!window.confirm(`Remove ${c.name}?`)) return;
+    setChannels((prev) => prev.filter((x) => x.id !== c.id));
+    toast.success(`${c.name} removed`);
   };
 
   const connected = channels.filter((c) => c.status === "connected").length;
@@ -99,9 +113,13 @@ export default function DashboardOTA() {
     { key: "commission", label: "Commission", align: "right", render: (c) => `${c.commission}%` },
     { key: "lastSync", label: "Last sync", render: (c) => c.lastSync },
     { key: "action", label: "", align: "right", render: (c) => (
-      <button onClick={(e) => { e.stopPropagation(); toggle(c); }} className={`text-xs font-medium px-3 py-1.5 rounded-lg press ${c.status === "disconnected" ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"}`}>
-        {c.status === "disconnected" ? "Connect" : "Disconnect"}
-      </button>
+      <span className="inline-flex items-center gap-1.5 justify-end">
+        <button onClick={(e) => { e.stopPropagation(); toggle(c); }} className={`text-xs font-medium px-3 py-1.5 rounded-lg press ${c.status === "disconnected" ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"}`}>
+          {c.status === "disconnected" ? "Connect" : "Disconnect"}
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); openEdit(c); }} aria-label="Edit channel" className="w-8 h-8 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); removeChannel(c); }} aria-label="Remove channel" className="w-8 h-8 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
+      </span>
     ) },
   ];
 
@@ -118,7 +136,8 @@ export default function DashboardOTA() {
           <button onClick={syncAll} disabled={syncing} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press disabled:opacity-50">
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> Sync all
           </button>
-          <button onClick={() => setAdding(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add channel</button>
+          <Link to="/dashboard/ota/categories" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press"><Tags className="w-4 h-4" /> Categories</Link>
+          <button onClick={openNew} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add channel</button>
         </div>
       </header>
 
@@ -172,21 +191,23 @@ export default function DashboardOTA() {
         )}
       </Drawer>
 
-      <Drawer open={adding} onClose={() => setAdding(false)} icon={Plus} width="max-w-md" title="Add channel" subtitle="Connect a new OTA channel">
-        <form onSubmit={addChannel} className="space-y-4">
+      <Drawer open={!!editing} onClose={() => setEditing(null)} icon={editing?.id ? Pencil : Plus} width="max-w-md" title={editing?.id ? "Edit channel" : "Add channel"} subtitle={editing?.id ? "Update channel details" : "Connect a new OTA channel"}>
+        {editing && (
+        <form onSubmit={save} className="space-y-4">
           <div>
             <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Channel name</label>
-            <input autoFocus value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="dash-input" placeholder="e.g. Trip.com" />
+            <input autoFocus value={editing.name} onChange={(e) => setEditing((f) => ({ ...f, name: e.target.value }))} className="dash-input" placeholder="e.g. Trip.com" />
           </div>
           <div>
             <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Commission %</label>
-            <input type="number" min="0" max="100" value={form.commission} onChange={(e) => setForm((f) => ({ ...f, commission: e.target.value }))} className="dash-input" />
+            <input type="number" min="0" max="100" value={editing.commission} onChange={(e) => setEditing((f) => ({ ...f, commission: e.target.value }))} className="dash-input" />
           </div>
           <div className="flex gap-2 pt-2">
-            <button type="button" onClick={() => setAdding(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
-            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">Add channel</button>
+            <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">{editing.id ? "Save changes" : "Add channel"}</button>
           </div>
         </form>
+        )}
       </Drawer>
     </div>
   );

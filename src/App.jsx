@@ -76,6 +76,7 @@ const DashboardERP = lazy(() => import('./dashboard/DashboardERP'));
 const DashboardOTA = lazy(() => import('./dashboard/DashboardOTA'));
 const DashboardPMS = lazy(() => import('./dashboard/DashboardPMS'));
 const DashboardOTATransactions = lazy(() => import('./dashboard/DashboardOTATransactions'));
+const DashboardOTACategories = lazy(() => import('./dashboard/DashboardOTACategories'));
 const DashboardPMSTransactions = lazy(() => import('./dashboard/DashboardPMSTransactions'));
 const DashboardContent = lazy(() => import('./dashboard/DashboardContent'));
 const DashboardContentDetail = lazy(() => import('./dashboard/DashboardContentDetail'));
@@ -141,6 +142,7 @@ const AppRoutes = () => (
           {/* Operations */}
           <Route path="ota" element={<DashboardOTA />} />
           <Route path="ota/transactions" element={<DashboardOTATransactions />} />
+          <Route path="ota/categories" element={<DashboardOTACategories />} />
           <Route path="pms" element={<DashboardPMS />} />
           <Route path="pms/transactions" element={<DashboardPMSTransactions />} />
           <Route path="content" element={<DashboardContent />} />

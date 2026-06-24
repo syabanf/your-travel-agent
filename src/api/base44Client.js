@@ -148,7 +148,7 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory'];
 
 // Business records whose changes are written to the AuditLog (compliance trail).
 const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting']);
@@ -180,7 +180,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v6`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v7`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -259,6 +259,11 @@ function runMigrations() {
         return r;
       });
       if (changed) writeCollection(nm, next);
+    }
+
+    // v7: seed the OTA booking categories that drive the mobile app's tabs.
+    if (readCollection('OtaCategory').length === 0 && (seed.OtaCategory || []).length) {
+      writeCollection('OtaCategory', seed.OtaCategory);
     }
 
     // v6: insert seed rows added after the user first seeded (the spread-out

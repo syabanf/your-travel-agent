@@ -19,6 +19,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
@@ -229,9 +230,7 @@ export default function DashboardLeads() {
             <Row2>
               <Fld label="Phone"><input value={editing.phone} onChange={(e) => upd("phone", e.target.value)} className="dash-input" placeholder="+62…" /></Fld>
               <Fld label="Source">
-                <select value={editing.source} onChange={(e) => upd("source", e.target.value)} className="dash-input capitalize">
-                  {SOURCES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
-                </select>
+                <SearchableSelect value={editing.source} onChange={(v) => upd("source", v)} options={SOURCES.map((s) => ({ value: s, label: cap(s) }))} ariaLabel="Source" />
               </Fld>
             </Row2>
             <Row2>
@@ -244,14 +243,10 @@ export default function DashboardLeads() {
             </Row2>
             <Row2>
               <Fld label="Priority">
-                <select value={editing.priority} onChange={(e) => upd("priority", e.target.value)} className="dash-input capitalize">
-                  {PRIORITIES.map((p) => <option key={p} value={p}>{cap(p)}</option>)}
-                </select>
+                <SearchableSelect value={editing.priority} onChange={(v) => upd("priority", v)} options={PRIORITIES.map((p) => ({ value: p, label: cap(p) }))} ariaLabel="Priority" />
               </Fld>
               <Fld label="Status">
-                <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input capitalize">
-                  {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
-                </select>
+                <SearchableSelect value={editing.status} onChange={(v) => upd("status", v)} options={STATUSES.map((s) => ({ value: s, label: cap(s) }))} ariaLabel="Status" />
               </Fld>
             </Row2>
             <Row2>
@@ -283,20 +278,17 @@ export default function DashboardLeads() {
                   placeholder="Search leads…"
                 />
               </div>
-              <select value={sourceF} onChange={(e) => setSourceF(e.target.value)} className="dash-input max-w-[160px]">
-                <option value="all">All sources</option>
-                {sourceOptions.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
-              </select>
-              <select value={agentF} onChange={(e) => setAgentF(e.target.value)} className="dash-input max-w-[170px]">
-                <option value="all">All agents</option>
-                {agentOptions.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
+              <SearchableSelect value={sourceF} onChange={setSourceF} options={[{ value: "all", label: "All sources" }, ...sourceOptions.map((s) => ({ value: s, label: cap(s) }))]} placeholder="All sources" ariaLabel="Source filter" className="max-w-[160px]" />
+              <SearchableSelect value={agentF} onChange={setAgentF} options={[{ value: "all", label: "All agents" }, ...agentOptions.map((a) => ({ value: a, label: a }))]} placeholder="All agents" ariaLabel="Agent filter" className="max-w-[170px]" />
               <DateRangeSelect value={range} onChange={setRange} />
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[170px]">
-                <option value="newest">Newest</option>
-                <option value="budget">Budget high–low</option>
-                <option value="name">Name</option>
-              </select>
+              <SearchableSelect
+                value={sortBy}
+                onChange={setSortBy}
+                options={[{ value: "newest", label: "Newest" }, { value: "budget", label: "Budget high–low" }, { value: "name", label: "Name" }]}
+                placeholder="Newest"
+                ariaLabel="Sort by"
+                className="max-w-[170px]"
+              />
               {(query || sourceF !== "all" || agentF !== "all" || range !== "all" || sortBy !== "newest") && (
                 <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                   <X className="w-3.5 h-3.5" /> Clear
@@ -358,15 +350,19 @@ export default function DashboardLeads() {
 
                         <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-mora-primary/5">
                           {canEdit && (
-                            <select
-                              value={l.status || "new"}
+                            <span
+                              className="flex-1 min-w-0"
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                              onChange={(e) => { e.preventDefault(); e.stopPropagation(); setStatus(l.id, e.target.value); }}
-                              className="text-[11px] rounded-lg border border-mora-primary/15 bg-white px-2 py-1 text-mora-primary capitalize outline-none focus:border-mora-gold/50 flex-1 min-w-0"
                               title="Move stage"
                             >
-                              {STATUSES.map((s) => <option key={s} value={s}>{cap(s)}</option>)}
-                            </select>
+                              <SearchableSelect
+                                value={l.status || "new"}
+                                onChange={(v) => setStatus(l.id, v)}
+                                options={STATUSES.map((s) => ({ value: s, label: cap(s) }))}
+                                ariaLabel="Move stage"
+                                className="text-[11px] !h-auto py-1 w-full"
+                              />
+                            </span>
                           )}
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}

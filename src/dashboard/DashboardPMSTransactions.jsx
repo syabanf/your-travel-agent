@@ -12,6 +12,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const RES_BADGE = { confirmed: "bg-blue-100 text-blue-700", checked_in: "bg-emerald-100 text-emerald-700", checked_out: "bg-slate-100 text-slate-500", cancelled: "bg-red-100 text-red-600" };
 const RES_DOT = { confirmed: "bg-blue-500", checked_in: "bg-emerald-500", checked_out: "bg-slate-400", cancelled: "bg-red-500" };
@@ -116,10 +117,13 @@ export default function DashboardPMSTransactions() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
           <input className="dash-input pl-9" placeholder="Search res #, guest or room…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
-        <select value={propertyF} onChange={(e) => setPropertyF(e.target.value)} className="dash-input max-w-[200px]">
-          <option value="all">All properties</option>
-          {PMS_PROPERTY_NAMES.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
+        <SearchableSelect
+          value={propertyF}
+          onChange={setPropertyF}
+          options={[{ value: "all", label: "All properties" }, ...PMS_PROPERTY_NAMES.map((p) => ({ value: String(p), label: String(p) }))]}
+          ariaLabel="Filter by property"
+          className="max-w-[200px]"
+        />
         <DateRangeSelect value={range} onChange={setRange} />
         {(query || propertyF !== "all" || statusF !== "all" || range !== "all") && (
           <button onClick={() => { setQuery(""); setPropertyF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">

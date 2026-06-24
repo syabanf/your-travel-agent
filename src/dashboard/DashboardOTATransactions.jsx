@@ -12,6 +12,7 @@ import { usePagination } from "@/dashboard/usePagination";
 import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
 const DOT = { paid: "bg-emerald-500", pending: "bg-mora-gold", refunded: "bg-slate-400" };
@@ -114,10 +115,13 @@ export default function DashboardOTATransactions() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
           <input className="dash-input pl-9" placeholder="Search ref, guest or listing…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
-        <select value={channelF} onChange={(e) => setChannelF(e.target.value)} className="dash-input max-w-[170px]">
-          <option value="all">All channels</option>
-          {OTA_CHANNEL_NAMES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
+        <SearchableSelect
+          value={channelF}
+          onChange={setChannelF}
+          options={[{ value: "all", label: "All channels" }, ...OTA_CHANNEL_NAMES.map((c) => ({ value: String(c), label: String(c) }))]}
+          ariaLabel="Filter by channel"
+          className="max-w-[170px]"
+        />
         <DateRangeSelect value={range} onChange={setRange} />
         {(query || channelF !== "all" || statusF !== "all" || range !== "all") && (
           <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">

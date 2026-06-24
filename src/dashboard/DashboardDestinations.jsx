@@ -18,6 +18,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const EMPTY = { name: "", country: "", tagline: "", images: [""], emoji: "🌍", fromPrice: "", vibes: "", lat: null, lng: null, gradient: ["#0EA5E9", "#14B8A6"], active: true, best_season: "", currency: "", timezone: "", languages: "", visa_note: "" };
 
@@ -253,23 +254,38 @@ export default function DashboardDestinations() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
             <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search destinations…" />
           </div>
-          <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[160px]">
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <SearchableSelect
+            value={statusF}
+            onChange={setStatusF}
+            options={[
+              { value: "all", label: "All" },
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ]}
+            ariaLabel="Filter by status"
+            className="max-w-[160px]"
+          />
           {countryOptions.length > 1 && (
-            <select value={countryF} onChange={(e) => setCountryF(e.target.value)} className="dash-input max-w-[170px]">
-              <option value="all">All countries</option>
-              {countryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+            <SearchableSelect
+              value={countryF}
+              onChange={setCountryF}
+              options={[{ value: "all", label: "All countries" }, ...countryOptions.map((c) => ({ value: String(c), label: String(c) }))]}
+              ariaLabel="Filter by country"
+              className="max-w-[170px]"
+            />
           )}
           <DateRangeSelect value={range} onChange={setRange} />
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
-            <option value="newest">Newest</option>
-            <option value="name">Name A–Z</option>
-            <option value="price">Price</option>
-          </select>
+          <SearchableSelect
+            value={sortBy}
+            onChange={setSortBy}
+            options={[
+              { value: "newest", label: "Newest" },
+              { value: "name", label: "Name A–Z" },
+              { value: "price", label: "Price" },
+            ]}
+            ariaLabel="Sort by"
+            className="max-w-[160px]"
+          />
           {(query || statusF !== "all" || countryF !== "all" || range !== "all" || sortBy !== "newest") && (
             <button onClick={() => { setQuery(""); setStatusF("all"); setCountryF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
               <X className="w-3.5 h-3.5" /> Clear

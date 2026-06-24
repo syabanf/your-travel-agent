@@ -6,6 +6,7 @@
 // All monetary amounts are in Indonesian Rupiah (IDR).
 
 import { DESTINATIONS } from '@/data/destinations';
+import { DEFAULT_OTA_CATEGORIES } from '@/data/otaCategories';
 
 const DAY = 86400000;
 
@@ -228,6 +229,11 @@ export function buildSeed() {
     { id: 'media_market', created_date: iso(-10), created_by: by, title: 'Bali Arts Festival', url: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80', tags: ['event', 'culture', 'market'] },
   ];
 
+  // OTA booking categories — drive the mobile app's OTA search tabs.
+  const OtaCategory = DEFAULT_OTA_CATEGORIES.map((c, i) => ({
+    id: `otacat_${c.key}`, created_date: iso(-60 + i), updated_date: iso(-60 + i), created_by: by, ...c,
+  }));
+
   // Single app-wide settings record (brand, support, social, feature flags).
   const Setting = [
     { id: 'app', created_date: iso(-400), created_by: by, brand_name: 'MORA', tagline: 'Your Travel Agent', support_email: 'support@mora.app', support_phone: '+62 21 5000 1234', support_whatsapp: '+62 811 2233 4455', currency: 'IDR', instagram: '@mora.travel', facebook: 'MORA Travel', hero_title: 'Your journey begins with MORA', hero_subtitle: 'Plan, book and travel — beautifully.', flag_promotions: true, flag_ai_assistant: true, flag_consultations: true, flag_ota: true },
@@ -331,5 +337,5 @@ export function buildSeed() {
     });
   }
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting };
+  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory };
 }

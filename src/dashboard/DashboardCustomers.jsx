@@ -20,6 +20,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -232,17 +233,25 @@ export default function DashboardCustomers() {
               <Row2>
                 <FieldD label="Country"><input value={editing.country} onChange={(e) => upd("country", e.target.value)} className="dash-input" placeholder="Indonesia" /></FieldD>
                 <FieldD label="Tier">
-                  <select value={editing.tier} onChange={(e) => upd("tier", e.target.value)} className="dash-input">
-                    {TIERS.map((t) => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}
-                  </select>
+                  <SearchableSelect
+                    value={editing.tier}
+                    onChange={(val) => upd("tier", val)}
+                    options={TIERS.map((t) => ({ value: t, label: t[0].toUpperCase() + t.slice(1) }))}
+                    ariaLabel="Tier"
+                  />
                 </FieldD>
               </Row2>
               <Row2>
                 <FieldD label="Status">
-                  <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
+                  <SearchableSelect
+                    value={editing.status}
+                    onChange={(val) => upd("status", val)}
+                    options={[
+                      { value: "active", label: "Active" },
+                      { value: "inactive", label: "Inactive" },
+                    ]}
+                    ariaLabel="Status"
+                  />
                 </FieldD>
                 <FieldD label="Lifetime spend (IDR)"><input type="number" value={editing.lifetime_spend} onChange={(e) => upd("lifetime_spend", e.target.value)} className="dash-input" placeholder="25000000" /></FieldD>
               </Row2>
@@ -260,10 +269,16 @@ export default function DashboardCustomers() {
               </Row2>
               <FieldD label="Address"><input value={editing.address} onChange={(e) => upd("address", e.target.value)} className="dash-input" placeholder="Street, city, postal code" /></FieldD>
               <FieldD label="Source">
-                <select value={editing.source} onChange={(e) => upd("source", e.target.value)} className="dash-input">
-                  <option value="">Select source…</option>
-                  {SOURCES.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
-                </select>
+                <SearchableSelect
+                  value={editing.source}
+                  onChange={(val) => upd("source", val)}
+                  options={[
+                    { value: "", label: "Select source…" },
+                    ...SOURCES.map((s) => ({ value: s, label: s[0].toUpperCase() + s.slice(1) })),
+                  ]}
+                  placeholder="Select source…"
+                  ariaLabel="Source"
+                />
               </FieldD>
               <label className="flex items-center gap-2 text-sm text-mora-primary cursor-pointer pt-1">
                 <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-mora-primary/30 text-gold focus:ring-gold" />
@@ -314,30 +329,58 @@ export default function DashboardCustomers() {
                 onChange={(e) => setListQuery(e.target.value)}
               />
             </div>
-            <select value={tierF} onChange={(e) => setTierF(e.target.value)} className="dash-input max-w-[150px]">
-              <option value="all">All tiers</option>
-              <option value="bronze">Bronze</option>
-              <option value="silver">Silver</option>
-              <option value="gold">Gold</option>
-              <option value="platinum">Platinum</option>
-            </select>
-            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
-              <option value="all">All status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+            <SearchableSelect
+              value={tierF}
+              onChange={setTierF}
+              options={[
+                { value: "all", label: "All tiers" },
+                { value: "bronze", label: "Bronze" },
+                { value: "silver", label: "Silver" },
+                { value: "gold", label: "Gold" },
+                { value: "platinum", label: "Platinum" },
+              ]}
+              placeholder="All tiers"
+              ariaLabel="Tier filter"
+              className="max-w-[150px]"
+            />
+            <SearchableSelect
+              value={statusF}
+              onChange={setStatusF}
+              options={[
+                { value: "all", label: "All status" },
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              placeholder="All status"
+              ariaLabel="Status filter"
+              className="max-w-[150px]"
+            />
             {countryOptions.length > 1 && (
-              <select value={countryF} onChange={(e) => setCountryF(e.target.value)} className="dash-input max-w-[170px]">
-                <option value="all">All countries</option>
-                {countryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+              <SearchableSelect
+                value={countryF}
+                onChange={setCountryF}
+                options={[
+                  { value: "all", label: "All countries" },
+                  ...countryOptions.map((c) => ({ value: String(c), label: c })),
+                ]}
+                placeholder="All countries"
+                ariaLabel="Country filter"
+                className="max-w-[170px]"
+              />
             )}
             <DateRangeSelect value={range} onChange={setRange} />
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="newest">Newest</option>
-              <option value="name">Name A–Z</option>
-              <option value="spend">Lifetime spend</option>
-            </select>
+            <SearchableSelect
+              value={sort}
+              onChange={setSort}
+              options={[
+                { value: "newest", label: "Newest" },
+                { value: "name", label: "Name A–Z" },
+                { value: "spend", label: "Lifetime spend" },
+              ]}
+              placeholder="Newest"
+              ariaLabel="Sort"
+              className="max-w-[160px]"
+            />
             {(listQuery || tierF !== "all" || statusF !== "all" || countryF !== "all" || range !== "all" || sort !== "newest") && (
               <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear

@@ -2,22 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket, Search, MapPin, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
+import { Ticket, Search, MapPin, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
 import { toast } from "sonner";
 import GlassCard from "../GlassCard";
 import DateTimePicker from "../DateTimePicker";
 import { formatIDR } from "@/lib/currency";
+import { DEFAULT_OTA_CATEGORIES, iconFor } from "@/data/otaCategories";
 
-const tabs = [
-  { key: "my_bookings", label: "My Bookings", icon: Ticket },
-  { key: "flight", label: "Flight", icon: Plane },
-  { key: "hotel", label: "Hotel", icon: Building2 },
-  { key: "train", label: "Train", icon: Train },
-  { key: "bus", label: "Bus", icon: Bus },
-  { key: "ship", label: "Ship", icon: Ship },
-  { key: "car_rental", label: "Rental", icon: Car },
-  { key: "attraction", label: "Attraction", icon: Ticket },
-];
+const MY_BOOKINGS_TAB = { key: "my_bookings", label: "My Bookings", icon: Ticket };
 
 const statusColors = {
   pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
@@ -30,8 +22,22 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const savingRef = useRef(false);
-  const visibleTabs = showMyBookings ? tabs : tabs.filter((t) => t.key !== "my_bookings");
+  const [cats, setCats] = useState(null);
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  // Categories are managed in the dashboard (OtaCategory) and drive these tabs.
+  // Each tab's key is the category's `behavior`, so the built-in search/book
+  // flows below stay unchanged and new categories reuse a built-in flow.
+  useEffect(() => {
+    base44.entities.OtaCategory.list("order", 50)
+      .then((rows) => setCats((rows || []).length ? rows : DEFAULT_OTA_CATEGORIES))
+      .catch(() => setCats(DEFAULT_OTA_CATEGORIES));
+  }, []);
+  const categoryTabs = (cats || DEFAULT_OTA_CATEGORIES)
+    .filter((c) => c.active !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0))
+    .map((c) => ({ key: c.behavior || c.key, label: c.label, icon: iconFor(c.icon), uid: c.id || c.key }));
+  const visibleTabs = showMyBookings ? [MY_BOOKINGS_TAB, ...categoryTabs] : categoryTabs;
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [form, setForm] = useState({
@@ -138,13 +144,16 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
     <div className="px-6 mb-8">
       {/* Tab selector */}
       <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar">
-        {visibleTabs.map(({ key, label, icon: Icon }) => (
-          <button key={key} onClick={() => handleTabChange(key)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === key ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
-            <Icon className="w-3.5 h-3.5" />
-            {label}
-          </button>
-        ))}
+        {visibleTabs.map((t) => {
+          const Icon = t.icon;
+          return (
+            <button key={t.uid || t.key} onClick={() => handleTabChange(t.key)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === t.key ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
+              <Icon className="w-3.5 h-3.5" />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* My Bookings */}
@@ -243,7 +252,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
           <button onClick={handleSearch} disabled={loading || (!form.to && !form.from)}
             className="w-full py-3 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            {loading ? "Searching..." : `Search ${tabs.find(t => t.key === activeTab)?.label}s`}
+            {loading ? "Searching..." : `Search ${visibleTabs.find(t => t.key === activeTab)?.label || ""}s`}
           </button>
         </GlassCard>
       )}

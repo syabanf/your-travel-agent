@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { formatIDR } from "@/lib/currency";
 import { toast } from "sonner";
-import { Building2, BedDouble, Percent, TrendingUp, Plus, RefreshCw, Check, Minus } from "lucide-react";
+import { Building2, BedDouble, Percent, TrendingUp, Plus, RefreshCw, Check, Minus, Pencil, Trash2 } from "lucide-react";
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 // Mock property-management inventory (no backend — demo only).
@@ -50,21 +51,36 @@ export default function DashboardPMS() {
   const [detail, setDetail] = useState(null);
   const [sync, setSync] = useState([]);
   const [syncing, setSyncing] = useState(false);
-  const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ property: "", roomType: "", total: 10, adr: 2000000 });
+  const [editing, setEditing] = useState(null); // null | {id?, property, roomType, total, adr, status}
   const inSync = sync.filter((s) => s.status === "in_sync").length;
 
-  const addProperty = (e) => {
+  const openNew = () => setEditing({ property: "", roomType: "", total: 10, adr: 2000000, status: "open" });
+  const openEdit = (r) => setEditing({ id: r.id, property: r.property, roomType: r.roomType, total: r.total, adr: r.adr, status: r.status });
+
+  const save = (e) => {
     e.preventDefault();
-    const property = form.property.trim();
-    const roomType = form.roomType.trim() || "Standard Room";
+    const property = (editing.property || "").trim();
+    const roomType = (editing.roomType || "").trim() || "Standard Room";
     if (!property) { toast.error("Enter a property name"); return; }
-    const total = Math.max(1, Number(form.total) || 1);
-    const id = `${property}-${roomType}`.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `room-${rows.length + 1}`;
-    if (rows.some((r) => r.id === id)) { toast.error("That room already exists"); return; }
-    setRows((prev) => [...prev, { id, property, roomType, total, available: total, adr: Math.max(0, Number(form.adr) || 0), status: "open" }]);
-    setAdding(false); setForm({ property: "", roomType: "", total: 10, adr: 2000000 });
-    toast.success(`${roomType} at ${property} added`);
+    const total = Math.max(1, Number(editing.total) || 1);
+    const adr = Math.max(0, Number(editing.adr) || 0);
+    const status = editing.status || "open";
+    if (editing.id) {
+      setRows((prev) => prev.map((r) => (r.id === editing.id ? { ...r, property, roomType, total, adr, status, available: Math.min(r.available, total) } : r)));
+      toast.success("Property updated");
+    } else {
+      const id = `${property}-${roomType}`.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `room-${rows.length + 1}`;
+      if (rows.some((r) => r.id === id)) { toast.error("That room already exists"); return; }
+      setRows((prev) => [...prev, { id, property, roomType, total, available: total, adr, status }]);
+      toast.success(`${roomType} at ${property} added`);
+    }
+    setEditing(null);
+  };
+
+  const removeRoom = (r) => {
+    if (!window.confirm(`Remove ${r.roomType} at ${r.property}?`)) return;
+    setRows((prev) => prev.filter((x) => x.id !== r.id));
+    toast.success("Removed");
   };
 
   const openDetail = (r) => { setDetail(r); setSync(syncFor(r)); setSyncing(false); };
@@ -109,9 +125,11 @@ export default function DashboardPMS() {
     { key: "adr", label: "ADR", align: "right", className: "text-right font-semibold text-gold", render: (r) => formatIDR(r.adr) },
     { key: "status", label: "Status", render: (r) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${STATUS[r.status]}`}>{r.status}</span> },
     { key: "rate", label: "Rate", align: "right", render: (r) => (
-      <span className="inline-flex gap-1">
-        <button onClick={(e) => { e.stopPropagation(); adjust(r, -100000); }} className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">−</button>
-        <button onClick={(e) => { e.stopPropagation(); adjust(r, 100000); }} className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">+</button>
+      <span className="inline-flex gap-1 justify-end">
+        <button onClick={(e) => { e.stopPropagation(); adjust(r, -100000); }} aria-label="Lower rate" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">−</button>
+        <button onClick={(e) => { e.stopPropagation(); adjust(r, 100000); }} aria-label="Raise rate" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">+</button>
+        <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} aria-label="Edit room" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); removeRoom(r); }} aria-label="Remove room" className="w-7 h-7 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
       </span>
     ) },
   ];
@@ -126,7 +144,7 @@ export default function DashboardPMS() {
         </div>
         <div className="flex items-center gap-2">
           <DashboardAiStub resource="pms" data={rows} />
-          <button onClick={() => setAdding(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add property</button>
+          <button onClick={openNew} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add property</button>
         </div>
       </header>
 
@@ -179,31 +197,37 @@ export default function DashboardPMS() {
         )}
       </Drawer>
 
-      <Drawer open={adding} onClose={() => setAdding(false)} icon={Plus} width="max-w-md" title="Add property" subtitle="Add a room type to your inventory">
-        <form onSubmit={addProperty} className="space-y-4">
+      <Drawer open={!!editing} onClose={() => setEditing(null)} icon={editing?.id ? Pencil : Plus} width="max-w-md" title={editing?.id ? "Edit property" : "Add property"} subtitle="A room type in your inventory">
+        {editing && (
+        <form onSubmit={save} className="space-y-4">
           <div>
             <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Property</label>
-            <input autoFocus value={form.property} onChange={(e) => setForm((f) => ({ ...f, property: e.target.value }))} className="dash-input" placeholder="e.g. Lombok Beach Resort" />
+            <input autoFocus value={editing.property} onChange={(e) => setEditing((f) => ({ ...f, property: e.target.value }))} className="dash-input" placeholder="e.g. Lombok Beach Resort" />
           </div>
           <div>
             <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Room type</label>
-            <input value={form.roomType} onChange={(e) => setForm((f) => ({ ...f, roomType: e.target.value }))} className="dash-input" placeholder="e.g. Deluxe Suite" />
+            <input value={editing.roomType} onChange={(e) => setEditing((f) => ({ ...f, roomType: e.target.value }))} className="dash-input" placeholder="e.g. Deluxe Suite" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Rooms</label>
-              <input type="number" min="1" value={form.total} onChange={(e) => setForm((f) => ({ ...f, total: e.target.value }))} className="dash-input" />
+              <input type="number" min="1" value={editing.total} onChange={(e) => setEditing((f) => ({ ...f, total: e.target.value }))} className="dash-input" />
             </div>
             <div>
               <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">ADR (IDR)</label>
-              <input type="number" min="0" step="50000" value={form.adr} onChange={(e) => setForm((f) => ({ ...f, adr: e.target.value }))} className="dash-input" />
+              <input type="number" min="0" step="50000" value={editing.adr} onChange={(e) => setEditing((f) => ({ ...f, adr: e.target.value }))} className="dash-input" />
             </div>
           </div>
+          <div>
+            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Status</label>
+            <SearchableSelect value={editing.status} onChange={(v) => setEditing((f) => ({ ...f, status: v }))} options={[{ value: "open", label: "Open" }, { value: "soldout", label: "Sold out" }, { value: "maintenance", label: "Maintenance" }]} />
+          </div>
           <div className="flex gap-2 pt-2">
-            <button type="button" onClick={() => setAdding(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
-            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">Add property</button>
+            <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">{editing.id ? "Save changes" : "Add property"}</button>
           </div>
         </form>
+        )}
       </Drawer>
     </div>
   );

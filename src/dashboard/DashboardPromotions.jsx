@@ -18,6 +18,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false, terms: "", promo_code: "", max_redemptions: "", audience: "all" };
 const TYPE_META = {
@@ -145,11 +146,16 @@ export default function DashboardPromotions() {
           </div>
           <div className="space-y-3">
             <Fld label="Type">
-              <select value={editing.type} onChange={(e) => upd("type", e.target.value)} className="dash-input">
-                <option value="promo">Promotion</option>
-                <option value="event">Event</option>
-                <option value="news">News</option>
-              </select>
+              <SearchableSelect
+                value={editing.type}
+                onChange={(v) => upd("type", v)}
+                options={[
+                  { value: "promo", label: "Promotion" },
+                  { value: "event", label: "Event" },
+                  { value: "news", label: "News" },
+                ]}
+                ariaLabel="Type"
+              />
             </Fld>
             <Fld label="Title"><input value={editing.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Flash Sale: Bali Villas" /></Fld>
             <Fld label="Description"><textarea value={editing.description} onChange={(e) => upd("description", e.target.value)} className="dash-input !h-auto py-2" rows={2} /></Fld>
@@ -175,13 +181,18 @@ export default function DashboardPromotions() {
               <Fld label="Max redemptions"><input type="number" value={editing.max_redemptions ?? ""} onChange={(e) => upd("max_redemptions", e.target.value)} className="dash-input" placeholder="500" /></Fld>
             </div>
             <Fld label="Audience">
-              <select value={editing.audience ?? "all"} onChange={(e) => upd("audience", e.target.value)} className="dash-input">
-                <option value="all">All users</option>
-                <option value="platinum">Platinum</option>
-                <option value="gold">Gold</option>
-                <option value="new">New users</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <SearchableSelect
+                value={editing.audience ?? "all"}
+                onChange={(v) => upd("audience", v)}
+                options={[
+                  { value: "all", label: "All users" },
+                  { value: "platinum", label: "Platinum" },
+                  { value: "gold", label: "Gold" },
+                  { value: "new", label: "New users" },
+                  { value: "inactive", label: "Inactive" },
+                ]}
+                ariaLabel="Audience"
+              />
             </Fld>
             <Fld label="Terms & conditions"><textarea value={editing.terms ?? ""} onChange={(e) => upd("terms", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Terms that apply to this offer…" /></Fld>
             <label className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
@@ -205,18 +216,30 @@ export default function DashboardPromotions() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-mora-neutral pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search entries…" />
             </div>
-            <select value={typeF} onChange={(e) => setTypeF(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="all">All types</option>
-              <option value="promo">Promotion</option>
-              <option value="event">Event</option>
-              <option value="news">News</option>
-            </select>
+            <SearchableSelect
+              value={typeF}
+              onChange={setTypeF}
+              options={[
+                { value: "all", label: "All types" },
+                { value: "promo", label: "Promotion" },
+                { value: "event", label: "Event" },
+                { value: "news", label: "News" },
+              ]}
+              ariaLabel="Filter by type"
+              className="max-w-[160px]"
+            />
             <DateRangeSelect value={range} onChange={setRange} />
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="newest">Newest</option>
-              <option value="title">Title A–Z</option>
-              <option value="type">Type</option>
-            </select>
+            <SearchableSelect
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "newest", label: "Newest" },
+                { value: "title", label: "Title A–Z" },
+                { value: "type", label: "Type" },
+              ]}
+              ariaLabel="Sort by"
+              className="max-w-[160px]"
+            />
             {(query || typeF !== "all" || range !== "all" || sortBy !== "newest") && (
               <button onClick={() => { setQuery(""); setTypeF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear

@@ -15,6 +15,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
@@ -184,18 +185,28 @@ export default function DashboardContent() {
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Type">
-                <select value={editing.type} onChange={(e) => upd("type", e.target.value)} className="dash-input">
-                  <option value="page">Page</option>
-                  <option value="faq">FAQ</option>
-                  <option value="announcement">Announcement</option>
-                  <option value="hero">Hero</option>
-                </select>
+                <SearchableSelect
+                  value={editing.type}
+                  onChange={(v) => upd("type", v)}
+                  options={[
+                    { value: "page", label: "Page" },
+                    { value: "faq", label: "FAQ" },
+                    { value: "announcement", label: "Announcement" },
+                    { value: "hero", label: "Hero" },
+                  ]}
+                  ariaLabel="Type"
+                />
               </Fld>
               <Fld label="Status">
-                <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                </select>
+                <SearchableSelect
+                  value={editing.status}
+                  onChange={(v) => upd("status", v)}
+                  options={[
+                    { value: "draft", label: "Draft" },
+                    { value: "published", label: "Published" },
+                  ]}
+                  ariaLabel="Status"
+                />
               </Fld>
             </div>
             <Fld label="Title"><input value={editing.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Frequently Asked Questions" /></Fld>
@@ -237,25 +248,43 @@ export default function DashboardContent() {
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
-            <select value={typeF} onChange={(e) => setTypeF(e.target.value)} className="dash-input max-w-[170px]">
-              <option value="all">All types</option>
-              <option value="page">Page</option>
-              <option value="faq">FAQ</option>
-              <option value="announcement">Announcement</option>
-              <option value="hero">Hero</option>
-            </select>
-            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
-              <option value="all">All status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
+            <SearchableSelect
+              value={typeF}
+              onChange={setTypeF}
+              options={[
+                { value: "all", label: "All types" },
+                { value: "page", label: "Page" },
+                { value: "faq", label: "FAQ" },
+                { value: "announcement", label: "Announcement" },
+                { value: "hero", label: "Hero" },
+              ]}
+              ariaLabel="Filter by type"
+              className="max-w-[170px]"
+            />
+            <SearchableSelect
+              value={statusF}
+              onChange={setStatusF}
+              options={[
+                { value: "all", label: "All status" },
+                { value: "published", label: "Published" },
+                { value: "draft", label: "Draft" },
+              ]}
+              ariaLabel="Filter by status"
+              className="max-w-[150px]"
+            />
             <DateRangeSelect value={range} onChange={setRange} />
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="newest">Newest</option>
-              <option value="title">Title A–Z</option>
-              <option value="status">Status</option>
-              <option value="type">Type</option>
-            </select>
+            <SearchableSelect
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "newest", label: "Newest" },
+                { value: "title", label: "Title A–Z" },
+                { value: "status", label: "Status" },
+                { value: "type", label: "Type" },
+              ]}
+              ariaLabel="Sort by"
+              className="max-w-[160px]"
+            />
             {(query || typeF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
               <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear

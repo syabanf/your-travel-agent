@@ -17,6 +17,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -199,14 +200,20 @@ export default function DashboardMarketing() {
             <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Platinum Bali Flash Sale" /></Fld>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Channel">
-                <select value={editing.channel} onChange={(e) => upd("channel", e.target.value)} className="dash-input">
-                  {CHANNELS.map((ch) => <option key={ch} value={ch}>{CHANNEL_META[ch].label}</option>)}
-                </select>
+                <SearchableSelect
+                  value={editing.channel}
+                  onChange={(v) => upd("channel", v)}
+                  options={CHANNELS.map((ch) => ({ value: String(ch), label: CHANNEL_META[ch].label }))}
+                  ariaLabel="Channel"
+                />
               </Fld>
               <Fld label="Segment">
-                <select value={editing.segment} onChange={(e) => upd("segment", e.target.value)} className="dash-input">
-                  {SEGMENTS.map((s) => <option key={s} value={s}>{cap(s)} ({segmentCount(s)})</option>)}
-                </select>
+                <SearchableSelect
+                  value={editing.segment}
+                  onChange={(v) => upd("segment", v)}
+                  options={SEGMENTS.map((s) => ({ value: String(s), label: `${cap(s)} (${segmentCount(s)})` }))}
+                  ariaLabel="Segment"
+                />
               </Fld>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -215,11 +222,16 @@ export default function DashboardMarketing() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Fld label="Status">
-                <select value={editing.status} onChange={(e) => upd("status", e.target.value)} className="dash-input">
-                  <option value="draft">Draft</option>
-                  <option value="scheduled">Scheduled</option>
-                  <option value="sent">Sent</option>
-                </select>
+                <SearchableSelect
+                  value={editing.status}
+                  onChange={(v) => upd("status", v)}
+                  options={[
+                    { value: "draft", label: "Draft" },
+                    { value: "scheduled", label: "Scheduled" },
+                    { value: "sent", label: "Sent" },
+                  ]}
+                  ariaLabel="Status"
+                />
               </Fld>
               <Fld label="Scheduled date"><input type="date" value={editing.scheduled_date} onChange={(e) => upd("scheduled_date", e.target.value)} className="dash-input" /></Fld>
             </div>
@@ -240,24 +252,42 @@ export default function DashboardMarketing() {
               <Search className="w-4 h-4 text-mora-neutral absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search campaigns…" />
             </div>
-            <select value={channelF} onChange={(e) => setChannelF(e.target.value)} className="dash-input max-w-[150px]">
-              <option value="all">All channels</option>
-              <option value="email">Email</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="push">Push</option>
-            </select>
-            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[150px]">
-              <option value="all">All status</option>
-              <option value="draft">Draft</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="sent">Sent</option>
-            </select>
+            <SearchableSelect
+              value={channelF}
+              onChange={setChannelF}
+              options={[
+                { value: "all", label: "All channels" },
+                { value: "email", label: "Email" },
+                { value: "whatsapp", label: "WhatsApp" },
+                { value: "push", label: "Push" },
+              ]}
+              ariaLabel="Filter by channel"
+              className="max-w-[150px]"
+            />
+            <SearchableSelect
+              value={statusF}
+              onChange={setStatusF}
+              options={[
+                { value: "all", label: "All status" },
+                { value: "draft", label: "Draft" },
+                { value: "scheduled", label: "Scheduled" },
+                { value: "sent", label: "Sent" },
+              ]}
+              ariaLabel="Filter by status"
+              className="max-w-[150px]"
+            />
             <DateRangeSelect value={range} onChange={setRange} />
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="dash-input max-w-[160px]">
-              <option value="newest">Newest</option>
-              <option value="name">Name A–Z</option>
-              <option value="status">Status</option>
-            </select>
+            <SearchableSelect
+              value={sortBy}
+              onChange={setSortBy}
+              options={[
+                { value: "newest", label: "Newest" },
+                { value: "name", label: "Name A–Z" },
+                { value: "status", label: "Status" },
+              ]}
+              ariaLabel="Sort by"
+              className="max-w-[160px]"
+            />
             {(query || channelF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
               <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear

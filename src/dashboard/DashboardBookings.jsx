@@ -17,6 +17,7 @@ import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
+import SearchableSelect from "@/dashboard/SearchableSelect";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
@@ -142,9 +143,13 @@ export default function DashboardBookings() {
   const Pill = ({ s }) => <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[s] || statusPill.pending}`}>{s}</span>;
   const StatusCell = ({ value, options, editable, onChange }) =>
     editable ? (
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="text-[11px] rounded-lg border border-mora-primary/15 bg-white px-2 py-1 text-mora-primary capitalize outline-none focus:border-mora-gold/50">
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
+      <SearchableSelect
+        value={value}
+        onChange={onChange}
+        options={options.map((o) => ({ value: o, label: cap1(o) }))}
+        ariaLabel="Status"
+        className="text-[11px] !h-auto py-1 max-w-[150px]"
+      />
     ) : <Pill s={value} />;
 
   const canEditBookings = can(role, "bookings", "edit");
@@ -255,46 +260,30 @@ export default function DashboardBookings() {
             <div className="space-y-3">
               <Row2>
                 <Fld label="Type">
-                  <select value={d.type} onChange={(e) => upd("type", e.target.value)} className="dash-input capitalize">
-                    {BOOKING_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <SearchableSelect value={d.type} onChange={(v) => upd("type", v)} options={BOOKING_TYPES.map((t) => ({ value: t, label: cap1(t) }))} ariaLabel="Type" />
                 </Fld>
                 <Fld label="Status">
-                  <select value={d.status} onChange={(e) => upd("status", e.target.value)} className="dash-input capitalize">
-                    {BOOKING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <SearchableSelect value={d.status} onChange={(v) => upd("status", v)} options={BOOKING_STATUSES.map((s) => ({ value: s, label: cap1(s) }))} ariaLabel="Status" />
                 </Fld>
               </Row2>
               <Fld label="Title"><input value={d.title} onChange={(e) => upd("title", e.target.value)} className="dash-input" placeholder="Garuda Indonesia — SIN → DPS" /></Fld>
               <Row2>
                 <Fld label="Provider"><input value={d.provider} onChange={(e) => upd("provider", e.target.value)} className="dash-input" placeholder="Garuda Indonesia" /></Fld>
                 <Fld label="Linked trip">
-                  <select value={d.trip_id} onChange={(e) => upd("trip_id", e.target.value)} className="dash-input">
-                    <option value="">— None —</option>
-                    {(trips || []).map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
-                  </select>
+                  <SearchableSelect value={d.trip_id} onChange={(v) => upd("trip_id", v)} options={[{ value: "", label: "— None —" }, ...(trips || []).map((t) => ({ value: t.id, label: t.title }))]} placeholder="— None —" ariaLabel="Linked trip" />
                 </Fld>
               </Row2>
               <Row2>
                 <Fld label="Customer">
-                  <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
-                    <option value="">— None —</option>
-                    {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <SearchableSelect value={d.customer_id} onChange={(v) => upd("customer_id", v)} options={[{ value: "", label: "— None —" }, ...customers.map((c) => ({ value: c.id, label: c.name }))]} placeholder="— None —" ariaLabel="Customer" />
                 </Fld>
                 <Fld label="Supplier">
-                  <select value={d.supplier_id} onChange={(e) => upd("supplier_id", e.target.value)} className="dash-input">
-                    <option value="">— None —</option>
-                    {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+                  <SearchableSelect value={d.supplier_id} onChange={(v) => upd("supplier_id", v)} options={[{ value: "", label: "— None —" }, ...suppliers.map((s) => ({ value: s.id, label: s.name }))]} placeholder="— None —" ariaLabel="Supplier" />
                 </Fld>
               </Row2>
               <Row2>
                 <Fld label="Channel">
-                  <select value={d.channel} onChange={(e) => upd("channel", e.target.value)} className="dash-input">
-                    <option value="">—</option>
-                    {CHANNELS.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <SearchableSelect value={d.channel} onChange={(v) => upd("channel", v)} options={[{ value: "", label: "—" }, ...CHANNELS.map((c) => ({ value: c, label: c }))]} placeholder="—" ariaLabel="Channel" />
                 </Fld>
                 <Fld label="Supplier ref"><input value={d.supplier_ref} onChange={(e) => upd("supplier_ref", e.target.value)} className="dash-input" placeholder="REF-12345" /></Fld>
               </Row2>
@@ -313,10 +302,7 @@ export default function DashboardBookings() {
               </Row2>
               <Row2>
                 <Fld label="Payment status">
-                  <select value={d.payment_status} onChange={(e) => upd("payment_status", e.target.value)} className="dash-input capitalize">
-                    <option value="">—</option>
-                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <SearchableSelect value={d.payment_status} onChange={(v) => upd("payment_status", v)} options={[{ value: "", label: "—" }, ...PAYMENT_STATUSES.map((s) => ({ value: s, label: cap1(s) }))]} placeholder="—" ariaLabel="Payment status" />
                 </Fld>
                 <Fld label="Confirmation code"><input value={d.confirmation_code} onChange={(e) => upd("confirmation_code", e.target.value)} className="dash-input" placeholder="AB-558210" /></Fld>
               </Row2>
@@ -329,17 +315,12 @@ export default function DashboardBookings() {
               <Row2>
                 <Fld label="Destination"><input value={d.destination} onChange={(e) => upd("destination", e.target.value)} className="dash-input" placeholder="Bali, Indonesia" /></Fld>
                 <Fld label="Status">
-                  <select value={d.status} onChange={(e) => upd("status", e.target.value)} className="dash-input capitalize">
-                    {TRIP_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <SearchableSelect value={d.status} onChange={(v) => upd("status", v)} options={TRIP_STATUSES.map((s) => ({ value: s, label: cap1(s) }))} ariaLabel="Status" />
                 </Fld>
               </Row2>
               <Row2>
                 <Fld label="Customer">
-                  <select value={d.customer_id} onChange={(e) => upd("customer_id", e.target.value)} className="dash-input">
-                    <option value="">— None —</option>
-                    {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <SearchableSelect value={d.customer_id} onChange={(v) => upd("customer_id", v)} options={[{ value: "", label: "— None —" }, ...customers.map((c) => ({ value: c.id, label: c.name }))]} placeholder="— None —" ariaLabel="Customer" />
                 </Fld>
                 <Fld label="Lead traveler"><input value={d.lead_traveler} onChange={(e) => upd("lead_traveler", e.target.value)} className="dash-input" placeholder="Jane Doe" /></Fld>
               </Row2>
@@ -357,16 +338,10 @@ export default function DashboardBookings() {
               </Row2>
               <Row2>
                 <Fld label="Travel style">
-                  <select value={d.travel_style} onChange={(e) => upd("travel_style", e.target.value)} className="dash-input capitalize">
-                    <option value="">—</option>
-                    {TRAVEL_STYLES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <SearchableSelect value={d.travel_style} onChange={(v) => upd("travel_style", v)} options={[{ value: "", label: "—" }, ...TRAVEL_STYLES.map((s) => ({ value: s, label: cap1(s) }))]} placeholder="—" ariaLabel="Travel style" />
                 </Fld>
                 <Fld label="Accommodation preference">
-                  <select value={d.accommodation_pref} onChange={(e) => upd("accommodation_pref", e.target.value)} className="dash-input capitalize">
-                    <option value="">—</option>
-                    {ACCOMMODATION_PREFS.map((a) => <option key={a} value={a}>{a}</option>)}
-                  </select>
+                  <SearchableSelect value={d.accommodation_pref} onChange={(v) => upd("accommodation_pref", v)} options={[{ value: "", label: "—" }, ...ACCOMMODATION_PREFS.map((a) => ({ value: a, label: cap1(a) }))]} placeholder="—" ariaLabel="Accommodation preference" />
                 </Fld>
               </Row2>
               <Fld label="Cover image URL"><input value={d.cover_image} onChange={(e) => upd("cover_image", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
@@ -399,12 +374,16 @@ export default function DashboardBookings() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${tab}…`} className="dash-input pl-9" />
             </div>
-            <select value={statusF} onChange={(e) => setStatusF(e.target.value)} className="dash-input max-w-[170px] capitalize">
-              <option value="all">All status</option>
-              {(tab === "bookings" ? BOOKING_STATUSES : TRIP_STATUSES).map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <SearchableSelect
+              value={statusF}
+              onChange={setStatusF}
+              options={[{ value: "all", label: "All status" }, ...(tab === "bookings" ? BOOKING_STATUSES : TRIP_STATUSES).map((s) => ({ value: s, label: cap1(s) }))]}
+              placeholder="All status"
+              ariaLabel="Status filter"
+              className="max-w-[170px]"
+            />
             {tab === "bookings" && (
-              <select value={typeF} onChange={(e)=>setTypeF(e.target.value)} className="dash-input max-w-[150px] capitalize"><option value="all">All types</option>{BOOKING_TYPES.map((t)=><option key={t} value={t}>{t}</option>)}</select>
+              <SearchableSelect value={typeF} onChange={setTypeF} options={[{ value: "all", label: "All types" }, ...BOOKING_TYPES.map((t) => ({ value: t, label: cap1(t) }))]} placeholder="All types" ariaLabel="Type filter" className="max-w-[150px]" />
             )}
             <DateRangeSelect value={range} onChange={setRange} />
             {(query || statusF !== "all" || typeF !== "all" || range !== "all") && (

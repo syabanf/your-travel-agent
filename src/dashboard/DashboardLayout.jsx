@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -19,6 +19,7 @@ const GROUPS = [
   ] },
   { title: "Operations", items: [
     { to: "/dashboard/ota", end: true, icon: Globe, label: "OTA Channels", res: "ota" },
+    { to: "/dashboard/ota/categories", icon: Tags, label: "Booking Categories", res: "ota" },
     { to: "/dashboard/ota/transactions", icon: Receipt, label: "OTA Transactions", res: "ota" },
     { to: "/dashboard/pms", end: true, icon: Hotel, label: "Property (PMS)", res: "pms" },
     { to: "/dashboard/pms/transactions", icon: ClipboardList, label: "PMS Transactions", res: "pms" },
