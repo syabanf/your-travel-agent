@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -26,8 +26,24 @@ function InfoCell({ icon: Icon, label, value }) {
 
 export default function PromotionDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Claim the offer: copy the promo code (if any) and head to the booking flow.
+  const claim = async () => {
+    if (item.promo_code) {
+      try {
+        await navigator.clipboard.writeText(item.promo_code);
+        toast.success(`Code ${item.promo_code} copied — apply it at checkout`);
+      } catch {
+        toast.success(`Use code ${item.promo_code} at checkout`);
+      }
+    } else {
+      toast.success(item.type === "event" ? "Saved to your events" : "Offer applied");
+    }
+    if (item.type !== "event") navigate("/ota");
+  };
 
   useEffect(() => {
     base44.entities.Promotion.filter({ id }).then((r) => { setItem(r[0] || null); setLoading(false); });
@@ -85,7 +101,7 @@ export default function PromotionDetail() {
           </ul>
         </GlassCard>
 
-        <button onClick={() => toast("Coming soon")} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2">
+        <button onClick={claim} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 press">
           {item.cta || "Get this offer"} <ArrowRight className="w-4 h-4" />
         </button>
       </div>

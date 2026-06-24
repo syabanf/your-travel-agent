@@ -50,7 +50,22 @@ export default function DashboardPMS() {
   const [detail, setDetail] = useState(null);
   const [sync, setSync] = useState([]);
   const [syncing, setSyncing] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ property: "", roomType: "", total: 10, adr: 2000000 });
   const inSync = sync.filter((s) => s.status === "in_sync").length;
+
+  const addProperty = (e) => {
+    e.preventDefault();
+    const property = form.property.trim();
+    const roomType = form.roomType.trim() || "Standard Room";
+    if (!property) { toast.error("Enter a property name"); return; }
+    const total = Math.max(1, Number(form.total) || 1);
+    const id = `${property}-${roomType}`.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `room-${rows.length + 1}`;
+    if (rows.some((r) => r.id === id)) { toast.error("That room already exists"); return; }
+    setRows((prev) => [...prev, { id, property, roomType, total, available: total, adr: Math.max(0, Number(form.adr) || 0), status: "open" }]);
+    setAdding(false); setForm({ property: "", roomType: "", total: 10, adr: 2000000 });
+    toast.success(`${roomType} at ${property} added`);
+  };
 
   const openDetail = (r) => { setDetail(r); setSync(syncFor(r)); setSyncing(false); };
   const syncNow = () => {
@@ -111,7 +126,7 @@ export default function DashboardPMS() {
         </div>
         <div className="flex items-center gap-2">
           <DashboardAiStub resource="pms" data={rows} />
-          <button onClick={() => toast("Add a property (demo)")} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2"><Plus className="w-4 h-4" /> Add property</button>
+          <button onClick={() => setAdding(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add property</button>
         </div>
       </header>
 
@@ -162,6 +177,33 @@ export default function DashboardPMS() {
             <p className="text-[11px] text-mora-neutral/50">Sync status is simulated for the demo.</p>
           </>
         )}
+      </Drawer>
+
+      <Drawer open={adding} onClose={() => setAdding(false)} icon={Plus} width="max-w-md" title="Add property" subtitle="Add a room type to your inventory">
+        <form onSubmit={addProperty} className="space-y-4">
+          <div>
+            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Property</label>
+            <input autoFocus value={form.property} onChange={(e) => setForm((f) => ({ ...f, property: e.target.value }))} className="dash-input" placeholder="e.g. Lombok Beach Resort" />
+          </div>
+          <div>
+            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Room type</label>
+            <input value={form.roomType} onChange={(e) => setForm((f) => ({ ...f, roomType: e.target.value }))} className="dash-input" placeholder="e.g. Deluxe Suite" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Rooms</label>
+              <input type="number" min="1" value={form.total} onChange={(e) => setForm((f) => ({ ...f, total: e.target.value }))} className="dash-input" />
+            </div>
+            <div>
+              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">ADR (IDR)</label>
+              <input type="number" min="0" step="50000" value={form.adr} onChange={(e) => setForm((f) => ({ ...f, adr: e.target.value }))} className="dash-input" />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={() => setAdding(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">Add property</button>
+          </div>
+        </form>
       </Drawer>
     </div>
   );

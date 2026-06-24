@@ -52,6 +52,19 @@ export default function DashboardOTA() {
   const [channels, setChannels] = useState(SEED);
   const [syncing, setSyncing] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ name: "", commission: 15 });
+
+  const addChannel = (e) => {
+    e.preventDefault();
+    const name = form.name.trim();
+    if (!name) { toast.error("Enter a channel name"); return; }
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `ch-${channels.length + 1}`;
+    if (channels.some((c) => c.id === id || c.name.toLowerCase() === name.toLowerCase())) { toast.error("That channel is already connected"); return; }
+    setChannels((prev) => [...prev, { id, name, status: "connected", listings: 0, bookings: 0, revenue: 0, commission: Math.max(0, Number(form.commission) || 0), lastSync: "just now" }]);
+    setAdding(false); setForm({ name: "", commission: 15 });
+    toast.success(`${name} connected`);
+  };
 
   const connected = channels.filter((c) => c.status === "connected").length;
   const listings = channels.reduce((s, c) => s + c.listings, 0);
@@ -105,7 +118,7 @@ export default function DashboardOTA() {
           <button onClick={syncAll} disabled={syncing} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press disabled:opacity-50">
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> Sync all
           </button>
-          <button onClick={() => toast("Connect a new channel (demo)")} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2"><Plus className="w-4 h-4" /> Add channel</button>
+          <button onClick={() => setAdding(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add channel</button>
         </div>
       </header>
 
@@ -157,6 +170,23 @@ export default function DashboardOTA() {
             <p className="text-[11px] text-mora-neutral/50">Demo data — transactions are simulated.</p>
           </>
         )}
+      </Drawer>
+
+      <Drawer open={adding} onClose={() => setAdding(false)} icon={Plus} width="max-w-md" title="Add channel" subtitle="Connect a new OTA channel">
+        <form onSubmit={addChannel} className="space-y-4">
+          <div>
+            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Channel name</label>
+            <input autoFocus value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="dash-input" placeholder="e.g. Trip.com" />
+          </div>
+          <div>
+            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Commission %</label>
+            <input type="number" min="0" max="100" value={form.commission} onChange={(e) => setForm((f) => ({ ...f, commission: e.target.value }))} className="dash-input" />
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={() => setAdding(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+            <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">Add channel</button>
+          </div>
+        </form>
       </Drawer>
     </div>
   );
