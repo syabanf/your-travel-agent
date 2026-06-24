@@ -80,10 +80,9 @@ export default function Itinerary() {
           <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
         </div>
       )}
-      <PageHeader 
-        title="My Itineraries" 
+      <PageHeader
+        title="My Itineraries"
         subtitle="Plan & manage your journeys"
-        showNotification
         rightAction={
           <Link 
             to="/itinerary/wizard"

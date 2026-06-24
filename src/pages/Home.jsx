@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, Search, Gift, ChevronRight } from "lucide-react";
+import { Gift, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import QuickActions from "../components/home/QuickActions";
 import ActiveTrip from "../components/home/ActiveTrip";
@@ -70,15 +70,9 @@ export default function Home() {
   if (loading) {
     return (
       <div className="animate-fade-in">
-        <div className="px-6 pt-4 pb-2 flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-7 w-36" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-10 w-10 rounded-xl" />
-            <Skeleton className="h-10 w-10 rounded-xl" />
-          </div>
+        <div className="px-6 pt-4 pb-2 space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-7 w-36" />
         </div>
         <div className="px-6 space-y-8 pt-6">
           <div className="grid grid-cols-4 gap-3">
@@ -117,31 +111,12 @@ export default function Home() {
           <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
         </div>
       )}
-      {/* Header */}
+      {/* Greeting */}
       <div className="px-6 pt-4 pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gold tracking-widest uppercase mb-1">{greeting()}</p>
-            <h1 className="text-2xl font-display font-semibold text-mora-primary">
-              {user?.full_name?.split(" ")[0] || "Traveler"}
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              to="/search"
-              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors"
-            >
-              <Search className="w-5 h-5" />
-            </Link>
-            <Link 
-              to="/notifications"
-              className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold transition-colors relative"
-            >
-              <Bell className="w-5 h-5" />
-              <div className="absolute top-2 right-2 w-2 h-2 bg-mora-gold rounded-full" />
-            </Link>
-          </div>
-        </div>
+        <p className="text-xs text-gold tracking-widest uppercase mb-1">{greeting()}</p>
+        <h1 className="text-2xl font-display font-semibold text-mora-primary">
+          {user?.full_name?.split(" ")[0] || "Traveler"}
+        </h1>
       </div>
 
       <div className="space-y-8 pt-4 stagger">

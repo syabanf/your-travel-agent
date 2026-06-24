@@ -61,7 +61,7 @@ export default function Booking() {
           <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
         </div>
       )}
-      <PageHeader title="My Bookings" subtitle="Your reservations" showNotification />
+      <PageHeader title="My Bookings" subtitle="Your reservations" />
 
       {/* CTA to standalone OTA marketplace */}
       <div className="px-6 mb-6">

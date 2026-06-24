@@ -48,7 +48,7 @@ export default function Profile() {
 
   return (
     <div className="animate-fade-in pb-28">
-      <PageHeader title="Profile" showNotification />
+      <PageHeader title="Profile" />
 
       {/* Profile Card */}
       <div className="px-6 mb-6">

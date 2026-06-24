@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, Menu, X, ChevronDown } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
+import DashboardHeader from "./DashboardHeader";
 
 const GROUPS = [
   { title: "Insight Center", items: [
@@ -95,16 +96,6 @@ function Shell() {
   return (
     <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary font-body">
       <a href="#main" className="skip-link">Skip to content</a>
-      {/* Mobile top bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 z-30 bg-white/90 backdrop-blur border-b border-mora-primary/10 flex items-center gap-3 px-4">
-        <button onClick={() => setOpen(true)} aria-label="Open menu" className="w-10 h-10 -ml-1 rounded-xl hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary">
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
-          <span className="font-display font-bold text-mora-primary">MORA</span>
-        </div>
-      </div>
 
       {/* Backdrop (mobile) */}
       {open && <div onClick={() => setOpen(false)} className="lg:hidden fixed inset-0 bg-black/30 z-40" aria-hidden="true" />}
@@ -200,7 +191,8 @@ function Shell() {
       </aside>
 
       {/* Content — own scroll container because the global body is position:fixed (mobile-app lock) */}
-      <main id="main" className="lg:ml-64 h-screen overflow-y-auto pt-14 lg:pt-0">
+      <main id="main" className="lg:ml-64 h-screen overflow-y-auto">
+        <DashboardHeader onMenu={() => setOpen(true)} role={role} groups={GROUPS} />
         <Outlet />
       </main>
     </div>

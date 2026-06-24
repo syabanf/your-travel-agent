@@ -37,7 +37,7 @@ export default function Assistant() {
 
   return (
     <div className="animate-fade-in pb-28">
-      <PageHeader title="Assistant" subtitle="AI & personal travel experts" showNotification />
+      <PageHeader title="Assistant" subtitle="AI & personal travel experts" />
 
       {/* AI Assistant CTA */}
       <div className="px-6 mb-6">
