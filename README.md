@@ -22,7 +22,42 @@ Other scripts:
 npm run build     # production build → dist/
 npm run preview   # preview the production build
 npm run lint      # eslint
+npm run test:run  # run the test suite once (npm test = watch)
 ```
+
+## Docker
+
+Nothing to install but Docker — no Node, no npm.
+
+```bash
+docker compose up web                    # production build → http://localhost:8080
+docker compose --profile dev up dev      # hot-reload dev server → http://localhost:5173
+docker compose --profile test run --rm test   # lint + the test suite
+```
+
+Ports are overridable: `WEB_PORT=9000 docker compose up web` (same for `DEV_PORT`).
+
+The [`Dockerfile`](Dockerfile) has four stages — `deps`, `dev`, `test` and
+`build` → `prod`. Because the app is a pure front-end SPA (all data lives in the
+browser), production is just static files: the final image is nginx serving
+`dist/`, ~80 MB, running as a non-root user on a read-only filesystem.
+
+`docker build --target test .` is a self-contained CI gate — it runs eslint and
+the full vitest suite and fails the build if either is red.
+
+### Routing note
+
+[`docker/nginx.conf`](docker/nginx.conf) deliberately treats two paths
+differently, and both matter:
+
+| Path | Behaviour |
+|---|---|
+| `/landing/*` | Served straight from disk. A missing page returns a real **404** — it must never fall back to the SPA, or a typo'd URL would silently render the app. |
+| everything else | Falls back to `/index.html`, because the app uses `BrowserRouter`, so `/dashboard`, `/admin`, `/packages/:id` … have no file on disk. |
+
+Caching follows the same split: hashed `/assets/*` are immutable for a year,
+`index.html` and `sw.js` are never cached (so a deploy is picked up immediately
+and users can't get pinned to a stale service worker).
 
 ## How the backend works
 

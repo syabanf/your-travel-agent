@@ -1,0 +1,66 @@
+# Icon Holiday — container setup.
+#
+#   docker compose up web            → production build on http://localhost:8080
+#   docker compose up dev            → hot-reload dev server on http://localhost:5173
+#   docker compose run --rm test     → lint + the vitest suite
+#
+# Ports can be overridden without editing this file:
+#   WEB_PORT=9000 docker compose up web
+
+services:
+  # ---- production: static bundle behind nginx --------------------------
+  web:
+    build:
+      context: .
+      target: prod
+    image: icon-holiday:latest
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    restart: unless-stopped
+    read_only: true
+    # nginx needs somewhere writable for its temp dirs and pid file while the
+    # image itself stays read-only. These must be owned by uid 101 (the
+    # unprivileged nginx user) — a default tmpfs is root-owned and nginx would
+    # get EACCES the first time it needs a temp file.
+    tmpfs:
+      - /tmp:uid=101,gid=101,mode=1777
+      - /var/cache/nginx:uid=101,gid=101,mode=0755
+      - /var/run:uid=101,gid=101,mode=0755
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # ---- development: Vite with hot reload -------------------------------
+  dev:
+    build:
+      context: .
+      target: dev
+    image: icon-holiday:dev
+    ports:
+      - "${DEV_PORT:-5173}:5173"
+    volumes:
+      # Source is bind-mounted for hot reload, but node_modules stays the
+      # container's own (an anonymous volume shadows the host directory) so a
+      # host install for a different platform can't leak in.
+      - .:/app
+      - /app/node_modules
+    environment:
+      # Bind mounts on macOS/Windows don't deliver inotify events reliably.
+      - CHOKIDAR_USEPOLLING=true
+    profiles: ["dev"]
+
+  # ---- one-shot: lint + tests ------------------------------------------
+  test:
+    build:
+      context: .
+      target: dev
+    image: icon-holiday:dev
+    command: sh -c "npm run lint && npx vitest run"
+    environment:
+      - CI=true
+    profiles: ["test"]
