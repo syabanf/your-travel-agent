@@ -6,9 +6,9 @@ export default function DataTable({ columns, rows, rowKey = (r) => r.id, onRowCl
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ minWidth }}>
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/60 bg-mora-primary/[0.02] border-b border-mora-primary/[0.07]">
               {columns.map((c) => (
-                <th key={c.key} className={`px-5 py-3 font-medium ${c.align === "right" ? "text-right" : ""}`}>{c.label}</th>
+                <th key={c.key} className={`px-5 py-3.5 font-semibold ${c.align === "right" ? "text-right" : ""}`}>{c.label}</th>
               ))}
             </tr>
           </thead>
@@ -19,7 +19,7 @@ export default function DataTable({ columns, rows, rowKey = (r) => r.id, onRowCl
               <tr
                 key={rowKey(row)}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={`border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02] ${onRowClick ? "cursor-pointer" : ""}`}
+                className={`border-b border-mora-primary/5 last:border-0 transition-colors hover:bg-mora-gold/[0.035] ${onRowClick ? "cursor-pointer" : ""}`}
               >
                 {columns.map((c) => (
                   <td key={c.key} className={`px-5 py-3 ${c.align === "right" ? "text-right" : ""} ${c.className || "text-mora-neutral"}`}>

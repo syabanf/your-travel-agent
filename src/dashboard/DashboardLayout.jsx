@@ -99,7 +99,7 @@ function Shell() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F3F6FB] text-mora-primary font-body">
+    <div className="min-h-screen w-full dash-shell text-mora-primary font-body">
       <a href="#main" className="skip-link">Skip to content</a>
 
       {/* Backdrop (mobile) */}
@@ -161,12 +161,19 @@ function Shell() {
                         end={item.end}
                         onClick={() => setOpen(false)}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                            isActive ? "bg-mora-gold/10 text-gold" : "text-mora-neutral hover:bg-mora-primary/5 hover:text-mora-primary"
+                          `relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
+                            isActive
+                              ? "bg-gradient-to-r from-mora-gold/[0.14] to-mora-gold/[0.03] text-gold font-semibold"
+                              : "text-mora-neutral font-medium hover:bg-mora-primary/5 hover:text-mora-primary"
                           }`
                         }
                       >
-                        <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
+                        {({ isActive }) => (
+                          <>
+                            {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-gold" />}
+                            <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
+                          </>
+                        )}
                       </NavLink>
                     ))}
                   </div>
