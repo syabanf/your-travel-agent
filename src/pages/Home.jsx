@@ -92,7 +92,7 @@ export default function Home() {
   if (!user) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center min-h-screen px-6 text-center">
-        <h1 className="text-3xl font-display font-semibold text-mora-primary mb-3">Welcome to MORA</h1>
+        <h1 className="text-3xl font-display font-semibold text-mora-primary mb-3">Welcome to Icon Holiday</h1>
         <p className="text-mora-neutral mb-8">Sign in to plan your next adventure</p>
         <Link
           to="/login"

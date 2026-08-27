@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { ArrowLeft, MapPin, CheckCircle2, Circle, Wallet, ListChecks, Activity, Users, Trash2, UserPlus, Pencil, Loader2, Save, Printer, User, UserCircle, Baby, BedDouble, Sparkles } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
@@ -158,6 +159,13 @@ export default function DashboardTripDetail() {
   };
 
   const deleteTrip = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this trip?",
+      body: `${trip.title || "This trip"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Trip.delete(id);
       toast.success("Trip deleted");
@@ -167,7 +175,7 @@ export default function DashboardTripDetail() {
     }
   };
 
-  const printItinerary = () => printDocument("MORA Itinerary", tripItineraryHTML(trip, items, members));
+  const printItinerary = () => printDocument("Icon Holiday Itinerary", tripItineraryHTML(trip, items, members));
 
   // --- Members ---
   const canManageMembers = can(role, "trips", "create") || can(role, "trips", "edit") || can(role, "trips", "delete");
@@ -191,7 +199,18 @@ export default function DashboardTripDetail() {
     } catch { toast.error("Couldn't save member"); }
     finally { setSavingMember(false); }
   };
-  const removeMember = async (mid) => { await base44.entities.TripMember.delete(mid); toast.success("Member removed"); loadMembers(); };
+  const removeMember = async (m) => {
+    const ok = await confirmDialog({
+      title: "Remove this member?",
+      body: `${m.name || "This member"} will be removed from this trip. This can't be undone.`,
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!ok) return;
+    await base44.entities.TripMember.delete(m.id);
+    toast.success("Member removed");
+    loadMembers();
+  };
 
   // Sort itinerary by day then time, and group under "Day N".
   const sorted = [...items].sort((a, b) => {
@@ -392,8 +411,8 @@ export default function DashboardTripDetail() {
                 <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${memberStatusBadge[m.status] || memberStatusBadge.invited}`}>{m.status}</span>
                 {canManageMembers && (
                   <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    {can(role, "trips", "edit") && <button onClick={() => startEditMember(m)} className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-3.5 h-3.5" /></button>}
-                    {can(role, "trips", "delete") && <button onClick={() => removeMember(m.id)} className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>}
+                    {can(role, "trips", "edit") && <button onClick={() => startEditMember(m)} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold"><Pencil className="w-3.5 h-3.5" /></button>}
+                    {can(role, "trips", "delete") && <button onClick={() => removeMember(m)} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>}
                   </div>
                 )}
               </li>

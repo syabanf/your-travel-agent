@@ -1,6 +1,6 @@
-# MORA — Feature Reference
+# Icon Holiday — Feature Reference
 
-**MORA** is a travel-agency platform delivered as one React app with two surfaces:
+**Icon Holiday** is a travel-agency platform delivered as one React app with two surfaces:
 
 1. **Traveller app** — a mobile (phone-framed) experience to discover destinations, plan trips with an AI concierge, and book everything from flights to attractions.
 2. **Admin console** — a full back-office for running the agency: CRM, operations, catalog, content, marketing, finance and reports.
@@ -159,7 +159,7 @@ A **front-end demo / prototype** (no real backend by design):
 - **RBAC** is client-side only (the role switcher is for demonstration).
 - **Persistence** is the browser's `localStorage` — clearing it resets to seed data.
 
-These are the boundaries to address if MORA becomes a production product.
+These are the boundaries to address if Icon Holiday becomes a production product.
 
 ---
 

@@ -83,7 +83,7 @@ export default function DestinationDetail() {
           <h2 className="text-sm font-semibold text-mora-primary mb-2">About {d.name}</h2>
           <p className="text-sm text-mora-neutral leading-relaxed">
             {d.tagline ? `${d.name} — ${d.tagline.toLowerCase()}. ` : ""}
-            A favorite among MORA travelers, {d.name} blends {vibes.slice(0, 3).map((v) => v.toLowerCase()).join(", ") || "unforgettable experiences"} into one trip. Tap below and let the concierge craft a day-by-day plan.
+            A favorite among Icon Holiday travelers, {d.name} blends {vibes.slice(0, 3).map((v) => v.toLowerCase()).join(", ") || "unforgettable experiences"} into one trip. Tap below and let the concierge craft a day-by-day plan.
           </p>
           {vibes.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">

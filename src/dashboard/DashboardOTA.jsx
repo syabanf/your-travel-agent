@@ -7,6 +7,7 @@ import { Plug, RefreshCw, Globe, CalendarCheck, Wallet, Plus, Receipt, Tags, Pen
 import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 // Mock OTA channel-manager data (no backend — demo only).
@@ -74,8 +75,14 @@ export default function DashboardOTA() {
     setEditing(null);
   };
 
-  const removeChannel = (c) => {
-    if (!window.confirm(`Remove ${c.name}?`)) return;
+  const removeChannel = async (c) => {
+    const ok = await confirmDialog({
+      title: "Remove this channel?",
+      body: `${c.name} will be disconnected and removed from your channel list, along with its listings and sync history. This can't be undone.`,
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!ok) return;
     setChannels((prev) => prev.filter((x) => x.id !== c.id));
     toast.success(`${c.name} removed`);
   };
@@ -117,8 +124,8 @@ export default function DashboardOTA() {
         <button onClick={(e) => { e.stopPropagation(); toggle(c); }} className={`text-xs font-medium px-3 py-1.5 rounded-lg press ${c.status === "disconnected" ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"}`}>
           {c.status === "disconnected" ? "Connect" : "Disconnect"}
         </button>
-        <button onClick={(e) => { e.stopPropagation(); openEdit(c); }} aria-label="Edit channel" className="w-8 h-8 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
-        <button onClick={(e) => { e.stopPropagation(); removeChannel(c); }} aria-label="Remove channel" className="w-8 h-8 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); openEdit(c); }} aria-label="Edit channel" className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); removeChannel(c); }} aria-label="Remove channel" className="w-9 h-9 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
       </span>
     ) },
   ];

@@ -36,7 +36,7 @@ export default function Onboarding() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
-            <span className="font-display font-bold text-mora-primary">MORA</span>
+            <span className="font-display font-bold text-mora-primary">Icon Holiday</span>
           </div>
           <button onClick={() => finish(navigate)} className="text-sm text-mora-neutral hover:text-mora-primary transition-colors press">Skip</button>
         </div>

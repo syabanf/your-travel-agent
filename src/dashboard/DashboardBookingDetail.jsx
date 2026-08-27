@@ -13,6 +13,7 @@ import {
   Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp, Globe, Tag, CreditCard,
 } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
@@ -93,6 +94,13 @@ export default function DashboardBookingDetail() {
     toast.success("Status updated");
   };
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this booking?",
+      body: `${b.title || "This booking"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Booking.delete(id);
     toast.success("Booking deleted");
     navigate("/dashboard/bookings");
@@ -105,10 +113,10 @@ export default function DashboardBookingDetail() {
     setCancelOpen(false);
     toast.success(amt ? `Cancelled · refund ${formatIDR(amt)}` : "Booking cancelled");
   };
-  const printVoucher = () => printDocument(`MORA Voucher`, bookingVoucherHTML(b, { supplierName: supplier?.name, customerName: customer?.name }));
+  const printVoucher = () => printDocument(`Icon Holiday Voucher`, bookingVoucherHTML(b, { supplierName: supplier?.name, customerName: customer?.name }));
   const sendWhatsApp = () => {
-    const code = b.confirmation_code || `MORA-${String(id).slice(-6).toUpperCase()}`;
-    const msg = `Hi ${customer?.name || "there"}, your MORA booking "${b.title}" is ${b.status}. Confirmation: ${code}. Total: ${formatIDR(b.price || 0)}. Thank you for booking with MORA Travel!`;
+    const code = b.confirmation_code || `Icon Holiday-${String(id).slice(-6).toUpperCase()}`;
+    const msg = `Hi ${customer?.name || "there"}, your Icon Holiday booking "${b.title}" is ${b.status}. Confirmation: ${code}. Total: ${formatIDR(b.price || 0)}. Thank you for booking with Icon Holiday Travel!`;
     openWhatsApp(customer?.phone, msg);
   };
 

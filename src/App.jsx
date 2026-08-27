@@ -6,6 +6,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { ConfirmHost } from '@/components/ConfirmDialog';
 import Layout from './components/Layout';
 import PageNotFound from './lib/PageNotFound';
 
@@ -208,6 +209,7 @@ function App() {
             <AppRoutes />
           </Router>
           <Toaster />
+          <ConfirmHost />
           <SonnerToaster position="top-center" richColors toastOptions={{ style: { fontFamily: 'var(--font-body)' } }} />
         </QueryClientProvider>
       </AuthProvider>

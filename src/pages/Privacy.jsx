@@ -8,7 +8,7 @@ const sections = [
   },
   {
     title: "How we use it",
-    body: "Your information is used to personalize recommendations, complete bookings, remember your preferences, and improve the MORA experience. We never sell your personal data to third parties.",
+    body: "Your information is used to personalize recommendations, complete bookings, remember your preferences, and improve the Icon Holiday experience. We never sell your personal data to third parties.",
   },
   {
     title: "Data storage",
@@ -20,7 +20,7 @@ const sections = [
   },
   {
     title: "Contact",
-    body: "Questions about your privacy? Reach our team at privacy@mora.travel and we'll be happy to help.",
+    body: "Questions about your privacy? Reach our team at privacy@iconholiday.travel and we'll be happy to help.",
   },
 ];
 

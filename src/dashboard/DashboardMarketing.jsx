@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -98,6 +99,13 @@ export default function DashboardMarketing() {
   };
 
   const remove = async (c) => {
+    const ok = await confirmDialog({
+      title: "Delete this campaign?",
+      body: `${c.name || "This campaign"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Campaign.delete(c.id);
     toast.success("Campaign removed");
     load();
@@ -217,7 +225,7 @@ export default function DashboardMarketing() {
               </Fld>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Fld label="Promo code"><input value={editing.promo_code} onChange={(e) => upd("promo_code", e.target.value)} className="dash-input" placeholder="MORA20" /></Fld>
+              <Fld label="Promo code"><input value={editing.promo_code} onChange={(e) => upd("promo_code", e.target.value)} className="dash-input" placeholder="ICON20" /></Fld>
               <Fld label="Discount %"><input type="number" value={editing.discount} onChange={(e) => upd("discount", e.target.value)} className="dash-input" placeholder="20" /></Fld>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

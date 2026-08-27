@@ -69,7 +69,7 @@ export default function ProfileSettings() {
           <GlassCard className="p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all">
             <Info className="w-5 h-5 text-gold/70" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-mora-white">About MORA</p>
+              <p className="text-sm font-medium text-mora-white">About Icon Holiday</p>
               <p className="text-xs text-mora-neutral/50">Version 1.0.0</p>
             </div>
           </GlassCard>

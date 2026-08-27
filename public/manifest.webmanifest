@@ -1,7 +1,7 @@
 {
-  "name": "MORA · Your Travel Agent",
-  "short_name": "MORA",
-  "description": "Plan, book and manage your travels with MORA — your AI travel concierge.",
+  "name": "Icon Holiday · Your Travel Agent",
+  "short_name": "Icon Holiday",
+  "description": "Plan, book and manage your travels with Icon Holiday — your AI travel concierge.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

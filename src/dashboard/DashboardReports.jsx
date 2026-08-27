@@ -424,7 +424,7 @@ export default function DashboardReports() {
         <div>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Reports</h1>
           <p className="text-sm text-mora-neutral mt-0.5">
-            Revenue, bookings and customer analytics across the MORA platform.
+            Revenue, bookings and customer analytics across the Icon Holiday platform.
           </p>
         </div>
         <button

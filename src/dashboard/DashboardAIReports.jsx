@@ -52,7 +52,7 @@ export default function DashboardAIReports() {
       <header className="mb-6">
         <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" /> AI · Demo</p>
         <h1 className="text-2xl font-display font-bold text-mora-primary">AI Report Generator</h1>
-        <p className="text-sm text-mora-neutral mt-0.5">Describe the report you want in plain English — MORA builds it from your live data.</p>
+        <p className="text-sm text-mora-neutral mt-0.5">Describe the report you want in plain English — Icon Holiday builds it from your live data.</p>
       </header>
 
       {/* Prompt box */}

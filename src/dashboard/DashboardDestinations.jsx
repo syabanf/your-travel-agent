@@ -10,6 +10,7 @@ import { can } from "./rbac";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -94,6 +95,13 @@ export default function DashboardDestinations() {
   };
 
   const remove = async (d) => {
+    const ok = await confirmDialog({
+      title: "Delete this destination?",
+      body: `${d.name || "This destination"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Destination.delete(d.id);
     toast.success("Destination removed");
     load();

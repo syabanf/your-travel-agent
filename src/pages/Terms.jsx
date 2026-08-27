@@ -4,7 +4,7 @@ import GlassCard from "../components/GlassCard";
 const sections = [
   {
     title: "Booking & payments",
-    body: "When you book through MORA, you agree to pay the price shown at checkout, including any applicable taxes and fees. Bookings are confirmed once payment is completed and you receive a confirmation in the app.",
+    body: "When you book through Icon Holiday, you agree to pay the price shown at checkout, including any applicable taxes and fees. Bookings are confirmed once payment is completed and you receive a confirmation in the app.",
   },
   {
     title: "Cancellations & refunds",
@@ -16,22 +16,22 @@ const sections = [
   },
   {
     title: "Liability",
-    body: "MORA acts as a platform connecting you with travel providers. We are not liable for the acts, errors, or omissions of third-party providers, or for events beyond our reasonable control.",
+    body: "Icon Holiday acts as a platform connecting you with travel providers. We are not liable for the acts, errors, or omissions of third-party providers, or for events beyond our reasonable control.",
   },
   {
     title: "Changes to these terms",
-    body: "We may update these terms from time to time. Continued use of MORA after changes take effect means you accept the revised terms.",
+    body: "We may update these terms from time to time. Continued use of Icon Holiday after changes take effect means you accept the revised terms.",
   },
   {
     title: "Contact",
-    body: "Questions about these terms? Reach our team at support@mora.travel and we'll be happy to help.",
+    body: "Questions about these terms? Reach our team at support@iconholiday.travel and we'll be happy to help.",
   },
 ];
 
 export default function Terms() {
   return (
     <div className="animate-fade-in pb-28">
-      <PageHeader title="Terms of Service" subtitle="The rules of using MORA" showBack />
+      <PageHeader title="Terms of Service" subtitle="The rules of using Icon Holiday" showBack />
       <div className="px-6 space-y-3 mt-2">
         <p className="text-xs text-mora-neutral/50 px-1">Last updated June 2026</p>
         {sections.map((s) => (

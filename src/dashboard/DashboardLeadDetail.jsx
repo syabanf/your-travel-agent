@@ -13,6 +13,7 @@ import {
   MapPin, Compass, CalendarDays, StickyNote, MessageCircle, UserPlus, Users, Flag,
 } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS_BADGE = {
   new: "bg-blue-100 text-blue-700",
@@ -62,6 +63,13 @@ export default function DashboardLeadDetail() {
   };
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this lead?",
+      body: `${lead?.name || "This lead"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Lead.delete(id);
       toast.success("Lead removed");
@@ -115,7 +123,7 @@ export default function DashboardLeadDetail() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {lead.phone && (
-            <button onClick={() => openWhatsApp(lead.phone, `Hi ${lead.name}, this is MORA Travel following up on your ${lead.destination} enquiry…`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
+            <button onClick={() => openWhatsApp(lead.phone, `Hi ${lead.name}, this is Icon Holiday Travel following up on your ${lead.destination} enquiry…`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </button>
           )}

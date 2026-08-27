@@ -53,7 +53,7 @@ export default function AIAssistant() {
 
     try {
     const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are MORA's premium AI travel concierge. You help travelers plan luxurious, well-organized itineraries. 
+      prompt: `You are Icon Holiday's premium AI travel concierge. You help travelers plan luxurious, well-organized itineraries. 
       
 When creating itineraries, format them beautifully with:
 - Day numbers and dates
@@ -196,7 +196,7 @@ ${content}`,
                   <div className="w-6 h-6 rounded-lg bg-mora-gold/10 flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-gold" />
                   </div>
-                  <span className="text-[10px] text-gold">MORA AI</span>
+                  <span className="text-[10px] text-gold">Icon Holiday AI</span>
                 </div>
               )}
               <GlassCard 

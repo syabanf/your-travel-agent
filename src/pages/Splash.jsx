@@ -30,7 +30,7 @@ export default function Splash() {
           <div className="w-20 h-20 rounded-3xl btn-primary flex items-center justify-center mb-5 shadow-[0_16px_40px_rgba(173,31,35,0.35)]">
             <Plane className="w-10 h-10 text-white" strokeWidth={1.5} />
           </div>
-          <h1 className="text-5xl font-display font-bold text-mora-primary tracking-tight">MORA</h1>
+          <h1 className="text-5xl font-display font-bold text-mora-primary tracking-tight">Icon Holiday</h1>
           <p className="text-xs text-mora-neutral mt-2 tracking-[0.25em] uppercase">Your Travel Agent</p>
         </motion.div>
 

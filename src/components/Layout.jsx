@@ -5,6 +5,7 @@ import PhoneFrame from "./PhoneFrame";
 import BottomNav from "./BottomNav";
 import AppHeader from "./AppHeader";
 import ErrorBoundary from "./ErrorBoundary";
+import useScrollRestoration from "@/lib/useScrollRestoration";
 
 // Main tab screens get the persistent brand app-bar + horizontal swipe nav.
 const TAB_ROOTS = ["/", "/itinerary", "/booking", "/assistant", "/profile"];
@@ -15,6 +16,9 @@ export default function Layout() {
   const navigate = useNavigate();
   const reduce = useReducedMotion();
   const showHeader = TAB_ROOTS.includes(location.pathname);
+  // Going back to a list returns you to where you were, not the top.
+  const mainRef = useRef(null);
+  useScrollRestoration(mainRef);
 
   // Direction (1 = forward/right, -1 = back/left) so the page slides the way
   // you're travelling through the tab order. Computed during render so the
@@ -74,6 +78,7 @@ export default function Layout() {
       {/* Page content */}
       <main
         id="main"
+        ref={mainRef}
         className="relative z-10 flex-1 overflow-y-auto hide-scrollbar"
         style={{ paddingBottom: 88 }}
         onTouchStart={onTouchStart}

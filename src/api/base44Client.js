@@ -20,7 +20,7 @@ const SEED_FLAG = `${PREFIX}_seeded_v4`;
 const MOCK_USER = {
   id: 'user_local',
   full_name: 'Alex Rivera',
-  email: 'traveler@mora.app',
+  email: 'traveler@iconholiday.app',
   role: 'user',
 };
 

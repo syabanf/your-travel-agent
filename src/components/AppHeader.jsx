@@ -30,7 +30,7 @@ export default function AppHeader() {
       <div className="px-5 h-12 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 press">
           <div className="w-7 h-7 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
-          <span className="font-display font-bold text-mora-primary tracking-tight">MORA</span>
+          <span className="font-display font-bold text-mora-primary tracking-tight">Icon Holiday</span>
         </Link>
 
         <div className="flex items-center gap-1.5">

@@ -31,7 +31,7 @@ export default function Pagination({ page, pageCount, total, pageSize, onPage, n
         <div className="flex items-center gap-1">
           <button
             onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page"
-            className="h-9 px-2.5 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
+            className="h-10 px-3 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -41,7 +41,7 @@ export default function Pagination({ page, pageCount, total, pageSize, onPage, n
             ) : (
               <button
                 key={p} onClick={() => onPage(p)} aria-label={`Page ${p}`} aria-current={p === page ? "page" : undefined}
-                className={`h-9 min-w-[36px] px-3 rounded-lg text-sm font-medium press ${
+                className={`h-10 min-w-[40px] px-3 rounded-lg text-sm font-medium press ${
                   p === page ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"
                 }`}
               >
@@ -51,7 +51,7 @@ export default function Pagination({ page, pageCount, total, pageSize, onPage, n
           )}
           <button
             onClick={() => onPage(page + 1)} disabled={page >= pageCount} aria-label="Next page"
-            className="h-9 px-2.5 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
+            className="h-10 px-3 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

@@ -96,7 +96,7 @@ export default function SearchPage() {
         ) : !q ? (
           <EmptyState
             icon={Search}
-            title="Search MORA"
+            title="Search Icon Holiday"
             hint="Find destinations, deals & experts"
           />
         ) : total === 0 ? (

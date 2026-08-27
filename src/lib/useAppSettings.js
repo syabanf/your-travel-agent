@@ -5,9 +5,9 @@ import { base44 } from "@/api/base44Client";
 // CMS `Setting` record (id 'app'). Falls back to sensible defaults so the UI
 // never breaks if the record is missing.
 const DEFAULTS = {
-  brand_name: "MORA",
+  brand_name: "Icon Holiday",
   tagline: "Your Travel Agent",
-  support_email: "support@mora.app",
+  support_email: "support@iconholiday.app",
   support_phone: "",
   support_whatsapp: "",
   currency: "IDR",

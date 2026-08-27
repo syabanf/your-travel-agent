@@ -8,6 +8,7 @@ import moment from "moment";
 import {
   ChevronLeft, Trash2, FileText, CalendarDays, Hash, Link2, ListOrdered,
 } from "lucide-react";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const TYPE_META = {
   page: { label: "Page", pill: "bg-mora-primary/10 text-mora-neutral" },
@@ -32,6 +33,13 @@ export default function DashboardContentDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this page?",
+      body: `${p?.title || "This page"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Page.delete(id);
       toast.success("Removed");

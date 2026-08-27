@@ -65,7 +65,7 @@ export default function BookingCheckout() {
     setProcessing(true);
     try {
       await new Promise(r => setTimeout(r, 2000)); // simulate processing
-      const code = "MORA-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      const code = "Icon Holiday-" + Math.random().toString(36).substring(2, 8).toUpperCase();
       await base44.entities.Booking.update(bookingId, {
         status: "confirmed",
         confirmation_code: code,

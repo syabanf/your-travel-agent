@@ -10,6 +10,7 @@ import {
   ChevronLeft, Trash2, Send, Users, CheckCircle2, Ticket, CalendarClock,
   Layers, Tag, Radio, CalendarDays, Mail, MessageCircle, Bell,
 } from "lucide-react";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const CHANNEL_META = {
   email: { label: "Email", icon: Mail, badge: "bg-blue-500/15 text-blue-600" },
@@ -57,6 +58,13 @@ export default function DashboardCampaignDetail() {
   };
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this campaign?",
+      body: `${campaign?.name || "This campaign"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Campaign.delete(id);
       toast.success("Campaign removed");

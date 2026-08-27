@@ -1,4 +1,4 @@
-# MORA — Your Travel Agent
+# Icon Holiday — Your Travel Agent
 
 A mobile-style travel planning app (trips, itineraries, bookings, and an AI
 concierge) built with **React + Vite + Tailwind**.

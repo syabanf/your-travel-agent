@@ -8,6 +8,7 @@ import moment from "moment";
 import {
   ChevronLeft, Trash2, Copy, ExternalLink, Image as ImageIcon, Tag, CalendarDays, Link2,
 } from "lucide-react";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 export default function DashboardMediaDetail() {
   const { id } = useParams();
@@ -20,6 +21,13 @@ export default function DashboardMediaDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this asset?",
+      body: `${m?.title || "This asset"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.MediaAsset.delete(id);
       toast.success("Media removed");

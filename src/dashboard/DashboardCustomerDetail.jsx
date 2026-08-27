@@ -14,6 +14,7 @@ import {
   Building2, Cake, BookUser, Flag, Languages, Home, Megaphone, GitBranch,
 } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const TIER_BADGE = {
   platinum: "bg-indigo-100 text-indigo-700",
@@ -41,6 +42,13 @@ export default function DashboardCustomerDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this customer?",
+      body: `${c?.name || "This customer"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Customer.delete(id);
       toast.success("Customer removed");
@@ -111,7 +119,7 @@ export default function DashboardCustomerDetail() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {c.phone && (
-            <button onClick={() => openWhatsApp(c.phone, `Hi ${c.name}, this is MORA Travel — how can we help with your next trip?`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
+            <button onClick={() => openWhatsApp(c.phone, `Hi ${c.name}, this is Icon Holiday Travel — how can we help with your next trip?`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </button>
           )}

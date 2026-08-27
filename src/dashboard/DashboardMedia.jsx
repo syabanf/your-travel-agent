@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
@@ -61,6 +62,13 @@ export default function DashboardMedia() {
   };
 
   const remove = async (m) => {
+    const ok = await confirmDialog({
+      title: "Delete this media asset?",
+      body: `${m.title || "This asset"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.MediaAsset.delete(m.id);
     toast.success("Media removed");
     load();

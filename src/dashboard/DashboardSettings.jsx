@@ -86,7 +86,7 @@ export default function DashboardSettings() {
         {/* Brand */}
         <Section icon={Building2} title="Brand">
           <Row2>
-            <FieldD label="Brand name"><input value={form.brand_name || ""} onChange={(e) => upd("brand_name", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="MORA Travel" /></FieldD>
+            <FieldD label="Brand name"><input value={form.brand_name || ""} onChange={(e) => upd("brand_name", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="Icon Holiday Travel" /></FieldD>
             <FieldD label="Tagline"><input value={form.tagline || ""} onChange={(e) => upd("tagline", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="Journeys, curated." /></FieldD>
           </Row2>
           <Row2>

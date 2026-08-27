@@ -11,6 +11,7 @@ import {
   Mail, Phone, MessageCircle,
 } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
@@ -46,6 +47,13 @@ export default function DashboardSupplierDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this supplier?",
+      body: `${s?.name || "This supplier"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Supplier.delete(id);
       toast.success("Supplier removed");
@@ -140,7 +148,7 @@ export default function DashboardSupplierDetail() {
             : <span className="text-mora-neutral/50">No phone</span>}
           {s.contact_phone && (
             <button
-              onClick={() => openWhatsApp(s.contact_phone, `Hi ${s.name}, this is MORA Travel…`)}
+              onClick={() => openWhatsApp(s.contact_phone, `Hi ${s.name}, this is Icon Holiday Travel…`)}
               className="ml-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold px-2.5 py-1 flex items-center gap-1.5 transition-colors"
             >
               <MessageCircle className="w-3.5 h-3.5" /> WhatsApp

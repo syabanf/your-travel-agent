@@ -6,6 +6,7 @@ import DataTable from "@/dashboard/DataTable";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
 import Drawer from "@/dashboard/Drawer";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { ChartCard, CategoryBars } from "@/dashboard/charts";
 
 // Mock property-management inventory (no backend — demo only).
@@ -77,8 +78,14 @@ export default function DashboardPMS() {
     setEditing(null);
   };
 
-  const removeRoom = (r) => {
-    if (!window.confirm(`Remove ${r.roomType} at ${r.property}?`)) return;
+  const removeRoom = async (r) => {
+    const ok = await confirmDialog({
+      title: "Remove this room?",
+      body: `${r.roomType} at ${r.property} will be taken out of your inventory. This can't be undone.`,
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!ok) return;
     setRows((prev) => prev.filter((x) => x.id !== r.id));
     toast.success("Removed");
   };
@@ -126,10 +133,10 @@ export default function DashboardPMS() {
     { key: "status", label: "Status", render: (r) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${STATUS[r.status]}`}>{r.status}</span> },
     { key: "rate", label: "Rate", align: "right", render: (r) => (
       <span className="inline-flex gap-1 justify-end">
-        <button onClick={(e) => { e.stopPropagation(); adjust(r, -100000); }} aria-label="Lower rate" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">−</button>
-        <button onClick={(e) => { e.stopPropagation(); adjust(r, 100000); }} aria-label="Raise rate" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">+</button>
-        <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} aria-label="Edit room" className="w-7 h-7 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
-        <button onClick={(e) => { e.stopPropagation(); removeRoom(r); }} aria-label="Remove room" className="w-7 h-7 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); adjust(r, -100000); }} aria-label="Lower rate" className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">−</button>
+        <button onClick={(e) => { e.stopPropagation(); adjust(r, 100000); }} aria-label="Raise rate" className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">+</button>
+        <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} aria-label="Edit room" className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); removeRoom(r); }} aria-label="Remove room" className="w-9 h-9 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
       </span>
     ) },
   ];

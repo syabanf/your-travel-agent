@@ -115,7 +115,7 @@ export default function DashboardOverview() {
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1">Insight Center</p>
           <h1 className="text-2xl font-display font-bold text-mora-primary">Overview</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Your data & trends across the MORA platform at a glance.</p>
+          <p className="text-sm text-mora-neutral mt-0.5">Your data & trends across the Icon Holiday platform at a glance.</p>
         </div>
         <DashboardAiStub resource="overview" data={s ? s.bookings : []} />
       </header>

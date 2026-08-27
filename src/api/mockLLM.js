@@ -319,7 +319,7 @@ export function reportFor(prompt = '') {
     const pend = bookings.filter((b) => b.status === 'pending').length;
     return {
       title: 'Revenue & Margin Report', subtitle: sub,
-      summary: `MORA recorded ${formatIDR(revenue)} in confirmed revenue across ${confirmed.length} booking(s), at an estimated ${marginPct}% gross margin (${formatIDR(margin)}).${typeRows[0] ? ` ${typeRows[0][0]} is the highest-grossing category.` : ''}`,
+      summary: `Icon Holiday recorded ${formatIDR(revenue)} in confirmed revenue across ${confirmed.length} booking(s), at an estimated ${marginPct}% gross margin (${formatIDR(margin)}).${typeRows[0] ? ` ${typeRows[0][0]} is the highest-grossing category.` : ''}`,
       kpis: [
         { label: 'Confirmed revenue', value: formatIDR(revenue) },
         { label: 'Gross margin', value: `${formatIDR(margin)} · ${marginPct}%` },

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
@@ -88,6 +89,13 @@ export default function DashboardContent() {
   };
 
   const remove = async (p) => {
+    const ok = await confirmDialog({
+      title: "Delete this content item?",
+      body: `${p.title || "This item"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Page.delete(p.id);
     toast.success("Removed");
     load();
@@ -101,6 +109,13 @@ export default function DashboardContent() {
 
   const deleteSelected = async () => {
     const ids = [...selected];
+    const ok = await confirmDialog({
+      title: ids.length === 1 ? "Delete this content item?" : `Delete ${ids.length} content items?`,
+      body: `${ids.length} item${ids.length === 1 ? "" : "s"} will be permanently removed. This can't be undone.`,
+      confirmLabel: ids.length === 1 ? "Delete" : "Delete all",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       for (const id of ids) await base44.entities.Page.delete(id);
       toast.success(`${ids.length} item${ids.length === 1 ? "" : "s"} deleted`);

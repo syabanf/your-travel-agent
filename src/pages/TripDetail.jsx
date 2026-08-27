@@ -9,6 +9,7 @@ import DayTimeline from "../components/itinerary/DayTimeline";
 import { formatIDR, formatIDRCompact } from "@/lib/currency";
 import moment from "moment";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 export default function TripDetail() {
   const { tripId } = useParams();
@@ -49,9 +50,27 @@ export default function TripDetail() {
     } catch { toast.error("Couldn't add traveler"); }
     finally { setSavingInvite(false); }
   };
-  const removeMember = async (mid) => { await base44.entities.TripMember.delete(mid); await reloadMembers(); toast("Traveler removed"); };
+  const removeMember = async (m) => {
+    const ok = await confirmDialog({
+      title: "Remove this traveler?",
+      body: `${m.name || "This traveler"} will be taken off this trip and will lose access to it. You'd have to invite them again to bring them back.`,
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!ok) return;
+    await base44.entities.TripMember.delete(m.id);
+    await reloadMembers();
+    toast("Traveler removed");
+  };
 
   const handleDelete = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this trip?",
+      body: `${trip?.title || "This trip"} and its entire itinerary will be permanently deleted. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Trip.delete(tripId);
     navigate("/itinerary");
   };
@@ -265,7 +284,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
                 <p className="text-sm font-medium text-mora-primary truncate">{m.name}</p>
                 <p className="text-[11px] text-mora-neutral truncate capitalize">{m.role} · {m.status}</p>
               </div>
-              <button onClick={() => removeMember(m.id)} aria-label="Remove traveler" className="w-8 h-8 rounded-lg flex items-center justify-center text-mora-neutral/60 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+              <button onClick={() => removeMember(m)} aria-label="Remove traveler" className="w-9 h-9 rounded-lg flex items-center justify-center text-mora-neutral/60 hover:text-red-600 hover:bg-red-500/10 transition-colors">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>

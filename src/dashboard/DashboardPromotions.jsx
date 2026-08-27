@@ -10,6 +10,7 @@ import { can } from "./rbac";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -78,7 +79,18 @@ export default function DashboardPromotions() {
     finally { setSaving(false); }
   };
 
-  const remove = async (p) => { await base44.entities.Promotion.delete(p.id); toast.success("Removed"); load(); };
+  const remove = async (p) => {
+    const ok = await confirmDialog({
+      title: "Delete this promotion?",
+      body: `${p.title || "This promotion"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
+    await base44.entities.Promotion.delete(p.id);
+    toast.success("Removed");
+    load();
+  };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
   const scoped = (items || []).filter((p) => inRange(p.created_date, range));

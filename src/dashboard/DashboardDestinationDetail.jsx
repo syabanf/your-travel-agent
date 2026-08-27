@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { ArrowLeft, Trash2, MapPin, Plane, Receipt, Wallet, Sparkles, Sun, Coins, Clock, Languages, FileText } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
@@ -97,6 +98,13 @@ export default function DashboardDestinationDetail() {
   const gallery = destImages(dest);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this destination?",
+      body: `${name || "This destination"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Destination.delete(id);
       toast.success("Destination removed");

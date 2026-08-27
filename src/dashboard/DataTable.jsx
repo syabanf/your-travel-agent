@@ -22,7 +22,7 @@ export default function DataTable({ columns, rows, rowKey = (r) => r.id, onRowCl
                 className={`border-b border-mora-primary/5 last:border-0 transition-colors hover:bg-mora-gold/[0.035] ${onRowClick ? "cursor-pointer" : ""}`}
               >
                 {columns.map((c) => (
-                  <td key={c.key} className={`px-5 py-3 ${c.align === "right" ? "text-right" : ""} ${c.className || "text-mora-neutral"}`}>
+                  <td key={c.key} className={`px-5 py-3.5 ${c.align === "right" ? "text-right" : ""} ${c.className || "text-mora-neutral"}`}>
                     {c.render ? c.render(row) : (row[c.key] ?? "—")}
                   </td>
                 ))}

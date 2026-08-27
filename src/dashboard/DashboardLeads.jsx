@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -118,6 +119,13 @@ export default function DashboardLeads() {
   };
 
   const remove = async (l) => {
+    const ok = await confirmDialog({
+      title: "Delete this lead?",
+      body: `${l.name || "This lead"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Lead.delete(l.id);
       toast.success("Lead removed");
@@ -365,8 +373,8 @@ export default function DashboardLeads() {
                             </span>
                           )}
                           <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is MORA Travel following up on your ${l.destination} enquiry…`); }}
-                            className="w-7 h-7 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is Icon Holiday Travel following up on your ${l.destination} enquiry…`); }}
+                            className="w-9 h-9 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
                             aria-label="WhatsApp"
                             title="WhatsApp"
                           >
@@ -375,7 +383,7 @@ export default function DashboardLeads() {
                           {canConvert && (
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); convert(l); }}
-                              className="w-7 h-7 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
+                              className="w-9 h-9 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
                               aria-label="Convert to customer"
                               title="Convert to customer"
                             >
@@ -385,7 +393,7 @@ export default function DashboardLeads() {
                           {canEdit && (
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                              className="w-7 h-7 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
+                              className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
                               aria-label="Edit"
                               title="Edit"
                             >
@@ -395,7 +403,7 @@ export default function DashboardLeads() {
                           {canDelete && (
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l); }}
-                              className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 shrink-0"
+                              className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 shrink-0"
                               aria-label="Delete"
                               title="Delete"
                             >

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
@@ -117,6 +118,13 @@ export default function DashboardTeam() {
   };
 
   const remove = async (m) => {
+    const ok = await confirmDialog({
+      title: "Remove this team member?",
+      body: `${m.name || m.email || "This member"} will be permanently removed and will lose access. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.StaffMember.delete(m.id);
       toast.success(`Removed ${m.name || m.email}`);
@@ -202,7 +210,7 @@ export default function DashboardTeam() {
               </div>
               <div>
                 <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Email</label>
-                <input type="email" value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} className="dash-input" placeholder="jane@mora.travel" />
+                <input type="email" value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} className="dash-input" placeholder="jane@iconholiday.travel" />
               </div>
               <div>
                 <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Role</label>

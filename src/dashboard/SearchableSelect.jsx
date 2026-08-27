@@ -110,7 +110,7 @@ export default function SearchableSelect({
                     aria-selected={isSel}
                     onMouseEnter={() => setActive(i)}
                     onClick={() => pick(o)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left ${i === active ? "bg-mora-gold/10" : ""} ${isSel ? "text-gold font-medium" : "text-mora-primary"}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 min-h-[40px] text-sm text-left transition-colors ${i === active ? "bg-mora-gold/10" : ""} ${isSel ? "text-gold font-medium" : "text-mora-primary"}`}
                   >
                     {Icon && <Icon className="w-4 h-4 shrink-0 text-gold" />}
                     <span className="flex-1 truncate">{o.label}</span>

@@ -18,12 +18,13 @@
     outline: none;
     transition: border-color 0.15s ease;
   }
-  .dash-input:focus { border-color: rgba(173, 31, 35, 0.5); }
+  /* A soft ring on focus so it's always obvious which field you're typing in. */
+  .dash-input:focus { border-color: rgba(173, 31, 35, 0.5); box-shadow: 0 0 0 3px rgba(173, 31, 35, 0.10); }
   .dash-input::placeholder { color: #93a0b8; }
 }
 
 /* ------------------------------------------------------------------ *
- * MORA — coherent light "luxury" palette: deep navy + crimson + cream *
+ * Icon Holiday — coherent light "luxury" palette: deep navy + crimson + cream *
  * One source of truth so text/surfaces stay high-contrast everywhere. *
  * ------------------------------------------------------------------ */
 
@@ -110,6 +111,17 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
+
+  /* ----- Reading comfort -----
+     DM Sans sets tight by default; give running text room to breathe and pull
+     display sizes in slightly so headings stay crisp rather than airy. */
+  body { line-height: 1.55; letter-spacing: -0.005em; }
+  p { line-height: 1.6; }
+  h1, h2, h3, h4 { line-height: 1.22; letter-spacing: -0.018em; }
+  /* Long-form copy (policies, help, notes) — cap the measure for easy scanning. */
+  .prose-comfort p { max-width: 68ch; line-height: 1.7; }
+  /* Numerals stay aligned in tables/stats so columns are easy to compare. */
+  table, .stat-value { font-variant-numeric: tabular-nums; }
   ::selection {
     background: rgba(173, 31, 35, 0.18);
   }

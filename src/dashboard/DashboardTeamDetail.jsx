@@ -8,6 +8,7 @@ import moment from "moment";
 import {
   ChevronLeft, Trash2, Mail, ShieldCheck, Clock, CheckSquare, ShieldOff,
 } from "lucide-react";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
@@ -33,6 +34,13 @@ export default function DashboardTeamDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this team member?",
+      body: `${m?.name || m?.email || "This member"} will be permanently removed from the team. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.StaffMember.delete(id);
       toast.success("Member removed");

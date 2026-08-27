@@ -11,6 +11,7 @@ import {
   Percent, Wallet, CalendarClock, MapPin, MousePointerClick, Clock,
   Tag, Hash, Users, FileText,
 } from "lucide-react";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const AUDIENCE_META = {
   all: { label: "All users", pill: "bg-mora-primary/10 text-mora-primary" },
@@ -37,6 +38,13 @@ export default function DashboardPromotionDetail() {
   }, [id]);
 
   const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this entry?",
+      body: `${item?.title || "This entry"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await base44.entities.Promotion.delete(id);
       toast.success("Entry removed");

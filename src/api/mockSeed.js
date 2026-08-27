@@ -23,7 +23,7 @@ export function buildSeed() {
   const at = (offsetDays) => new Date(now + offsetDays * DAY);
   const iso = (offsetDays) => at(offsetDays).toISOString();
   const date = (offsetDays) => at(offsetDays).toISOString().slice(0, 10); // YYYY-MM-DD
-  const by = 'traveler@mora.app';
+  const by = 'traveler@iconholiday.app';
   const cost = (p) => Math.round((p * 0.78) / 50000) * 50000; // indicative supplier cost
 
   const Trip = [
@@ -161,19 +161,19 @@ export function buildSeed() {
   ];
 
   const StaffMember = [
-    { id: 'staff_alex', created_date: iso(-400), created_by: by, name: 'Alex Rivera', email: 'alex@mora.app', role: 'admin', status: 'active', last_active: iso(-0.05) },
-    { id: 'staff_dewi', created_date: iso(-300), created_by: by, name: 'Dewi Lestari', email: 'dewi@mora.app', role: 'manager', status: 'active', last_active: iso(-1) },
-    { id: 'staff_tom', created_date: iso(-200), created_by: by, name: 'Tom Becker', email: 'tom@mora.app', role: 'editor', status: 'active', last_active: iso(-3) },
-    { id: 'staff_rina', created_date: iso(-30), created_by: by, name: 'Rina Putri', email: 'rina@mora.app', role: 'viewer', status: 'invited', last_active: null },
+    { id: 'staff_alex', created_date: iso(-400), created_by: by, name: 'Alex Rivera', email: 'alex@iconholiday.app', role: 'admin', status: 'active', last_active: iso(-0.05) },
+    { id: 'staff_dewi', created_date: iso(-300), created_by: by, name: 'Dewi Lestari', email: 'dewi@iconholiday.app', role: 'manager', status: 'active', last_active: iso(-1) },
+    { id: 'staff_tom', created_date: iso(-200), created_by: by, name: 'Tom Becker', email: 'tom@iconholiday.app', role: 'editor', status: 'active', last_active: iso(-3) },
+    { id: 'staff_rina', created_date: iso(-30), created_by: by, name: 'Rina Putri', email: 'rina@iconholiday.app', role: 'viewer', status: 'invited', last_active: null },
   ];
 
   // Trip rosters — who is travelling on each trip.
   const TripMember = [
-    { id: 'tm_bali_alex', created_date: iso(-12), created_by: by, trip_id: 'trip_bali', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_bali_alex', created_date: iso(-12), created_by: by, trip_id: 'trip_bali', name: 'Alex Rivera', email: 'traveler@iconholiday.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
     { id: 'tm_bali_mia', created_date: iso(-11), created_by: by, trip_id: 'trip_bali', name: 'Mia Tan', email: 'mia.tan@example.com', phone: '+65 8111 2222', role: 'traveler', status: 'confirmed' },
-    { id: 'tm_kyoto_alex', created_date: iso(-8), created_by: by, trip_id: 'trip_kyoto', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_kyoto_alex', created_date: iso(-8), created_by: by, trip_id: 'trip_kyoto', name: 'Alex Rivera', email: 'traveler@iconholiday.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
     { id: 'tm_kyoto_kenji', created_date: iso(-7), created_by: by, trip_id: 'trip_kyoto', name: 'Kenji Sato', email: 'kenji.sato@example.com', phone: '+81 90 1234 5678', role: 'traveler', status: 'invited' },
-    { id: 'tm_san_alex', created_date: iso(-4), created_by: by, trip_id: 'trip_santorini', name: 'Alex Rivera', email: 'traveler@mora.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
+    { id: 'tm_san_alex', created_date: iso(-4), created_by: by, trip_id: 'trip_santorini', name: 'Alex Rivera', email: 'traveler@iconholiday.app', phone: '+62 811 2233 4455', role: 'organizer', status: 'confirmed' },
     { id: 'tm_san_sara', created_date: iso(-4), created_by: by, trip_id: 'trip_santorini', name: 'Sara Putri', email: 'sara.putri@example.com', phone: '+62 822 9090 1010', role: 'traveler', status: 'confirmed' },
     { id: 'tm_san_leo', created_date: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Leo Fernandes', email: 'leo.f@example.com', phone: '+351 912 345 678', role: 'traveler', status: 'invited' },
     { id: 'tm_san_guest', created_date: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Hana Kim', email: 'hana.kim@example.com', phone: '+82 10 5555 6666', role: 'guest', status: 'invited' },
@@ -209,8 +209,8 @@ export function buildSeed() {
 
   // CMS content pages — hero copy, info pages, FAQs and announcements.
   const Page = [
-    { id: 'page_hero', created_date: iso(-40), created_by: by, type: 'hero', title: 'Your journey begins with MORA', slug: 'home-hero', excerpt: 'Plan, book and travel — beautifully.', body: 'Discover handpicked destinations, build day-by-day itineraries, and book everything in one place.', cover_image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', status: 'published', order: 1 },
-    { id: 'page_about', created_date: iso(-38), created_by: by, type: 'page', title: 'About MORA', slug: 'about', excerpt: 'Who we are.', body: 'MORA is your AI-powered travel concierge — blending curated destinations, smart itineraries and one-tap booking into a single, beautiful experience.', cover_image: '', status: 'published', order: 2 },
+    { id: 'page_hero', created_date: iso(-40), created_by: by, type: 'hero', title: 'Your journey begins with Icon Holiday', slug: 'home-hero', excerpt: 'Plan, book and travel — beautifully.', body: 'Discover handpicked destinations, build day-by-day itineraries, and book everything in one place.', cover_image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', status: 'published', order: 1 },
+    { id: 'page_about', created_date: iso(-38), created_by: by, type: 'page', title: 'About Icon Holiday', slug: 'about', excerpt: 'Who we are.', body: 'Icon Holiday is your AI-powered travel concierge — blending curated destinations, smart itineraries and one-tap booking into a single, beautiful experience.', cover_image: '', status: 'published', order: 2 },
     { id: 'page_faq_book', created_date: iso(-30), created_by: by, type: 'faq', title: 'How do I make a booking?', slug: 'faq-booking', excerpt: '', body: 'Open the Book (OTA) page, choose a category (flight, hotel, train, and more), search, and tap Book. You can also add bookings directly to a trip.', cover_image: '', status: 'published', order: 1 },
     { id: 'page_faq_cancel', created_date: iso(-29), created_by: by, type: 'faq', title: 'What is the cancellation policy?', slug: 'faq-cancellation', excerpt: '', body: 'Most bookings can be cancelled from the booking detail screen. Refund amounts depend on the supplier policy and how close to travel you cancel.', cover_image: '', status: 'published', order: 2 },
     { id: 'page_faq_pay', created_date: iso(-28), created_by: by, type: 'faq', title: 'Which payment methods are supported?', slug: 'faq-payments', excerpt: '', body: 'In this demo, payments are simulated. A live deployment supports cards and e-wallets via a secure payment gateway.', cover_image: '', status: 'published', order: 3 },
@@ -236,7 +236,7 @@ export function buildSeed() {
 
   // Single app-wide settings record (brand, support, social, feature flags).
   const Setting = [
-    { id: 'app', created_date: iso(-400), created_by: by, brand_name: 'MORA', tagline: 'Your Travel Agent', support_email: 'support@mora.app', support_phone: '+62 21 5000 1234', support_whatsapp: '+62 811 2233 4455', currency: 'IDR', instagram: '@mora.travel', facebook: 'MORA Travel', hero_title: 'Your journey begins with MORA', hero_subtitle: 'Plan, book and travel — beautifully.', flag_promotions: true, flag_ai_assistant: true, flag_consultations: true, flag_ota: true },
+    { id: 'app', created_date: iso(-400), created_by: by, brand_name: 'Icon Holiday', tagline: 'Your Travel Agent', support_email: 'support@iconholiday.app', support_phone: '+62 21 5000 1234', support_whatsapp: '+62 811 2233 4455', currency: 'IDR', instagram: '@iconholiday.travel', facebook: 'Icon Holiday Travel', hero_title: 'Your journey begins with Icon Holiday', hero_subtitle: 'Plan, book and travel — beautifully.', flag_promotions: true, flag_ai_assistant: true, flag_consultations: true, flag_ota: true },
   ];
 
   /* ----------------------------------------------------------------------------
@@ -247,7 +247,7 @@ export function buildSeed() {
    * the mobile traveller's personal lists.
    * -------------------------------------------------------------------------- */
   const cap = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-  const agencyBy = 'agency@mora.app';
+  const agencyBy = 'agency@iconholiday.app';
   const custIds = Customer.map((c) => c.id);
   const firstNames = ['Rizki', 'Ayu', 'Hendra', 'Nadia', 'Fajar', 'Lina', 'Bayu', 'Citra', 'Galih', 'Sari', 'Dewa', 'Indah', 'Reza', 'Maya', 'Yoga', 'Wulan'];
   const lastNames = ['Saputra', 'Wibowo', 'Halim', 'Kusuma', 'Permata', 'Anggraini', 'Nugroho', 'Pertiwi', 'Santoso', 'Wijaya'];
@@ -274,7 +274,7 @@ export function buildSeed() {
       id: `bk_h${i}`, created_date: iso(off), updated_date: iso(off + 1), created_by: agencyBy,
       trip_id: '', type: k.type, title: `${cap(k.type)} · ${dst.split(',')[0]}`,
       provider: k.prov, check_in: iso(off + 18), location: dst,
-      confirmation_code: `MORA-H${1000 + i}`, price, currency: 'IDR', status,
+      confirmation_code: `Icon Holiday-H${1000 + i}`, price, currency: 'IDR', status,
       guests: 1 + (i % 4), notes: 'Past booking.',
       customer_id: custIds[i % custIds.length], supplier_id: k.sup, cost_price: cost(price),
       payment_status: status === 'cancelled' ? 'refunded' : payCycle[i % payCycle.length],

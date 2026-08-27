@@ -5,6 +5,7 @@ import moment from "moment";
 import { Download, Trash2, ShieldCheck, ChevronRight, FileText } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const DB_PREFIX = "mora_db_";
 
@@ -54,10 +55,13 @@ export default function ProfilePrivacy() {
     toast("Data exported");
   };
 
-  const handleDelete = () => {
-    const ok = window.confirm(
-      "This will erase all locally stored MORA data and reload the app. Continue?"
-    );
+  const handleDelete = async () => {
+    const ok = await confirmDialog({
+      title: "Delete all your data?",
+      body: "Every trip, booking and setting stored on this device will be erased, and the app will reload. This can't be undone — export your data first if you want to keep a copy.",
+      confirmLabel: "Delete everything",
+      destructive: true,
+    });
     if (!ok) return;
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith(DB_PREFIX)) localStorage.removeItem(key);
@@ -165,7 +169,7 @@ export default function ProfilePrivacy() {
             </div>
             <div className="flex-1 text-left">
               <p className="text-sm font-medium text-mora-white">Terms of Service</p>
-              <p className="text-xs text-mora-neutral/50 mt-0.5">The rules of using MORA</p>
+              <p className="text-xs text-mora-neutral/50 mt-0.5">The rules of using Icon Holiday</p>
             </div>
             <ChevronRight className="w-4 h-4 text-mora-neutral/30" />
           </Link>

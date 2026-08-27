@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import ErrorState from "@/components/ErrorState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -41,6 +42,13 @@ export default function BookingDetail() {
   }, [load]);
 
   const handleDelete = async () => {
+    const ok = await confirmDialog({
+      title: "Delete this booking?",
+      body: `${booking?.title || "This booking"} will be permanently removed from your bookings, along with its confirmation details. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Booking.delete(bookingId);
     navigate("/booking");
   };

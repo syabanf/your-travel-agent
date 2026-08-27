@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import moment from "moment";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -121,6 +122,13 @@ export default function DashboardCustomers() {
   };
 
   const remove = async (c) => {
+    const ok = await confirmDialog({
+      title: "Delete this customer?",
+      body: `${c.name || "This customer"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Customer.delete(c.id);
     toast.success("Customer removed");
     load();

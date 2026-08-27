@@ -11,6 +11,7 @@ import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
 import { downloadCSV } from "@/lib/csv";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DashboardAiStub from "@/dashboard/DashboardAiStub";
@@ -65,8 +66,32 @@ export default function DashboardBookings() {
   };
   useEffect(() => { load(); }, []);
 
-  const delTrip = async (id) => { await base44.entities.Trip.delete(id); toast.success("Trip deleted"); load(); };
-  const delBooking = async (id) => { await base44.entities.Booking.delete(id); toast.success("Booking deleted"); load(); };
+  const delTrip = async (id) => {
+    const t = (trips || []).find((x) => x.id === id);
+    const ok = await confirmDialog({
+      title: "Delete this trip?",
+      body: `${t?.title || "This trip"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
+    await base44.entities.Trip.delete(id);
+    toast.success("Trip deleted");
+    load();
+  };
+  const delBooking = async (id) => {
+    const b = (bookings || []).find((x) => x.id === id);
+    const ok = await confirmDialog({
+      title: "Delete this booking?",
+      body: `${b?.title || "This booking"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
+    await base44.entities.Booking.delete(id);
+    toast.success("Booking deleted");
+    load();
+  };
   const setBookingStatus = async (id, status) => { await base44.entities.Booking.update(id, { status }); toast.success("Status updated"); load(); };
   const setTripStatus = async (id, status) => { await base44.entities.Trip.update(id, { status }); toast.success("Status updated"); load(); };
 

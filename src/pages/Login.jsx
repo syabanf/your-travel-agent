@@ -83,7 +83,7 @@ export default function Login({ register = false }) {
         </button>
 
         <p className="text-center text-sm text-mora-neutral mt-6">
-          {isRegister ? "Already have an account?" : "New to MORA?"}{" "}
+          {isRegister ? "Already have an account?" : "New to Icon Holiday?"}{" "}
           <button onClick={() => setMode(isRegister ? "login" : "register")} className="text-gold font-semibold">
             {isRegister ? "Sign in" : "Create one"}
           </button>

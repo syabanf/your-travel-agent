@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, ChevronLeft, Tags, Eye, EyeOff } from "lucide-rea
 import DataTable from "@/dashboard/DataTable";
 import Drawer from "@/dashboard/Drawer";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import { ICON_OPTIONS, BEHAVIORS, iconFor } from "@/data/otaCategories";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -62,7 +63,13 @@ export default function DashboardOTACategories() {
   };
 
   const remove = async (r) => {
-    if (!window.confirm(`Delete the "${r.label}" category? It will disappear from the mobile app.`)) return;
+    const ok = await confirmDialog({
+      title: "Delete this category?",
+      body: `"${r.label}" will disappear from the mobile app's Book tab. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     try { await base44.entities.OtaCategory.delete(r.id); toast.success("Category deleted"); load(); }
     catch { toast.error("Couldn't delete"); }
   };
@@ -81,8 +88,8 @@ export default function DashboardOTACategories() {
     ) },
     { key: "actions", label: "", align: "right", render: (r) => (
       <span className="inline-flex gap-1">
-        {canEdit && <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} className="w-8 h-8 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>}
-        {canDelete && <button onClick={(e) => { e.stopPropagation(); remove(r); }} className="w-8 h-8 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>}
+        {canEdit && <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>}
+        {canDelete && <button onClick={(e) => { e.stopPropagation(); remove(r); }} className="w-9 h-9 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>}
       </span>
     ) },
   ];

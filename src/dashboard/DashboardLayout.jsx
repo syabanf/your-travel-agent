@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags } from "lucide-react";
@@ -8,6 +8,7 @@ import { ROLES, can } from "./rbac";
 import DashboardHeader from "./DashboardHeader";
 import SearchableSelect from "./SearchableSelect";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import useScrollRestoration from "@/lib/useScrollRestoration";
 
 const GROUPS = [
   { title: "Insight Center", items: [
@@ -49,6 +50,9 @@ function Shell() {
   const navigate = useNavigate();
   const location = useLocation();
   const reduce = useReducedMotion();
+  // Returning from a record puts you back where you were in the list.
+  const mainRef = useRef(null);
+  useScrollRestoration(mainRef);
   const { logout } = useAuth();
   const { role, setRole } = useRole();
   const [open, setOpen] = useState(false);
@@ -113,7 +117,7 @@ function Shell() {
               <Plane className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="font-display font-bold leading-none text-mora-primary">MORA</p>
+              <p className="font-display font-bold leading-none text-mora-primary">Icon Holiday</p>
               <p className="text-[10px] text-mora-neutral">Admin Console</p>
             </div>
           </div>
@@ -201,7 +205,7 @@ function Shell() {
       </aside>
 
       {/* Content — own scroll container because the global body is position:fixed (mobile-app lock) */}
-      <main id="main" className="lg:ml-64 h-screen overflow-y-auto">
+      <main id="main" ref={mainRef} className="lg:ml-64 h-screen overflow-y-auto">
         <DashboardHeader onMenu={() => setOpen(true)} role={role} groups={GROUPS} />
         <motion.div
           key={location.pathname}

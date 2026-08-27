@@ -11,6 +11,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Save, Building2, CheckCircle2, Percen
 import { toast } from "sonner";
 import { SkeletonStat, SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import Pagination from "@/dashboard/Pagination";
 import { usePagination } from "@/dashboard/usePagination";
 import DataTable from "@/dashboard/DataTable";
@@ -93,6 +94,13 @@ export default function DashboardSuppliers() {
   };
 
   const remove = async (s) => {
+    const ok = await confirmDialog({
+      title: "Delete this supplier?",
+      body: `${s.name || "This supplier"} will be permanently removed. This can't be undone.`,
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!ok) return;
     await base44.entities.Supplier.delete(s.id);
     toast.success("Supplier removed");
     load();
@@ -352,7 +360,7 @@ export default function DashboardSuppliers() {
 
               {s.contact_phone && (
                 <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(s.contact_phone, `Hi ${s.name}, this is MORA Travel…`); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(s.contact_phone, `Hi ${s.name}, this is Icon Holiday Travel…`); }}
                   className="mt-3 w-full rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold py-2 flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <MessageCircle className="w-3.5 h-3.5" /> WhatsApp

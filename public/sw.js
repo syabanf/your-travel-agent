@@ -1,4 +1,4 @@
-// Minimal offline-shell service worker for the MORA PWA.
+// Minimal offline-shell service worker for the Icon Holiday PWA.
 // Registered only in production (see src/main.jsx) so it never interferes with dev/HMR.
 const CACHE = "mora-v1";
 
