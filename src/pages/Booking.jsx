@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight } from "lucide-react";
+import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -17,7 +17,7 @@ const statusColors = {
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
-const typeIcons = { flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2, consultation: MessageCircle };
+const typeIcons = { package: Package, flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2, consultation: MessageCircle };
 
 export default function Booking() {
   const [bookings, setBookings] = useState([]);
@@ -63,19 +63,32 @@ export default function Booking() {
       )}
       <PageHeader title="My Bookings" subtitle="Your reservations" />
 
-      {/* CTA to standalone OTA marketplace */}
-      <div className="px-6 mb-6">
-        <Link to="/ota" className="block press">
-          <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-            <div className="w-11 h-11 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
-              <CalendarSearch className="w-5 h-5 text-gold" strokeWidth={1.5} />
+      {/* Ways to book: ready-made packages, or search the marketplace */}
+      <div className="px-6 mb-6 space-y-3">
+        <Link to="/packages" className="block press-spring">
+          <div className="card-modern rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-lift transition-shadow">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-soft" style={{ backgroundImage: "linear-gradient(135deg, #C42A2E, #8E181B)" }}>
+              <Package className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-mora-white">Book flights, hotels &amp; more</p>
+              <p className="text-sm font-semibold text-mora-primary">Holiday packages</p>
+              <p className="text-xs text-mora-neutral/70 mt-0.5">Ready-made trips, everything included</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
+          </div>
+        </Link>
+
+        <Link to="/ota" className="block press-spring">
+          <div className="card-modern rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-lift transition-shadow">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-soft" style={{ backgroundImage: "linear-gradient(135deg, #1B2D52, #0B1B3B)" }}>
+              <CalendarSearch className="w-5 h-5 text-white" strokeWidth={1.8} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-mora-primary">Book flights, hotels &amp; more</p>
               <p className="text-xs text-mora-neutral/70 mt-0.5">Search the travel marketplace</p>
             </div>
             <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
-          </GlassCard>
+          </div>
         </Link>
       </div>
 

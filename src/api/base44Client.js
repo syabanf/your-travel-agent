@@ -156,10 +156,10 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage'];
 
 // Business records whose changes are written to the AuditLog (compliance trail).
-const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting']);
+const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage']);
 function logAudit(action, name, id, data) {
   if (!AUDITABLE.has(name)) return;
   try {
@@ -188,7 +188,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v7`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v8`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -272,6 +272,11 @@ function runMigrations() {
     // v7: seed the OTA booking categories that drive the mobile app's tabs.
     if (readCollection('OtaCategory').length === 0 && (seed.OtaCategory || []).length) {
       writeCollection('OtaCategory', seed.OtaCategory);
+    }
+
+    // v8: seed the sellable holiday packages.
+    if (readCollection('TourPackage').length === 0 && (seed.TourPackage || []).length) {
+      writeCollection('TourPackage', seed.TourPackage);
     }
 
     // v6: insert seed rows added after the user first seeded (the spread-out

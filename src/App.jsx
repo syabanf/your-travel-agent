@@ -38,6 +38,8 @@ const AssistantProfile = lazy(() => import('./pages/AssistantProfile'));
 const ConsultationBooking = lazy(() => import('./pages/ConsultationBooking'));
 const Promotions = lazy(() => import('./pages/Promotions'));
 const PromotionDetail = lazy(() => import('./pages/PromotionDetail'));
+const Packages = lazy(() => import('./pages/Packages'));
+const PackageDetail = lazy(() => import('./pages/PackageDetail'));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail'));
 const ProfilePreferences = lazy(() => import('./pages/ProfilePreferences'));
 const ProfileTravelers = lazy(() => import('./pages/ProfileTravelers'));
@@ -58,6 +60,8 @@ const DashboardDestinations = lazy(() => import('./dashboard/DashboardDestinatio
 const DashboardDestinationDetail = lazy(() => import('./dashboard/DashboardDestinationDetail'));
 const DashboardPromotions = lazy(() => import('./dashboard/DashboardPromotions'));
 const DashboardPromotionDetail = lazy(() => import('./dashboard/DashboardPromotionDetail'));
+const DashboardPackages = lazy(() => import('./dashboard/DashboardPackages'));
+const DashboardPackageDetail = lazy(() => import('./dashboard/DashboardPackageDetail'));
 const DashboardBookings = lazy(() => import('./dashboard/DashboardBookings'));
 const DashboardBookingDetail = lazy(() => import('./dashboard/DashboardBookingDetail'));
 const DashboardTripDetail = lazy(() => import('./dashboard/DashboardTripDetail'));
@@ -118,6 +122,8 @@ const AppRoutes = () => (
           <Route path="destinations/:id" element={<DashboardDestinationDetail />} />
           <Route path="promotions" element={<DashboardPromotions />} />
           <Route path="promotions/:id" element={<DashboardPromotionDetail />} />
+          <Route path="packages" element={<DashboardPackages />} />
+          <Route path="packages/:id" element={<DashboardPackageDetail />} />
           <Route path="bookings" element={<DashboardBookings />} />
           <Route path="bookings/:id" element={<DashboardBookingDetail />} />
           <Route path="trips/:id" element={<DashboardTripDetail />} />
@@ -182,6 +188,8 @@ const AppRoutes = () => (
           <Route path="/booking/:bookingId/checkout" element={<BookingCheckout />} />
           <Route path="/promotions" element={<Promotions />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
+          <Route path="/packages" element={<Packages />} />
+          <Route path="/packages/:id" element={<PackageDetail />} />
           <Route path="/destination/:id" element={<DestinationDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/preferences" element={<ProfilePreferences />} />

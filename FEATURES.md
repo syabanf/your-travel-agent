@@ -49,6 +49,7 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 - **Destination detail** (`/destination/:id`) — swipeable hero gallery, vibes, travel info.
 - **Destination swipe** — Tinder-style deck (swipe right to save a destination); favourites persist and pre-fill the trip wizard.
 - **Promotions & Events** (`/promotions`, `/promotions/:id`) — promos, events and news; the CTA copies the promo code and routes into booking.
+- **Holiday Packages** (`/packages`, `/packages/:id`) — ready-made trips for sale: browse by category, see the day-by-day itinerary, what's included/excluded, departure dates and seats left, pick a party size, then buy straight into the checkout flow. Surfaced on Home and on the Booking tab; only published packages appear.
 - **Help** (`/help`) — FAQ + support, sourced from the CMS.
 
 ### Trip planning — Itinerary (`/itinerary`)
@@ -105,6 +106,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ### Catalog
 - **Destinations** (`/dashboard/destinations`, `/destinations/:id`) — CRUD with a **map editor** (click or geocode-search), multi-image gallery (cover = first), vibes, emoji, from-price, and travel metadata (best season, currency, timezone, visa). Detail shows derived insights on a map.
 - **Promotions & Events** (`/dashboard/promotions`, `/promotions/:id`) — CRUD with promo codes, audience, terms, validity.
+- **Holiday Packages** (`/dashboard/packages`, `/packages/:id`) — full CRUD for the packages sold in the app: pricing (incl. a strikethrough "was" price and automatic discount badge), duration, party-size limits, seats left, highlights, inclusions/exclusions, a day-by-day itinerary and departure dates. Draft vs published controls app visibility. **Drives the mobile store.**
 - **Suppliers** (`/dashboard/suppliers`, `/suppliers/:id`) — directory (flight/hotel/activity/transport/DMC) with contact person, payment terms, commission, ratings; per-supplier bookings, sales, cost and estimated commission.
 
 ### Content (CMS)
@@ -136,7 +138,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ## Data model
 Mock entities ([`src/api/base44Client.js`](src/api/base44Client.js)):
 
-`Trip` · `Booking` · `ItineraryItem` · `TripMember` · `Notification` · `PersonalAssistant` · `ChatMessage` · `Destination` · `Promotion` · `OtaCategory` · `Customer` · `Lead` · `Supplier` · `Campaign` · `StaffMember` · `Page` · `MediaAsset` · `Setting` · `AuditLog`
+`Trip` · `Booking` · `ItineraryItem` · `TripMember` · `Notification` · `PersonalAssistant` · `ChatMessage` · `Destination` · `Promotion` · `OtaCategory` · `TourPackage` · `Customer` · `Lead` · `Supplier` · `Campaign` · `StaffMember` · `Page` · `MediaAsset` · `Setting` · `AuditLog`
 
 Each supports `list(order, limit)`, `filter(query, order, limit)`, `get(id)`, `create`, `update`, `delete` (+ `bulkCreate`). Mutations to business entities are written to `AuditLog`.
 

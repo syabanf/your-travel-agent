@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags, Package } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -30,6 +30,7 @@ const GROUPS = [
   { title: "Catalog", items: [
     { to: "/dashboard/destinations", icon: MapPin, label: "Destinations", res: "destinations" },
     { to: "/dashboard/promotions", icon: Megaphone, label: "Promotions & Events", res: "promotions" },
+    { to: "/dashboard/packages", icon: Package, label: "Holiday Packages", res: "promotions" },
     { to: "/dashboard/suppliers", icon: Building2, label: "Suppliers", res: "suppliers" },
   ] },
   { title: "Content", items: [

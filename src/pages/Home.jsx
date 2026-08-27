@@ -7,6 +7,7 @@ import ActiveTrip from "../components/home/ActiveTrip";
 import FeaturedDestinations from "../components/home/FeaturedDestinations";
 import ConciergeOffer from "../components/home/ConciergeOffer";
 import RecentBookings from "../components/home/RecentBookings";
+import HolidayPackages from "../components/home/HolidayPackages";
 import Skeleton, { SkeletonRows } from "@/components/Skeletons";
 
 export default function Home() {
@@ -135,6 +136,7 @@ export default function Home() {
           </div>
         </Link>
         <ActiveTrip trip={activeTrip} />
+        <HolidayPackages />
         <FeaturedDestinations />
         <ConciergeOffer />
         <RecentBookings bookings={bookings} />
