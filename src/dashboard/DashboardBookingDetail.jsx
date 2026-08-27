@@ -115,7 +115,7 @@ export default function DashboardBookingDetail() {
   };
   const printVoucher = () => printDocument(`Icon Holiday Voucher`, bookingVoucherHTML(b, { supplierName: supplier?.name, customerName: customer?.name }));
   const sendWhatsApp = () => {
-    const code = b.confirmation_code || `Icon Holiday-${String(id).slice(-6).toUpperCase()}`;
+    const code = b.confirmation_code || `ICH-${String(id).slice(-6).toUpperCase()}`;
     const msg = `Hi ${customer?.name || "there"}, your Icon Holiday booking "${b.title}" is ${b.status}. Confirmation: ${code}. Total: ${formatIDR(b.price || 0)}. Thank you for booking with Icon Holiday Travel!`;
     openWhatsApp(customer?.phone, msg);
   };

@@ -59,7 +59,7 @@ export default function ConsultationBooking() {
         currency: "IDR",
         status: "confirmed",
         guests: 1,
-        confirmation_code: "Icon Holiday-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        confirmation_code: "ICH-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
         payment_method: method?.label,
         notes: `${pkg.name}${notes ? " · " + notes : ""}`,
         image_url: assistant.photo_url || undefined,

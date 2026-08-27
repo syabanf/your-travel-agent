@@ -51,7 +51,7 @@ function header(docLabel, code) {
 const row = (k, v) => `<div class="row"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`;
 
 export function bookingVoucherHTML(b, opts = {}) {
-  const code = b.confirmation_code || `Icon Holiday-${String(b.id || "").slice(-6).toUpperCase()}`;
+  const code = b.confirmation_code || `ICH-${String(b.id || "").slice(-6).toUpperCase()}`;
   return `${header("Booking Voucher", code)}
     <h1>${esc(b.title || "Booking")}</h1>
     <p class="muted"><span class="pill">${esc(b.type || "booking")}</span> &nbsp; ${esc(b.status || "")}</p>

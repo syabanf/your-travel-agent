@@ -449,7 +449,7 @@ export function buildSeed() {
       id: `bk_h${i}`, created_date: iso(off), updated_date: iso(off + 1), created_by: agencyBy,
       trip_id: '', type: k.type, title: `${cap(k.type)} · ${dst.split(',')[0]}`,
       provider: k.prov, check_in: iso(off + 18), location: dst,
-      confirmation_code: `Icon Holiday-H${1000 + i}`, price, currency: 'IDR', status,
+      confirmation_code: `ICH-H${1000 + i}`, price, currency: 'IDR', status,
       guests: 1 + (i % 4), notes: 'Past booking.',
       customer_id: custIds[i % custIds.length], supplier_id: k.sup, cost_price: cost(price),
       payment_status: status === 'cancelled' ? 'refunded' : payCycle[i % payCycle.length],
