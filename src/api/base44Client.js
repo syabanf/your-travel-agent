@@ -300,7 +300,16 @@ runMigrations();
 
 const auth = {
   async me() {
-    return clone(MOCK_USER);
+    // Sign-in stores who the person said they were. Everything in the app that
+    // needs the current user goes through here, so reading it back is what makes
+    // a registered name actually show up instead of the demo user's.
+    const name = readRaw('mora_user_name');
+    const email = readRaw('mora_user_email');
+    return clone({
+      ...MOCK_USER,
+      ...(name ? { full_name: name } : {}),
+      ...(email ? { email } : {}),
+    });
   },
   // No real session in local mode — these are intentionally inert so the UI
   // controls still work without throwing or redirecting off-app.

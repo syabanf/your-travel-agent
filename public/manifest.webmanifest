@@ -2,14 +2,22 @@
   "name": "Icon Holiday · Your Travel Agent",
   "short_name": "Icon Holiday",
   "description": "Plan, book and manage your travels with Icon Holiday — your AI travel concierge.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/app/",
+  "scope": "/app/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0B1B3B",
   "theme_color": "#0B1B3B",
-  "categories": ["travel", "lifestyle"],
+  "categories": [
+    "travel",
+    "lifestyle"
+  ],
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }

@@ -16,6 +16,21 @@ npm run dev
 
 Then open the URL Vite prints (default http://localhost:5173).
 
+### URL map
+
+The company-profile landing page owns the root; the app lives under `/app/`.
+
+| URL | What it serves |
+|---|---|
+| `/` | redirects to `/landing/` |
+| `/landing/…` | company-profile site (static HTML) |
+| `/app/` | traveller app |
+| `/app/dashboard` | admin CMS |
+| `/admin` | friendly alias → `/app/admin` |
+
+This holds in dev and in production: a small Vite plugin performs the same
+redirects the nginx config does, so the two never drift.
+
 Other scripts:
 
 ```bash

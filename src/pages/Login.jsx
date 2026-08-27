@@ -35,7 +35,7 @@ export default function Login({ register = false }) {
     }
     setBusy(true);
     setTimeout(() => {
-      login({ name: form.name || form.email.split("@")[0] });
+      login({ name: form.name || form.email.split("@")[0], email: form.email });
       toast.success(isRegister ? "Account created" : "Welcome back");
       navigate("/", { replace: true });
     }, 700);

@@ -188,10 +188,20 @@ ${content}`,
           </div>
         )}
 
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[85%] ${msg.role === "user" ? "" : ""}`}>
-              {msg.role === "assistant" && (
+        {messages.map((msg, idx) => {
+          // Only the traveller's own messages get a bubble. The assistant reads
+          // as plain text on the page — the way current chat apps do it — so
+          // long itineraries aren't boxed into a narrow card.
+          const isUser = msg.role === "user";
+          const markdown = (
+            <ReactMarkdown className="text-sm text-mora-primary leading-relaxed prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-headings:text-gold prose-strong:text-mora-primary prose-li:text-mora-primary">
+              {msg.content}
+            </ReactMarkdown>
+          );
+          return (
+          <div key={idx} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+            <div className={isUser ? "max-w-[85%]" : "w-full"}>
+              {!isUser && (
                 <div className="flex items-center gap-2 mb-1.5">
                   <div className="w-6 h-6 rounded-lg bg-mora-gold/10 flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-gold" />
@@ -199,15 +209,13 @@ ${content}`,
                   <span className="text-[10px] text-gold">Icon Holiday AI</span>
                 </div>
               )}
-              <GlassCard 
-                className={`p-4 ${msg.role === "user" ? "glass-gold" : ""}`}
-              >
-                <ReactMarkdown className="text-sm text-mora-primary leading-relaxed prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-headings:text-gold prose-strong:text-mora-primary prose-li:text-mora-primary">
-                  {msg.content}
-                </ReactMarkdown>
-              </GlassCard>
-              
-              {msg.role === "assistant" && (
+              {isUser ? (
+                <GlassCard className="p-4 glass-gold">{markdown}</GlassCard>
+              ) : (
+                markdown
+              )}
+
+              {!isUser && (
                 <div className="flex gap-2 mt-2 flex-wrap">
                   <button
                     onClick={() => handleSaveToTrip(msg.content)}
@@ -226,18 +234,18 @@ ${content}`,
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {loading && (
-          <div className="flex justify-start">
-            <GlassCard className="p-4 flex items-center gap-3">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-mora-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-2 h-2 bg-mora-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-2 h-2 bg-mora-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-              <span className="text-xs text-mora-neutral">Planning your journey...</span>
-            </GlassCard>
+          // Borderless too, so the thinking state sits where the reply will.
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1">
+              <div className="w-2 h-2 bg-mora-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-mora-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-mora-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+            <span className="text-xs text-mora-neutral">Planning your journey...</span>
           </div>
         )}
         

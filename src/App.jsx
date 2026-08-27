@@ -215,7 +215,8 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
-          <Router>
+          {/* The landing page owns "/", so the app is mounted under Vite's base ("/app"). */}
+          <Router basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <AppRoutes />
           </Router>
           <Toaster />

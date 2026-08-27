@@ -3,13 +3,12 @@
 Company-profile website yang tampil **sebelum** pengunjung masuk ke aplikasi.
 Berdiri sendiri: HTML + CSS + JS biasa, **tanpa build step**, tanpa dependency.
 
-Folder ini ada di `public/` supaya di-serve dari origin yang sama dengan
-aplikasi — dengan begitu tombol **Buka Aplikasi** (`/`) dan **CMS**
-(`/admin`) benar-benar berfungsi, baik saat `npm run dev` maupun di hasil
-`npm run build`.
+Landing memegang **root** (`/`), sedangkan aplikasi ada di `/app/` dan CMS di
+`/admin`. Membuka `/` akan diarahkan ke `/landing/`. Aturan yang sama berlaku di
+`npm run dev` maupun hasil `npm run build`.
 
 ```
-public/landing/
+landing/
 ├── index.html            ← beranda
 ├── layanan.html          ← tour · tiket · visa · hotel · cruise
 ├── tour.html             ← daftar paket (filter per kawasan)
@@ -36,7 +35,7 @@ public/landing/
 npm run dev
 ```
 
-Lalu buka <http://localhost:5173/landing/>. Aplikasi ada di `/`, CMS di `/dashboard`.
+Lalu buka <http://localhost:5173> — otomatis ke `/landing/`. Aplikasi di `/app/`, CMS di `/admin`.
 
 Setelah `npm run build`, halaman ini otomatis ikut ter-copy ke `dist/landing/`.
 
@@ -87,7 +86,7 @@ setelah render.
 
 | Kondisi | Aplikasi | CMS |
 |---|---|---|
-| Di-serve bersama aplikasi (default) | `/` | `/admin` |
+| Di-serve bersama aplikasi (default) | `/app/` | `/admin` |
 | Di-deploy terpisah | `${ICON_APP_ORIGIN}/` | `${ICON_APP_ORIGIN}/admin` |
 | Dibuka via `file://` | `../../index.html` | `../../index.html` * |
 

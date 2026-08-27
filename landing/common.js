@@ -10,9 +10,11 @@
 /* ── Tautan ke aplikasi & CMS ────────────────────────────────── */
 const APP_ORIGIN = (window.ICON_APP_ORIGIN || "").replace(/\/$/, "");
 const IS_FILE = location.protocol === "file:";
+// Landing owns "/", so the app is mounted at "/app/". "/admin" is a friendly
+// alias that redirects to the CMS.
 window.LINKS = {
-  app: APP_ORIGIN ? `${APP_ORIGIN}/` : IS_FILE ? "../../index.html" : "/",
-  cms: APP_ORIGIN ? `${APP_ORIGIN}/admin` : IS_FILE ? "../../index.html" : "/admin",
+  app: APP_ORIGIN ? `${APP_ORIGIN}/app/` : IS_FILE ? "../index.html" : "/app/",
+  cms: APP_ORIGIN ? `${APP_ORIGIN}/admin` : IS_FILE ? "../index.html" : "/admin",
 };
 
 /* ── Util ────────────────────────────────────────────────────── */

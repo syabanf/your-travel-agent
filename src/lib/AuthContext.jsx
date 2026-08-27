@@ -31,12 +31,18 @@ export const AuthProvider = ({ children }) => {
     try {
       localStorage.setItem(SESSION_KEY, '1');
       if (profile.name) localStorage.setItem('mora_user_name', profile.name);
+      if (profile.email) localStorage.setItem('mora_user_email', profile.email);
     } catch { /* ignore */ }
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      // Don't leave the previous person's name greeting the next one.
+      localStorage.removeItem('mora_user_name');
+      localStorage.removeItem('mora_user_email');
+    } catch { /* ignore */ }
     setIsAuthenticated(false);
   };
 
@@ -51,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     isLoadingPublicSettings: false,
     authError: null,
     appPublicSettings: { id: 'local', public_settings: {} },
-    navigateToLogin: () => { if (typeof window !== 'undefined') window.location.href = '/login'; },
+    navigateToLogin: () => { if (typeof window !== 'undefined') window.location.href = `${import.meta.env.BASE_URL}login`; },
     checkAppState: () => {},
   };
 

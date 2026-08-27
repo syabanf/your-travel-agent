@@ -66,7 +66,7 @@ export default function ProfilePrivacy() {
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith(DB_PREFIX)) localStorage.removeItem(key);
     });
-    window.location.href = "/";
+    window.location.href = import.meta.env.BASE_URL;
   };
 
   const consentRows = [
