@@ -3,8 +3,13 @@
 Company-profile website yang tampil **sebelum** pengunjung masuk ke aplikasi.
 Berdiri sendiri: HTML + CSS + JS biasa, **tanpa build step**, tanpa dependency.
 
+Folder ini ada di `public/` supaya di-serve dari origin yang sama dengan
+aplikasi — dengan begitu tombol **Buka Aplikasi** (`/`) dan **CMS**
+(`/dashboard`) benar-benar berfungsi, baik saat `npm run dev` maupun di hasil
+`npm run build`.
+
 ```
-landing/
+public/landing/
 ├── index.html   ← seluruh struktur halaman
 ├── styles.css   ← desain (mengikuti design system aplikasi)
 ├── script.js    ← konten (tour, destinasi, artikel) + interaksi
@@ -13,13 +18,13 @@ landing/
 
 ## Menjalankan
 
-Buka `index.html` langsung di browser, atau lewat server statis:
-
 ```bash
-cd landing && python3 -m http.server 5190
+npm run dev
 ```
 
-Lalu buka <http://127.0.0.1:5190>.
+Lalu buka <http://localhost:5173/landing/>. Aplikasi ada di `/`, CMS di `/dashboard`.
+
+Setelah `npm run build`, halaman ini otomatis ikut ter-copy ke `dist/landing/`.
 
 ## Isi halaman
 
@@ -33,7 +38,7 @@ Lalu buka <http://127.0.0.1:5190>.
 | Testimoni | Ulasan pelanggan (contoh) |
 | Artikel | Info perjalanan terbaru |
 | Tentang | Profil singkat + keunggulan |
-| CTA Aplikasi | Tautan ke aplikasi traveler & portal agen |
+| Masuk ke Sistem | Dua kartu portal: **Aplikasi Traveler** dan **CMS / Portal Admin** |
 | Kontak | Formulir + kantor Medan & Jakarta + jam operasional |
 
 ## Mengubah konten
@@ -47,11 +52,30 @@ Konten ditaruh sebagai array di bagian atas `script.js` — tidak perlu menyentu
 
 Teks tetap (headline, layanan, tentang, kontak) ada di `index.html`.
 
-## Tautan ke aplikasi
+## Tombol pindah ke Aplikasi / CMS
 
-Tombol **Buka Aplikasi** dan **Portal Agen** menunjuk ke `../index.html`
-(aplikasi React di root repo). Sesuaikan bila landing di-deploy terpisah —
-ganti `../index.html` dengan URL aplikasi, mis. `https://app.iconholiday.id`.
+Ada tombol di tiga tempat: **navbar** (CMS + Buka Aplikasi), bagian **"Masuk ke
+Sistem"** (dua kartu portal), dan **footer**.
+
+Semua tautan itu ditandai `data-link="app"` atau `data-link="cms"`, lalu
+`script.js` mengisi `href`-nya otomatis:
+
+| Kondisi | Aplikasi | CMS |
+|---|---|---|
+| Di-serve bersama aplikasi (default) | `/` | `/dashboard` |
+| Di-deploy terpisah | `${ICON_APP_ORIGIN}/` | `${ICON_APP_ORIGIN}/dashboard` |
+| Dibuka via `file://` | `../../index.html` | `../../index.html` * |
+
+\* Deep-link ke `/dashboard` butuh server (aplikasi memakai BrowserRouter, bukan
+hash routing), jadi lewat `file://` tombol CMS hanya membuka aplikasi.
+
+Kalau landing di-deploy terpisah dari aplikasi, set origin-nya sebelum
+`script.js` di `index.html`:
+
+```html
+<script>window.ICON_APP_ORIGIN = "https://app.iconholiday.id"</script>
+<script src="./script.js"></script>
+```
 
 ## Catatan
 

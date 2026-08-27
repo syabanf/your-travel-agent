@@ -4,6 +4,36 @@
    no build step. Swap these arrays for a CMS feed when you have one.
    ================================================================ */
 
+/* ── Tautan ke aplikasi ──────────────────────────────────────────
+   Halaman ini hidup di `public/landing/`, jadi saat di-serve bersama
+   aplikasi (dev maupun hasil build) aplikasi ada di root: `/` dan
+   `/dashboard`. Kalau landing di-deploy terpisah, cukup set:
+
+     <script>window.ICON_APP_ORIGIN = "https://app.iconholiday.id"</script>
+
+   sebelum <script src="./script.js">.                               */
+const APP_ORIGIN = (window.ICON_APP_ORIGIN || "").replace(/\/$/, "");
+const IS_FILE = location.protocol === "file:";
+
+const LINKS = {
+  // Aplikasi traveler (mobile app)
+  app: APP_ORIGIN ? `${APP_ORIGIN}/` : IS_FILE ? "../../index.html" : "/",
+  // Portal admin / CMS — BrowserRouter, jadi path asli (bukan hash)
+  cms: APP_ORIGIN ? `${APP_ORIGIN}/dashboard` : IS_FILE ? "../../index.html" : "/dashboard",
+};
+
+// Terapkan ke setiap tautan yang menandai dirinya dengan data-link="app|cms".
+document.querySelectorAll("[data-link]").forEach((a) => {
+  const target = LINKS[a.dataset.link];
+  if (target) a.href = target;
+});
+// Dibuka lewat file:// tidak bisa deep-link ke /dashboard (butuh server).
+if (IS_FILE) {
+  document.querySelectorAll('[data-link="cms"]').forEach((a) => {
+    a.title = "Buka lewat server untuk masuk langsung ke /dashboard";
+  });
+}
+
 const IMG = (u, w = 800) => `${u}?w=${w}&q=80`;
 const rp = (n) => "IDR " + n.toLocaleString("id-ID");
 
