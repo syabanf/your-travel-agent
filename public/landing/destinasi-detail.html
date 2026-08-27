@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Detail Destinasi — Icon Holiday Indonesia</title>
+<meta name="description" content="Profil destinasi Icon Holiday: gambaran singkat, musim terbaik untuk berkunjung, ketentuan visa dan mata uang, serta paket tour yang tersedia ke sana." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero destinasi ══ -->
+<section class="phero">
+  <div class="phero__bg" id="ddBg" aria-hidden="true"></div>
+  <div class="wrap phero__in" id="ddHead"></div>
+</section>
+
+<!-- ══ Profil destinasi ══ -->
+<section class="sect">
+  <div class="wrap" id="ddBody"></div>
+</section>
+
+<!-- ══ Paket ke destinasi ini ══ -->
+<section class="sect sect--tint" id="ddToursSect" hidden>
+  <div class="wrap" id="ddTours"></div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(() => {
+  const DESTS = window.DESTS || [];
+  const TOURS = window.TOURS || [];
+  const dest = DESTS.find((d) => d.id === qs("id"));
+  const bg = document.getElementById("ddBg");
+  const head = document.getElementById("ddHead");
+  const body = document.getElementById("ddBody");
+  const toursSect = document.getElementById("ddToursSect");
+  const tours = document.getElementById("ddTours");
+
+  /* ── Destinasi tidak ditemukan ─────────────────────────────── */
+  if (!dest) {
+    document.title = "Destinasi tidak ditemukan — Icon Holiday";
+    head.innerHTML = `
+      <nav class="crumb" aria-label="Remah roti">
+        <a href="index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="destinasi.html">Destinasi</a>
+        <span aria-hidden="true">/</span>
+        <span>Destinasi tidak ditemukan</span>
+      </nav>
+      <h1>Destinasi tidak ditemukan</h1>
+      <p>Tautan yang Anda buka mungkin sudah tidak berlaku atau salah ketik.</p>`;
+    body.innerHTML = `
+      <div class="empty">
+        <b>Destinasi tidak ditemukan</b>
+        Silakan kembali ke daftar destinasi untuk melihat tujuan yang kami layani.
+        <p class="note"><a class="btn btn--primary" href="destinasi.html"><svg class="i"><use href="#i-back"/></svg> Lihat semua destinasi</a></p>
+      </div>`;
+    return;
+  }
+
+  /* ── Hero ──────────────────────────────────────────────────── */
+  document.title = `${dest.name} — Icon Holiday`;
+  bg.style.backgroundImage = `url("${dest.img}")`;
+  head.innerHTML = `
+    <nav class="crumb" aria-label="Remah roti">
+      <a href="index.html">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="destinasi.html">Destinasi</a>
+      <span aria-hidden="true">/</span>
+      <span>${esc(dest.name)}</span>
+    </nav>
+    <p class="eyebrow eyebrow--light">${esc(dest.region)}</p>
+    <h1>${esc(dest.name)}</h1>
+    <p>${esc(dest.blurb)}</p>`;
+
+  /* ── Paket yang cocok: nama dulu, baru kawasan ─────────────── */
+  const norm = (s) => String(s || "").toLowerCase().trim();
+  const dn = norm(dest.name);
+  const byName = TOURS.filter((t) => {
+    const c = norm(t.country);
+    return c === dn || c.includes(dn) || dn.includes(c) || norm(t.title).includes(dn);
+  });
+  const byRegion = TOURS.filter((t) => norm(t.region) === norm(dest.region));
+  const matches = byName.length ? byName : byRegion;
+
+  /* ── Profil: dua kolom ─────────────────────────────────────── */
+  body.innerHTML = `
+    <div class="detail">
+      <div>
+        <article class="panel">
+          <h2><svg class="i"><use href="#i-map"/></svg> Sekilas</h2>
+          <p>${esc(dest.blurb)}</p>
+          <p>Kami mengantar tamu ke ${esc(dest.name)} dalam bentuk tour grup dengan keberangkatan terjadwal maupun tour privat sesuai tanggal Anda — lengkap dengan penerbangan, hotel, transportasi darat, tiket masuk objek wisata, dan tour leader berbahasa Indonesia.</p>
+          <p>Kalau tanggal keberangkatan grup belum cocok, rute yang sama bisa kami susun ulang untuk keluarga atau rombongan Anda sendiri.</p>
+        </article>
+
+        <article class="panel">
+          <h2><svg class="i"><use href="#i-doc"/></svg> Informasi perjalanan</h2>
+          <div class="buy__meta">
+            <div><span><svg class="i"><use href="#i-pin"/></svg> Kawasan</span><b>${esc(dest.region)}</b></div>
+            <div><span><svg class="i"><use href="#i-cal"/></svg> Musim terbaik</span><b>${esc(dest.best)}</b></div>
+            <div><span><svg class="i"><use href="#i-doc"/></svg> Visa</span><b>${esc(dest.visa)}</b></div>
+            <div><span><svg class="i"><use href="#i-grid"/></svg> Mata uang</span><b>${esc(dest.currency)}</b></div>
+          </div>
+          <p class="note">Ketentuan visa dan dokumen bisa berubah sewaktu-waktu. Konfirmasikan ke tim kami sebelum membeli tiket.</p>
+        </article>
+      </div>
+
+      <aside class="buy" aria-label="Ringkasan destinasi">
+        <p class="buy__price">${esc(dest.name)}</p>
+        <p class="buy__unit">${esc(dest.region)}</p>
+
+        <div class="buy__meta">
+          <div><span><svg class="i"><use href="#i-cal"/></svg> Musim terbaik</span><b>${esc(dest.best)}</b></div>
+          <div><span><svg class="i"><use href="#i-doc"/></svg> Visa</span><b>${esc(dest.visa)}</b></div>
+          <div><span><svg class="i"><use href="#i-map"/></svg> Paket tersedia</span><b>${byName.length} paket</b></div>
+        </div>
+
+        <div class="grid">
+          <a class="btn btn--primary" href="kontak.html?dest=${encodeURIComponent(dest.id)}">Tanya perjalanan ke ${esc(dest.name)}</a>
+          <a class="btn btn--ghost" href="tour.html"><svg class="i"><use href="#i-map"/></svg> Lihat semua paket</a>
+        </div>
+
+        <p class="buy__note">Konsultasi gratis — ceritakan tanggal dan jumlah peserta, kami susunkan rencananya.</p>
+      </aside>
+    </div>`;
+
+  /* ── Paket ke destinasi ini ────────────────────────────────── */
+  const card = (t) => `
+    <a class="tour" href="tour-detail.html?id=${encodeURIComponent(t.id)}">
+      <div class="tour__media">
+        <img src="${esc(t.img)}" alt="${esc(t.country)}" loading="lazy" decoding="async" />
+        <span class="tour__country">${esc(t.country)}</span>
+        <span class="tour__days">${esc(t.days)} hari</span>
+      </div>
+      <div class="tour__body">
+        <p class="tour__date">${esc((t.dates || []).join(" · "))}</p>
+        <h3 class="tour__title">${esc(t.title)}</h3>
+        <div class="tour__foot">
+          <p class="tour__price">${t.price ? esc(rp(t.price)) : "Hubungi kami"}<small>${t.price ? "per orang" : "untuk harga terbaru"}</small></p>
+          ${t.seats <= 6 ? `<span class="tour__seat">Sisa ${esc(t.seats)} kursi</span>` : ""}
+        </div>
+      </div>
+    </a>`;
+
+  toursSect.hidden = false;
+  if (matches.length) {
+    const direct = byName.length > 0;
+    tours.innerHTML = `
+      <p class="eyebrow">Keberangkatan 2026</p>
+      <h2 class="sect__title">${direct ? `Paket ke ${esc(dest.name)}` : `Paket lain di ${esc(dest.region)}`}</h2>
+      ${direct ? "" : `<p class="sect__lead">Belum ada keberangkatan grup ke ${esc(dest.name)} tahun ini. Ini paket lain di kawasan yang sama — atau hubungi kami untuk menyusun rute khusus.</p>`}
+      <div class="grid grid--3 reveal">${matches.map(card).join("")}</div>
+      <p class="note">Harga per orang, sudah termasuk tiket, hotel dan tour leader. Kursi terbatas — hubungi kami untuk ketersediaan terkini.</p>`;
+  } else {
+    tours.innerHTML = `
+      <p class="eyebrow">Keberangkatan 2026</p>
+      <h2 class="sect__title">Paket ke ${esc(dest.name)}</h2>
+      <p class="note">Belum ada keberangkatan grup ke ${esc(dest.name)} yang tayang saat ini. Ceritakan tanggal dan jumlah peserta Anda — kami susunkan itinerary khusus, lengkap dengan tiket, hotel dan pengurusan visanya. <a href="kontak.html?dest=${encodeURIComponent(dest.id)}">Hubungi kami</a>.</p>`;
+  }
+
+  window.initReveal();
+})();
+</script>
+</body>
+</html>

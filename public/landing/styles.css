@@ -455,3 +455,148 @@ p { line-height: 1.65; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .reveal > * { opacity: 1; transform: none; }
 }
+
+/* ================================================================
+   Halaman dalam (tour, destinasi, artikel, layanan, visa, galeri…)
+   ================================================================ */
+
+/* Hero ringkas untuk halaman dalam */
+.phero { position: relative; color: #fff; overflow: hidden; }
+.phero__bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.phero__bg::after { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,27,59,.86), rgba(11,27,59,.72) 60%, rgba(11,27,59,.94)); }
+.phero__in { position: relative; padding: 54px 22px 48px; }
+.phero h1 { font-size: clamp(1.8rem, 4.4vw, 2.9rem); margin-bottom: .6rem; }
+.phero p { color: rgba(255,255,255,.8); max-width: 620px; }
+
+/* Breadcrumb */
+.crumb { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap;
+  font-size: .8rem; color: rgba(255,255,255,.65); margin-bottom: .9rem; }
+.crumb a { color: rgba(255,255,255,.8); }
+.crumb a:hover { color: #fff; text-decoration: underline; }
+.crumb span { opacity: .5; }
+.crumb--dark { color: var(--slate-light); }
+.crumb--dark a { color: var(--slate); }
+.crumb--dark a:hover { color: var(--crimson); }
+
+/* Chip filter */
+.chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+.chip {
+  min-height: 40px; padding: 0 1.05rem; border-radius: 999px; border: 1px solid var(--line);
+  background: #fff; color: var(--slate); font: inherit; font-size: .84rem; font-weight: 600;
+  cursor: pointer; box-shadow: var(--shadow-soft);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), background .2s, color .2s, box-shadow .2s;
+}
+.chip:hover { box-shadow: var(--shadow-lift); }
+.chip:active { transform: scale(.96); }
+.chip[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--crimson-bright), var(--crimson-deep));
+  color: #fff; border-color: transparent; box-shadow: 0 8px 20px rgba(173,31,35,.28);
+}
+
+/* Detail dua kolom */
+.detail { display: grid; grid-template-columns: 1.55fr 1fr; gap: 2.2rem; align-items: start; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 1.6rem; box-shadow: var(--shadow-soft); margin-bottom: 1.15rem; }
+.panel h2 { font-size: 1.12rem; margin-bottom: .9rem; display: flex; align-items: center; gap: .55rem; }
+.panel h2 .i { color: var(--crimson); }
+.panel > p { color: var(--slate); }
+.panel > p + p { margin-top: .8rem; }
+
+/* Kartu harga sticky */
+.buy { position: sticky; top: 96px; background: #fff; border: 1px solid var(--line);
+  border-radius: var(--r-lg); padding: 1.6rem; box-shadow: var(--shadow-lift); }
+.buy__was { font-size: .85rem; color: var(--slate-light); text-decoration: line-through; }
+.buy__price { font-size: 1.9rem; font-weight: 700; color: var(--crimson); line-height: 1.1;
+  font-variant-numeric: tabular-nums; }
+.buy__unit { font-size: .8rem; color: var(--slate-light); margin-bottom: 1.1rem; }
+.buy__meta { display: grid; gap: .6rem; margin: 1.1rem 0; padding: 1.1rem 0;
+  border-block: 1px solid var(--line); }
+.buy__meta div { display: flex; align-items: center; justify-content: space-between; gap: .7rem; font-size: .87rem; }
+.buy__meta dt, .buy__meta span:first-child { color: var(--slate-light); display: inline-flex; align-items: center; gap: .45rem; }
+.buy__meta span:first-child .i { color: var(--crimson); }
+.buy__meta b { font-weight: 600; }
+.buy .btn { width: 100%; }
+.buy__note { font-size: .76rem; color: var(--slate-light); text-align: center; margin-top: .8rem; }
+
+/* Daftar tanggal keberangkatan */
+.dates { display: flex; flex-wrap: wrap; gap: .5rem; }
+.dates span { padding: .4rem .8rem; border-radius: 999px; background: rgba(173,31,35,.07);
+  color: var(--crimson); font-size: .8rem; font-weight: 600; }
+
+/* Itinerary harian */
+.days { list-style: none; display: grid; gap: 1.1rem; }
+.days li { display: flex; gap: .95rem; }
+.days b { flex: none; width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center;
+  background: rgba(173,31,35,.08); color: var(--crimson); font-size: .82rem; }
+.days h3 { font-size: .95rem; margin-bottom: .2rem; }
+.days p { font-size: .87rem; color: var(--slate); }
+
+/* Termasuk / tidak termasuk */
+.incl { list-style: none; display: grid; gap: .6rem; }
+.incl li { display: flex; align-items: flex-start; gap: .6rem; font-size: .88rem; color: var(--slate); }
+.incl .i { flex: none; margin-top: .18rem; }
+.incl--yes .i { color: #059669; }
+.incl--no { color: var(--slate-light); }
+.incl--no .i { color: #b91c1c; opacity: .55; }
+
+/* Galeri */
+.gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.gal figure { position: relative; border-radius: var(--r); overflow: hidden; aspect-ratio: 4/3;
+  box-shadow: var(--shadow-soft); transition: transform .25s, box-shadow .25s; }
+.gal figure:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+.gal img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.22,1,.36,1); }
+.gal figure:hover img { transform: scale(1.06); }
+.gal figcaption { position: absolute; inset: auto 0 0 0; padding: .8rem;
+  background: linear-gradient(to top, rgba(11,27,59,.9), transparent);
+  color: #fff; font-size: .8rem; }
+.gal__strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.gal__strip img { border-radius: 12px; aspect-ratio: 4/3; object-fit: cover; }
+
+/* Akordion (visa) */
+.acc { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+  background: #fff; box-shadow: var(--shadow-soft); margin-bottom: .8rem; }
+.acc__btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.1rem 1.3rem; background: none; border: 0; font: inherit; font-size: .98rem; font-weight: 600;
+  color: var(--navy); cursor: pointer; text-align: left; }
+.acc__btn:hover { background: rgba(11,27,59,.02); }
+.acc__btn::after { content: '+'; font-size: 1.3rem; font-weight: 400; color: var(--crimson); flex: none; }
+.acc__btn[aria-expanded="true"]::after { content: '−'; }
+.acc__body { padding: 0 1.3rem 1.2rem; display: none; }
+.acc__btn[aria-expanded="true"] + .acc__body { display: block; }
+.acc__body ul { list-style: none; display: flex; flex-wrap: wrap; gap: .45rem; }
+.acc__body li { padding: .4rem .8rem; border-radius: 999px; background: rgba(11,27,59,.04);
+  font-size: .83rem; color: var(--slate); }
+
+/* Artikel */
+.article__body p { color: var(--slate); margin-bottom: 1rem; font-size: .97rem; }
+.article__meta { font-size: .78rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: .5rem; }
+.article__hero { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-lift);
+  margin-bottom: 1.8rem; aspect-ratio: 16/9; }
+.article__hero img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Layanan — baris bergantian */
+.svcrow { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4rem; align-items: center;
+  padding: 2.4rem 0; border-bottom: 1px solid var(--line); }
+.svcrow:last-child { border-bottom: 0; }
+.svcrow:nth-child(even) .svcrow__media { order: 2; }
+.svcrow__media img { border-radius: var(--r-lg); box-shadow: var(--shadow-lift); aspect-ratio: 4/3; object-fit: cover; }
+.svcrow h2 { font-size: clamp(1.3rem, 2.6vw, 1.8rem); margin: .5rem 0 .7rem; }
+.svcrow > div > p { color: var(--slate); }
+
+/* Kosong */
+.empty { text-align: center; padding: 3.5rem 1rem; color: var(--slate-light); }
+.empty b { display: block; color: var(--navy); font-size: 1.05rem; margin-bottom: .35rem; }
+
+@media (max-width: 1020px) {
+  .detail { grid-template-columns: 1fr; }
+  .buy { position: static; }
+  .gal { grid-template-columns: repeat(2, 1fr); }
+  .svcrow { grid-template-columns: 1fr; gap: 1.5rem; }
+  .svcrow:nth-child(even) .svcrow__media { order: 0; }
+}
+@media (max-width: 780px) {
+  .gal { grid-template-columns: 1fr; }
+  .phero__in { padding: 40px 22px 36px; }
+}

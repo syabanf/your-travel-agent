@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Artikel &amp; Info Perjalanan — Icon Holiday Indonesia</title>
+<meta name="description" content="Info visa, aturan penerbangan terbaru, tips koper dan panduan cruise — catatan praktis dari tim Icon Holiday untuk perjalanan Anda berikutnya." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&amp;q=80" aria-hidden="true"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span>Artikel
+    </nav>
+    <h1>Artikel &amp; Info Perjalanan</h1>
+    <p>
+      Aturan visa, ketentuan maskapai dan hal-hal kecil yang sering terlewat —
+      kami tulis ulang dengan bahasa yang mudah dipakai.
+    </p>
+  </div>
+</section>
+
+<!-- ══ Daftar artikel ══ -->
+<section class="sect">
+  <div class="wrap">
+    <p class="eyebrow">Info Perjalanan</p>
+    <h2 class="sect__title">Semua artikel</h2>
+    <p class="sect__lead">Pilih topik untuk menyaring daftar di bawah.</p>
+
+    <div class="chips" id="chips" role="group" aria-label="Saring artikel berdasarkan topik"></div>
+
+    <div class="grid grid--3 reveal" id="newsGrid"></div>
+
+    <div class="empty" id="newsEmpty" hidden>
+      <b>Belum ada artikel untuk topik ini</b>
+      Coba pilih topik lain, atau lihat seluruh artikel yang tersedia.
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sect sect--tint">
+  <div class="wrap">
+    <p class="eyebrow">Masih ada yang mengganjal?</p>
+    <h2 class="sect__title">Tanyakan langsung ke tim kami</h2>
+    <p class="sect__lead">
+      Aturan perjalanan berubah cepat. Kalau ada yang belum jelas — soal visa,
+      bagasi, atau dokumen — tanyakan saja, tidak perlu menunggu artikelnya terbit.
+    </p>
+    <a class="btn btn--primary" href="kontak.html">Hubungi kami <svg class="i"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(function () {
+  const esc = window.esc;
+
+  document.querySelectorAll("[data-bg]").forEach((n) => {
+    n.style.backgroundImage = `url("${n.dataset.bg}")`;
+  });
+
+  const NEWS  = window.NEWS;
+  const chips = document.getElementById("chips");
+  const grid  = document.getElementById("newsGrid");
+  const empty = document.getElementById("newsEmpty");
+
+  const ALL  = "Semua";
+  const TAGS = [ALL, ...Array.from(new Set(NEWS.map((n) => n.tag)))];
+  let active = ALL;
+
+  chips.innerHTML = TAGS.map((t) => `
+    <button class="chip" type="button" data-tag="${esc(t)}" aria-pressed="${t === active}">${esc(t)}</button>`).join("");
+
+  const card = (n) => `
+    <a class="news" href="artikel-detail.html?id=${esc(encodeURIComponent(n.id))}">
+      <div class="news__media"><img src="${esc(n.img)}" alt="" loading="lazy" decoding="async" /></div>
+      <div class="news__body">
+        <p class="news__meta">${esc(n.tag)} · ${esc(n.date)}</p>
+        <h3>${esc(n.title)}</h3>
+        <p>${esc(n.sum)}</p>
+      </div>
+    </a>`;
+
+  const render = () => {
+    const list = active === ALL ? NEWS : NEWS.filter((n) => n.tag === active);
+    grid.innerHTML = list.map(card).join("");
+    empty.hidden = list.length > 0;
+    window.initReveal();
+  };
+
+  chips.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    active = btn.dataset.tag;
+    chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === btn)));
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

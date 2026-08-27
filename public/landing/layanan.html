@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Layanan Kami — Icon Holiday Indonesia</title>
+<meta name="description" content="Layanan Icon Holiday: paket tour grup &amp; privat, tiket pesawat harga korporat, pengurusan visa 30+ negara, reservasi hotel, serta ocean dan river cruise." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1800&amp;q=80" aria-hidden="true"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span>Layanan
+    </nav>
+    <h1>Layanan Kami</h1>
+    <p>
+      Lima layanan yang saling terhubung — supaya satu perjalanan tidak perlu
+      diurus di lima tempat berbeda.
+    </p>
+  </div>
+</section>
+
+<!-- ══ Baris layanan ══ -->
+<section class="sect">
+  <div class="wrap">
+    <div id="svcRows"></div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sect sect--tint">
+  <div class="wrap">
+    <p class="eyebrow">Mulai dari sini</p>
+    <h2 class="sect__title">Belum yakin butuh yang mana?</h2>
+    <p class="sect__lead">
+      Ceritakan rencana Anda — tujuan, perkiraan tanggal, dan jumlah peserta.
+      Kami bantu susun kombinasi layanan yang paling masuk akal, tanpa biaya konsultasi.
+    </p>
+    <a class="btn btn--primary" href="kontak.html">Konsultasi gratis <svg class="i"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(function () {
+  const esc = window.esc;
+
+  /* Latar hero halaman — gambar disuntik lewat data-bg supaya tidak perlu CSS baru. */
+  document.querySelectorAll("[data-bg]").forEach((n) => {
+    n.style.backgroundImage = `url("${n.dataset.bg}")`;
+  });
+
+  /* Foto pendamping tiap layanan (id Unsplash yang sudah dipakai di data.js). */
+  const PHOTO = {
+    tour:   "photo-1469854523086-cc02fe5d8800",
+    tiket:  "photo-1436491865332-7a61a109cc05",
+    visa:   "photo-1488646953014-85cb44e25828",
+    hotel:  "photo-1512453979798-5ea266f8880c",
+    cruise: "photo-1548574505-5e239809ee19",
+  };
+  const img = (id) => `https://images.unsplash.com/${id}?w=900&q=80`;
+
+  document.getElementById("svcRows").innerHTML = window.SERVICES.map((s) => `
+    <div class="svcrow">
+      <div class="svcrow__media">
+        <img src="${img(PHOTO[s.id] || PHOTO.tour)}" alt="${esc(s.name)} — Icon Holiday" loading="lazy" decoding="async" />
+      </div>
+      <div>
+        <span class="svc__ic svc__ic--${esc(s.tone)}"><svg class="i"><use href="#${esc(s.icon)}"/></svg></span>
+        <h2 id="${esc(s.id)}">${esc(s.name)}</h2>
+        <p>${esc(s.long)}</p>
+        <ul class="ticks">${s.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
+        ${s.id === "visa"
+          ? `<a class="btn btn--ghost" href="visa.html">Lihat daftar negara <svg class="i"><use href="#i-arrow"/></svg></a>`
+          : ""}
+      </div>
+    </div>`).join("");
+
+  /* Buka anchor dari footer (layanan.html#visa) setelah baris dirender. */
+  if (location.hash) {
+    const target = document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView({ behavior: window.REDUCED ? "auto" : "smooth" });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pengurusan Visa — Icon Holiday Indonesia</title>
+<meta name="description" content="Pengurusan visa untuk lebih dari 30 negara: Schengen, Amerika Serikat, Inggris, Jepang, Korea, China, Australia dan lainnya. Dokumen dicek sebelum diajukan." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1800&amp;q=80" aria-hidden="true"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span><a href="layanan.html">Layanan</a><span>/</span>Visa
+    </nav>
+    <h1>Pengurusan Visa</h1>
+    <p>
+      Lebih dari 30 negara kami layani. Berkas Anda kami periksa lebih dulu,
+      formulirnya kami dampingi, dan jadwal biometriknya kami informasikan.
+    </p>
+  </div>
+</section>
+
+<!-- ══ Intro + pencarian negara ══ -->
+<section class="sect">
+  <div class="wrap">
+    <p class="eyebrow">Negara yang dilayani</p>
+    <h2 class="sect__title">Cari negara tujuan Anda</h2>
+    <p class="sect__lead">
+      Setiap negara punya alur, biaya dan waktu proses yang berbeda. Ketik nama
+      negaranya untuk memastikan kami melayaninya — lalu hubungi kami untuk daftar
+      dokumen versi terbaru.
+    </p>
+
+    <div class="panel">
+      <div class="form__field">
+        <label for="visaSearch">Cari negara</label>
+        <input id="visaSearch" type="search" placeholder="Misalnya: Jepang, Jerman, Amerika…" autocomplete="off" aria-describedby="visaStatus" />
+      </div>
+      <p class="form__status" id="visaStatus" role="status"></p>
+    </div>
+
+    <div id="visaGroups"></div>
+
+    <div class="empty" id="visaEmpty" hidden>
+      <b>Negara itu belum ada di daftar</b>
+      Coba ejaan lain, atau tanyakan langsung — daftar ini bisa bertambah sewaktu-waktu.
+      <p class="note"><a class="btn btn--ghost" href="kontak.html">Tanya ketersediaan <svg class="i"><use href="#i-arrow"/></svg></a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Dokumen umum ══ -->
+<section class="sect sect--tint">
+  <div class="wrap">
+    <p class="eyebrow">Persiapan</p>
+    <h2 class="sect__title">Dokumen umum yang biasanya diminta</h2>
+    <p class="sect__lead">
+      Daftar di bawah adalah pola yang paling sering muncul di hampir semua kedutaan.
+      Rinciannya tetap berbeda per negara dan per jenis visa.
+    </p>
+
+    <div class="panel">
+      <h2><svg class="i"><use href="#i-doc"/></svg> Berkas dasar</h2>
+      <ul class="incl incl--yes">
+        <li><svg class="i"><use href="#i-check"/></svg> Paspor yang masih berlaku minimal 6 bulan sejak tanggal keberangkatan</li>
+        <li><svg class="i"><use href="#i-check"/></svg> Pas foto terbaru sesuai ukuran dan latar yang diminta kedutaan</li>
+        <li><svg class="i"><use href="#i-check"/></svg> Bukti keuangan — rekening koran 3 bulan terakhir dan/atau surat sponsor</li>
+        <li><svg class="i"><use href="#i-check"/></svg> Bukti pekerjaan atau usaha — surat keterangan kerja, SIUP, atau surat kampus</li>
+        <li><svg class="i"><use href="#i-check"/></svg> Itinerary perjalanan dan tiket pesawat pulang-pergi</li>
+        <li><svg class="i"><use href="#i-check"/></svg> Bukti akomodasi — voucher hotel atau surat undangan dari pengundang</li>
+      </ul>
+      <p class="note">
+        Persyaratan visa berubah sewaktu-waktu, kadang tanpa pengumuman.
+        Jangan menyiapkan berkas dari daftar lama — konsultasikan dulu dengan kami
+        sebelum mengumpulkan dokumen, supaya tidak ada yang terbuang percuma.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sect">
+  <div class="wrap">
+    <p class="eyebrow">Langkah pertama</p>
+    <h2 class="sect__title">Konsultasikan dulu sebelum mengajukan</h2>
+    <p class="sect__lead">
+      Kirimkan tujuan, tanggal rencana berangkat, dan status pekerjaan Anda.
+      Kami balas dengan daftar dokumen yang berlaku hari ini beserta perkiraan waktu prosesnya.
+    </p>
+    <a class="btn btn--primary" href="kontak.html">Konsultasi visa <svg class="i"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(function () {
+  const esc = window.esc;
+
+  document.querySelectorAll("[data-bg]").forEach((n) => {
+    n.style.backgroundImage = `url("${n.dataset.bg}")`;
+  });
+
+  const GROUPS = window.VISA_COUNTRIES;
+  const host   = document.getElementById("visaGroups");
+  const input  = document.getElementById("visaSearch");
+  const status = document.getElementById("visaStatus");
+  const empty  = document.getElementById("visaEmpty");
+
+  /* ── Render akordion ─────────────────────────────────────── */
+  host.innerHTML = GROUPS.map((g, i) => `
+    <div class="acc">
+      <button class="acc__btn" type="button" id="accBtn${i}" aria-expanded="${i === 0}" aria-controls="accBody${i}">
+        <span>${esc(g.g)}</span>
+        <span data-count>${g.c.length} negara</span>
+      </button>
+      <div class="acc__body" id="accBody${i}" role="region" aria-labelledby="accBtn${i}">
+        <ul>${g.c.map((c) => `<li data-name="${esc(c.toLowerCase())}">${esc(c)}</li>`).join("")}</ul>
+      </div>
+    </div>`).join("");
+
+  const accs = Array.from(host.querySelectorAll(".acc"));
+
+  /* ── Buka/tutup ──────────────────────────────────────────── */
+  host.addEventListener("click", (e) => {
+    const btn = e.target.closest(".acc__btn");
+    if (!btn) return;
+    btn.setAttribute("aria-expanded", btn.getAttribute("aria-expanded") === "true" ? "false" : "true");
+  });
+
+  /* ── Pencarian lintas grup ───────────────────────────────── */
+  const filter = () => {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let total = 0;
+
+    accs.forEach((acc, i) => {
+      let hits = 0;
+      acc.querySelectorAll("li").forEach((li) => {
+        const match = !q || li.dataset.name.includes(q);
+        li.hidden = !match;
+        if (match) hits++;
+      });
+      total += hits;
+
+      acc.hidden = Boolean(q) && hits === 0;
+      acc.querySelector("[data-count]").textContent = q
+        ? `${hits} dari ${GROUPS[i].c.length} negara`
+        : `${GROUPS[i].c.length} negara`;
+      acc.querySelector(".acc__btn").setAttribute(
+        "aria-expanded",
+        String(q ? hits > 0 : i === 0)
+      );
+    });
+
+    empty.hidden = total > 0;
+    status.textContent = !q
+      ? `${GROUPS.reduce((n, g) => n + g.c.length, 0)} negara dalam ${GROUPS.length} kawasan.`
+      : total
+        ? `${total} negara cocok dengan “${raw}”.`
+        : `Tidak ada negara yang cocok dengan “${raw}”.`;
+  };
+
+  input.addEventListener("input", filter);
+  filter();
+})();
+</script>
+</body>
+</html>

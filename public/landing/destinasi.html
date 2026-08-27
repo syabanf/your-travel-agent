@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Destinasi — Icon Holiday Indonesia</title>
+<meta name="description" content="Destinasi yang kami layani — Jepang, Korea Selatan, China, Eropa Barat, Turki, New Zealand, Dubai dan Australia. Lengkap dengan musim terbaik dan ketentuan visanya." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" aria-hidden="true" style="background-image:url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1600&amp;q=80')"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Remah roti">
+      <a href="index.html">Home</a>
+      <span aria-hidden="true">/</span>
+      <span>Destinasi</span>
+    </nav>
+    <p class="eyebrow eyebrow--light">Ke Mana Tahun Ini</p>
+    <h1>Destinasi</h1>
+    <p>Negara-negara yang paling sering kami antar. Setiap halaman berisi musim terbaik, ketentuan visa, dan paket yang tersedia.</p>
+  </div>
+</section>
+
+<!-- ══ Daftar destinasi ══ -->
+<section class="sect">
+  <div class="wrap">
+    <div class="chips" id="destChips" role="group" aria-label="Saring destinasi berdasarkan kawasan"></div>
+
+    <div id="destResults">
+      <div class="grid grid--4 reveal" id="destGrid"></div>
+      <p class="note">Belum menemukan tujuan Anda? Kami juga melayani rute di luar daftar ini — ceritakan rencana Anda, kami susunkan itinerary-nya.</p>
+    </div>
+
+    <div id="destEmpty" hidden>
+      <div class="empty">
+        <b>Belum ada destinasi di kawasan ini</b>
+        Coba pilih kawasan lain, atau hubungi kami untuk tujuan yang belum tercantum.
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(() => {
+  const DESTS = window.DESTS || [];
+  const chips = document.getElementById("destChips");
+  const grid = document.getElementById("destGrid");
+  const results = document.getElementById("destResults");
+  const empty = document.getElementById("destEmpty");
+
+  /* Kawasan unik, urut sesuai kemunculan di data.js */
+  const regions = [];
+  DESTS.forEach((d) => { if (d.region && !regions.includes(d.region)) regions.push(d.region); });
+
+  chips.innerHTML = [`<button class="chip" type="button" data-region="" aria-pressed="true">Semua</button>`]
+    .concat(regions.map((r) =>
+      `<button class="chip" type="button" data-region="${esc(r)}" aria-pressed="false">${esc(r)}</button>`))
+    .join("");
+
+  /* Kartu destinasi — markup sama dengan grid destinasi di beranda */
+  const card = (d) => `
+    <a class="dest" href="destinasi-detail.html?id=${encodeURIComponent(d.id)}" aria-label="Destinasi ${esc(d.name)}">
+      <img src="${esc(d.img)}" alt="${esc(d.name)}" loading="lazy" decoding="async" />
+      <span class="dest__ov"></span>
+      <span class="dest__txt"><b>${esc(d.name)}</b><span>${esc(d.region)}</span></span>
+    </a>`;
+
+  const render = (region) => {
+    const list = region ? DESTS.filter((d) => d.region === region) : DESTS;
+    grid.innerHTML = list.map(card).join("");
+    results.hidden = list.length === 0;
+    empty.hidden = list.length > 0;
+    window.initReveal();
+  };
+
+  chips.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === btn)));
+    render(btn.dataset.region);
+  });
+
+  render("");
+})();
+</script>
+</body>
+</html>

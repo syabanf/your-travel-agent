@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hubungi Kami — Icon Holiday Indonesia</title>
+<meta name="description" content="Hubungi Icon Holiday Indonesia — kantor Medan (061) 4520 888 dan Jakarta (021) 6660 8888. Konsultasi tour, tiket, visa, hotel dan cruise tanpa biaya." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1800&amp;q=80" aria-hidden="true"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span>Kontak
+    </nav>
+    <h1>Hubungi Kami</h1>
+    <p>
+      Ceritakan rencana Anda — tujuan, perkiraan tanggal, dan jumlah peserta.
+      Konsultasi tidak dipungut biaya.
+    </p>
+  </div>
+</section>
+
+<!-- ══ Kontak ══ -->
+<section class="sect">
+  <div class="wrap">
+    <p class="eyebrow">Hubungi Kami</p>
+    <h2 class="sect__title">Mari rencanakan perjalanan Anda</h2>
+    <p class="sect__lead">
+      Isi formulir di bawah, atau hubungi kantor terdekat lewat telepon dan WhatsApp.
+      Kami balas pada jam operasional.
+    </p>
+
+    <p class="note" id="prefillNote" hidden></p>
+
+    <div class="contact">
+      <form class="form" id="contactForm" novalidate>
+        <div class="form__row">
+          <div class="form__field"><label for="c-name">Nama</label><input id="c-name" name="name" type="text" required placeholder="Nama lengkap" /></div>
+          <div class="form__field"><label for="c-phone">No. WhatsApp</label><input id="c-phone" name="phone" type="tel" required placeholder="08xx xxxx xxxx" /></div>
+        </div>
+        <div class="form__field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" placeholder="nama@email.com" /></div>
+        <div class="form__field"><label for="c-msg">Rencana perjalanan</label><textarea id="c-msg" name="message" rows="4" placeholder="Tujuan, perkiraan tanggal, jumlah peserta…"></textarea></div>
+        <button class="btn btn--primary" type="submit">Kirim pesan</button>
+        <p class="form__status" id="formStatus" role="status"></p>
+      </form>
+
+      <div class="offices" id="offices"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(function () {
+  const esc = window.esc;
+  const CO  = window.COMPANY;
+  const el  = (id) => document.getElementById(id);
+
+  document.querySelectorAll("[data-bg]").forEach((n) => {
+    n.style.backgroundImage = `url("${n.dataset.bg}")`;
+  });
+
+  /* ── Kantor + jam operasional ────────────────────────────── */
+  el("offices").innerHTML =
+    CO.offices.map((o) => `
+      <article class="office">
+        <h3><svg class="i"><use href="#i-pin"/></svg> Office ${esc(o.city)}</h3>
+        <p class="office__co">${esc(o.legal)}</p>
+        <p>${esc(o.addr)}</p>
+        <p class="office__tel"><a href="tel:${esc(o.telHref)}">${esc(o.tel)}</a></p>
+      </article>`).join("") + `
+      <article class="office office--hours">
+        <h3><svg class="i"><use href="#i-clock"/></svg> Jam Operasional</h3>
+        ${CO.hours.map((h) => `<p>${esc(h)}</p>`).join("")}
+      </article>
+      <article class="office">
+        <h3><svg class="i"><use href="#i-wa"/></svg> WhatsApp</h3>
+        <p>Cara tercepat untuk pertanyaan singkat soal ketersediaan kursi atau dokumen visa.</p>
+        <p class="office__tel"><a href="https://wa.me/${esc(CO.wa)}" target="_blank" rel="noopener noreferrer">Chat sekarang</a></p>
+      </article>`;
+
+  /* ── Prefill dari ?tour= / ?dest= ────────────────────────── */
+  const msg  = el("c-msg");
+  const note = el("prefillNote");
+
+  const tourId = window.qs("tour");
+  const destId = window.qs("dest");
+  const tour = tourId ? (window.TOURS || []).find((t) => t.id === tourId) : null;
+  const dest = destId ? (window.DESTS || []).find((d) => d.id === destId) : null;
+
+  if (tour) {
+    msg.value = `Saya tertarik dengan paket "${tour.title}". Mohon informasi lebih lanjut.`;
+    note.textContent = `Anda sedang menanyakan paket: ${tour.title} (${tour.days} hari). Silakan lengkapi data di bawah — pesannya sudah kami isikan.`;
+    note.hidden = false;
+  } else if (dest) {
+    msg.value = `Saya tertarik dengan perjalanan ke ${dest.name}. Mohon informasi lebih lanjut.`;
+    note.textContent = `Anda sedang menanyakan destinasi: ${dest.name} (${dest.region}). Silakan lengkapi data di bawah — pesannya sudah kami isikan.`;
+    note.hidden = false;
+  }
+
+  /* ── Form (demo — belum ada backend) ─────────────────────── */
+  el("contactForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const status = el("formStatus");
+    const name = f.name.value.trim();
+    const phone = f.phone.value.trim();
+
+    if (!name || !phone) {
+      status.className = "form__status err";
+      status.textContent = "Mohon isi nama dan nomor WhatsApp Anda.";
+      return;
+    }
+    status.className = "form__status ok";
+    status.textContent = `Terima kasih, ${name.split(" ")[0]}! Tim kami akan menghubungi Anda di ${phone}.`;
+    f.reset();
+  });
+})();
+</script>
+</body>
+</html>

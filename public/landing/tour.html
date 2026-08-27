@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Paket Tour 2026 — Icon Holiday Indonesia</title>
+<meta name="description" content="Daftar paket tour Icon Holiday untuk keberangkatan 2026 — Korea, Jepang, China, Eropa Barat dan New Zealand. Harga sudah termasuk tiket, hotel dan tour leader." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" aria-hidden="true" style="background-image:url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&amp;q=80')"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Remah roti">
+      <a href="index.html">Home</a>
+      <span aria-hidden="true">/</span>
+      <span>Tour 2026</span>
+    </nav>
+    <p class="eyebrow eyebrow--light">Limited Seat Tour</p>
+    <h1>Paket Tour 2026</h1>
+    <p>Keberangkatan grup sepanjang tahun — sudah termasuk tiket pesawat, hotel, transportasi darat dan tour leader berbahasa Indonesia.</p>
+  </div>
+</section>
+
+<!-- ══ Daftar paket ══ -->
+<section class="sect">
+  <div class="wrap">
+    <div class="chips" id="tourChips" role="group" aria-label="Saring paket berdasarkan kawasan"></div>
+
+    <div id="tourResults">
+      <div class="grid grid--3 reveal" id="tourGrid"></div>
+      <p class="note">Harga per orang, sudah termasuk tiket, hotel dan tour leader. Kursi terbatas — hubungi kami untuk ketersediaan terkini.</p>
+    </div>
+
+    <div id="tourEmpty" hidden>
+      <div class="empty">
+        <b>Belum ada paket di kawasan ini</b>
+        Coba pilih kawasan lain, atau hubungi kami untuk menyusun rute khusus sesuai tanggal Anda.
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(() => {
+  const TOURS = window.TOURS || [];
+  const chips = document.getElementById("tourChips");
+  const grid = document.getElementById("tourGrid");
+  const results = document.getElementById("tourResults");
+  const empty = document.getElementById("tourEmpty");
+
+  /* Kawasan unik, urut sesuai kemunculan di data.js */
+  const regions = [];
+  TOURS.forEach((t) => { if (t.region && !regions.includes(t.region)) regions.push(t.region); });
+
+  chips.innerHTML = [`<button class="chip" type="button" data-region="" aria-pressed="true">Semua</button>`]
+    .concat(regions.map((r) =>
+      `<button class="chip" type="button" data-region="${esc(r)}" aria-pressed="false">${esc(r)}</button>`))
+    .join("");
+
+  /* Kartu paket — markup sama dengan grid tour di beranda, dibungkus tautan */
+  const card = (t) => `
+    <a class="tour" href="tour-detail.html?id=${encodeURIComponent(t.id)}">
+      <div class="tour__media">
+        <img src="${esc(t.img)}" alt="${esc(t.country)}" loading="lazy" decoding="async" />
+        <span class="tour__country">${esc(t.country)}</span>
+        <span class="tour__days">${esc(t.days)} hari</span>
+      </div>
+      <div class="tour__body">
+        <p class="tour__date">${esc((t.dates || []).join(" · "))}</p>
+        <h3 class="tour__title">${esc(t.title)}</h3>
+        <div class="tour__foot">
+          <p class="tour__price">${t.price ? esc(rp(t.price)) : "Hubungi kami"}<small>${t.price ? "per orang" : "untuk harga terbaru"}</small></p>
+          ${t.seats <= 6 ? `<span class="tour__seat">Sisa ${esc(t.seats)} kursi</span>` : ""}
+        </div>
+      </div>
+    </a>`;
+
+  const render = (region) => {
+    const list = region ? TOURS.filter((t) => t.region === region) : TOURS;
+    grid.innerHTML = list.map(card).join("");
+    results.hidden = list.length === 0;
+    empty.hidden = list.length > 0;
+    window.initReveal();
+  };
+
+  chips.addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === btn)));
+    render(btn.dataset.region);
+  });
+
+  render("");
+})();
+</script>
+</body>
+</html>

@@ -115,6 +115,8 @@ const AppRoutes = () => (
 
       {/* Everything below requires a session */}
       <Route element={<RequireSession />}>
+        {/* /admin is the public-facing entry point to the CMS (the landing site links here). */}
+        <Route path="/admin/*" element={<Navigate to="/dashboard" replace />} />
         {/* Admin dashboard / CMS (desktop) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />

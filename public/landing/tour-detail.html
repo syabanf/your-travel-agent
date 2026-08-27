@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Detail Paket Tour — Icon Holiday Indonesia</title>
+<meta name="description" content="Detail paket tour Icon Holiday: itinerary harian, sorotan perjalanan, harga per orang, tanggal keberangkatan, serta rincian yang termasuk dan tidak termasuk." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero paket ══ -->
+<section class="phero">
+  <div class="phero__bg" id="tdBg" aria-hidden="true"></div>
+  <div class="wrap phero__in" id="tdHead"></div>
+</section>
+
+<!-- ══ Isi paket ══ -->
+<section class="sect">
+  <div class="wrap" id="tdBody"></div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(() => {
+  const TOURS = window.TOURS || [];
+  const tour = TOURS.find((t) => t.id === qs("id"));
+  const bg = document.getElementById("tdBg");
+  const head = document.getElementById("tdHead");
+  const body = document.getElementById("tdBody");
+
+  /* ── Paket tidak ditemukan ─────────────────────────────────── */
+  if (!tour) {
+    document.title = "Paket tidak ditemukan — Icon Holiday";
+    head.innerHTML = `
+      <nav class="crumb" aria-label="Remah roti">
+        <a href="index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="tour.html">Tour 2026</a>
+        <span aria-hidden="true">/</span>
+        <span>Paket tidak ditemukan</span>
+      </nav>
+      <h1>Paket tidak ditemukan</h1>
+      <p>Tautan yang Anda buka mungkin sudah tidak berlaku, atau paketnya sudah ditutup untuk tahun ini.</p>`;
+    body.innerHTML = `
+      <div class="empty">
+        <b>Paket tidak ditemukan</b>
+        Silakan kembali ke daftar paket untuk melihat keberangkatan yang masih tersedia.
+        <p class="note"><a class="btn btn--primary" href="tour.html"><svg class="i"><use href="#i-back"/></svg> Lihat semua paket 2026</a></p>
+      </div>`;
+    return;
+  }
+
+  /* ── Hero ──────────────────────────────────────────────────── */
+  document.title = `${tour.title} — Icon Holiday`;
+  bg.style.backgroundImage = `url("${tour.img}")`;
+
+  const dates = tour.dates || [];
+  head.innerHTML = `
+    <nav class="crumb" aria-label="Remah roti">
+      <a href="index.html">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="tour.html">Tour 2026</a>
+      <span aria-hidden="true">/</span>
+      <span>${esc(tour.title)}</span>
+    </nav>
+    <p class="eyebrow eyebrow--light">Paket Tour</p>
+    <h1>${esc(tour.title)}</h1>
+    <p>${esc(tour.country)} &nbsp;·&nbsp; ${esc(tour.days)} hari / ${esc(tour.nights)} malam &nbsp;·&nbsp; ${dates.length} keberangkatan</p>`;
+
+  /* ── Kolom kiri ────────────────────────────────────────────── */
+  const highlights = tour.highlights || [];
+  const itinerary = tour.itinerary || [];
+  const includes = tour.includes || [];
+  const excludes = tour.excludes || [];
+  const gallery = tour.gallery || [];
+
+  const panelHighlights = highlights.length ? `
+    <article class="panel">
+      <h2><svg class="i"><use href="#i-pin"/></svg> Sorotan perjalanan</h2>
+      <ul class="incl">
+        ${highlights.map((h) => `<li><svg class="i"><use href="#i-pin"/></svg> ${esc(h)}</li>`).join("")}
+      </ul>
+    </article>` : "";
+
+  const panelItinerary = itinerary.length ? `
+    <article class="panel">
+      <h2><svg class="i"><use href="#i-cal"/></svg> Itinerary harian</h2>
+      <ol class="days">
+        ${itinerary.map((it) => `
+          <li>
+            <b>Hari ${esc(it.d)}</b>
+            <div><h3>${esc(it.t)}</h3><p>${esc(it.x)}</p></div>
+          </li>`).join("")}
+      </ol>
+    </article>` : "";
+
+  const panelIncl = (includes.length || excludes.length) ? `
+    <article class="panel">
+      <h2><svg class="i"><use href="#i-check"/></svg> Termasuk / Tidak termasuk</h2>
+      ${includes.length ? `<ul class="incl incl--yes">
+        ${includes.map((i) => `<li><svg class="i"><use href="#i-check"/></svg> ${esc(i)}</li>`).join("")}
+      </ul>` : ""}
+      ${excludes.length ? `<p class="note">Belum termasuk — perlu disiapkan sendiri</p>
+      <ul class="incl incl--no">
+        ${excludes.map((x) => `<li><svg class="i"><use href="#i-x"/></svg> ${esc(x)}</li>`).join("")}
+      </ul>` : ""}
+    </article>` : "";
+
+  const panelGallery = gallery.length > 1 ? `
+    <article class="panel">
+      <h2><svg class="i"><use href="#i-grid"/></svg> Suasana perjalanan</h2>
+      <div class="gal__strip">
+        ${gallery.map((g, i) => `<img src="${esc(g)}" alt="${esc(tour.country)} — foto ${i + 1}" loading="lazy" decoding="async" />`).join("")}
+      </div>
+    </article>` : "";
+
+  /* ── Kartu harga ───────────────────────────────────────────── */
+  const was = tour.priceBefore && tour.price && tour.priceBefore > tour.price
+    ? `<p class="buy__was">${esc(rp(tour.priceBefore))}</p>` : "";
+
+  const buy = `
+    <aside class="buy" aria-label="Ringkasan harga dan pemesanan">
+      ${was}
+      <p class="buy__price">${tour.price ? esc(rp(tour.price)) : "Hubungi kami"}</p>
+      <p class="buy__unit">${tour.price ? "per orang" : "untuk harga terbaru"}</p>
+
+      <div class="buy__meta">
+        <div><span><svg class="i"><use href="#i-clock"/></svg> Durasi</span><b>${esc(tour.days)} hari / ${esc(tour.nights)} malam</b></div>
+        <div><span><svg class="i"><use href="#i-cal"/></svg> Keberangkatan</span><b>${dates.length} tanggal</b></div>
+        <div><span><svg class="i"><use href="#i-users"/></svg> Sisa kursi</span><b>${esc(tour.seats)} kursi</b></div>
+      </div>
+
+      <p class="buy__unit">Tanggal keberangkatan</p>
+      <div class="grid">
+        <div class="dates">${dates.map((d) => `<span>${esc(d)}</span>`).join("")}</div>
+        <a class="btn btn--primary" href="kontak.html?tour=${encodeURIComponent(tour.id)}">
+          Tanya paket ini <svg class="i"><use href="#i-arrow"/></svg>
+        </a>
+        <a class="btn btn--ghost" data-link="app" href="#">
+          <svg class="i"><use href="#i-phone-app"/></svg> Lihat di aplikasi
+        </a>
+      </div>
+
+      <p class="buy__note">Harga dapat berubah mengikuti kurs dan ketersediaan seat. Kursi baru dikunci setelah uang muka diterima.</p>
+    </aside>`;
+
+  /* ── Susun halaman ─────────────────────────────────────────── */
+  body.innerHTML = `
+    <div class="detail">
+      <div>
+        <article class="panel">
+          <h2><svg class="i"><use href="#i-map"/></svg> Tentang paket ini</h2>
+          <p>${esc(tour.summary)}</p>
+        </article>
+        ${panelHighlights}
+        ${panelItinerary}
+        ${panelIncl}
+        ${panelGallery}
+      </div>
+      ${buy}
+    </div>`;
+
+  /* common.js mengisi [data-link] saat memuat — ulangi untuk elemen baru */
+  document.querySelectorAll("[data-link]").forEach((a) => {
+    const target = window.LINKS[a.dataset.link];
+    if (target) a.href = target;
+  });
+})();
+</script>
+</body>
+</html>

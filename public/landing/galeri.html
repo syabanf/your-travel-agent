@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Galeri — Icon Holiday Indonesia</title>
+<meta name="description" content="Foto-foto perjalanan grup Icon Holiday: Korea, China, Jepang, Eropa Barat, New Zealand, Turki dan Dubai. Klik foto untuk melihat versi besarnya." />
+<meta name="theme-color" content="#0B1B3B" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<a href="#main" class="skip-link">Lompat ke konten</a>
+
+<main id="main">
+
+<!-- ══ Hero halaman ══ -->
+<section class="phero">
+  <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=1800&amp;q=80" aria-hidden="true"></div>
+  <div class="wrap phero__in">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span>Galeri
+    </nav>
+    <h1>Galeri</h1>
+    <p>
+      Beberapa momen dari keberangkatan grup kami — dari Nami Island sampai
+      Cappadocia. Klik foto untuk melihat versi besarnya.
+    </p>
+  </div>
+</section>
+
+<!-- ══ Grid galeri ══ -->
+<section class="sect">
+  <div class="wrap">
+    <p class="eyebrow">Dokumentasi</p>
+    <h2 class="sect__title">Perjalanan yang sudah berangkat</h2>
+    <p class="sect__lead">
+      Foto diambil oleh tour leader dan peserta di berbagai keberangkatan grup.
+    </p>
+
+    <div class="gal" id="galGrid"></div>
+    <p class="note">Ingin foto perjalanan Anda tampil di sini? Kirimkan ke tim kami lewat WhatsApp.</p>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="sect sect--tint">
+  <div class="wrap">
+    <p class="eyebrow">Giliran Anda</p>
+    <h2 class="sect__title">Perjalanan berikutnya bisa jadi milik Anda</h2>
+    <p class="sect__lead">
+      Ceritakan tujuan dan perkiraan tanggalnya — kami bantu susun rencananya,
+      dari tiket sampai dokumen.
+    </p>
+    <a class="btn btn--primary" href="kontak.html">Rencanakan perjalanan <svg class="i"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<script src="./data.js"></script>
+<script src="./common.js"></script>
+<script>
+(function () {
+  const esc = window.esc;
+
+  document.querySelectorAll("[data-bg]").forEach((n) => {
+    n.style.backgroundImage = `url("${n.dataset.bg}")`;
+  });
+
+  const ITEMS = window.GALLERY;
+  const grid  = document.getElementById("galGrid");
+
+  grid.innerHTML = ITEMS.map((g, i) => `
+    <figure role="button" tabindex="0" data-i="${i}" aria-label="Perbesar foto: ${esc(g.cap)}">
+      <img src="${esc(g.img)}" alt="${esc(g.cap)}" loading="lazy" decoding="async" />
+      <figcaption>${esc(g.cap)}</figcaption>
+    </figure>`).join("");
+
+  /* ── Lightbox ────────────────────────────────────────────────
+     Tidak ada kelas untuk overlay di styles.css, jadi elemennya
+     dibuat lewat JS dengan style inline seperlunya.             */
+  let overlay = null;
+  let lastFocus = null;
+
+  const close = () => {
+    if (!overlay) return;
+    overlay.remove();
+    overlay = null;
+    removeEventListener("keydown", onKey);
+    if (lastFocus) lastFocus.focus();
+  };
+
+  function onKey(e) {
+    if (e.key === "Escape") { e.preventDefault(); close(); return; }
+    if (e.key === "Tab" && overlay) {           // fokus tetap di dalam overlay
+      e.preventDefault();
+      overlay.querySelector("button").focus();
+    }
+  }
+
+  const open = (i, trigger) => {
+    const item = ITEMS[i];
+    if (!item) return;
+    close();
+    lastFocus = trigger || null;
+
+    overlay = document.createElement("div");
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", item.cap);
+    overlay.style.cssText =
+      "position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;" +
+      "align-items:center;justify-content:center;gap:1rem;padding:24px;" +
+      "background:rgba(11,27,59,.9);cursor:zoom-out";
+
+    const img = document.createElement("img");
+    img.src = String(item.img).replace("w=900", "w=1600");
+    img.alt = item.cap;
+    img.decoding = "async";
+    img.style.cssText =
+      "max-width:min(1100px,100%);max-height:72vh;object-fit:contain;" +
+      "border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.5);cursor:auto";
+
+    const cap = document.createElement("p");
+    cap.textContent = item.cap;
+    cap.style.cssText = "color:#fff;font-size:.9rem;text-align:center;max-width:620px";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn--light";
+    btn.textContent = "Tutup";
+    btn.addEventListener("click", close);
+
+    overlay.append(img, cap, btn);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+    document.body.appendChild(overlay);
+    addEventListener("keydown", onKey);
+    btn.focus();
+  };
+
+  grid.addEventListener("click", (e) => {
+    const fig = e.target.closest("figure[data-i]");
+    if (fig) open(+fig.dataset.i, fig);
+  });
+  grid.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+    const fig = e.target.closest("figure[data-i]");
+    if (!fig) return;
+    e.preventDefault();
+    open(+fig.dataset.i, fig);
+  });
+})();
+</script>
+</body>
+</html>
