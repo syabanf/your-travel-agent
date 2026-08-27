@@ -19,6 +19,11 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // jsdom disables localStorage/sessionStorage on the default about:blank
+    // opaque origin, so give it a real origin — otherwise every storage call in
+    // a test silently no-ops (or throws) and we'd be testing the in-memory
+    // fallback instead of the real path.
+    environmentOptions: { jsdom: { url: 'http://localhost/' } },
     globals: true,
     setupFiles: './src/test/setup.js',
     css: false,

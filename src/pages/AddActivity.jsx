@@ -9,8 +9,55 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Ticket, Navigation, Map } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const categories = ["transport", "accommodation", "dining", "attraction", "activity", "shopping", "rest", "other"];
+
+const EMPTY_FORM = {
+  trip_id: "",
+  day_number: 1,
+  time: "",
+  activity_name: "",
+  location: "",
+  description: "",
+  duration_minutes: "",
+  budget: "",
+  reservation_required: false,
+  booking_status: "not_booked",
+  notes: "",
+  category: "activity",
+  is_completed: false,
+  sort_order: 0,
+  booking_id: "",
+};
+
+// Picking a location on the map unmounts this page. The draft is stashed
+// first so nothing typed here is lost on the way back.
+const DRAFT_KEY = "activity:draft";
+
+/** Day is a free-text number input — an empty/garbage value must never reach the UI as NaN. */
+const safeDay = (value) => {
+  const n = Number.parseInt(value, 10);
+  return Number.isFinite(n) && n >= 1 ? n : 1;
+};
+
+function readDraft() {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    const draft = raw ? JSON.parse(raw) : null;
+    return draft && typeof draft === "object" ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDraft() {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* ignore — storage is a convenience, never a requirement */
+  }
+}
 
 export default function AddActivity() {
   const { tripId } = useParams();
@@ -20,26 +67,35 @@ export default function AddActivity() {
   const dayParam = urlParams.get("day");
   const locationParam = urlParams.get("location") || "";
 
-  const [form, setForm] = useState({
-    trip_id: tripId,
-    day_number: dayParam ? parseInt(dayParam) : 1,
-    time: "",
-    activity_name: "",
-    location: locationParam,
-    description: "",
-    duration_minutes: "",
-    budget: "",
-    reservation_required: false,
-    booking_status: "not_booked",
-    notes: "",
-    category: "activity",
-    is_completed: false,
-    sort_order: 0,
-    booking_id: "",
+  const [form, setForm] = useState(() => {
+    const base = { ...EMPTY_FORM, trip_id: tripId };
+    // Only a draft belonging to this trip is worth restoring.
+    const draft = readDraft();
+    const restored = draft && draft.trip_id === tripId ? { ...base, ...draft } : base;
+    // Whatever the map (or the caller) sends back through the URL wins.
+    return {
+      ...restored,
+      trip_id: tripId,
+      day_number: safeDay(dayParam !== null ? dayParam : restored.day_number),
+      location: locationParam || restored.location || "",
+    };
   });
   const [saving, setSaving] = useState(false);
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const stashDraft = (data) => {
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    } catch {
+      /* ignore — storage is a convenience, never a requirement */
+    }
+  };
+
+  const browseMap = () => {
+    stashDraft(form);
+    navigate(`/itinerary/map?callback=/itinerary/${tripId}/add?day=${form.day_number}`);
+  };
 
   const handleSave = async () => {
     if (!form.activity_name) return;
@@ -47,11 +103,15 @@ export default function AddActivity() {
     try {
       await base44.entities.ItineraryItem.create({
         ...form,
+        day_number: safeDay(form.day_number),
         duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,
         budget: form.budget ? Number(form.budget) : undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["itinerary", tripId] });
+      clearDraft();
       navigate(`/itinerary/${tripId}`);
+    } catch {
+      toast.error("Couldn't add this activity. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -85,7 +145,7 @@ export default function AddActivity() {
                 />
               </div>
               <button
-                onClick={() => navigate(`/itinerary/map?callback=/itinerary/${tripId}/add?day=${form.day_number}`)}
+                onClick={browseMap}
                 className="flex items-center gap-1.5 px-3 h-11 glass-gold rounded-xl text-xs font-semibold text-gold hover:glow-gold transition-all flex-shrink-0"
                 title="Browse map to find location"
               >
@@ -102,7 +162,7 @@ export default function AddActivity() {
               <Input 
                 type="number" min={1}
                 value={form.day_number}
-                onChange={e => update("day_number", parseInt(e.target.value))}
+                onChange={e => update("day_number", safeDay(e.target.value))}
                 className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11"
               />
             </div>

@@ -28,6 +28,7 @@ const typeColors = {
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
 
   const load = async () => {
     const data = await base44.entities.Notification.list("-created_date", 50);
@@ -57,6 +58,18 @@ export default function Notifications() {
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  const readCount = notifications.length - unreadCount;
+
+  // Keep a chip visible while it is the active filter, even once its bucket empties.
+  const chips = [
+    { value: "all", label: `All (${notifications.length})` },
+    ...(unreadCount > 0 || filter === "unread" ? [{ value: "unread", label: `Unread (${unreadCount})` }] : []),
+    ...(readCount > 0 || filter === "read" ? [{ value: "read", label: "Read" }] : []),
+  ];
+
+  const shown = notifications.filter((n) =>
+    filter === "all" ? true : filter === "unread" ? !n.is_read : n.is_read
+  );
 
   return (
     <div className="animate-fade-in pb-28">
@@ -76,6 +89,24 @@ export default function Notifications() {
         }
       />
 
+      {/* Read-state filter chips */}
+      {!loading && chips.length > 2 && (
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar px-6 pb-4">
+          {chips.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => setFilter(c.value)}
+              aria-pressed={filter === c.value}
+              className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
+                filter === c.value ? "btn-primary text-white" : "glass-light text-mora-neutral"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {loading ? (
         <div className="px-6">
           <SkeletonRows rows={4} />
@@ -86,9 +117,15 @@ export default function Notifications() {
           title="You're all caught up"
           hint="No notifications right now."
         />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          icon={Bell}
+          title={filter === "unread" ? "No unread notifications" : "No read notifications"}
+          hint="Try another filter to see the rest."
+        />
       ) : (
         <div className="px-6 space-y-4 stagger">
-          {notifications.map((notification) => {
+          {shown.map((notification) => {
             const Icon = typeIcons[notification.type] || Bell;
             const color = typeColors[notification.type] || "#94A3B8";
             return (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -19,12 +19,21 @@ const statusColors = {
 
 const typeIcons = { package: Package, flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2, consultation: MessageCircle };
 
+// Status filter chips are derived from the bookings actually loaded, in this order.
+const STATUS_FILTERS = [
+  { value: "pending", label: "Pending" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
 export default function Booking() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [startY, setStartY] = useState(null);
+  const [status, setStatus] = useState("all");
 
   const loadBookings = useCallback(async () => {
     setError(false);
@@ -39,6 +48,21 @@ export default function Booking() {
   }, []);
 
   useEffect(() => { loadBookings(); }, [loadBookings]);
+
+  // Only offer chips for statuses that actually appear in the data.
+  const chips = useMemo(() => {
+    const present = new Set((bookings || []).map((b) => b.status));
+    return [
+      { value: "all", label: `All (${(bookings || []).length})` },
+      ...STATUS_FILTERS.filter((s) => present.has(s.value) || s.value === status),
+    ];
+  }, [bookings, status]);
+
+  const shown = useMemo(
+    () => (bookings || []).filter((b) => status === "all" || b.status === status),
+    [bookings, status]
+  );
+  const statusLabel = STATUS_FILTERS.find((s) => s.value === status)?.label.toLowerCase();
 
   const handleTouchStart = (e) => {
     if (e.currentTarget.scrollTop === 0) setStartY(e.touches[0].clientY);
@@ -100,6 +124,24 @@ export default function Booking() {
           </h2>
         </div>
 
+        {/* Status filter chips — hidden when there is nothing meaningful to filter by */}
+        {!loading && !error && chips.length > 2 && (
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-6 px-6 pb-4">
+            {chips.map((c) => (
+              <button
+                key={c.value}
+                onClick={() => setStatus(c.value)}
+                aria-pressed={status === c.value}
+                className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
+                  status === c.value ? "btn-primary text-white" : "glass-light text-mora-neutral"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {loading ? (
           <SkeletonRows rows={4} />
         ) : error ? (
@@ -122,9 +164,15 @@ export default function Booking() {
               </Link>
             }
           />
+        ) : shown.length === 0 ? (
+          <EmptyState
+            icon={Ticket}
+            title={statusLabel ? `No ${statusLabel} bookings` : "No bookings found"}
+            hint="Try another filter to see the rest of your reservations."
+          />
         ) : (
           <div className="space-y-3 stagger">
-            {bookings.map((booking) => {
+            {shown.map((booking) => {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
                 <Link key={booking.id} to={`/booking/${booking.id}`} className="block press">

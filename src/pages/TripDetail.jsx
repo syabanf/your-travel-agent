@@ -25,14 +25,20 @@ export default function TripDetail() {
 
   useEffect(() => {
     const load = async () => {
-      const trips = await base44.entities.Trip.filter({ id: tripId });
-      if (trips.length > 0) setTrip(trips[0]);
-      
-      const itineraryItems = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
-      setItems(itineraryItems.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
-      const mem = await base44.entities.TripMember.filter({ trip_id: tripId });
-      setMembers(mem);
-      setLoading(false);
+      try {
+        const trips = await base44.entities.Trip.filter({ id: tripId });
+        if (trips.length > 0) setTrip(trips[0]);
+
+        const itineraryItems = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
+        setItems(itineraryItems.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
+        const mem = await base44.entities.TripMember.filter({ trip_id: tripId });
+        setMembers(mem);
+      } catch {
+        // Never leave the page on a spinner with no explanation.
+        toast.error("Couldn't load this trip. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, [tripId]);
@@ -89,54 +95,60 @@ export default function TripDetail() {
   const handleGenerateActivities = async () => {
     if (!trip) return;
     setAiGenerating(true);
-    const res = await base44.integrations.Core.InvokeLLM({
-      prompt: `Generate a detailed ${trip.travel_style || 'luxury'} travel itinerary for ${trip.destination}${
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate a detailed ${trip.travel_style || 'luxury'} travel itinerary for ${trip.destination}${
         trip.start_date ? ` from ${trip.start_date} to ${trip.end_date || trip.start_date}` : ` for ${totalDays} days`
       }. Pace: ${trip.pace || 'moderate'}. Trip type: ${trip.trip_type || 'couple'}. Travelers: ${trip.travelers || 2}.
 IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for days 1 to ${totalDays}. Do NOT exceed day ${totalDays}. Spread activities evenly across all ${totalDays} day(s).`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          activities: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                day: { type: "number" },
-                time: { type: "string" },
-                name: { type: "string" },
-                location: { type: "string" },
-                description: { type: "string" },
-                budget: { type: "number" },
-                category: { type: "string" },
-                duration_minutes: { type: "number" }
+        response_json_schema: {
+          type: "object",
+          properties: {
+            activities: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  day: { type: "number" },
+                  time: { type: "string" },
+                  name: { type: "string" },
+                  location: { type: "string" },
+                  description: { type: "string" },
+                  budget: { type: "number" },
+                  category: { type: "string" },
+                  duration_minutes: { type: "number" }
+                }
               }
             }
           }
         }
-      }
-    });
+      });
 
-    if (res.activities?.length > 0) {
-      for (const act of res.activities) {
-        await base44.entities.ItineraryItem.create({
-          trip_id: tripId,
-          day_number: act.day || 1,
-          time: act.time || "",
-          activity_name: act.name,
-          location: act.location || "",
-          description: act.description || "",
-          budget: act.budget || 0,
-          category: act.category || "activity",
-          duration_minutes: act.duration_minutes || 60,
-          booking_status: "not_booked",
-        });
+      if (res.activities?.length > 0) {
+        for (const act of res.activities) {
+          await base44.entities.ItineraryItem.create({
+            trip_id: tripId,
+            day_number: act.day || 1,
+            time: act.time || "",
+            activity_name: act.name,
+            location: act.location || "",
+            description: act.description || "",
+            budget: act.budget || 0,
+            category: act.category || "activity",
+            duration_minutes: act.duration_minutes || 60,
+            booking_status: "not_booked",
+          });
+        }
+        // Reload items
+        const updated = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
+        setItems(updated.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
       }
-      // Reload items
-      const updated = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
-      setItems(updated.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
+    } catch {
+      toast.error("Couldn't generate activities. Please try again.");
+    } finally {
+      // Always release the button — never strand the user on "Generating…".
+      setAiGenerating(false);
     }
-    setAiGenerating(false);
   };
 
   if (loading) {

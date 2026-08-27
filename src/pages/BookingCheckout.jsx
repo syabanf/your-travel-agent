@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
-import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, CreditCard, User, FileText, ChevronRight, Loader2, Lock } from "lucide-react";
+import { CheckCircle, CreditCard, User, FileText, ChevronRight, ChevronLeft, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
@@ -17,20 +16,52 @@ const steps = [
   { id: 4, label: "Done", icon: CheckCircle },
 ];
 
+const GUEST_FIELDS = { full_name: "full name", email: "email", phone: "phone number" };
+const CARD_FIELDS = { card_number: "card number", card_name: "cardholder name", expiry: "expiry date", cvv: "CVV" };
+
+// "a", "a and b", "a, b and c"
+const listPhrase = (items) =>
+  items.length < 2 ? (items[0] || "") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+
+/* --------- checkout progress, parked in sessionStorage per booking --------- */
+// Card details are deliberately never persisted.
+
+const progressKey = (bookingId) => `checkout:${bookingId}`;
+
+function readProgress(bookingId) {
+  try {
+    const raw = window.sessionStorage.getItem(progressKey(bookingId));
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function BookingCheckout() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => {
+    const saved = Number(readProgress(bookingId)?.step);
+    // Step 4 is never restored — it belongs to a booking that is already paid.
+    return saved >= 1 && saved <= 3 ? saved : 1;
+  });
   const [processing, setProcessing] = useState(false);
   const [confirmCode, setConfirmCode] = useState("");
   const [method, setMethod] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [travelers, setTravelers] = useState([]);
+  const fieldRefs = useRef({});
 
-  const [guestInfo, setGuestInfo] = useState({
-    full_name: "",
-    email: "",
-    phone: "",
-    special_request: "",
+  const [guestInfo, setGuestInfo] = useState(() => {
+    const saved = readProgress(bookingId)?.guestInfo;
+    return {
+      full_name: saved?.full_name || "",
+      email: saved?.email || "",
+      phone: saved?.phone || "",
+      special_request: saved?.special_request || "",
+    };
   });
 
   const [paymentInfo, setPaymentInfo] = useState({
@@ -48,8 +79,99 @@ export default function BookingCheckout() {
     load();
   }, [bookingId]);
 
-  const updateGuest = (k, v) => setGuestInfo(p => ({ ...p, [k]: v }));
-  const updatePayment = (k, v) => setPaymentInfo(p => ({ ...p, [k]: v }));
+  // Prefill from the signed-in user, but never over something already typed
+  // (or restored from a reload).
+  useEffect(() => {
+    let cancelled = false;
+    base44.auth
+      .me()
+      .then((me) => {
+        if (cancelled || !me) return;
+        setGuestInfo((p) => ({
+          ...p,
+          full_name: p.full_name || me.full_name || "",
+          email: p.email || me.email || "",
+          phone: p.phone || me.phone || "",
+        }));
+      })
+      .catch(() => {
+        /* no session — the guest just fills the form in by hand */
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Saved travellers give one-tap fill.
+  useEffect(() => {
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem("mora_travelers") || "[]");
+      if (Array.isArray(parsed)) setTravelers(parsed.filter((t) => t && t.name));
+    } catch {
+      /* saved travellers are a convenience — ignore unreadable storage */
+    }
+  }, []);
+
+  // Keep step + guest info across a reload; drop it once the booking is paid.
+  useEffect(() => {
+    if (step >= 4) return;
+    try {
+      window.sessionStorage.setItem(progressKey(bookingId), JSON.stringify({ step, guestInfo }));
+    } catch {
+      /* storage full or blocked — progress simply won't survive a reload */
+    }
+  }, [bookingId, step, guestInfo]);
+
+  const clearProgress = () => {
+    try {
+      window.sessionStorage.removeItem(progressKey(bookingId));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const setFieldRef = (name) => (el) => { fieldRefs.current[name] = el; };
+  const focusField = (name) => {
+    try { fieldRefs.current[name]?.focus(); } catch { /* ignore */ }
+  };
+  const clearError = (k) => setErrors(p => (p[k] ? { ...p, [k]: false } : p));
+
+  const updateGuest = (k, v) => { setGuestInfo(p => ({ ...p, [k]: v })); clearError(k); };
+  const updatePayment = (k, v) => { setPaymentInfo(p => ({ ...p, [k]: v })); clearError(k); };
+  const chooseMethod = (m) => { setMethod(m); clearError("method"); };
+
+  const applyTraveler = (t) => {
+    setGuestInfo(p => ({
+      ...p,
+      full_name: t.name || p.full_name,
+      email: t.email || p.email,
+      phone: t.phone || p.phone,
+    }));
+    setErrors({});
+  };
+
+  // Flags the missing fields, says what's missing and puts the cursor on the
+  // first one. Returns true when everything required is filled in.
+  const requireFields = (labels, values) => {
+    const missing = Object.keys(labels).filter(k => !values[k]);
+    if (!missing.length) return true;
+    setErrors(Object.fromEntries(missing.map(k => [k, true])));
+    toast.error(`Please fill in your ${listPhrase(missing.map(k => labels[k]))}`);
+    focusField(missing[0]);
+    return false;
+  };
+
+  const fieldClass = (name) =>
+    `bg-white/5 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 ${
+      errors[name] ? "border-red-500/70 focus-visible:ring-red-500/50" : "border-white/10"
+    }`;
+
+  const handleBack = () => {
+    // Steps 2–3 rewind inside the flow instead of throwing the guest out of it.
+    if (step > 1 && step < 4) { setStep(s => s - 1); return; }
+    // Step 4 is the terminal receipt — stepping back would re-open payment for
+    // an already-paid booking, so leave the flow instead.
+    if (step === 4) { navigate("/booking"); return; }
+    navigate(-1);
+  };
 
   const formatCard = (val) => {
     return val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
@@ -61,7 +183,21 @@ export default function BookingCheckout() {
     return clean;
   };
 
+  const handleProceedToPayment = () => {
+    if (!requireFields(GUEST_FIELDS, guestInfo)) return;
+    setErrors({});
+    setStep(3);
+  };
+
   const handleConfirmPayment = async () => {
+    if (processing) return;
+    if (!method) {
+      setErrors({ method: true });
+      toast.error("Please choose a payment method");
+      return;
+    }
+    if (method.isNewCard && !requireFields(CARD_FIELDS, paymentInfo)) return;
+    setErrors({});
     setProcessing(true);
     try {
       await new Promise(r => setTimeout(r, 2000)); // simulate processing
@@ -73,6 +209,7 @@ export default function BookingCheckout() {
         payment_method: method?.label || "Card",
         notes: (booking.notes || "") + `\nGuest: ${guestInfo.full_name} | ${guestInfo.email} | ${guestInfo.phone}${guestInfo.special_request ? "\nRequest: " + guestInfo.special_request : ""}`,
       });
+      clearProgress();
       setConfirmCode(code);
       setStep(4);
     } catch {
@@ -90,7 +227,23 @@ export default function BookingCheckout() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader title="Checkout" subtitle={booking.title} showBack />
+      {/* Local header — the back control is step-aware, which the shared
+          PageHeader (always navigate(-1)) can't express. */}
+      <div className="flex items-center justify-between px-6 pt-4 pb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <button
+            onClick={handleBack}
+            aria-label={step > 1 && step < 4 ? "Back one step" : "Go back"}
+            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-mora-primary hover:text-gold press-spring shrink-0"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div className="min-w-0">
+            <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-mora-primary truncate">Checkout</h1>
+            <p className="text-sm text-mora-neutral mt-0.5 truncate">{booking.title}</p>
+          </div>
+        </div>
+      </div>
 
       {/* Step indicator */}
       <div className="px-6 mb-5">
@@ -156,25 +309,46 @@ export default function BookingCheckout() {
         {/* Step 2: Guest Info */}
         {step === 2 && (
           <>
+            {travelers.length > 0 && (
+              <div>
+                <p className="text-[10px] text-mora-neutral/50 mb-2">Fill from a saved traveller</p>
+                <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-1 px-1">
+                  {travelers.map((t, i) => (
+                    <button
+                      key={t.id || `${t.name}-${i}`}
+                      type="button"
+                      onClick={() => applyTraveler(t)}
+                      className="px-3.5 py-2 rounded-full glass-light text-xs font-medium text-mora-neutral hover:text-gold whitespace-nowrap shrink-0 press-spring transition-colors"
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <GlassCard className="p-4 space-y-3">
               <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Guest Information</h3>
               <div>
                 <label className="text-[10px] text-mora-neutral/50 mb-1 block">Full Name *</label>
-                <Input value={guestInfo.full_name} onChange={e => updateGuest("full_name", e.target.value)}
+                <Input ref={setFieldRef("full_name")} value={guestInfo.full_name} onChange={e => updateGuest("full_name", e.target.value)}
                   placeholder="As on ID/passport"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11" />
+                  aria-invalid={errors.full_name ? "true" : undefined}
+                  className={fieldClass("full_name")} />
               </div>
               <div>
                 <label className="text-[10px] text-mora-neutral/50 mb-1 block">Email *</label>
-                <Input type="email" value={guestInfo.email} onChange={e => updateGuest("email", e.target.value)}
+                <Input ref={setFieldRef("email")} type="email" value={guestInfo.email} onChange={e => updateGuest("email", e.target.value)}
                   placeholder="your@email.com"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11" />
+                  aria-invalid={errors.email ? "true" : undefined}
+                  className={fieldClass("email")} />
               </div>
               <div>
                 <label className="text-[10px] text-mora-neutral/50 mb-1 block">Phone Number *</label>
-                <Input type="tel" value={guestInfo.phone} onChange={e => updateGuest("phone", e.target.value)}
+                <Input ref={setFieldRef("phone")} type="tel" value={guestInfo.phone} onChange={e => updateGuest("phone", e.target.value)}
                   placeholder="+62 812 xxxx xxxx"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11" />
+                  aria-invalid={errors.phone ? "true" : undefined}
+                  className={fieldClass("phone")} />
               </div>
               <div>
                 <label className="text-[10px] text-mora-neutral/50 mb-1 block">Special Request</label>
@@ -185,9 +359,9 @@ export default function BookingCheckout() {
             </GlassCard>
 
             <button
-              onClick={() => setStep(3)}
-              disabled={!guestInfo.full_name || !guestInfo.email || !guestInfo.phone}
-              className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              onClick={handleProceedToPayment}
+              aria-disabled={!guestInfo.full_name || !guestInfo.email || !guestInfo.phone}
+              className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all aria-disabled:opacity-40 flex items-center justify-center gap-2"
             >
               Proceed to Payment <ChevronRight className="w-4 h-4" />
             </button>
@@ -197,12 +371,12 @@ export default function BookingCheckout() {
         {/* Step 3: Payment */}
         {step === 3 && (
           <>
-            <GlassCard className="p-4 space-y-3">
+            <GlassCard className={`p-4 space-y-3 ${errors.method ? "border !border-red-500/70" : ""}`}>
               <div className="flex items-center gap-2 mb-1">
                 <Lock className="w-3.5 h-3.5 text-gold" />
                 <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Payment method</h3>
               </div>
-              <PaymentMethodPicker value={method} onChange={setMethod} />
+              <PaymentMethodPicker value={method} onChange={chooseMethod} />
             </GlassCard>
 
             {method?.isNewCard && (
@@ -211,39 +385,47 @@ export default function BookingCheckout() {
                 <div>
                   <label className="text-[10px] text-mora-neutral/50 mb-1 block">Card Number</label>
                   <Input
+                    ref={setFieldRef("card_number")}
                     value={paymentInfo.card_number}
                     onChange={e => updatePayment("card_number", formatCard(e.target.value))}
                     placeholder="0000 0000 0000 0000"
-                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 tracking-widest"
+                    aria-invalid={errors.card_number ? "true" : undefined}
+                    className={`${fieldClass("card_number")} tracking-widest`}
                   />
                 </div>
                 <div>
                   <label className="text-[10px] text-mora-neutral/50 mb-1 block">Cardholder Name</label>
                   <Input
+                    ref={setFieldRef("card_name")}
                     value={paymentInfo.card_name}
                     onChange={e => updatePayment("card_name", e.target.value)}
                     placeholder="Name on card"
-                    className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                    aria-invalid={errors.card_name ? "true" : undefined}
+                    className={fieldClass("card_name")}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[10px] text-mora-neutral/50 mb-1 block">Expiry Date</label>
                     <Input
+                      ref={setFieldRef("expiry")}
                       value={paymentInfo.expiry}
                       onChange={e => updatePayment("expiry", formatExpiry(e.target.value))}
                       placeholder="MM/YY"
-                      className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                      aria-invalid={errors.expiry ? "true" : undefined}
+                      className={fieldClass("expiry")}
                     />
                   </div>
                   <div>
                     <label className="text-[10px] text-mora-neutral/50 mb-1 block">CVV</label>
                     <Input
+                      ref={setFieldRef("cvv")}
                       value={paymentInfo.cvv}
                       onChange={e => updatePayment("cvv", e.target.value.replace(/\D/g, "").slice(0, 4))}
                       placeholder="• • •"
                       type="password"
-                      className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+                      aria-invalid={errors.cvv ? "true" : undefined}
+                      className={fieldClass("cvv")}
                     />
                   </div>
                 </div>
@@ -270,8 +452,9 @@ export default function BookingCheckout() {
 
             <button
               onClick={handleConfirmPayment}
-              disabled={processing || !method || (method.isNewCard && (!paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv))}
-              className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              disabled={processing}
+              aria-disabled={!method || (method.isNewCard && (!paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv))}
+              className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 aria-disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(booking.price || 0)}</>}
             </button>

@@ -11,6 +11,21 @@ import { DEFAULT_OTA_CATEGORIES, iconFor } from "@/data/otaCategories";
 
 const MY_BOOKINGS_TAB = { key: "my_bookings", label: "My Bookings", icon: Ticket };
 
+// Booking an option navigates to checkout, which unmounts this component.
+// The search is kept in sessionStorage so coming back shows the same results
+// instead of an empty form the traveller has to fill in and re-run.
+const SEARCH_KEY = "ota:search";
+
+function readSearch() {
+  try {
+    const raw = sessionStorage.getItem(SEARCH_KEY);
+    const saved = raw ? JSON.parse(raw) : null;
+    return saved && typeof saved === "object" ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
 const statusColors = {
   pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
@@ -22,8 +37,18 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const savingRef = useRef(false);
+  // Read once, on mount. A saved search only belongs to the screen it was run
+  // on, so it is ignored when the destination this component was opened with
+  // has changed.
+  const [restored] = useState(() => {
+    const saved = readSearch();
+    return saved && saved.context === defaultTo ? saved : null;
+  });
   const [cats, setCats] = useState(null);
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = restored?.activeTab;
+    return tab && (showMyBookings || tab !== "my_bookings") ? tab : defaultTab;
+  });
 
   // Categories are managed in the dashboard (OtaCategory) and drive these tabs.
   // Each tab's key is the category's `behavior`, so the built-in search/book
@@ -40,12 +65,22 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   const visibleTabs = showMyBookings ? [MY_BOOKINGS_TAB, ...categoryTabs] : categoryTabs;
   const [myBookings, setMyBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
-  const [form, setForm] = useState({
-    from: "", to: defaultTo, checkin: "", checkout: "", guests: 1, date: ""
-  });
-  const [results, setResults] = useState([]);
+  const [form, setForm] = useState(() => ({
+    from: "", to: defaultTo, checkin: "", checkout: "", guests: 1, date: "",
+    ...(restored?.form && typeof restored.form === "object" ? restored.form : {}),
+  }));
+  const [results, setResults] = useState(() => (Array.isArray(restored?.results) ? restored.results : []));
   const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+  const [searched, setSearched] = useState(() => !!restored?.searched);
+
+  // Keep the stored search in step with what's on screen.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SEARCH_KEY, JSON.stringify({ context: defaultTo, activeTab, form, results, searched }));
+    } catch {
+      /* ignore — storage is a convenience, never a requirement */
+    }
+  }, [defaultTo, activeTab, form, results, searched]);
 
   const upd = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
@@ -142,6 +177,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
      const created = await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
      queryClient.invalidateQueries({ queryKey: ["bookings"] });
      if (onSaveBooking) onSaveBooking();
+     toast.success("Booking created — continue to checkout.");
      navigate(`/booking/${created.id}/checkout`);
    } catch {
      toast.error("Couldn't start booking. Please try again.");

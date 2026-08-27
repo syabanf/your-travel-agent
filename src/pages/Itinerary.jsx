@@ -130,16 +130,15 @@ export default function Itinerary() {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex gap-1.5 px-6 mb-6">
+      {/* Status filter chips */}
+      <div className="flex gap-2 overflow-x-auto hide-scrollbar px-6 pb-4">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-medium transition-all duration-300 ${
-              activeTab === tab.id
-                ? "glass-gold text-gold"
-                : "text-mora-neutral hover:text-mora-primary"
+            aria-pressed={activeTab === tab.id}
+            className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
+              activeTab === tab.id ? "btn-primary text-white" : "glass-light text-mora-neutral"
             }`}
           >
             {tab.label}
@@ -157,6 +156,12 @@ export default function Itinerary() {
           title="Couldn't load itineraries"
           hint="Please check your connection and try again."
           onRetry={loadTrips}
+        />
+      ) : filteredTrips.length === 0 && trips.length > 0 ? (
+        <EmptyState
+          icon={Map}
+          title="No trips found"
+          hint={`Nothing under "${tabs.find((t) => t.id === activeTab)?.label}". Try another filter to see your other trips.`}
         />
       ) : filteredTrips.length === 0 ? (
         <EmptyState

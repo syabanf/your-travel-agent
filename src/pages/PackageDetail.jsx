@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
@@ -29,10 +29,18 @@ export default function PackageDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pkg, setPkg] = useState(undefined); // undefined = loading, null = not found
   const [pax, setPax] = useState(2);
   const [departure, setDeparture] = useState("");
   const [booking, setBooking] = useState(false);
+
+  // The party size and departure the user arrived with — kept in a ref so the
+  // load effect can honour them without re-fetching on every param change.
+  const fromUrl = useRef({
+    pax: Number(searchParams.get("pax")) || 0,
+    departure: searchParams.get("departure") || "",
+  });
 
   useEffect(() => {
     base44.entities.TourPackage.filter({ id })
@@ -40,8 +48,11 @@ export default function PackageDetail() {
         const found = r[0] || null;
         setPkg(found);
         if (found) {
-          setPax(Math.max(1, Number(found.min_pax) || 1));
-          setDeparture(found.departure_dates?.[0] || "");
+          const min = Math.max(1, Number(found.min_pax) || 1);
+          const max = Math.max(min, Number(found.max_pax) || 12);
+          const dates = found.departure_dates || [];
+          setPax(fromUrl.current.pax ? Math.min(max, Math.max(min, fromUrl.current.pax)) : min);
+          setDeparture(dates.includes(fromUrl.current.departure) ? fromUrl.current.departure : (dates[0] || ""));
         }
       })
       .catch(() => setPkg(null));
@@ -72,11 +83,31 @@ export default function PackageDetail() {
   const maxPax = Math.max(minPax, Number(pkg.max_pax) || 12);
   const total = packageTotal(pkg, pax);
 
+  // Mirror the choices into the URL so coming back to this page restores them.
+  const syncUrl = (next) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("pax", String(next.pax));
+    if (next.departure) params.set("departure", next.departure);
+    else params.delete("departure");
+    setSearchParams(params, { replace: true });
+  };
+
+  const changePax = (value) => {
+    const next = Math.min(maxPax, Math.max(minPax, value));
+    setPax(next);
+    syncUrl({ pax: next, departure });
+  };
+
+  const changeDeparture = (d) => {
+    setDeparture(d);
+    syncUrl({ pax, departure: d });
+  };
+
   const book = async () => {
     if (booking) return;
     setBooking(true);
     try {
-      const created = await base44.entities.Booking.create({
+      const details = {
         type: "package",
         title: pkg.title,
         provider: "Icon Holiday",
@@ -89,9 +120,25 @@ export default function PackageDetail() {
         image_url: pkg.image,
         package_id: pkg.id,
         notes: `${pkg.duration_days}D/${pkg.duration_nights}N · ${categoryLabel(pkg.category)} · ${pax} traveller${pax > 1 ? "s" : ""}`,
-      });
+      };
+
+      // Re-use the draft this package may already have instead of piling up a
+      // new pending booking every time Book is tapped.
+      let pending = null;
+      try {
+        const drafts = await base44.entities.Booking.filter({ package_id: pkg.id, status: "pending" });
+        pending = drafts?.[0] || null;
+      } catch {
+        /* couldn't look it up — fall through and create a fresh booking */
+      }
+
+      const record = pending
+        ? await base44.entities.Booking.update(pending.id, details)
+        : await base44.entities.Booking.create(details);
+
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      navigate(`/booking/${created.id}/checkout`);
+      toast.success("Package reserved — just a few details left");
+      navigate(`/booking/${record.id}/checkout`);
     } catch {
       toast.error("Couldn't start this booking. Please try again.");
       setBooking(false);
@@ -145,7 +192,7 @@ export default function PackageDetail() {
             </div>
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setPax((p) => Math.max(minPax, p - 1))}
+                onClick={() => changePax(pax - 1)}
                 disabled={pax <= minPax}
                 aria-label="Fewer travellers"
                 className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-mora-primary disabled:opacity-40 press-spring"
@@ -154,7 +201,7 @@ export default function PackageDetail() {
               </button>
               <span className="stat-value w-6 text-center text-base font-display font-bold text-mora-primary">{pax}</span>
               <button
-                onClick={() => setPax((p) => Math.min(maxPax, p + 1))}
+                onClick={() => changePax(pax + 1)}
                 disabled={pax >= maxPax}
                 aria-label="More travellers"
                 className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-mora-primary disabled:opacity-40 press-spring"
@@ -175,7 +222,7 @@ export default function PackageDetail() {
               {pkg.departure_dates.map((d) => (
                 <button
                   key={d}
-                  onClick={() => setDeparture(d)}
+                  onClick={() => changeDeparture(d)}
                   className={`px-4 min-h-[44px] rounded-2xl text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
                     departure === d ? "btn-primary text-white" : "glass-light text-mora-neutral"
                   }`}

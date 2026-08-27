@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   ChevronLeft, ChevronRight, Sparkles, Loader2, Wand2, MapPin, Users,
   Heart, Calendar, Check, Plane,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { confirmDialog } from "@/components/ConfirmDialog";
 import GlassCard from "@/components/GlassCard";
 import DateTimePicker from "@/components/DateTimePicker";
 import { Input } from "@/components/ui/input";
@@ -33,35 +35,112 @@ const paceOptions = ["relaxed", "moderate", "packed"];
 const tripTypes = ["solo", "couple", "family", "business", "luxury", "group"];
 const budgetChips = [5000000, 15000000, 30000000, 50000000];
 
+const EMPTY_FORM = {
+  destination: "",
+  start_date: "",
+  end_date: "",
+  travelers: 2,
+  travel_style: "luxury",
+  pace: "moderate",
+  trip_type: "couple",
+  budget_total: "",
+};
+
+// A reload mid-wizard used to wipe every answer. Progress is kept in
+// sessionStorage so it survives a refresh but never outlives the tab.
+const DRAFT_KEY = "trip:wizard";
+const LAST_PLANNING_STEP = STEPS.indexOf("review");
+
+function readDraft() {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    const draft = raw ? JSON.parse(raw) : null;
+    return draft && typeof draft === "object" ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDraft() {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* ignore — storage is a convenience, never a requirement */
+  }
+}
+
+/** Merge a stored draft over the empty form, ignoring unknown/blank keys. */
+function restoreForm() {
+  const saved = readDraft()?.form;
+  const out = { ...EMPTY_FORM };
+  if (saved && typeof saved === "object") {
+    for (const k of Object.keys(EMPTY_FORM)) {
+      if (saved[k] !== undefined && saved[k] !== null) out[k] = saved[k];
+    }
+  }
+  return out;
+}
+
+/** Restore the step, clamped to the planning steps ("book" needs a live trip). */
+function restoreStep() {
+  const saved = Number(readDraft()?.step);
+  if (!Number.isFinite(saved)) return 0;
+  return Math.min(Math.max(Math.trunc(saved), 0), LAST_PLANNING_STEP);
+}
+
 export default function TripWizard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(restoreStep);
   const [liked, setLiked] = useState(getFavorites());
   const [createdTripId, setCreatedTripId] = useState(null);
   const [busy, setBusy] = useState(null); // 'ai' | 'save'
-  const [form, setForm] = useState({
-    destination: "",
-    start_date: "",
-    end_date: "",
-    travelers: 2,
-    travel_style: "luxury",
-    pace: "moderate",
-    trip_type: "couple",
-    budget_total: "",
-  });
+  const [form, setForm] = useState(restoreForm);
+
+  // Keep the draft in step with the form. Once the trip exists there is
+  // nothing left to recover, so we stop writing.
+  useEffect(() => {
+    if (createdTripId) return;
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ step: Math.min(step, LAST_PLANNING_STEP), form }));
+    } catch {
+      /* ignore — storage is a convenience, never a requirement */
+    }
+  }, [step, form, createdTripId]);
 
   const key = STEPS[step];
   const meta = STEP_META[key];
   const update = (field, value) => setForm((p) => ({ ...p, [field]: value }));
 
-  const canContinue = key === "destination" ? !!form.destination.trim() : true;
+  const destination = String(form.destination || "");
+  const canContinue = key === "destination" ? !!destination.trim() : true;
 
-  const back = () => (step === 0 ? navigate(-1) : setStep((s) => s - 1));
+  /** Has the traveler actually typed/picked anything yet? */
+  const isDirty = () =>
+    Object.keys(EMPTY_FORM).some((k) => String(form[k] ?? "") !== String(EMPTY_FORM[k]));
+
+  const back = async () => {
+    if (step > 0) {
+      setStep((s) => s - 1);
+      return;
+    }
+    // Step 0's back control leaves the wizard entirely — check first.
+    if (isDirty()) {
+      const ok = await confirmDialog({
+        title: "Leave trip planner?",
+        body: "Your answers so far will be discarded.",
+        confirmLabel: "Leave",
+        destructive: true,
+      });
+      if (!ok) return;
+    }
+    clearDraft();
+    navigate(-1);
+  };
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
 
-  const cityOnly = form.destination.split(",")[0].trim();
+  const cityOnly = destination.split(",")[0].trim();
 
   const buildItinerary = async (trip, activities) => {
     if (!activities?.length) return;
@@ -83,6 +162,7 @@ export default function TripWizard() {
 
   const finishTrip = (trip) => {
     queryClient.invalidateQueries({ queryKey: ["trips"] });
+    clearDraft();
     setCreatedTripId(trip.id);
     setStep(STEPS.indexOf("book"));
   };
@@ -131,6 +211,8 @@ export default function TripWizard() {
       });
       await buildItinerary(trip, res.activities);
       finishTrip(trip);
+    } catch {
+      toast.error("Couldn't build your trip. Please try again.");
     } finally {
       setBusy(null);
     }
@@ -153,6 +235,8 @@ export default function TripWizard() {
         status: "planned",
       });
       finishTrip(trip);
+    } catch {
+      toast.error("Couldn't create your trip. Please try again.");
     } finally {
       setBusy(null);
     }

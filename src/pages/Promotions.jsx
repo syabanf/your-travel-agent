@@ -10,6 +10,11 @@ import { MapPin, ArrowRight, Sparkles } from "lucide-react";
 import moment from "moment";
 
 const Img = (props) => <img {...props} onError={(e) => { e.currentTarget.style.display = "none"; }} />;
+const TYPE_FILTERS = [
+  { value: "promo", label: "Promo" },
+  { value: "event", label: "Event" },
+  { value: "news", label: "News" },
+];
 const Section = ({ title, children }) => (
   <div>
     <h2 className="text-sm font-semibold text-mora-primary uppercase tracking-wide mb-3">{title}</h2>
@@ -19,6 +24,7 @@ const Section = ({ title, children }) => (
 
 export default function Promotions() {
   const [items, setItems] = useState(null);
+  const [type, setType] = useState("all");
 
   useEffect(() => { base44.entities.Promotion.list("-created_date", 50).then(setItems); }, []);
 
@@ -26,6 +32,23 @@ export default function Promotions() {
   const promos = items?.filter((p) => p.type === "promo" && !p.featured) || [];
   const events = items?.filter((p) => p.type === "event") || [];
   const news = items?.filter((p) => p.type === "news") || [];
+
+  // Only offer chips for the content types actually present.
+  const present = new Set((items || []).map((p) => p.type));
+  const chips = [
+    { value: "all", label: "All" },
+    ...TYPE_FILTERS.filter((t) => present.has(t.value) || t.value === type),
+  ];
+
+  const showFeatured = Boolean(featured) && (type === "all" || type === "promo");
+  const showPromos = type === "all" || type === "promo";
+  const showEvents = type === "all" || type === "event";
+  const showNews = type === "all" || type === "news";
+  const nothingMatches =
+    !showFeatured &&
+    !(showPromos && promos.length) &&
+    !(showEvents && events.length) &&
+    !(showNews && news.length);
 
   return (
     <div className="animate-fade-in pb-28">
@@ -44,7 +67,25 @@ export default function Promotions() {
         />
       ) : (
         <div className="px-6 space-y-6">
-          {featured && (
+          {/* Type filter chips */}
+          {chips.length > 2 && (
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-6 px-6">
+              {chips.map((c) => (
+                <button
+                  key={c.value}
+                  onClick={() => setType(c.value)}
+                  aria-pressed={type === c.value}
+                  className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
+                    type === c.value ? "btn-primary text-white" : "glass-light text-mora-neutral"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showFeatured && (
             <Link to={`/promotions/${featured.id}`} className="press block relative rounded-2xl overflow-hidden h-48 bg-mora-primary">
               <Img src={featured.image} alt={featured.title} className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
@@ -59,7 +100,7 @@ export default function Promotions() {
             </Link>
           )}
 
-          {promos.length > 0 && (
+          {showPromos && promos.length > 0 && (
             <Section title="Promotions">
               {promos.map((p) => (
                 <Link key={p.id} to={`/promotions/${p.id}`} className="block press">
@@ -79,7 +120,7 @@ export default function Promotions() {
             </Section>
           )}
 
-          {events.length > 0 && (
+          {showEvents && events.length > 0 && (
             <Section title="Upcoming Events">
               {events.map((e) => (
                 <Link key={e.id} to={`/promotions/${e.id}`} className="block press">
@@ -99,7 +140,7 @@ export default function Promotions() {
             </Section>
           )}
 
-          {news.length > 0 && (
+          {showNews && news.length > 0 && (
             <Section title="News & Info">
               {news.map((n) => (
                 <Link key={n.id} to={`/promotions/${n.id}`} className="block press">
@@ -110,6 +151,14 @@ export default function Promotions() {
                 </Link>
               ))}
             </Section>
+          )}
+
+          {nothingMatches && (
+            <EmptyState
+              icon={Sparkles}
+              title="Nothing here yet"
+              hint="Try another filter to see more promotions, events & news."
+            />
           )}
         </div>
       )}
