@@ -8,6 +8,57 @@ module.exports = {
         display: ['var(--font-display)'],
         body: ['var(--font-body)'],
       },
+      // Borderless AI replies lean entirely on type and rhythm, so give the
+      // markdown a deliberate scale instead of the plugin's article defaults.
+      typography: () => ({
+        chat: {
+          css: {
+            "--tw-prose-body": "#0B1B3B",
+            "--tw-prose-headings": "#0B1B3B",
+            "--tw-prose-bold": "#0B1B3B",
+            "--tw-prose-bullets": "rgba(173,31,35,0.45)",
+            "--tw-prose-hr": "rgba(11,27,59,0.10)",
+            "--tw-prose-quotes": "#46566F",
+            "--tw-prose-quote-borders": "rgba(173,31,35,0.30)",
+            "--tw-prose-th-borders": "rgba(11,27,59,0.14)",
+            "--tw-prose-td-borders": "rgba(11,27,59,0.07)",
+            fontSize: "0.9375rem",
+            lineHeight: "1.7",
+            "> :first-child": { marginTop: "0" },
+            "> :last-child": { marginBottom: "0" },
+            p: { marginTop: "0.85em", marginBottom: "0.85em" },
+            // Day headings carry the structure — make them unmistakable.
+            "h1, h2, h3": {
+              fontSize: "1rem",
+              fontWeight: "700",
+              letterSpacing: "-0.01em",
+              marginTop: "1.6em",
+              marginBottom: "0.6em",
+              paddingBottom: "0.4em",
+              borderBottom: "1px solid rgba(11,27,59,0.08)",
+            },
+            "ul, ol": { marginTop: "0.6em", marginBottom: "0.9em", paddingLeft: "1.15em" },
+            li: { marginTop: "0.3em", marginBottom: "0.3em", paddingLeft: "0.15em" },
+            "li::marker": { fontSize: "0.85em" },
+            strong: { fontWeight: "600" },
+            em: { color: "#46566F", fontStyle: "normal", fontSize: "0.9em" },
+            a: { color: "#AD1F23", textDecoration: "underline", textUnderlineOffset: "2px" },
+            code: {
+              backgroundColor: "rgba(11,27,59,0.05)",
+              padding: "0.15em 0.4em",
+              borderRadius: "6px",
+              fontWeight: "500",
+            },
+            "code::before": { content: '""' },
+            "code::after": { content: '""' },
+            table: { fontSize: "0.875rem", marginTop: "1em", marginBottom: "1em" },
+            "thead th": { fontWeight: "600", paddingBottom: "0.6em" },
+            "tbody td": { paddingTop: "0.6em", paddingBottom: "0.6em" },
+            blockquote: { fontStyle: "normal", fontWeight: "400", paddingLeft: "1em" },
+            hr: { marginTop: "1.6em", marginBottom: "1.6em" },
+          },
+        },
+      }),
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -107,5 +158,5 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 }

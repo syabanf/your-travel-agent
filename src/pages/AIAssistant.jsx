@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const quickPrompts = [
   "Create a 3-day luxury itinerary in Bali",
@@ -194,7 +195,16 @@ ${content}`,
           // long itineraries aren't boxed into a narrow card.
           const isUser = msg.role === "user";
           const markdown = (
-            <ReactMarkdown className="text-sm text-mora-primary leading-relaxed prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 prose-headings:text-gold prose-strong:text-mora-primary prose-li:text-mora-primary">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              className={
+                isUser
+                  ? "prose prose-chat max-w-none"
+                  // Borderless: a capped measure keeps long itineraries readable,
+                  // and tables get their own scroll rather than forcing the page wide.
+                  : "prose prose-chat max-w-none [&_table]:block [&_table]:overflow-x-auto [&_table]:w-full"
+              }
+            >
               {msg.content}
             </ReactMarkdown>
           );
