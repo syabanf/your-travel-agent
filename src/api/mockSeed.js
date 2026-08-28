@@ -26,6 +26,22 @@ export function buildSeed() {
   const by = 'traveler@iconholiday.app';
   const cost = (p) => Math.round((p * 0.78) / 50000) * 50000; // indicative supplier cost
 
+  // Payment plan fields, derived from the payment_status a row already carries so
+  // the numbers and the badge can never disagree. `deposit` rows sit on a DP.
+  const pay = (price, payment_status, dueOffset = 14) => {
+    const dp_percent = payment_status === 'deposit' ? 30 : 100;
+    const paid_amount =
+      payment_status === 'paid' ? price
+      : payment_status === 'deposit' ? Math.round((price * dp_percent) / 100)
+      : 0;
+    return {
+      paid_amount,
+      payment_plan: payment_status === 'deposit' ? 'dp' : 'full',
+      dp_percent,
+      balance_due_date: paid_amount < price ? date(dueOffset) : null,
+    };
+  };
+
   const Trip = [
     {
       id: 'trip_bali', created_date: iso(-12), updated_date: iso(-1), created_by: by,
@@ -60,9 +76,34 @@ export function buildSeed() {
       lead_traveler: 'Andi Pratama', adults: 3, children: 1, accommodation_pref: 'villa',
       special_requests: 'Connecting rooms, airport transfer, cliffside sunset dinner.',
     },
+    {
+      // Bought as a package and only half paid, so the day-by-day detail stays
+      // sealed until the balance clears. Demonstrates the trip lock.
+      id: 'trip_maldives', created_date: iso(-3), updated_date: iso(-3), created_by: by,
+      title: 'Maldives Signature Overwater', destination: 'Maldives',
+      cover_image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80',
+      start_date: date(30), end_date: date(37), status: 'planned', travelers: 2,
+      travel_style: 'luxury', budget_total: 129000000, budget_currency: 'IDR',
+      notes: 'Signature package booking — balance due before departure.',
+      pace: 'relaxed', trip_type: 'couple', is_ai_generated: false, customer_id: 'cust_putri',
+      lead_traveler: 'Putri Wijaya', adults: 2, children: 0, accommodation_pref: 'resort',
+      special_requests: 'Overwater villa with direct lagoon access.',
+      locked_until_paid: true, booking_id: 'bk_pkg_maldives', package_id: 'pkg_maldives_signature',
+    },
   ];
 
   const Booking = [
+    {
+      id: 'bk_pkg_maldives', created_date: iso(-3), updated_date: iso(-3), created_by: by,
+      trip_id: 'trip_maldives', type: 'package', title: 'Maldives Signature Overwater — 2 pax',
+      provider: 'Icon Holiday', check_in: date(30), check_out: date(37), location: 'Maldives',
+      confirmation_code: 'ICH-PKG-MV21', price: 129000000, currency: 'IDR', status: 'confirmed',
+      guests: 2, notes: 'Signature package, 50% deposit received.',
+      customer_id: 'cust_putri', supplier_id: 'sup_azure', cost_price: 101000000,
+      payment_status: 'deposit', ...pay(129000000, 'deposit', 20), dp_percent: 50,
+      paid_amount: 64500000, payment_plan: 'dp', package_id: 'pkg_maldives_signature',
+      channel: 'Direct', supplier_ref: 'MV-SIG-0021', commission: 12900000,
+    },
     {
       id: 'bk_flight', created_date: iso(-11), updated_date: iso(-11), created_by: by,
       trip_id: 'trip_bali', type: 'flight', title: 'Garuda Indonesia — SIN → DPS',
@@ -71,6 +112,7 @@ export function buildSeed() {
       guests: 2, notes: 'GA407 · Business · Direct',
       customer_id: 'cust_putri', supplier_id: 'sup_garuda', cost_price: cost(6800000),
       payment_status: 'paid', channel: 'Direct', supplier_ref: 'GA-PNR-7Q2K', commission: Math.round(6800000 * 0.1),
+      ...pay(6800000, 'paid'),
     },
     {
       id: 'bk_hotel', created_date: iso(-10), updated_date: iso(-10), created_by: by,
@@ -82,6 +124,7 @@ export function buildSeed() {
       notes: 'Ocean Suite · Infinity pool, Spa, Free breakfast',
       customer_id: 'cust_putri', supplier_id: 'sup_azure', cost_price: cost(4200000),
       payment_status: 'deposit', channel: 'Booking.com', supplier_ref: 'AB-558210', commission: Math.round(4200000 * 0.12),
+      ...pay(4200000, 'deposit'),
     },
     {
       id: 'bk_attraction', created_date: iso(-6), updated_date: iso(-6), created_by: by,
@@ -91,10 +134,20 @@ export function buildSeed() {
       notes: 'Adventure · 6h · Guide, Transport',
       customer_id: 'cust_putri', supplier_id: 'sup_baliadv', cost_price: cost(980000),
       payment_status: 'unpaid', channel: 'Traveloka', supplier_ref: 'BA-MTB-0091', commission: Math.round(980000 * 0.15),
+      ...pay(980000, 'unpaid'),
     },
   ];
 
   const ItineraryItem = [
+    // Behind the trip lock until the Maldives balance is settled.
+    { id: 'it_mv_1', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 1, time: '09:00', activity_name: 'Seaplane to the atoll', location: 'Male Airport', description: 'Meet-and-greet, then a low pass over the reefs to your villa.', duration_minutes: 120, budget: 0, reservation_required: false, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_2', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 2, time: '08:30', activity_name: 'House reef snorkel & spa', location: 'Resort house reef', description: 'Guided snorkel off your own ladder, then an afternoon over the water.', duration_minutes: 180, budget: 2400000, reservation_required: true, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_3', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 3, time: '16:00', activity_name: 'Dolphin cruise', location: 'North Male Atoll', description: 'A late-afternoon sail out to the spinner pods.', duration_minutes: 150, budget: 3100000, reservation_required: true, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_4', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 4, time: '18:30', activity_name: 'Private sandbank dinner', location: 'Private sandbank', description: 'A stretch of sand, a table for two, and nothing else for miles.', duration_minutes: 180, budget: 6800000, reservation_required: true, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_5', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 5, time: '07:30', activity_name: 'Manta point', location: 'Cleaning station', description: 'A boat morning at the manta cleaning station.', duration_minutes: 240, budget: 4200000, reservation_required: true, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_6', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 6, time: '10:00', activity_name: 'Slow day', location: 'Overwater villa', description: 'Deliberately unplanned.', duration_minutes: 60, budget: 0, reservation_required: false, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_7', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 7, time: '17:00', activity_name: 'Sunset fishing', location: 'Lagoon edge', description: 'Traditional handline fishing, then your catch grilled on the beach.', duration_minutes: 150, budget: 2700000, reservation_required: true, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
+    { id: 'it_mv_8', created_date: iso(-3), created_by: by, trip_id: 'trip_maldives', day_number: 8, time: '11:00', activity_name: 'Departure', location: 'Male Airport', description: 'Seaplane back to Male.', duration_minutes: 90, budget: 0, reservation_required: false, booking_status: 'confirmed', is_completed: false, category: 'activity', sort_order: 1 },
     { id: 'it_1', created_date: iso(-9), created_by: by, trip_id: 'trip_bali', day_number: 1, date: date(-2), time: '10:00', activity_name: 'Beach Club & Lunch', location: 'Seminyak Beach', description: 'Day beds, ocean swim, and a long lunch.', duration_minutes: 180, budget: 1400000, reservation_required: true, booking_status: 'confirmed', is_completed: true, category: 'dining', sort_order: 1 },
     { id: 'it_2', created_date: iso(-9), created_by: by, trip_id: 'trip_bali', day_number: 1, date: date(-2), time: '18:30', activity_name: 'Sunset at Tanah Lot', location: 'Tanah Lot Temple', description: 'Iconic sea temple at golden hour.', duration_minutes: 120, budget: 150000, reservation_required: false, booking_status: 'not_booked', is_completed: true, category: 'attraction', sort_order: 2 },
     { id: 'it_3', created_date: iso(-9), created_by: by, trip_id: 'trip_bali', day_number: 2, date: date(-1), time: '09:00', activity_name: 'Ubud Rice Terraces', location: 'Tegallalang', description: 'Walk the emerald terraces before crowds.', duration_minutes: 150, budget: 200000, reservation_required: false, booking_status: 'not_booked', is_completed: false, category: 'activity', sort_order: 1 },
@@ -233,7 +286,8 @@ export function buildSeed() {
   const pkg = (id, o) => ({
     id, created_date: iso(o.age ?? -40), updated_date: iso(-2), created_by: by,
     status: 'active', featured: false, rating: 4.7, reviews_count: 60,
-    min_pax: 2, max_pax: 12, slots_left: 8, currency: 'IDR', ...o,
+    min_pax: 2, max_pax: 12, slots_left: 8, currency: 'IDR',
+    min_dp_percent: 30, ...o,
   });
 
   const TourPackage = [
@@ -384,6 +438,54 @@ export function buildSeed() {
       departure_dates: [date(7), date(18), date(32), date(46)],
       rating: 4.5, reviews_count: 207, slots_left: 12, min_pax: 1, max_pax: 20, age: -20,
     }),
+    // The two commercial tiers. Signature asks a larger deposit; Cost Saver a
+    // smaller one, which is much of the point of the tier.
+    pkg('pkg_maldives_signature', {
+      title: 'Maldives Signature Overwater', destination: 'Maldives', category: 'signature',
+      summary: 'Seven nights in an overwater villa, seaplane transfers, and a private sandbank dinner.',
+      description: 'Our flagship escape. A private overwater villa with a glass floor and a direct lagoon ladder, seaplane transfers over the atolls, a reserved sandbank for one candlelit dinner, and a dedicated host for the week.',
+      image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1200&q=80',
+      images: [
+        'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1200&q=80',
+        'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=1200&q=80',
+      ],
+      duration_days: 8, duration_nights: 7, price: 64500000, price_before: 72000000,
+      min_dp_percent: 50,
+      highlights: ['Overwater villa with glass floor', 'Seaplane transfers', 'Private sandbank dinner', 'Dedicated host'],
+      includes: ['7 nights overwater villa', 'All meals', 'Return seaplane transfers', 'Sandbank dinner', 'Snorkelling excursions'],
+      excludes: ['International flights', 'Travel insurance', 'Premium spirits'],
+      itinerary: [
+        { day: 1, title: 'Seaplane to the atoll', detail: 'Meet-and-greet in Male, then a low pass over the reefs to your villa.' },
+        { day: 2, title: 'House reef & spa', detail: 'Guided snorkel off your own ladder, then an afternoon over the water.' },
+        { day: 3, title: 'Dolphin cruise', detail: 'A late-afternoon sail out to the spinner pods.' },
+        { day: 4, title: 'Sandbank dinner', detail: 'A private stretch of sand, a table for two, and nothing else for miles.' },
+        { day: 5, title: 'Manta point', detail: 'A boat morning at the cleaning station.' },
+        { day: 6, title: 'Slow day', detail: 'Deliberately unplanned.' },
+        { day: 7, title: 'Sunset fishing', detail: 'Traditional handline fishing, then your catch grilled on the beach.' },
+        { day: 8, title: 'Departure', detail: 'Seaplane back to Male.' },
+      ],
+      departure_dates: [date(30), date(48), date(66), date(90)],
+      rating: 5.0, reviews_count: 96, slots_left: 2, featured: true, min_pax: 2, max_pax: 4, age: -50,
+    }),
+    pkg('pkg_bromo_cost_saver', {
+      title: 'Bromo Sunrise Cost Saver', destination: 'East Java, Indonesia', category: 'cost_saver',
+      summary: 'Three days, shared jeeps, and the best sunrise in Java for under two million.',
+      description: 'The classic Bromo run, stripped to what matters. Overnight train from Surabaya, a shared jeep to Penanjakan for first light, the crater rim on foot, and a night in a clean guesthouse in Cemoro Lawang. Small group, fixed departures, no hidden extras.',
+      image: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=1200&q=80',
+      images: ['https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=1200&q=80'],
+      duration_days: 3, duration_nights: 2, price: 1850000, price_before: 2400000,
+      min_dp_percent: 20,
+      highlights: ['Penanjakan sunrise', 'Crater rim walk', 'Shared jeep transfers', 'Small group'],
+      includes: ['2 nights guesthouse', 'Daily breakfast', 'Shared jeep to sunrise point', 'Park entrance fees', 'Local guide'],
+      excludes: ['Train tickets to Surabaya', 'Lunch and dinner', 'Horse hire at the crater'],
+      itinerary: [
+        { day: 1, title: 'Arrive Cemoro Lawang', detail: 'Transfer up to the rim village, an early dinner, and an early night.' },
+        { day: 2, title: 'Sunrise & crater', detail: '3am jeep to Penanjakan, then the sea of sand and the 250 steps to the rim.' },
+        { day: 3, title: 'Madakaripura & departure', detail: 'The waterfall on the way down, then back to Surabaya.' },
+      ],
+      departure_dates: [date(12), date(19), date(26), date(40)],
+      rating: 4.6, reviews_count: 312, slots_left: 9, min_pax: 1, max_pax: 16, age: -45,
+    }),
     pkg('pkg_lombok_draft', {
       title: 'Lombok & Gili Islands Retreat', destination: 'Lombok, Indonesia', category: 'beach',
       summary: 'Island-hopping the Gilis with a Rinjani foothills finish.',
@@ -453,6 +555,7 @@ export function buildSeed() {
       guests: 1 + (i % 4), notes: 'Past booking.',
       customer_id: custIds[i % custIds.length], supplier_id: k.sup, cost_price: cost(price),
       payment_status: status === 'cancelled' ? 'refunded' : payCycle[i % payCycle.length],
+      ...pay(price, status === 'cancelled' ? 'refunded' : payCycle[i % payCycle.length], -(off + 12)),
       channel: k.ch, supplier_ref: `REF-H${1000 + i}`, commission: Math.round(price * 0.1),
     });
   }
@@ -512,5 +615,17 @@ export function buildSeed() {
     });
   }
 
-  return { Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage };
+  // Sign-ups awaiting an admin decision before they can log in.
+  const Registration = [
+    { id: 'reg_1', created_date: iso(-0.4), created_by: by, full_name: 'Sinta Halim', email: 'sinta.halim@example.com', phone: '+62 812 7788 9900', source: 'mobile_app', status: 'pending', note: 'Honeymoon enquiry via Instagram.' },
+    { id: 'reg_2', created_date: iso(-1.2), created_by: by, full_name: 'Bagus Nugroho', email: 'bagus.n@example.com', phone: '+62 813 4455 6677', source: 'mobile_app', status: 'pending', note: '' },
+    { id: 'reg_3', created_date: iso(-6), created_by: by, full_name: 'Alex Rivera', email: 'traveler@iconholiday.app', phone: '+62 811 2233 4455', source: 'mobile_app', status: 'approved', reviewed_by: 'Dewi Lestari', reviewed_date: iso(-5.5), note: '' },
+    { id: 'reg_4', created_date: iso(-9), created_by: by, full_name: 'Spam Account', email: 'noreply@spam.example', phone: '', source: 'mobile_app', status: 'rejected', reviewed_by: 'Dewi Lestari', reviewed_date: iso(-8.6), note: 'Disposable address.' },
+  ];
+
+  // Paid add-ons a traveller has unlocked. Empty for new users by design —
+  // Virtual Guiding and AI itinerary building are bought, not given.
+  const FeatureAccess = [];
+
+  return { Registration, FeatureAccess, Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage };
 }

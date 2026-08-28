@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags, Package } from "lucide-react";
+import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags, Package, Luggage, UserCheck } from "lucide-react";
 import { useAuth } from "@/lib/AuthContext";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
@@ -18,6 +18,7 @@ const GROUPS = [
   { title: "Sales & CRM", items: [
     { to: "/dashboard/leads", icon: Target, label: "Leads", res: "leads" },
     { to: "/dashboard/customers", icon: Users, label: "Customers", res: "customers" },
+    { to: "/dashboard/trips", icon: Luggage, label: "Trips", res: "trips" },
     { to: "/dashboard/bookings", icon: CalendarCheck, label: "Trips & Bookings", res: "bookings" },
   ] },
   { title: "Operations", items: [
@@ -42,6 +43,7 @@ const GROUPS = [
     { to: "/dashboard/marketing", icon: Send, label: "Marketing", res: "marketing" },
   ] },
   { title: "System", items: [
+    { to: "/dashboard/registrations", icon: UserCheck, label: "Registrations", res: "registrations" },
     { to: "/dashboard/team", icon: Shield, label: "Team & Roles", res: "team" },
     { to: "/dashboard/audit", icon: History, label: "Audit Log", res: "audit" },
   ] },

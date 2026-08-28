@@ -3,15 +3,12 @@ import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
   AreaChart,
   Area,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
-  Cell,
 } from "recharts";
 import {
   TrendingUp,

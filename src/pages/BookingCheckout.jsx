@@ -3,11 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, CreditCard, User, FileText, ChevronRight, ChevronLeft, Loader2, Lock } from "lucide-react";
+import { CheckCircle, CreditCard, User, FileText, ChevronRight, ChevronLeft, Loader2, Lock, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 import PaymentMethodPicker from "@/components/PaymentMethodPicker";
+import { dpOptions, minDpPercent } from "@/data/packageCategories";
+import { amountForPercent, derivedPaymentStatus } from "@/lib/payments";
+import { currentEmail } from "@/lib/featureAccess";
 
 const steps = [
   { id: 1, label: "Review", icon: FileText },
@@ -52,6 +55,9 @@ export default function BookingCheckout() {
   const [method, setMethod] = useState(null);
   const [errors, setErrors] = useState({});
   const [travelers, setTravelers] = useState([]);
+  // Down-payment percentage. The package sets the floor; 100 means paying in full.
+  const [payPercent, setPayPercent] = useState(100);
+  const [pkg, setPkg] = useState(null);
   const fieldRefs = useRef({});
 
   const [guestInfo, setGuestInfo] = useState(() => {
@@ -74,7 +80,17 @@ export default function BookingCheckout() {
   useEffect(() => {
     const load = async () => {
       const results = await base44.entities.Booking.filter({ id: bookingId });
-      if (results.length > 0) setBooking(results[0]);
+      if (!results.length) return;
+      setBooking(results[0]);
+      // Only package bookings carry an instalment plan; everything else is
+      // paid in full, so we don't offer a choice that doesn't exist.
+      if (results[0].package_id) {
+        try {
+          setPkg(await base44.entities.TourPackage.get(results[0].package_id));
+        } catch {
+          /* package removed — fall back to the default minimum */
+        }
+      }
     };
     load();
   }, [bookingId]);
@@ -183,6 +199,18 @@ export default function BookingCheckout() {
     return clean;
   };
 
+  // Instalment options are only meaningful for packages; a flight or a hotel
+  // room is charged in full.
+  const total = booking?.price || 0;
+  const alreadyPaid = booking?.paid_amount || 0;
+  const outstanding = Math.max(0, total - alreadyPaid);
+  // The plan is chosen at the *first* payment. Coming back to a part-paid
+  // booking means settling the balance — offering "30% down" again would
+  // re-charge a slice of money that's already in.
+  const plans = booking?.package_id && !booking?.feature_key && alreadyPaid === 0 ? dpOptions(pkg) : [];
+  const amountDue = plans.length ? amountForPercent(total, payPercent) : outstanding;
+  const remaining = Math.max(0, total - alreadyPaid - amountDue);
+
   const handleProceedToPayment = () => {
     if (!requireFields(GUEST_FIELDS, guestInfo)) return;
     setErrors({});
@@ -203,12 +231,42 @@ export default function BookingCheckout() {
       await new Promise(r => setTimeout(r, 2000)); // simulate processing
       // Short, scannable booking reference — a full brand name reads wrong here.
       const code = "ICH-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      const paid = alreadyPaid + amountDue;
+      // Derive the status from the money rather than setting it by hand, so the
+      // badge, the balance and any trip lock can never disagree.
+      const paidPatch = {
+        paid_amount: paid,
+        payment_plan: paid < total ? "dp" : "full",
+        dp_percent: payPercent,
+        balance_due_date: paid < total ? moment().add(14, "days").format("YYYY-MM-DD") : null,
+      };
       await base44.entities.Booking.update(bookingId, {
         status: "confirmed",
         confirmation_code: code,
         payment_method: method?.label || "Card",
+        ...paidPatch,
+        payment_status: derivedPaymentStatus({ ...booking, ...paidPatch, status: "confirmed" }),
         notes: (booking.notes || "") + `\nGuest: ${guestInfo.full_name} | ${guestInfo.email} | ${guestInfo.phone}${guestInfo.special_request ? "\nRequest: " + guestInfo.special_request : ""}`,
       });
+      // Paying for a package turns it into a real trip in My Trips. It's
+      // created gated: `tripAccess` opens it as soon as the balance clears, so
+      // a deposit still gets the traveller something to look at.
+      if (pkg && !booking.trip_id) await createTripFromPackage(code, paid >= total);
+      // Paid add-ons (Virtual Guiding, AI itinerary) unlock on full payment only
+      // — a deposit on a one-off service doesn't make sense.
+      if (booking.feature_key && paid >= total) {
+        try {
+          await base44.entities.FeatureAccess.create({
+            feature: booking.feature_key,
+            user_email: currentEmail(),
+            status: "active",
+            booking_id: bookingId,
+            granted_date: new Date().toISOString(),
+          });
+        } catch {
+          /* payment succeeded; the grant is retried by re-opening the unlock page */
+        }
+      }
       clearProgress();
       setConfirmCode(code);
       setStep(4);
@@ -216,6 +274,51 @@ export default function BookingCheckout() {
       toast.error("Payment couldn't be processed. Please try again.");
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const createTripFromPackage = async (code, fullyPaid) => {
+    try {
+      const start = booking.check_in ? moment(booking.check_in) : moment().add(30, "days");
+      const trip = await base44.entities.Trip.create({
+        title: pkg.title,
+        destination: pkg.destination || booking.location || "",
+        cover_image: pkg.image || "",
+        start_date: start.format("YYYY-MM-DD"),
+        end_date: start.clone().add(Math.max(1, pkg.duration_days || 1) - 1, "days").format("YYYY-MM-DD"),
+        status: "planned",
+        travelers: booking.guests || 1,
+        adults: booking.guests || 1,
+        children: 0,
+        budget_total: total,
+        budget_currency: "IDR",
+        lead_traveler: guestInfo.full_name,
+        notes: `Booked from package ${pkg.title} (${code}).`,
+        special_requests: guestInfo.special_request || "",
+        package_id: pkg.id,
+        booking_id: bookingId,
+        locked_until_paid: true,
+      });
+      await base44.entities.Booking.update(bookingId, { trip_id: trip.id });
+
+      // Seed the day-by-day plan from the package. This is exactly what stays
+      // hidden behind the lock until the balance is settled.
+      for (const day of pkg.itinerary || []) {
+        await base44.entities.ItineraryItem.create({
+          trip_id: trip.id,
+          day_number: day.day || 1,
+          activity_name: day.title || `Day ${day.day || 1}`,
+          description: day.detail || "",
+          location: pkg.destination || "",
+          category: "activity",
+          booking_status: "confirmed",
+          sort_order: day.day || 1,
+        });
+      }
+      if (fullyPaid) toast.success("Trip unlocked — your full itinerary is ready");
+    } catch {
+      // The payment already went through; a missing trip is recoverable and
+      // must not surface as a failed checkout.
     }
   };
 
@@ -296,8 +399,24 @@ export default function BookingCheckout() {
             <GlassCard className="p-4">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm text-mora-neutral/70 shrink-0">Total Price</span>
-                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(booking.price || 0)}</span>
+                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(total)}</span>
               </div>
+              {alreadyPaid > 0 ? (
+                <div className="mt-2 pt-2 border-t border-white/5 space-y-1.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-mora-neutral/50">Already paid</span>
+                    <span className="text-xs text-emerald-600">{formatIDR(alreadyPaid)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-mora-neutral/50">Balance to settle</span>
+                    <span className="text-xs text-gold font-medium">{formatIDR(outstanding)}</span>
+                  </div>
+                </div>
+              ) : booking.package_id ? (
+                <p className="text-[11px] text-mora-neutral/60 mt-2 pt-2 border-t border-white/5 leading-relaxed">
+                  Pay in full, or start from {minDpPercent(pkg)}% down — {formatIDR(amountForPercent(total, minDpPercent(pkg)))}.
+                </p>
+              ) : null}
             </GlassCard>
 
             <button onClick={() => setStep(2)} className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2">
@@ -371,6 +490,43 @@ export default function BookingCheckout() {
         {/* Step 3: Payment */}
         {step === 3 && (
           <>
+            {plans.length > 0 && (
+              <GlassCard className="p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Wallet className="w-3.5 h-3.5 text-gold" />
+                  <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Payment plan</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {plans.map((p) => {
+                    const selected = payPercent === p.percent;
+                    return (
+                      <button
+                        key={p.percent}
+                        type="button"
+                        onClick={() => setPayPercent(p.percent)}
+                        aria-pressed={selected}
+                        className={`rounded-xl px-3 py-2.5 text-left press-spring transition-all border ${
+                          selected
+                            ? "glass-gold border-mora-gold/40 text-gold"
+                            : "glass-light border-white/10 text-mora-neutral hover:text-mora-primary"
+                        }`}
+                      >
+                        <span className="block text-xs font-semibold">{p.label}</span>
+                        <span className="block text-[11px] opacity-70 mt-0.5">
+                          {formatIDR(amountForPercent(total, p.percent))}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-mora-neutral/60 leading-relaxed">
+                  {remaining > 0
+                    ? `Minimum down payment for this package is ${minDpPercent(pkg)}%. The remaining ${formatIDR(remaining)} is due 14 days after booking — your trip detail unlocks once it's settled.`
+                    : "Paying in full unlocks your full trip itinerary straight away."}
+                </p>
+              </GlassCard>
+            )}
+
             <GlassCard className={`p-4 space-y-3 ${errors.method ? "border !border-red-500/70" : ""}`}>
               <div className="flex items-center gap-2 mb-1">
                 <Lock className="w-3.5 h-3.5 text-gold" />
@@ -443,11 +599,31 @@ export default function BookingCheckout() {
               </GlassCard>
             )}
 
-            <GlassCard className="p-4">
+            <GlassCard className="p-4 space-y-2">
+              {(remaining > 0 || alreadyPaid > 0) && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs text-mora-neutral/50 shrink-0">Package total</span>
+                  <span className="text-xs text-mora-neutral/70 text-right">{formatIDR(total)}</span>
+                </div>
+              )}
+              {alreadyPaid > 0 && (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs text-mora-neutral/50 shrink-0">Already paid</span>
+                  <span className="text-xs text-emerald-600 text-right">−{formatIDR(alreadyPaid)}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-mora-neutral/70 shrink-0">Total Charge</span>
-                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(booking.price || 0)}</span>
+                <span className="text-sm text-mora-neutral/70 shrink-0">
+                  {remaining > 0 ? `Pay now (${payPercent}%)` : alreadyPaid > 0 ? "Balance due now" : "Total Charge"}
+                </span>
+                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(amountDue)}</span>
               </div>
+              {remaining > 0 && (
+                <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/5">
+                  <span className="text-xs text-mora-neutral/50 shrink-0">Balance due later</span>
+                  <span className="text-xs text-mora-neutral/70 text-right">{formatIDR(remaining)}</span>
+                </div>
+              )}
             </GlassCard>
 
             <button
@@ -456,7 +632,7 @@ export default function BookingCheckout() {
               aria-disabled={!method || (method.isNewCard && (!paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv))}
               className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 aria-disabled:opacity-40 flex items-center justify-center gap-2"
             >
-              {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(booking.price || 0)}</>}
+              {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(amountDue)}</>}
             </button>
           </>
         )}
@@ -468,7 +644,11 @@ export default function BookingCheckout() {
               <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
             <h2 className="text-xl font-display font-bold text-mora-white mb-2">Booking Confirmed!</h2>
-            <p className="text-sm text-mora-neutral/60 mb-6">Your booking has been successfully confirmed and saved.</p>
+            <p className="text-sm text-mora-neutral/60 mb-6">
+              {remaining > 0
+                ? `Your deposit is in. ${formatIDR(remaining)} remains — settle it to unlock your full trip detail.`
+                : "Your booking has been successfully confirmed and saved."}
+            </p>
 
             <GlassCard className="p-4 text-left mb-6">
               <p className="text-xs text-mora-neutral/50 mb-1">Confirmation Code</p>
@@ -478,6 +658,21 @@ export default function BookingCheckout() {
                 <p className="text-xs text-mora-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>
                 {method && <p className="text-xs text-mora-neutral/50">Paid with {method.label}</p>}
               </div>
+              {remaining > 0 && (
+                <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-mora-neutral/50">Paid today</span>
+                    <span className="text-xs text-emerald-600 font-medium">{formatIDR(amountDue)}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-mora-neutral/50">Balance due</span>
+                    <span className="text-xs text-gold font-medium">{formatIDR(remaining)}</span>
+                  </div>
+                  <p className="text-[10px] text-mora-neutral/40 pt-1">
+                    Due by {moment().add(14, "days").format("MMM D, YYYY")}
+                  </p>
+                </div>
+              )}
             </GlassCard>
 
             <button onClick={() => navigate("/booking")} className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all">

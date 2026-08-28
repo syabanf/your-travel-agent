@@ -2,15 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/icon.svg" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#0B1B3B" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Icon Holiday" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Icon Holiday · Your Travel Agent</title>
+    <meta name="description" content="Plan, book and manage your travels with Icon Holiday — your AI travel concierge." />
+
+    <link rel="icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Cream, not navy: this is the colour the app actually paints at first
+         frame, so the splash and status bar don't flash dark before the UI. -->
+    <meta name="theme-color" content="#FBFAF5" />
+
+    <!-- iOS home-screen app. `default` (not black-translucent) because the UI is
+         a light theme — translucent forces white status-bar text, which is
+         invisible on cream. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Icon Holiday" />
+    <meta name="application-name" content="Icon Holiday" />
+    <!-- iOS only accepts PNG here; an SVG silently falls back to a screenshot. -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
+    <script>
+      // Chrome fires beforeinstallprompt long before React mounts, and the event
+      // is not replayed — stash it so <InstallPrompt /> can still offer to install.
+      window.addEventListener("beforeinstallprompt", function (e) {
+        e.preventDefault();
+        window.__moraInstallEvent = e;
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

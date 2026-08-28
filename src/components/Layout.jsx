@@ -5,6 +5,7 @@ import PhoneFrame from "./PhoneFrame";
 import BottomNav from "./BottomNav";
 import AppHeader from "./AppHeader";
 import ErrorBoundary from "./ErrorBoundary";
+import InstallPrompt from "./InstallPrompt";
 import useScrollRestoration from "@/lib/useScrollRestoration";
 
 // Main tab screens get the persistent brand app-bar + horizontal swipe nav.
@@ -104,6 +105,9 @@ export default function Layout() {
       </main>
 
       <BottomNav />
+      {/* Sits above the bottom nav; self-gating, so it renders nothing when the
+          app is already installed or the invitation was snoozed. */}
+      <InstallPrompt />
     </PhoneFrame>
   );
 }

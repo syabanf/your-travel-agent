@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2, Lock, CreditCard } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
@@ -10,6 +10,7 @@ import { formatIDR, formatIDRCompact } from "@/lib/currency";
 import moment from "moment";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { tripAccess } from "@/lib/payments";
 
 export default function TripDetail() {
   const { tripId } = useParams();
@@ -22,6 +23,7 @@ export default function TripDetail() {
   const [showInvite, setShowInvite] = useState(false);
   const [invite, setInvite] = useState({ name: "", email: "", role: "traveler" });
   const [savingInvite, setSavingInvite] = useState(false);
+  const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     const load = async () => {
@@ -33,6 +35,8 @@ export default function TripDetail() {
         setItems(itineraryItems.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
         const mem = await base44.entities.TripMember.filter({ trip_id: tripId });
         setMembers(mem);
+        // Drives the lock: a package trip stays sealed until its booking is settled.
+        setBookings(await base44.entities.Booking.filter({ trip_id: tripId }));
       } catch {
         // Never leave the page on a spinner with no explanation.
         toast.error("Couldn't load this trip. Please try again.");
@@ -183,6 +187,8 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
     dayGroups[d] = validItems.filter(i => i.day_number === d);
   }
 
+  const access = tripAccess(trip, bookings);
+
   return (
     <div className="animate-fade-in">
       {/* Cover Image */}
@@ -277,6 +283,85 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         </GlassCard>
       </div>
 
+      {/* Locked: the trip is visible, its detail isn't. Settle the balance to open it. */}
+      {access.locked ? (
+        <div className="px-6 mt-8 pb-28">
+          <GlassCard className="p-6 text-center">
+            <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-gold" />
+            </div>
+            <h2 className="text-base font-display font-bold text-mora-primary mb-1.5">Trip locked</h2>
+            <p className="text-sm text-mora-neutral leading-relaxed max-w-[280px] mx-auto">
+              Your day-by-day itinerary, contacts and travel documents open as soon as this trip
+              is paid in full.
+            </p>
+
+            <div className="mt-6 text-left">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] text-mora-neutral/60 uppercase tracking-wider">Paid so far</span>
+                <span className="text-[11px] text-gold font-medium">{Math.round(access.progress * 100)}%</span>
+              </div>
+              <div
+                className="h-2 rounded-full bg-white/10 overflow-hidden"
+                role="progressbar"
+                aria-valuenow={Math.round(access.progress * 100)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Payment progress"
+              >
+                <div
+                  className="h-full rounded-full bg-mora-gold transition-all"
+                  style={{ width: `${Math.max(4, access.progress * 100)}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+                <span className="text-sm text-mora-neutral/70">Balance remaining</span>
+                <span className="text-base font-display font-bold text-gold">{formatIDR(access.balance)}</span>
+              </div>
+              {access.booking?.balance_due_date && (
+                <p className="text-[11px] text-mora-neutral/50 mt-1.5">
+                  Due by {moment(access.booking.balance_due_date).format("MMM D, YYYY")}
+                </p>
+              )}
+            </div>
+
+            <button
+              onClick={() => navigate(`/booking/${access.booking.id}/checkout`)}
+              className="w-full py-3.5 mt-6 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2"
+            >
+              <CreditCard className="w-4 h-4" /> Pay {formatIDR(access.balance)} to unlock
+            </button>
+          </GlassCard>
+
+          {/* A taste of what's inside, without giving it away. */}
+          {items.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold text-mora-primary tracking-wide uppercase mb-3">
+                {items.length} activities waiting
+              </h3>
+              <GlassCard className="p-2" aria-label={`${items.length} activities, locked until paid`}>
+                {items.slice(0, 3).map((it, i) => (
+                  <div key={it.id} className="flex items-center gap-3 px-3 py-2.5">
+                    <div className="w-8 h-8 rounded-lg glass-light flex items-center justify-center text-[11px] text-mora-neutral shrink-0">
+                      D{it.day_number || i + 1}
+                    </div>
+                    {/* A placeholder bar, not a blurred title — CSS blur still
+                        leaves the real text in the DOM for anyone who looks. */}
+                    <div className="min-w-0 flex-1" aria-hidden="true">
+                      <div
+                        className="h-2.5 rounded-full bg-mora-primary/10"
+                        style={{ width: `${55 + ((i * 17) % 35)}%` }}
+                      />
+                    </div>
+                    <Lock className="w-3.5 h-3.5 text-mora-neutral/40 shrink-0" />
+                  </div>
+                ))}
+              </GlassCard>
+            </div>
+          )}
+        </div>
+      ) : (
+      <>
       {/* Travelers */}
       <div className="px-6 mt-8">
         <div className="flex items-center justify-between mb-3">
@@ -367,6 +452,8 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           />
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }

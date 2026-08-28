@@ -6,12 +6,10 @@ import pluginUnusedImports from "eslint-plugin-unused-imports";
 
 export default [
   {
-    files: [
-      "src/components/**/*.{js,mjs,cjs,jsx}",
-      "src/pages/**/*.{js,mjs,cjs,jsx}",
-      "src/Layout.jsx",
-    ],
-    ignores: ["src/lib/**/*", "src/components/ui/**/*"],
+    files: ["src/**/*.{js,mjs,cjs,jsx}"],
+    // Only vendored shadcn/ui is exempt — it's generated, and reformatting it
+    // would fight every future `npx shadcn add`.
+    ignores: ["src/components/ui/**/*"],
     ...pluginJs.configs.recommended,
     ...pluginReact.configs.flat.recommended,
     languageOptions: {

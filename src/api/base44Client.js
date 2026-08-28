@@ -156,10 +156,10 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage', 'Registration', 'FeatureAccess'];
 
 // Business records whose changes are written to the AuditLog (compliance trail).
-const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage']);
+const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage', 'Registration']);
 function logAudit(action, name, id, data) {
   if (!AUDITABLE.has(name)) return;
   try {
@@ -188,7 +188,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v8`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v10`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -253,7 +253,7 @@ function runMigrations() {
     }
 
     // v5: backfill newly-added fields from the seed onto existing rows.
-    for (const nm of ['Customer', 'Booking', 'Trip', 'Supplier', 'Lead', 'Promotion', 'Destination']) {
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Supplier', 'Lead', 'Promotion', 'Destination', 'TourPackage']) {
       const sMap = Object.fromEntries((seed[nm] || []).map((r) => [r.id, r]));
       const rows = readCollection(nm);
       if (!rows.length) continue;
@@ -279,10 +279,39 @@ function runMigrations() {
       writeCollection('TourPackage', seed.TourPackage);
     }
 
+    // v9: seed the registration queue, and give every existing booking a
+    // paid_amount consistent with the payment_status it already shows — without
+    // it, settled bookings would read as unpaid and lock their trips.
+    if (readCollection('Registration').length === 0 && (seed.Registration || []).length) {
+      writeCollection('Registration', seed.Registration);
+    }
+    const payRows = readCollection('Booking');
+    if (payRows.length) {
+      let changed = false;
+      const next = payRows.map((b) => {
+        if (b.paid_amount != null) return b;
+        changed = true;
+        const price = Number(b.price) || 0;
+        const paid = b.payment_status === 'paid' ? price
+          : b.payment_status === 'deposit' ? Math.round(price * 0.3)
+          : 0;
+        return { ...b, paid_amount: paid, payment_plan: paid && paid < price ? 'dp' : 'full', dp_percent: paid && paid < price ? 30 : 100 };
+      });
+      if (changed) writeCollection('Booking', next);
+    }
+
+    // v10: the locked demo trip's day-by-day plan — what the lock actually hides.
+    const itin = readCollection('ItineraryItem');
+    if (itin.length) {
+      const have = new Set(itin.map((r) => r.id));
+      const add = (seed.ItineraryItem || []).filter((r) => !have.has(r.id));
+      if (add.length) writeCollection('ItineraryItem', [...itin, ...add]);
+    }
+
     // v6: insert seed rows added after the user first seeded (the spread-out
     // historical demo data). Match by id so anything the user created/edited is
     // left untouched; empty collections are already handled by ensureSeeded.
-    for (const nm of ['Customer', 'Booking', 'Trip', 'Lead']) {
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Lead', 'TourPackage']) {
       const existing = readCollection(nm);
       if (!existing.length) continue;
       const have = new Set(existing.map((r) => r.id));

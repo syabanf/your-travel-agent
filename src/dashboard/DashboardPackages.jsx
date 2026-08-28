@@ -25,7 +25,7 @@ import SearchableSelect from "@/dashboard/SearchableSelect";
 const EMPTY = {
   title: "", destination: "", category: "honeymoon", summary: "", description: "",
   image: "", images: "", duration_days: "", duration_nights: "",
-  price: "", price_before: "", currency: "IDR",
+  price: "", price_before: "", currency: "IDR", min_dp_percent: "",
   min_pax: "", max_pax: "", slots_left: "",
   highlights: "", includes: "", excludes: "", itinerary: "", departure_dates: "",
   rating: "", reviews_count: "", status: "active", featured: false,
@@ -74,6 +74,7 @@ const toForm = (p) => ({
   price: blank(p.price),
   price_before: blank(p.price_before),
   currency: p.currency || "IDR",
+  min_dp_percent: blank(p.min_dp_percent),
   min_pax: blank(p.min_pax),
   max_pax: blank(p.max_pax),
   slots_left: blank(p.slots_left),
@@ -139,6 +140,8 @@ export default function DashboardPackages() {
         price,
         price_before: editing.price_before === "" || editing.price_before == null ? undefined : numOr(editing.price_before, 0),
         currency: editing.currency || "IDR",
+        // Blank means "use the platform default" rather than 0% down.
+        min_dp_percent: editing.min_dp_percent === "" || editing.min_dp_percent == null ? undefined : numOr(editing.min_dp_percent, DEFAULT_MIN_DP_PERCENT),
         min_pax: numOr(editing.min_pax, 1),
         max_pax: numOr(editing.max_pax, 0),
         slots_left: numOr(editing.slots_left, 0),
@@ -417,9 +420,15 @@ export default function DashboardPackages() {
               <Fld label="Price per person"><input type="number" min="0" value={editing.price} onChange={(e) => upd("price", e.target.value)} className="dash-input" placeholder="18500000" /></Fld>
               <Fld label="Price before discount"><input type="number" min="0" value={editing.price_before} onChange={(e) => upd("price_before", e.target.value)} className="dash-input" placeholder="22000000" /></Fld>
             </Row2>
-            <Fld label="Currency">
-              <SearchableSelect value={editing.currency} onChange={(v) => upd("currency", v)} options={CURRENCIES} ariaLabel="Currency" />
-            </Fld>
+            <Row2>
+              <Fld label="Currency">
+                <SearchableSelect value={editing.currency} onChange={(v) => upd("currency", v)} options={CURRENCIES} ariaLabel="Currency" />
+              </Fld>
+              <Fld label="Min. down payment %">
+                <input type="number" min="1" max="100" value={editing.min_dp_percent} onChange={(e) => upd("min_dp_percent", e.target.value)} className="dash-input" placeholder={String(DEFAULT_MIN_DP_PERCENT)} />
+                <Hint>Smallest deposit a traveller may pay at checkout. Blank uses {DEFAULT_MIN_DP_PERCENT}%.</Hint>
+              </Fld>
+            </Row2>
             <Row2>
               <Fld label="Min pax"><input type="number" min="0" value={editing.min_pax} onChange={(e) => upd("min_pax", e.target.value)} className="dash-input" placeholder="2" /></Fld>
               <Fld label="Max pax"><input type="number" min="0" value={editing.max_pax} onChange={(e) => upd("max_pax", e.target.value)} className="dash-input" placeholder="12" /></Fld>

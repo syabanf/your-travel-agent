@@ -39,6 +39,8 @@ const ConsultationBooking = lazy(() => import('./pages/ConsultationBooking'));
 const Promotions = lazy(() => import('./pages/Promotions'));
 const PromotionDetail = lazy(() => import('./pages/PromotionDetail'));
 const Packages = lazy(() => import('./pages/Packages'));
+const FeatureUnlock = lazy(() => import('./pages/FeatureUnlock'));
+const VirtualGuiding = lazy(() => import('./pages/VirtualGuiding'));
 const PackageDetail = lazy(() => import('./pages/PackageDetail'));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail'));
 const ProfilePreferences = lazy(() => import('./pages/ProfilePreferences'));
@@ -64,7 +66,9 @@ const DashboardPackages = lazy(() => import('./dashboard/DashboardPackages'));
 const DashboardPackageDetail = lazy(() => import('./dashboard/DashboardPackageDetail'));
 const DashboardBookings = lazy(() => import('./dashboard/DashboardBookings'));
 const DashboardBookingDetail = lazy(() => import('./dashboard/DashboardBookingDetail'));
+const DashboardTrips = lazy(() => import('./dashboard/DashboardTrips'));
 const DashboardTripDetail = lazy(() => import('./dashboard/DashboardTripDetail'));
+const DashboardRegistrations = lazy(() => import('./dashboard/DashboardRegistrations'));
 const DashboardCustomers = lazy(() => import('./dashboard/DashboardCustomers'));
 const DashboardCustomerDetail = lazy(() => import('./dashboard/DashboardCustomerDetail'));
 const DashboardLeads = lazy(() => import('./dashboard/DashboardLeads'));
@@ -128,7 +132,9 @@ const AppRoutes = () => (
           <Route path="packages/:id" element={<DashboardPackageDetail />} />
           <Route path="bookings" element={<DashboardBookings />} />
           <Route path="bookings/:id" element={<DashboardBookingDetail />} />
+          <Route path="trips" element={<DashboardTrips />} />
           <Route path="trips/:id" element={<DashboardTripDetail />} />
+          <Route path="registrations" element={<DashboardRegistrations />} />
           <Route path="customers" element={<DashboardCustomers />} />
           <Route path="customers/:id" element={<DashboardCustomerDetail />} />
           <Route path="leads" element={<DashboardLeads />} />
@@ -191,6 +197,8 @@ const AppRoutes = () => (
           <Route path="/promotions" element={<Promotions />} />
           <Route path="/promotions/:id" element={<PromotionDetail />} />
           <Route path="/packages" element={<Packages />} />
+          <Route path="/unlock/:feature" element={<FeatureUnlock />} />
+          <Route path="/virtual-guiding" element={<VirtualGuiding />} />
           <Route path="/packages/:id" element={<PackageDetail />} />
           <Route path="/destination/:id" element={<DestinationDetail />} />
           <Route path="/profile" element={<Profile />} />

@@ -4,13 +4,13 @@ import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
-import { printDocument, bookingVoucherHTML } from "@/lib/voucher";
+import { printDocument, bookingVoucherHTML, receiptHTML, quotationHTML } from "@/lib/voucher";
 import { openWhatsApp } from "@/lib/whatsapp";
 import { toast } from "sonner";
 import moment from "moment";
 import {
   ArrowLeft, Building2, MapPin, CalendarDays, Users, Wallet, Hash, StickyNote,
-  Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp, Globe, Tag, CreditCard,
+  Trash2, User, Truck, Printer, MessageCircle, Ban, Percent, TrendingUp, Globe, Tag, CreditCard, ReceiptText, FileText,
 } from "lucide-react";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 import { confirmDialog } from "@/components/ConfirmDialog";
@@ -114,6 +114,9 @@ export default function DashboardBookingDetail() {
     toast.success(amt ? `Cancelled · refund ${formatIDR(amt)}` : "Booking cancelled");
   };
   const printVoucher = () => printDocument(`Icon Holiday Voucher`, bookingVoucherHTML(b, { supplierName: supplier?.name, customerName: customer?.name }));
+  const party = { customerName: customer?.name, customerEmail: customer?.email, customerPhone: customer?.phone };
+  const printReceipt = () => printDocument("Icon Holiday Receipt", receiptHTML(b, party));
+  const printQuotation = () => printDocument("Icon Holiday Quotation", quotationHTML(b, party));
   const sendWhatsApp = () => {
     const code = b.confirmation_code || `ICH-${String(id).slice(-6).toUpperCase()}`;
     const msg = `Hi ${customer?.name || "there"}, your Icon Holiday booking "${b.title}" is ${b.status}. Confirmation: ${code}. Total: ${formatIDR(b.price || 0)}. Thank you for booking with Icon Holiday Travel!`;
@@ -189,6 +192,8 @@ export default function DashboardBookingDetail() {
         <h2 className="text-sm font-semibold text-mora-primary mb-4">Documents & sharing</h2>
         <div className="flex flex-wrap gap-2">
           <button onClick={printVoucher} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><Printer className="w-4 h-4" /> Print voucher (PDF)</button>
+          <button onClick={printReceipt} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><ReceiptText className="w-4 h-4" /> Export receipt</button>
+          <button onClick={printQuotation} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><FileText className="w-4 h-4" /> Export quotation</button>
           <button onClick={sendWhatsApp} className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15 px-3.5 py-2 rounded-xl transition-colors"><MessageCircle className="w-4 h-4" /> Send confirmation via WhatsApp</button>
         </div>
       </div>

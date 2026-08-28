@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, MessageCircle, Star, Globe, ChevronRight, Crown } from "lucide-react";
+import { Sparkles, MessageCircle, Star, Globe, ChevronRight, Crown, Headphones } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -63,6 +63,24 @@ export default function Assistant() {
               <ChevronRight className="w-5 h-5 text-gold flex-shrink-0" />
             </div>
           </div>
+        </Link>
+      </div>
+
+      {/* Virtual Guiding — a paid add-on, so it gets its own entry rather than
+          hiding inside the concierge grid. */}
+      <div className="px-6 mb-6">
+        <Link to="/virtual-guiding">
+          <GlassCard className="p-4 flex items-center gap-4 hover:glow-gold transition-all">
+            <div className="w-12 h-12 rounded-xl glass-gold flex items-center justify-center flex-shrink-0">
+              <Headphones className="w-6 h-6 text-gold" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-gold tracking-widest uppercase mb-0.5">Add-on</p>
+              <h3 className="text-base font-display font-semibold text-mora-primary mb-0.5">Virtual Guiding</h3>
+              <p className="text-xs text-mora-neutral">A live guide at every stop</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gold flex-shrink-0" />
+          </GlassCard>
         </Link>
       </div>
 

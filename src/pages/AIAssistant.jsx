@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Send, Sparkles, Save, RefreshCw, Headphones } from "lucide-react";
+import { Send, Sparkles, Save, RefreshCw, Headphones, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useFeatureAccess, PAID_FEATURES } from "@/lib/featureAccess";
+import { formatIDR } from "@/lib/currency";
 
 const quickPrompts = [
   "Create a 3-day luxury itinerary in Bali",
@@ -31,6 +33,7 @@ export default function AIAssistant() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
+  const { unlocked, loading: checkingAccess } = useFeatureAccess("ai_itinerary");
   const scrollRef = useRef(null);
   const urlParams = new URLSearchParams(window.location.search);
   const destination = urlParams.get("destination");
@@ -144,6 +147,49 @@ ${content}`,
       setSaving(false);
     }
   };
+
+  if (checkingAccess) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-6 h-6 text-gold animate-spin" />
+      </div>
+    );
+  }
+
+  // Building itineraries is a paid add-on. Show the offer, not the composer.
+  if (!unlocked) {
+    const meta = PAID_FEATURES.ai_itinerary;
+    return (
+      <div className="animate-fade-in">
+        <PageHeader title="Smart-A Itinerary" subtitle="Locked" showBack />
+        <div className="px-6 pb-28">
+          <GlassCard className="p-6 text-center">
+            <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-gold" />
+            </div>
+            <h2 className="text-base font-display font-bold text-mora-primary mb-1.5">
+              Itinerary building is a paid add-on
+            </h2>
+            <p className="text-sm text-mora-neutral leading-relaxed max-w-[280px] mx-auto">
+              {meta.tagline}
+            </p>
+            <button
+              onClick={() => navigate("/unlock/ai_itinerary")}
+              className="w-full py-3.5 mt-6 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all"
+            >
+              Unlock for {formatIDR(meta.price)}
+            </button>
+            <button
+              onClick={() => navigate("/assistant")}
+              className="w-full py-3 mt-2 text-[11px] text-mora-neutral hover:text-mora-primary transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Headphones className="w-3.5 h-3.5" /> Or talk to a human concierge — free
+            </button>
+          </GlassCard>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in flex flex-col" style={{ height: 'calc(100vh - 120px)' }}>

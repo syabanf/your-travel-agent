@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Map as MapIcon, CalendarCheck, Users, Wallet, TrendingUp, AlertCircle, ArrowUpRight, ChevronRight } from "lucide-react";
+import { MapPin, Map as MapIcon, CalendarCheck, Users, Wallet, TrendingUp, AlertCircle, ArrowUpRight } from "lucide-react";
 import { formatIDR } from "@/lib/currency";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";

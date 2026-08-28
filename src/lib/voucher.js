@@ -2,6 +2,7 @@
 // "Save as PDF" or print. No backend / no PDF library required.
 
 import { formatIDR } from "@/lib/currency";
+import { totalOf, paidOf, balanceOf, isFullyPaid, paymentProgress, amountForPercent } from "@/lib/payments";
 import moment from "moment";
 
 const esc = (v) => String(v == null ? "" : v).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -92,4 +93,145 @@ export function tripItineraryHTML(trip, items = [], members = []) {
     </div>
     ${itinerary}
     ${roster}`;
+}
+
+// Right-aligned money summary. Values are formatIDR output — no HTML-significant
+// characters can reach it — so only the label needs escaping.
+const sumRow = (k, v) =>
+  `<tr><td style="border:0;padding:5px 8px;color:#5A6B85">${esc(k)}</td><td style="border:0;padding:5px 8px;text-align:right;font-weight:600">${v}</td></tr>`;
+
+const sums = (rows) =>
+  `<table style="width:auto;min-width:300px;margin-left:auto;page-break-inside:avoid"><tbody>${rows.filter(Boolean).join("")}</tbody></table>`;
+
+// "cost_saver" → "cost saver", so the capitalizing .pill doesn't print the underscore.
+const label = (v, fallback) => String(v || fallback).replace(/_/g, " ");
+
+export function receiptHTML(booking, opts = {}) {
+  const b = booking || {};
+  const code = b.confirmation_code || `ICH-${String(b.id || "").slice(-6).toUpperCase()}`;
+  const total = totalOf(b);
+  const paid = paidOf(b);
+  const balance = balanceOf(b);
+  const settled = isFullyPaid(b);
+  const pax = Math.max(1, Number(b.guests) || 1);
+  const onDeposit = b.payment_plan === "dp";
+  // The agreed deposit is what the customer signed up to; with none recorded,
+  // how far the payment actually got is the honest stand-in.
+  const dpPercent = Number(b.dp_percent) > 0 ? Math.round(Number(b.dp_percent)) : Math.round(paymentProgress(b) * 100);
+  const sub = [b.provider, b.location].filter(Boolean).join(" · ");
+
+  const note = settled
+    ? `Received with thanks — no further payment is due.${onDeposit ? ` Settled in full after a ${dpPercent}% deposit.` : ""}`
+    : `${onDeposit ? `This booking is on a ${dpPercent}% deposit plan. ` : ""}A balance of ${formatIDR(balance)} remains outstanding${b.balance_due_date ? ` and is due by ${fmt(b.balance_due_date)}` : ""}.`;
+
+  return `${header("Receipt / Kwitansi", `RCP-${code}`)}
+    <h1>${esc(b.title || "Booking")}</h1>
+    <p class="muted"><span class="pill">${esc(label(b.type, "booking"))}</span> &nbsp; ${esc(b.status || "")}</p>
+    <div class="grid">
+      ${row("Receipt no", `RCP-${code}`)}
+      ${row("Issue date", fmt(opts.issuedAt || b.updated_date || b.created_date))}
+      ${row("Billed to", opts.customerName || b.customer_name || "—")}
+      ${row("Email", opts.customerEmail || b.customer_email || "—")}
+      ${row("Booking ref", code)}
+      ${row("Payment plan", onDeposit ? `Deposit ${dpPercent}%` : "Full payment")}
+    </div>
+    <table>
+      <thead><tr><th>Description</th><th style="text-align:center">Qty / Guests</th><th style="text-align:right">Unit price</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody><tr>
+        <td><strong>${esc(b.title || "Booking")}</strong>${sub ? `<br><span class="muted">${esc(sub)}</span>` : ""}</td>
+        <td style="text-align:center">${pax}</td>
+        <td style="text-align:right">${formatIDR(Math.round(total / pax))}</td>
+        <td style="text-align:right">${formatIDR(total)}</td>
+      </tr></tbody>
+    </table>
+    ${sums([
+      sumRow("Total", formatIDR(total)),
+      sumRow("Paid / Dibayar", formatIDR(paid)),
+      sumRow("Balance due / Sisa tagihan", formatIDR(balance)),
+    ])}
+    <div class="total" style="page-break-inside:avoid">
+      <span>${settled ? "Paid in full / Lunas" : "Balance due / Sisa tagihan"}</span>
+      <span class="v">${formatIDR(settled ? total : balance)}</span>
+    </div>
+    <p class="muted" style="margin-top:10px">${esc(note)}</p>`;
+}
+
+export function quotationHTML(payload, opts = {}) {
+  const p = payload || {};
+  // Accepts a package, a booking-like record, or a { package, pax } wrapper.
+  const q = p.package || p.pkg || p;
+  const pax = Math.max(1, Number(opts.pax ?? p.pax ?? q.pax ?? q.guests ?? q.travelers) || 1);
+  // Packages are quoted per person, but a booking's price is already the whole
+  // party — multiplying the wrong one would double-charge the quote.
+  const perPerson = opts.perPerson ?? !(q.guests != null || q.confirmation_code != null || q.payment_status != null);
+
+  const price = Number(q.price) > 0 ? Number(q.price) : 0;
+  const unit = perPerson ? price : Math.round(price / pax);
+  const net = perPerson ? price * pax : price;
+  const before = Number(q.price_before) > 0 ? Number(q.price_before) : 0;
+  const listUnit = before > unit ? before : unit;
+  const listTotal = before > unit ? before * pax : net;
+  const discount = Math.max(0, listTotal - net) + Math.max(0, Number(opts.discount) || 0);
+  const total = Math.max(0, listTotal - discount);
+
+  // Numbered off the record being quoted so a reprint keeps the same reference.
+  // Package ids are slugs, so normalise rather than truncate — a tail slice of
+  // "pkg_maldives_signature" would number the quote "QT-NATURE".
+  const quoteNo = opts.quoteNo || `QT-${String(q.confirmation_code || q.id || "").toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "DRAFT"}`;
+  const issued = opts.issuedAt || new Date();
+  const validDays = Number(opts.validDays) > 0 ? Number(opts.validDays) : 14;
+  const validUntil = opts.validUntil || q.valid_until || moment(issued).add(validDays, "days");
+  const departure = opts.departureDate || q.check_in || (Array.isArray(q.departure_dates) ? q.departure_dates[0] : null);
+
+  // Mirrors the checkout's default when a package sets no minimum of its own.
+  const rawDp = Number(opts.minDpPercent ?? q.min_dp_percent);
+  const minDp = rawDp > 0 && rawDp <= 100 ? Math.round(rawDp) : 30;
+  const dpAmount = amountForPercent(total, minDp);
+  const onBalance = Math.max(0, total - dpAmount);
+  const balanceDue = opts.balanceDueDate || (departure ? moment(departure).subtract(14, "days") : null);
+
+  const terms = minDp >= 100
+    ? `Full payment of ${formatIDR(total)} is due on confirmation.`
+    : `A down payment of ${minDp}% — ${formatIDR(dpAmount)} — is due on confirmation to hold your places. The remaining ${formatIDR(onBalance)} is due ${balanceDue ? `by ${fmt(balanceDue)}` : "no later than 14 days before departure"}.`;
+
+  const meta = [
+    q.destination || q.location,
+    q.duration_days ? `${q.duration_days} days${q.duration_nights ? ` / ${q.duration_nights} nights` : ""}` : "",
+  ].filter(Boolean).join(" · ");
+
+  return `${header("Quotation / Penawaran", quoteNo)}
+    <h1>${esc(q.title || "Travel quotation")}</h1>
+    <p class="muted"><span class="pill">${esc(label(q.category || q.type, "package"))}</span> &nbsp; ${esc(meta)}</p>
+    <div class="grid">
+      ${row("Quote no", quoteNo)}
+      ${row("Issue date", fmt(issued))}
+      ${row("Valid until", fmt(validUntil))}
+      ${row("Travellers", `${pax} pax`)}
+      ${departure ? row("Departure", fmt(departure)) : ""}
+      ${row("Prepared for", opts.customerName || q.customer_name || "—")}
+      ${row("Email", opts.customerEmail || q.customer_email || "—")}
+      ${opts.customerPhone ? row("Phone", opts.customerPhone) : ""}
+    </div>
+    <table>
+      <thead><tr><th>Description</th><th style="text-align:center">Pax</th><th style="text-align:right">Price / pax</th><th style="text-align:right">Amount</th></tr></thead>
+      <tbody><tr>
+        <td><strong>${esc(q.title || "Travel package")}</strong>${meta ? `<br><span class="muted">${esc(meta)}</span>` : ""}</td>
+        <td style="text-align:center">${pax}</td>
+        <td style="text-align:right">${formatIDR(listUnit)}</td>
+        <td style="text-align:right">${formatIDR(listTotal)}</td>
+      </tr></tbody>
+    </table>
+    ${sums([
+      sumRow("Subtotal", formatIDR(listTotal)),
+      discount > 0 ? sumRow("Discount / Diskon", `-${formatIDR(discount)}`) : "",
+    ])}
+    <div class="total" style="page-break-inside:avoid">
+      <span>Grand total / Total</span>
+      <span class="v">${formatIDR(total)}</span>
+    </div>
+    <div style="page-break-inside:avoid">
+      <h3 style="margin:22px 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#AD1F23">Payment terms / Ketentuan pembayaran</h3>
+      <p style="margin:0;font-size:13px">${esc(terms)}</p>
+      <p class="muted" style="margin:6px 0 0">${esc(`This quotation is valid until ${fmt(validUntil)}. Prices and availability are confirmed once the down payment is received.`)}</p>
+    </div>`;
 }

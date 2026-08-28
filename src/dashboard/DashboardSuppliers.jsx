@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";

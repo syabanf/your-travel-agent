@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Calendar, Wallet, Hash, Trash2, CreditCard } from "lucide-react";
+import { MapPin, Calendar, Wallet, Hash, Trash2, CreditCard, ReceiptText } from "lucide-react";
+import { printDocument, receiptHTML } from "@/lib/voucher";
+import { balanceOf, paidOf } from "@/lib/payments";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -86,6 +88,8 @@ export default function BookingDetail() {
     </div>
   );
 
+  const balance = balanceOf(booking);
+
   return (
     <div className="animate-fade-in">
       {booking.image_url && (
@@ -130,6 +134,18 @@ export default function BookingDetail() {
               <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
                 <Wallet className="w-4 h-4 text-gold/50 flex-shrink-0" />
                 <span className="stat-value font-display font-semibold text-gold">{formatIDR(booking.price)}</span>
+                {balance > 0 && paidOf(booking) > 0 && (
+                  <span className="text-xs text-mora-neutral/50">
+                    · {formatIDR(paidOf(booking))} paid
+                  </span>
+                )}
+              </div>
+            )}
+            {balance > 0 && paidOf(booking) > 0 && (
+              <div className="flex items-center gap-3 text-sm">
+                <Wallet className="w-4 h-4 text-transparent flex-shrink-0" />
+                <span className="text-mora-neutral/70">Balance due</span>
+                <span className="text-gold font-medium">{formatIDR(balance)}</span>
               </div>
             )}
             {booking.confirmation_code && (
@@ -147,13 +163,23 @@ export default function BookingDetail() {
           )}
         </GlassCard>
 
-        {booking.status === "pending" && (
+        {(booking.status === "pending" || balance > 0) && (
           <Link
             to={`/booking/${bookingId}/checkout`}
             className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2"
           >
-            <CreditCard className="w-4 h-4" /> Proceed to Checkout
+            <CreditCard className="w-4 h-4" />
+            {balance > 0 && paidOf(booking) > 0 ? `Pay balance ${formatIDR(balance)}` : "Proceed to Checkout"}
           </Link>
+        )}
+
+        {paidOf(booking) > 0 && (
+          <button
+            onClick={() => printDocument("Icon Holiday Receipt", receiptHTML(booking))}
+            className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-mora-primary hover:bg-mora-primary/5 flex items-center justify-center gap-2 transition-all"
+          >
+            <ReceiptText className="w-4 h-4" /> Export receipt
+          </button>
         )}
 
         <button

@@ -37,7 +37,8 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 
 ### Onboarding & auth
 - **Splash** (`/splash`) and an image-led **Onboarding** carousel (`/onboarding`).
-- **Login / Register** (`/login`, `/register`) — sign in, create an account, or **continue as guest** (mock auth — any credentials work).
+- **Login / Register** (`/login`, `/register`) — sign in, request an account, or **continue as guest** (mock auth — any credentials work).
+- **Admin-approved sign-up** — registering files a request rather than creating a session. The traveller sees an *Awaiting approval* screen, and sign-in is refused while the request is pending or rejected. Addresses with no request on file (the seeded demo accounts) are let through, so the demo stays usable.
 - **Session gating** — protected routes redirect to splash/login when signed out.
 
 ### Home (`/`)
@@ -60,14 +61,24 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 - **Add activity** (`/itinerary/:tripId/add`) — name, location (map browse), time, duration, category, budget, notes.
 - Trip tools: **Calendar** (`/itinerary/calendar`), **Map** (`/itinerary/map`, OpenLayers — markers, location search, pick-a-location), **Budget tracker** (`/itinerary/budget` — planned vs remaining + category chart), **Packing checklist** (`/itinerary/checklist`).
 
+### Paid trips & the trip lock
+- Paying for a holiday package **creates a trip** in My Trips, with the package's day-by-day plan copied in as itinerary items.
+- A trip bought on a deposit stays **locked**: the cover, dates and day count are visible, but the itinerary, contacts and documents are withheld behind a padlock showing **how much is paid, what's left and when it's due**, with a one-tap route to settle it. It opens by itself the moment the balance clears.
+- The teaser list shows placeholder bars rather than blurred titles — CSS blur still leaves the real text in the DOM.
+
 ### Booking — OTA engine
 - **OTA marketplace** (`/ota`) and **Booking hub** (`/booking`) — search **flights, hotels, trains, buses, ships, car rentals and attractions**. Category tabs are **driven by the dashboard's Booking Categories** (incl. custom ones).
 - **AI-simulated results** with one-tap booking, **booking detail** (`/booking/:bookingId`), and a **multi-step checkout** (`/booking/:bookingId/checkout` — review → guest details → payment → confirmation; payment simulated).
+- **Down-payment plans** — package checkouts offer a DP ladder (the package's own minimum, then 50%/70%, then pay-in-full). The minimum is set per package in the CMS. Returning to a part-paid booking charges the **remaining balance only** — the plan is chosen once, at the first payment.
+- **Balance tracking** — every booking carries `paid_amount` alongside `price`; the outstanding balance, progress and `payment_status` are all derived from those two numbers, so a badge can never disagree with the money ([`src/lib/payments.js`](src/lib/payments.js)).
+- **Export Receipt** from the traveller's own booking detail, once anything has been paid.
 - **My Bookings** list with statuses; bookings can be attached to a trip.
 
 ### Assistant
 - **Assistant hub** (`/assistant`) — choose AI or a human expert.
-- **AI Assistant** (`/assistant/ai`) — chat concierge; save a generated itinerary to Trips.
+- **AI Assistant** (`/assistant/ai`) — chat concierge; save a generated itinerary to Trips. **Paid add-on** — unentitled visitors get the offer, not the composer.
+- **Virtual Guiding** (`/virtual-guiding`) — live audio guiding with per-stop playback. **Paid add-on.**
+- **Add-on paywall** (`/unlock/:feature`) — both add-ons are bought through the normal checkout, so there's one payment flow and one receipt. Access is recorded per traveller in `FeatureAccess`.
 - **Personal assistants** (`/assistant/profile/:id`) — profiles, languages, ratings, packages → **consultation booking** (`/consultation/:assistantId`).
 
 ### Profile & account
@@ -95,7 +106,8 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ### Sales & CRM
 - **Leads** (`/dashboard/leads`, `/leads/:id`) — pipeline (new → contacted → quoted → won → lost) with priority, assignment, **WhatsApp follow-up**, and **convert-to-customer**.
 - **Customers** (`/dashboard/customers`, `/customers/:id`) — full CRUD (tier, lifetime value, passport, nationality, marketing opt-in, map location picker); per-customer trips & bookings.
-- **Trips & Bookings** (`/dashboard/bookings`, `/bookings/:id`, `/trips/:id`) — booking ledger + trips with full CRUD, inline status, payment/channel/commission/cost fields, **sell / cost / margin / commission** breakdown, **refunds & cancellations**, **print-to-PDF vouchers**, and trip rosters.
+- **Trips** (`/dashboard/trips`) — a dedicated trip CRUD page: all 20 trip fields incl. the **lock toggle** and its linked booking, inline **daily-itinerary** management grouped by day, plus a lock column reading *Open · Locked (balance due) · Paid·unlocked · Gated·no booking*.
+- **Trips & Bookings** (`/dashboard/bookings`, `/bookings/:id`, `/trips/:id`) — booking ledger + trips with full CRUD, inline status, payment/channel/commission/cost fields, **sell / cost / margin / commission** breakdown, **refunds & cancellations**, **print-to-PDF vouchers**, **Export Receipt** and **Export Quotation**, and trip rosters.
 
 ### Operations
 - **OTA Channels** (`/dashboard/ota`) — connect/disconnect, sync, per-channel revenue/commission, full CRUD, transaction drawer.
@@ -116,6 +128,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 
 ### Growth & System
 - **Marketing** (`/dashboard/marketing`, `/marketing/:id`) — campaigns across email / WhatsApp / push with **segments** (by tier/status), promo codes, scheduling, and a simulated "Send now".
+- **Registrations** (`/dashboard/registrations`) — the sign-up approval queue: pending/approved/rejected filters with a pending count, search, and approve/reject stamped with who decided and when.
 - **Team & Roles** (`/dashboard/team`, `/team/:id`) — staff, roles, invites.
 - **Audit Log** (`/dashboard/audit`) — automatic trail of every create/update/delete (actor, action, entity, summary) with filters.
 
@@ -129,7 +142,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ## Platform-wide features
 - **Role-based access control** — Administrator / Manager / Editor / Viewer gate view/create/edit/delete per resource; live "Viewing as" switcher; read-only banner for viewers.
 - **Period-over-period comparison** — reusable period + comparison controls with up/down delta pills.
-- **Installable PWA** — web manifest, branded icon, theme colour, and an offline-shell service worker (production) so the app can be added to the home screen.
+- **Installable PWA** — manifest scoped to `/app/` with `any` + **maskable** icons, app shortcuts, and a light theme colour matched to the UI (a dark one flashed before first paint). An **install prompt** captures `beforeinstallprompt` on Android/Chrome and falls back to *Share → Add to Home Screen* instructions on iOS, snoozing for 30 days once dismissed. The service worker precaches the shell **and the hashed bundles it references**, so a cold install doesn't boot to a blank screen, and serves a branded offline page.
 - **WhatsApp deep-links**, **clipboard share**, **print-to-PDF** (vouchers, itineraries, AI reports — via the browser print dialog), and **export / delete all my data**.
 - **Rich seed data** — ~18 months of spread bookings/trips/customers/leads so analytics and comparisons are meaningful out of the box, with a versioned clean reseed + migrations.
 
@@ -138,14 +151,14 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ## Data model
 Mock entities ([`src/api/base44Client.js`](src/api/base44Client.js)):
 
-`Trip` · `Booking` · `ItineraryItem` · `TripMember` · `Notification` · `PersonalAssistant` · `ChatMessage` · `Destination` · `Promotion` · `OtaCategory` · `TourPackage` · `Customer` · `Lead` · `Supplier` · `Campaign` · `StaffMember` · `Page` · `MediaAsset` · `Setting` · `AuditLog`
+`Trip` · `Booking` · `ItineraryItem` · `TripMember` · `Notification` · `PersonalAssistant` · `ChatMessage` · `Destination` · `Promotion` · `OtaCategory` · `TourPackage` · `Customer` · `Lead` · `Supplier` · `Campaign` · `StaffMember` · `Page` · `MediaAsset` · `Setting` · `AuditLog` · `Registration` · `FeatureAccess`
 
 Each supports `list(order, limit)`, `filter(query, order, limit)`, `get(id)`, `create`, `update`, `delete` (+ `bulkCreate`). Mutations to business entities are written to `AuditLog`.
 
 ---
 
 ## Engineering & quality
-- **Tests** — Vitest + RTL + jsdom; suite covers the mock-backend CRUD lifecycle, RBAC, currency & period math, and the SearchableSelect component (`npm run test:run`).
+- **Tests** — Vitest + RTL + jsdom; **91 tests** covering the mock-backend CRUD lifecycle, RBAC, currency & period math, payment/balance and trip-lock logic, DP ladders, the sign-up approval gate, receipt/quotation rendering, and the SearchableSelect component (`npm run test:run`).
 - **Resilience** — recoverable error boundaries per shell (a page crash keeps the nav and auto-recovers on navigation); storage writes never throw (in-memory fallback); guarded async (no stuck spinners).
 - **Accessibility** — aria-labels on icon controls, alt text, labelled inputs, visible focus ring, `prefers-reduced-motion` support, skip-to-content.
 - **Performance** — route-based code-splitting keeps the initial bundle lean.

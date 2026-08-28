@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatIDR } from "@/lib/currency";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
-import { Wallet, TrendingUp, Receipt, Banknote, Landmark, Download, Scale, Building2, Users } from "lucide-react";
+import { Wallet, TrendingUp, Receipt, Banknote, Landmark, Download, Scale } from "lucide-react";
 import { toast } from "sonner";
 import moment from "moment";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
