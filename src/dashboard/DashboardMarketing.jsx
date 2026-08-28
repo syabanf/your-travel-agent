@@ -32,8 +32,8 @@ const CHANNEL_META = {
 const SEGMENTS = ["all", "platinum", "gold", "silver", "bronze", "active", "inactive"];
 
 const STATUS_BADGE = {
-  draft: "bg-mora-primary/10 text-mora-neutral",
-  scheduled: "bg-mora-gold/10 text-gold",
+  draft: "bg-ich-primary/10 text-ich-neutral",
+  scheduled: "bg-ich-gold/10 text-gold",
   sent: "bg-emerald-100 text-emerald-700",
 };
 
@@ -161,8 +161,8 @@ export default function DashboardMarketing() {
       <ReadOnlyBanner resource="marketing" />
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Marketing Campaigns</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Marketing Campaigns</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
@@ -199,10 +199,10 @@ export default function DashboardMarketing() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 max-w-2xl">
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit campaign" : "New campaign"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit campaign" : "New campaign"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Platinum Bali Flash Sale" /></Fld>
@@ -247,17 +247,17 @@ export default function DashboardMarketing() {
               <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
             </div>
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative">
-              <Search className="w-4 h-4 text-mora-neutral absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-ich-neutral absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search campaigns…" />
             </div>
             <SearchableSelect
@@ -297,7 +297,7 @@ export default function DashboardMarketing() {
               className="max-w-[160px]"
             />
             {(query || channelF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -306,13 +306,13 @@ export default function DashboardMarketing() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "name", label: "Name", className: "font-medium text-mora-primary", render: (c) => c.name },
+                { key: "name", label: "Name", className: "font-medium text-ich-primary", render: (c) => c.name },
                 { key: "channel", label: "Channel", render: (c) => {
                   const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
                   return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>;
                 } },
                 { key: "segment", label: "Segment", render: (c) => cap(c.segment || "all") },
-                { key: "promo_code", label: "Promo code", render: (c) => c.promo_code ? <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-mora-primary/5 text-mora-primary">{c.promo_code}</span> : "—" },
+                { key: "promo_code", label: "Promo code", render: (c) => c.promo_code ? <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-ich-primary/5 text-ich-primary">{c.promo_code}</span> : "—" },
                 { key: "discount", label: "Discount", align: "right", className: "text-right font-semibold text-gold", render: (c) => `${Number(c.discount) || 0}%` },
                 { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || "draft"}</span> },
                 { key: "sent_count", label: "Sent", align: "right", className: "text-right", render: (c) => Number(c.sent_count) || 0 },
@@ -328,22 +328,22 @@ export default function DashboardMarketing() {
             const ChIcon = meta.icon;
             const recipients = segmentCount(c.segment);
             return (
-              <Link key={c.id} to={`/dashboard/marketing/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
-                <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><ChIcon className="w-5 h-5" /></div>
+              <Link key={c.id} to={`/dashboard/marketing/${c.id}`} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
+                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><ChIcon className="w-5 h-5" /></div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-display font-semibold text-mora-primary truncate">{c.name}</h3>
+                    <h3 className="font-display font-semibold text-ich-primary truncate">{c.name}</h3>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || "draft"}</span>
                   </div>
-                  <p className="text-xs text-mora-neutral mt-0.5">
-                    {cap(c.segment || "all")} <span className="text-mora-neutral/70">({recipients} recipients)</span>
+                  <p className="text-xs text-ich-neutral mt-0.5">
+                    {cap(c.segment || "all")} <span className="text-ich-neutral/70">({recipients} recipients)</span>
                     {c.scheduled_date ? ` · ${moment(c.scheduled_date).format("MMM D, YYYY")}` : ""}
                     {c.status === "sent" ? ` · ${Number(c.sent_count) || 0} sent` : ""}
                   </p>
                   {c.promo_code ? (
                     <div className="mt-1.5 flex items-center gap-2">
-                      <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-mora-primary/5 text-mora-primary">{c.promo_code}</span>
+                      <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-ich-primary/5 text-ich-primary">{c.promo_code}</span>
                       {c.discount ? <span className="text-[11px] font-semibold text-gold">{c.discount}% off</span> : null}
                     </div>
                   ) : c.discount ? (
@@ -353,13 +353,13 @@ export default function DashboardMarketing() {
                 {(can(role, "marketing", "edit") || can(role, "marketing", "delete")) && (
                   <div className="flex items-center gap-1.5 shrink-0">
                     {c.status !== "sent" && can(role, "marketing", "edit") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendNow(c); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-mora-gold/10 text-gold hover:bg-mora-gold/20 flex items-center gap-1.5">
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendNow(c); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-ich-gold/10 text-gold hover:bg-ich-gold/20 flex items-center gap-1.5">
                         <Send className="w-3.5 h-3.5" /> Send now
                       </button>
                     )}
                     <div className="flex gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       {can(role, "marketing", "edit") && (
-                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                       )}
                       {can(role, "marketing", "delete") && (
                         <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
@@ -395,18 +395,18 @@ export default function DashboardMarketing() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4">
-    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4">
+    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-xl font-display font-bold text-mora-primary truncate">{value}</div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-xl font-display font-bold text-ich-primary truncate">{value}</div>
     </div>
   </div>
 );
 
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

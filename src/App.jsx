@@ -98,7 +98,7 @@ const DashboardTeamDetail = lazy(() => import('./dashboard/DashboardTeamDetail')
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
-    <div className="w-8 h-8 border-4 border-mora-gold/20 border-t-mora-gold rounded-full animate-spin" />
+    <div className="w-8 h-8 border-4 border-ich-gold/20 border-t-ich-gold rounded-full animate-spin" />
   </div>
 );
 

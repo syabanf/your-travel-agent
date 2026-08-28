@@ -14,8 +14,8 @@ import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 
-const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
-const DOT = { paid: "bg-emerald-500", pending: "bg-mora-gold", refunded: "bg-slate-400" };
+const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-ich-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
+const DOT = { paid: "bg-emerald-500", pending: "bg-ich-gold", refunded: "bg-slate-400" };
 
 export default function DashboardOTATransactions() {
   const [query, setQuery] = useState("");
@@ -49,20 +49,20 @@ export default function DashboardOTATransactions() {
   const statusMix = OTA_STATUSES.map((st) => ({ name: st, value: statusCounts[st] || 0, color: { paid: "#10B981", pending: "#C99A3F", refunded: "#94A3B8" }[st] }));
 
   const exportCSV = () => downloadCSV(
-    "mora-ota-transactions",
+    "ich-ota-transactions",
     ["Date", "Ref", "Channel", "Guest", "Listing", "Check-in", "Nights", "Gross", "Commission", "Net", "Status"],
     filtered.map((t) => [moment(t.created).format("YYYY-MM-DD"), t.ref, t.channel, t.guest, t.listing, moment(t.checkIn).format("YYYY-MM-DD"), t.nights, t.gross, t.commission, t.net, t.status]),
   );
 
   const columns = [
     { key: "created", label: "Date", render: (t) => moment(t.created).format("MMM D") },
-    { key: "ref", label: "Ref", className: "font-medium text-mora-primary" },
-    { key: "channel", label: "Channel", render: (t) => <span className="inline-flex items-center gap-1.5"><span className="w-6 h-6 rounded-md bg-mora-gold/10 text-gold flex items-center justify-center text-[10px] font-bold uppercase">{t.channel[0]}</span>{t.channel}</span> },
+    { key: "ref", label: "Ref", className: "font-medium text-ich-primary" },
+    { key: "channel", label: "Channel", render: (t) => <span className="inline-flex items-center gap-1.5"><span className="w-6 h-6 rounded-md bg-ich-gold/10 text-gold flex items-center justify-center text-[10px] font-bold uppercase">{t.channel[0]}</span>{t.channel}</span> },
     { key: "guest", label: "Guest" },
     { key: "listing", label: "Listing" },
     { key: "checkIn", label: "Check-in", render: (t) => moment(t.checkIn).format("MMM D") },
     { key: "gross", label: "Gross", align: "right", className: "text-right", render: (t) => formatIDR(t.gross) },
-    { key: "commission", label: "Commission", align: "right", className: "text-right text-mora-neutral", render: (t) => t.commission ? `−${formatIDR(t.commission)}` : "—" },
+    { key: "commission", label: "Commission", align: "right", className: "text-right text-ich-neutral", render: (t) => t.commission ? `−${formatIDR(t.commission)}` : "—" },
     { key: "net", label: "Net", align: "right", className: "text-right font-semibold text-gold", render: (t) => formatIDR(t.net) },
     { key: "status", label: "Status", render: (t) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${TX_BADGE[t.status]}`}>{t.status}</span> },
   ];
@@ -75,12 +75,12 @@ export default function DashboardOTATransactions() {
             <Receipt className="w-3.5 h-3.5" /> Distribution
             <span className="inline-flex items-center gap-1 text-emerald-600 normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
           </p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">OTA Transactions</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Real-time monitoring of every booking across your channels.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">OTA Transactions</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Real-time monitoring of every booking across your channels.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DashboardAiStub resource="ota" data={filtered} />
-          <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+          <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
             <Download className="w-4 h-4" /> Export CSV
           </button>
         </div>
@@ -104,15 +104,15 @@ export default function DashboardOTATransactions() {
       <div className="flex flex-wrap gap-2 mb-4">
         {OTA_STATUSES.map((st) => (
           <button key={st} onClick={() => setStatusF(statusF === st ? "all" : st)}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${statusF === st ? "border-mora-gold/40 bg-mora-gold/10 text-gold" : "border-mora-primary/10 bg-white text-mora-neutral hover:bg-mora-primary/5"}`}>
-            <span className={`w-2 h-2 rounded-full ${DOT[st]}`} /> <span className="capitalize">{st}</span> <span className="font-bold text-mora-primary">{statusCounts[st] || 0}</span>
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${statusF === st ? "border-ich-gold/40 bg-ich-gold/10 text-gold" : "border-ich-primary/10 bg-white text-ich-neutral hover:bg-ich-primary/5"}`}>
+            <span className={`w-2 h-2 rounded-full ${DOT[st]}`} /> <span className="capitalize">{st}</span> <span className="font-bold text-ich-primary">{statusCounts[st] || 0}</span>
           </button>
         ))}
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
           <input className="dash-input pl-9" placeholder="Search ref, guest or listing…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
         <SearchableSelect
@@ -124,7 +124,7 @@ export default function DashboardOTATransactions() {
         />
         <DateRangeSelect value={range} onChange={setRange} />
         {(query || channelF !== "all" || statusF !== "all" || range !== "all") && (
-          <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+          <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}
@@ -134,28 +134,28 @@ export default function DashboardOTATransactions() {
       {view === "table" ? (
         <DataTable columns={columns} rows={pg.pageItems} minWidth={860} empty="No transactions match your filters." />
       ) : pg.pageItems.length === 0 ? (
-        <p className="text-mora-neutral/60 text-center py-10">No transactions match your filters.</p>
+        <p className="text-ich-neutral/60 text-center py-10">No transactions match your filters.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 stagger">
           {pg.pageItems.map((t) => (
-            <div key={t.id} className="bg-white rounded-2xl border border-mora-primary/10 p-4 hover:shadow-md transition-shadow min-w-0">
+            <div key={t.id} className="bg-white rounded-2xl border border-ich-primary/10 p-4 hover:shadow-md transition-shadow min-w-0">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="inline-flex items-center gap-2 min-w-0">
-                  <span className="w-7 h-7 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center text-[11px] font-bold uppercase shrink-0">{t.channel[0]}</span>
-                  <span className="text-sm font-semibold text-mora-primary truncate">{t.channel}</span>
+                  <span className="w-7 h-7 rounded-lg bg-ich-gold/10 text-gold flex items-center justify-center text-[11px] font-bold uppercase shrink-0">{t.channel[0]}</span>
+                  <span className="text-sm font-semibold text-ich-primary truncate">{t.channel}</span>
                 </span>
                 <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize shrink-0 ${TX_BADGE[t.status]}`}>{t.status}</span>
               </div>
-              <p className="text-xs text-mora-neutral mb-0.5"><span className="font-medium text-mora-primary">{t.ref}</span> · {t.guest}</p>
-              <p className="text-xs text-mora-neutral/60 truncate mb-3">{t.listing}</p>
-              <div className="flex items-end justify-between gap-2 border-t border-mora-primary/5 pt-3">
-                <div className="text-[11px] text-mora-neutral/60 leading-relaxed">
+              <p className="text-xs text-ich-neutral mb-0.5"><span className="font-medium text-ich-primary">{t.ref}</span> · {t.guest}</p>
+              <p className="text-xs text-ich-neutral/60 truncate mb-3">{t.listing}</p>
+              <div className="flex items-end justify-between gap-2 border-t border-ich-primary/5 pt-3">
+                <div className="text-[11px] text-ich-neutral/60 leading-relaxed">
                   <div>{moment(t.created).format("MMM D")} · stay {moment(t.checkIn).format("MMM D")}</div>
                   <div>commission −{formatIDR(t.commission)}</div>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="stat-value text-base font-display font-bold text-gold">{formatIDR(t.net)}</div>
-                  <div className="text-[10px] text-mora-neutral/50 uppercase tracking-wider">net</div>
+                  <div className="text-[10px] text-ich-neutral/50 uppercase tracking-wider">net</div>
                 </div>
               </div>
             </div>
@@ -168,9 +168,9 @@ export default function DashboardOTATransactions() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
-    <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3"><Icon className="w-5 h-5 text-gold" /></div>
-    <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
-    <p className="text-xs text-mora-neutral mt-1">{label}</p>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
+    <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center mb-3"><Icon className="w-5 h-5 text-gold" /></div>
+    <p className="stat-value text-lg lg:text-xl font-display font-bold text-ich-primary">{value}</p>
+    <p className="text-xs text-ich-neutral mt-1">{label}</p>
   </div>
 );

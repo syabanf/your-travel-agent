@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, Download, Plus, Share, Sparkles, X } from "lucide-react";
 
-const DISMISS_KEY = "mora_install_dismissed";
+const DISMISS_KEY = "ich_install_dismissed";
 // Long enough not to nag, short enough that someone who taps "Not now" while
 // browsing casually still gets a second chance next season.
 const SNOOZE_DAYS = 30;
@@ -77,7 +77,7 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
 
     // Chrome usually fires the event before React mounts, so index.html stashes
     // it on window — pick that up rather than waiting for one that already fired.
-    const stashed = window.__moraInstallEvent;
+    const stashed = window.__ichInstallEvent;
     if (stashed) {
       setDeferred(stashed);
       setPlatform("android");
@@ -119,7 +119,7 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
     } finally {
       // Chrome invalidates the event once prompted, so don't offer it twice.
       setDeferred(null);
-      try { delete window.__moraInstallEvent; } catch { /* ignore */ }
+      try { delete window.__ichInstallEvent; } catch { /* ignore */ }
     }
   }, [deferred, dismiss, close]);
 
@@ -147,12 +147,12 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
           <div className="pointer-events-auto mx-auto w-full max-w-[369px] glass-card rounded-[1.75rem] shadow-float p-4">
             {installed ? (
               <div className="flex items-center gap-3 py-1">
-                <div className="w-10 h-10 rounded-2xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0">
                   <Check className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-display font-bold text-mora-primary text-[15px]">Added to your home screen</p>
-                  <p className="text-[13px] text-mora-neutral leading-snug">Open Icon Holiday any time, even offline.</p>
+                  <p className="font-display font-bold text-ich-primary text-[15px]">Added to your home screen</p>
+                  <p className="text-[13px] text-ich-neutral leading-snug">Open Icon Holiday any time, even offline.</p>
                 </div>
               </div>
             ) : (
@@ -162,17 +162,17 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display font-bold text-mora-primary text-[15px] leading-tight">
+                    <p className="font-display font-bold text-ich-primary text-[15px] leading-tight">
                       Install Icon Holiday
                     </p>
-                    <p className="text-[13px] text-mora-neutral leading-snug mt-0.5">
+                    <p className="text-[13px] text-ich-neutral leading-snug mt-0.5">
                       Full screen, instant launch, and your trips available offline.
                     </p>
                   </div>
                   <button
                     onClick={dismiss}
                     aria-label="Dismiss install prompt"
-                    className="w-10 h-10 -mt-1 -mr-1 rounded-full flex items-center justify-center text-mora-neutral hover:bg-white/10 shrink-0 press-spring"
+                    className="w-10 h-10 -mt-1 -mr-1 rounded-full flex items-center justify-center text-ich-neutral hover:bg-white/10 shrink-0 press-spring"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -181,10 +181,10 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
                 {platform === "ios" ? (
                   <ol className="mt-3.5 space-y-2">
                     <IosStep n="1" icon={Share}>
-                      Tap <span className="font-semibold text-mora-primary">Share</span> in the Safari toolbar
+                      Tap <span className="font-semibold text-ich-primary">Share</span> in the Safari toolbar
                     </IosStep>
                     <IosStep n="2" icon={Plus}>
-                      Choose <span className="font-semibold text-mora-primary">Add to Home Screen</span>
+                      Choose <span className="font-semibold text-ich-primary">Add to Home Screen</span>
                     </IosStep>
                   </ol>
                 ) : (
@@ -208,11 +208,11 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
 function IosStep({ n, icon: Icon, children }) {
   return (
     <li className="flex items-center gap-2.5">
-      <span className="w-6 h-6 rounded-lg bg-mora-gold/10 text-gold text-[11px] font-bold flex items-center justify-center shrink-0">
+      <span className="w-6 h-6 rounded-lg bg-ich-gold/10 text-gold text-[11px] font-bold flex items-center justify-center shrink-0">
         {n}
       </span>
       <Icon className="w-4 h-4 text-gold shrink-0" strokeWidth={2} />
-      <span className="text-[13px] text-mora-neutral leading-snug">{children}</span>
+      <span className="text-[13px] text-ich-neutral leading-snug">{children}</span>
     </li>
   );
 }

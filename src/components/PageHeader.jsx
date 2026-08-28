@@ -11,15 +11,15 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
           <button
             onClick={() => navigate(-1)}
             aria-label="Go back"
-            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-mora-primary hover:text-gold press-spring shrink-0"
+            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-ich-primary hover:text-gold press-spring shrink-0"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
         )}
         <div className="min-w-0">
-          <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-mora-primary truncate">{title}</h1>
+          <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-ich-primary truncate">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-mora-neutral mt-0.5 truncate">{subtitle}</p>
+            <p className="text-sm text-ich-neutral mt-0.5 truncate">{subtitle}</p>
           )}
         </div>
       </div>
@@ -29,10 +29,10 @@ export default function PageHeader({ title, subtitle, showBack = false, showNoti
           <Link
             to="/notifications"
             aria-label="Notifications"
-            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-mora-neutral hover:text-gold press-spring relative"
+            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-ich-neutral hover:text-gold press-spring relative"
           >
             <Bell className="w-5 h-5" />
-            <div className="absolute top-2 right-2 w-2 h-2 bg-mora-gold rounded-full" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-ich-gold rounded-full" />
           </Link>
         )}
       </div>

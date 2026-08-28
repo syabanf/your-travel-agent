@@ -18,7 +18,7 @@ const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) :
 const TYPE_BADGE = {
   flight: "bg-blue-100 text-blue-700",
   hotel: "bg-emerald-100 text-emerald-700",
-  activity: "bg-mora-gold/10 text-gold",
+  activity: "bg-ich-gold/10 text-gold",
   transport: "bg-indigo-100 text-indigo-700",
   dmc: "bg-slate-200 text-slate-700",
 };
@@ -64,7 +64,7 @@ export default function DashboardSupplierDetail() {
   };
 
   const back = (
-    <Link to="/dashboard/suppliers" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary mb-4">
+    <Link to="/dashboard/suppliers" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary mb-4">
       <ChevronLeft className="w-4 h-4" /> Back to suppliers
     </Link>
   );
@@ -73,7 +73,7 @@ export default function DashboardSupplierDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
@@ -82,9 +82,9 @@ export default function DashboardSupplierDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
-          <h1 className="text-xl font-display font-bold text-mora-primary">Supplier not found</h1>
-          <p className="text-sm text-mora-neutral mt-1">This supplier may have been removed.</p>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-10 text-center">
+          <h1 className="text-xl font-display font-bold text-ich-primary">Supplier not found</h1>
+          <p className="text-sm text-ich-neutral mt-1">This supplier may have been removed.</p>
         </div>
       </div>
     );
@@ -111,16 +111,16 @@ export default function DashboardSupplierDetail() {
       {back}
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 flex items-start gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-mora-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 flex items-start gap-5">
+        <div className="w-16 h-16 rounded-2xl bg-ich-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
           {(s.name || "?").trim().charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-display font-bold text-mora-primary truncate">{s.name || "Unnamed supplier"}</h1>
-          <p className="text-sm text-mora-neutral/70 mt-0.5">{s.country || "No country"}</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary truncate">{s.name || "Unnamed supplier"}</h1>
+          <p className="text-sm text-ich-neutral/70 mt-0.5">{s.country || "No country"}</p>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[type] || TYPE_BADGE.dmc}`}>{type}</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mora-gold/10 text-gold flex items-center gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-ich-gold/10 text-gold flex items-center gap-1">
               <Star className="w-3 h-3 fill-gold" /> {Number(s.rating || 0).toFixed(1)}
             </span>
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{status}</span>
@@ -134,18 +134,18 @@ export default function DashboardSupplierDetail() {
       </div>
 
       {/* Contact row */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
         <div className="flex items-center gap-2 text-sm">
           <Mail className="w-4 h-4 text-gold shrink-0" />
           {s.contact_email
-            ? <a href={`mailto:${s.contact_email}`} className="text-mora-primary hover:text-gold break-all">{s.contact_email}</a>
-            : <span className="text-mora-neutral/50">No email</span>}
+            ? <a href={`mailto:${s.contact_email}`} className="text-ich-primary hover:text-gold break-all">{s.contact_email}</a>
+            : <span className="text-ich-neutral/50">No email</span>}
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Phone className="w-4 h-4 text-gold shrink-0" />
           {s.contact_phone
-            ? <span className="text-mora-primary">{s.contact_phone}</span>
-            : <span className="text-mora-neutral/50">No phone</span>}
+            ? <span className="text-ich-primary">{s.contact_phone}</span>
+            : <span className="text-ich-neutral/50">No phone</span>}
           {s.contact_phone && (
             <button
               onClick={() => openWhatsApp(s.contact_phone, `Hi ${s.name}, this is Icon Holiday Travel…`)}
@@ -158,8 +158,8 @@ export default function DashboardSupplierDetail() {
       </div>
 
       {/* Supplier details */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mt-6">
-        <h2 className="font-display font-semibold text-mora-primary mb-3">Supplier details</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 mt-6">
+        <h2 className="font-display font-semibold text-ich-primary mb-3">Supplier details</h2>
         <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm">
           <Row label="Contact person" value={s.contact_person} />
           <Row label="Website" value={s.website} href={s.website ? (s.website.startsWith("http") ? s.website : `https://${s.website}`) : null} />
@@ -178,10 +178,10 @@ export default function DashboardSupplierDetail() {
       </div>
 
       {/* Bookings */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
-        <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Bookings from this supplier</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mt-6">
+        <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Bookings from this supplier</h2>
         {count === 0 ? (
-          <p className="text-mora-neutral/60 text-sm py-6 text-center">No bookings yet</p>
+          <p className="text-ich-neutral/60 text-sm py-6 text-center">No bookings yet</p>
         ) : (
           <>
           <div className="flex flex-wrap gap-2 mb-3">
@@ -205,7 +205,7 @@ export default function DashboardSupplierDetail() {
           <div className="overflow-x-auto -mx-2">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] text-mora-neutral uppercase tracking-wider border-b border-mora-primary/10">
+                <tr className="text-left text-[11px] text-ich-neutral uppercase tracking-wider border-b border-ich-primary/10">
                   <th className="font-medium py-2 px-2">Title</th>
                   <th className="font-medium py-2 px-2">Status</th>
                   <th className="font-medium py-2 px-2 text-right">Price</th>
@@ -213,9 +213,9 @@ export default function DashboardSupplierDetail() {
               </thead>
               <tbody>
                 {filteredBookings.map((b) => (
-                  <tr key={b.id} className="border-b border-mora-primary/5 last:border-0">
+                  <tr key={b.id} className="border-b border-ich-primary/5 last:border-0">
                     <td className="py-2.5 px-2">
-                      <Link to={`/dashboard/bookings/${b.id}`} className="text-mora-primary hover:text-gold font-medium">
+                      <Link to={`/dashboard/bookings/${b.id}`} className="text-ich-primary hover:text-gold font-medium">
                         {b.title || b.package_name || "Untitled booking"}
                       </Link>
                     </td>
@@ -228,7 +228,7 @@ export default function DashboardSupplierDetail() {
               </tbody>
             </table>
             {filteredBookings.length === 0 && (
-              <p className="text-mora-neutral/60 text-sm py-6 text-center">No bookings match your filter.</p>
+              <p className="text-ich-neutral/60 text-sm py-6 text-center">No bookings match your filter.</p>
             )}
           </div>
           </>
@@ -239,22 +239,22 @@ export default function DashboardSupplierDetail() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="w-10 h-10 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
     </div>
-    <div className="text-xl font-display font-bold text-mora-primary mt-3 truncate">{value}</div>
+    <div className="text-xl font-display font-bold text-ich-primary mt-3 truncate">{value}</div>
   </div>
 );
 
 const Row = ({ label, value, href }) => (
-  <div className="flex items-baseline justify-between gap-3 border-b border-mora-primary/5 pb-2 last:border-0">
-    <span className="text-mora-neutral/60 shrink-0">{label}</span>
+  <div className="flex items-baseline justify-between gap-3 border-b border-ich-primary/5 pb-2 last:border-0">
+    <span className="text-ich-neutral/60 shrink-0">{label}</span>
     {value
       ? (href
-        ? <a href={href} target="_blank" rel="noreferrer" className="text-mora-primary hover:text-gold text-right break-all">{value}</a>
-        : <span className="text-mora-primary font-medium text-right">{value}</span>)
-      : <span className="text-mora-neutral/40">—</span>}
+        ? <a href={href} target="_blank" rel="noreferrer" className="text-ich-primary hover:text-gold text-right break-all">{value}</a>
+        : <span className="text-ich-primary font-medium text-right">{value}</span>)
+      : <span className="text-ich-neutral/40">—</span>}
   </div>
 );

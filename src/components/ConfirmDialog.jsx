@@ -65,27 +65,27 @@ export function ConfirmHost() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <div className="absolute inset-0 bg-mora-primary/30 backdrop-blur-[2px] animate-fade-in" onClick={() => close(false)} />
+      <div className="absolute inset-0 bg-ich-primary/30 backdrop-blur-[2px] animate-fade-in" onClick={() => close(false)} />
       <div className="dash-drawer-in relative w-full max-w-sm bg-white rounded-3xl shadow-float p-6 text-center">
         <button
           onClick={() => close(false)}
           aria-label="Close"
-          className="absolute top-3 right-3 w-10 h-10 rounded-full hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"
+          className="absolute top-3 right-3 w-10 h-10 rounded-full hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className={`w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center ${destructive ? "bg-red-500/10 text-red-600" : "bg-mora-gold/10 text-gold"}`}>
+        <div className={`w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center ${destructive ? "bg-red-500/10 text-red-600" : "bg-ich-gold/10 text-gold"}`}>
           <AlertTriangle className="w-6 h-6" />
         </div>
 
-        <h2 id="confirm-title" className="text-lg font-display font-bold text-mora-primary">{title}</h2>
-        {body && <p className="text-sm text-mora-neutral mt-1.5 leading-relaxed">{body}</p>}
+        <h2 id="confirm-title" className="text-lg font-display font-bold text-ich-primary">{title}</h2>
+        {body && <p className="text-sm text-ich-neutral mt-1.5 leading-relaxed">{body}</p>}
 
         <div className="flex gap-2.5 mt-6">
           <button
             onClick={() => close(false)}
-            className="flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press-spring"
+            className="flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press-spring"
           >
             {cancelLabel}
           </button>

@@ -133,7 +133,7 @@ export default function ChecklistView() {
               <button key={t.id}
                 onClick={() => selectTrip(t.id)}
                 className={`flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-                  selectedTripId === t.id ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"
+                  selectedTripId === t.id ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"
                 }`}>
                 {t.title}
               </button>
@@ -144,12 +144,12 @@ export default function ChecklistView() {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
         </div>
       ) : !selectedTripId ? (
         <div className="px-6">
           <GlassCard className="p-8 text-center">
-            <p className="text-sm text-mora-neutral/50">No trips found. Create a trip first.</p>
+            <p className="text-sm text-ich-neutral/50">No trips found. Create a trip first.</p>
           </GlassCard>
         </div>
       ) : (
@@ -158,11 +158,11 @@ export default function ChecklistView() {
           <div className="px-6 mb-6">
             <GlassCard className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-mora-white">{checkedItems} / {totalItems} packed</p>
+                <p className="text-sm font-medium text-ich-white">{checkedItems} / {totalItems} packed</p>
                 <p className="text-xs text-gold">{pct}%</p>
               </div>
               <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-mora-gold to-gold rounded-full transition-all duration-500"
+                <div className="h-full bg-gradient-to-r from-ich-gold to-gold rounded-full transition-all duration-500"
                   style={{ width: `${pct}%` }} />
               </div>
             </GlassCard>
@@ -172,16 +172,16 @@ export default function ChecklistView() {
           <div className="px-6 space-y-4">
             {categories.map(cat => (
               <GlassCard key={cat.id} className="p-4">
-                <h3 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest mb-3">{cat.name}</h3>
+                <h3 className="text-xs font-semibold text-ich-white/70 uppercase tracking-widest mb-3">{cat.name}</h3>
                 <div className="space-y-2">
                   {cat.items.map(item => (
                     <div key={item.id} className="flex items-center gap-3 group">
                       <button onClick={() => toggle(cat.id, item.id)} aria-label="Toggle item" className="flex-shrink-0">
                         {item.checked
                           ? <CheckSquare className="w-4 h-4 text-emerald-400" />
-                          : <Square className="w-4 h-4 text-mora-neutral/30" />}
+                          : <Square className="w-4 h-4 text-ich-neutral/30" />}
                       </button>
-                      <span className={`flex-1 text-sm transition-all ${item.checked ? "text-mora-neutral/40 line-through" : "text-mora-white"}`}>
+                      <span className={`flex-1 text-sm transition-all ${item.checked ? "text-ich-neutral/40 line-through" : "text-ich-white"}`}>
                         {item.label}
                       </span>
                       <button onClick={() => deleteItem(cat.id, item.id)} aria-label="Delete item"
@@ -197,10 +197,10 @@ export default function ChecklistView() {
                     onChange={e => setNewItem(prev => ({ ...prev, [cat.id]: e.target.value }))}
                     onKeyDown={e => e.key === "Enter" && addItem(cat.id)}
                     placeholder="Add item..."
-                    className="flex-1 bg-transparent text-xs text-mora-white placeholder:text-mora-neutral/30 outline-none"
+                    className="flex-1 bg-transparent text-xs text-ich-white placeholder:text-ich-neutral/30 outline-none"
                   />
                   <button onClick={() => addItem(cat.id)} aria-label="Add item"
-                    className="w-6 h-6 glass-light rounded-md flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors">
+                    className="w-6 h-6 glass-light rounded-md flex items-center justify-center text-ich-neutral/50 hover:text-gold transition-colors">
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>

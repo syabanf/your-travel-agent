@@ -11,7 +11,7 @@ import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const statusColors = {
-  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
+  pending: "bg-ich-gold/10 text-gold border-ich-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
@@ -82,7 +82,7 @@ export default function Booking() {
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
         </div>
       )}
       <PageHeader title="My Bookings" subtitle="Your reservations" />
@@ -95,10 +95,10 @@ export default function Booking() {
               <Package className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-mora-primary">Holiday packages</p>
-              <p className="text-xs text-mora-neutral/70 mt-0.5">Ready-made trips, everything included</p>
+              <p className="text-sm font-semibold text-ich-primary">Holiday packages</p>
+              <p className="text-xs text-ich-neutral/70 mt-0.5">Ready-made trips, everything included</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-ich-neutral/40 flex-shrink-0" />
           </div>
         </Link>
 
@@ -108,10 +108,10 @@ export default function Booking() {
               <CalendarSearch className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-mora-primary">Book flights, hotels &amp; more</p>
-              <p className="text-xs text-mora-neutral/70 mt-0.5">Search the travel marketplace</p>
+              <p className="text-sm font-semibold text-ich-primary">Book flights, hotels &amp; more</p>
+              <p className="text-xs text-ich-neutral/70 mt-0.5">Search the travel marketplace</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-mora-neutral/40 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-ich-neutral/40 flex-shrink-0" />
           </div>
         </Link>
       </div>
@@ -119,7 +119,7 @@ export default function Booking() {
       {/* Recent Bookings */}
       <div className="px-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-mora-white/90 tracking-wide uppercase">
+          <h2 className="text-sm font-semibold text-ich-white/90 tracking-wide uppercase">
             My Bookings
           </h2>
         </div>
@@ -133,7 +133,7 @@ export default function Booking() {
                 onClick={() => setStatus(c.value)}
                 aria-pressed={status === c.value}
                 className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                  status === c.value ? "btn-primary text-white" : "glass-light text-mora-neutral"
+                  status === c.value ? "btn-primary text-white" : "glass-light text-ich-neutral"
                 }`}
               >
                 {c.label}
@@ -183,20 +183,20 @@ export default function Booking() {
                           <img src={booking.image_url} alt={booking.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
                           <Icon className="w-6 h-6 text-gold" strokeWidth={1.5} />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-sm font-medium text-mora-white truncate">{booking.title}</h3>
+                          <h3 className="text-sm font-medium text-ich-white truncate">{booking.title}</h3>
                           <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[booking.status] || statusColors.pending}`}>
                             {booking.status}
                           </span>
                         </div>
-                        <p className="text-xs text-mora-neutral/60 mt-0.5">{booking.provider}</p>
+                        <p className="text-xs text-ich-neutral/60 mt-0.5">{booking.provider}</p>
                         <div className="flex items-center justify-between gap-2 mt-2">
-                          <span className="text-xs text-mora-neutral/70 truncate min-w-0">
+                          <span className="text-xs text-ich-neutral/70 truncate min-w-0">
                             {booking.check_in && moment(booking.check_in).format("MMM D, YYYY")}
                           </span>
                           {booking.price > 0 && (

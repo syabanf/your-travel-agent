@@ -68,11 +68,11 @@ export default function FeatureUnlock() {
           <div className="w-16 h-16 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
             <Icon className="w-8 h-8 text-gold" strokeWidth={1.5} />
           </div>
-          <h2 className="text-lg font-display font-bold text-mora-primary mb-1.5">{meta.name}</h2>
-          <p className="text-sm text-mora-neutral leading-relaxed max-w-[280px] mx-auto">{meta.tagline}</p>
+          <h2 className="text-lg font-display font-bold text-ich-primary mb-1.5">{meta.name}</h2>
+          <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">{meta.tagline}</p>
 
           <p className="mt-5 text-2xl font-display font-bold text-gold">{formatIDR(meta.price)}</p>
-          <p className="text-[11px] text-mora-neutral/60 mt-0.5">{meta.unit}</p>
+          <p className="text-[11px] text-ich-neutral/60 mt-0.5">{meta.unit}</p>
         </GlassCard>
 
         <GlassCard className="p-5">
@@ -81,15 +81,15 @@ export default function FeatureUnlock() {
             {meta.perks.map((perk) => (
               <li key={perk} className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-sm text-mora-neutral leading-snug">{perk}</span>
+                <span className="text-sm text-ich-neutral leading-snug">{perk}</span>
               </li>
             ))}
           </ul>
         </GlassCard>
 
         <div className="flex items-center gap-2 px-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-mora-neutral/50 shrink-0" />
-          <p className="text-[11px] text-mora-neutral/50 leading-relaxed">
+          <ShieldCheck className="w-3.5 h-3.5 text-ich-neutral/50 shrink-0" />
+          <p className="text-[11px] text-ich-neutral/50 leading-relaxed">
             One-off payment. Payment is simulated in this demo.
           </p>
         </div>

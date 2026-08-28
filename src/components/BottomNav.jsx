@@ -60,15 +60,15 @@ export default function BottomNav() {
                   {isActive && (
                     <motion.span
                       layoutId="navActivePill"
-                      className="absolute inset-0 rounded-2xl bg-mora-gold/[0.12]"
+                      className="absolute inset-0 rounded-2xl bg-ich-gold/[0.12]"
                       transition={{ type: "spring", stiffness: 520, damping: 38 }}
                     />
                   )}
                   <Icon
-                    className={`relative w-5 h-5 transition-colors ${isActive ? "text-gold" : "text-mora-neutral/60"}`}
+                    className={`relative w-5 h-5 transition-colors ${isActive ? "text-gold" : "text-ich-neutral/60"}`}
                     strokeWidth={isActive ? 2.4 : 1.7}
                   />
-                  <span className={`relative text-[11px] font-medium tracking-wide transition-colors ${isActive ? "text-gold" : "text-mora-neutral/60"}`}>
+                  <span className={`relative text-[11px] font-medium tracking-wide transition-colors ${isActive ? "text-gold" : "text-ich-neutral/60"}`}>
                     {label}
                   </span>
                 </button>

@@ -17,13 +17,13 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS_BADGE = {
   new: "bg-blue-100 text-blue-700",
-  contacted: "bg-mora-gold/10 text-gold",
+  contacted: "bg-ich-gold/10 text-gold",
   quoted: "bg-indigo-100 text-indigo-700",
   won: "bg-emerald-100 text-emerald-700",
   lost: "bg-red-100 text-red-700",
 };
 
-const PRIORITY_BADGE = { low: "bg-slate-100 text-slate-500", medium: "bg-mora-gold/15 text-gold", high: "bg-red-100 text-red-700" };
+const PRIORITY_BADGE = { low: "bg-slate-100 text-slate-500", medium: "bg-ich-gold/15 text-gold", high: "bg-red-100 text-red-700" };
 
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
 
@@ -78,7 +78,7 @@ export default function DashboardLeadDetail() {
   };
 
   const back = (
-    <Link to="/dashboard/leads" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary mb-4">
+    <Link to="/dashboard/leads" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary mb-4">
       <ChevronLeft className="w-4 h-4" /> Back to leads
     </Link>
   );
@@ -87,7 +87,7 @@ export default function DashboardLeadDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function DashboardLeadDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="bg-white rounded-2xl border border-mora-primary/10">
+        <div className="bg-white rounded-2xl border border-ich-primary/10">
           <EmptyState icon={Target} title="Lead not found" hint="This lead may have been removed or converted." />
         </div>
       </div>
@@ -110,13 +110,13 @@ export default function DashboardLeadDetail() {
       {back}
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 flex items-start gap-5">
-        <div className="w-16 h-16 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 flex items-start gap-5">
+        <div className="w-16 h-16 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
           {(lead.name || "?").trim().charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-display font-bold text-mora-primary truncate">{lead.name || "Unnamed lead"}</h1>
-          <p className="text-sm text-mora-neutral/70 mt-0.5">{[lead.source && cap(lead.source), lead.destination].filter(Boolean).join(" · ") || "No source or destination"}</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary truncate">{lead.name || "Unnamed lead"}</h1>
+          <p className="text-sm text-ich-neutral/70 mt-0.5">{[lead.source && cap(lead.source), lead.destination].filter(Boolean).join(" · ") || "No source or destination"}</p>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[status] || STATUS_BADGE.new}`}>{status}</span>
           </div>
@@ -143,8 +143,8 @@ export default function DashboardLeadDetail() {
       </div>
 
       {/* Details card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
-        <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Enquiry details</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mt-6">
+        <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Enquiry details</h2>
         <div className="space-y-1">
           <DetailRow icon={Mail} label="Email" value={lead.email} />
           <DetailRow icon={Phone} label="Phone" value={lead.phone} />
@@ -160,12 +160,12 @@ export default function DashboardLeadDetail() {
 
       {/* Actions card */}
       {(can(role, "leads", "edit") || can(role, "customers", "create")) && (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
-          <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Actions</h2>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mt-6">
+          <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Actions</h2>
           <div className="flex flex-wrap items-end gap-4">
             {can(role, "leads", "edit") && (
               <div>
-                <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Stage</label>
+                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Stage</label>
                 <SearchableSelect
                   value={status}
                   onChange={(v) => setStatus(v)}
@@ -176,7 +176,7 @@ export default function DashboardLeadDetail() {
               </div>
             )}
             {can(role, "customers", "create") && (
-              <button onClick={convert} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 bg-mora-gold/10 text-gold hover:bg-mora-gold/20">
+              <button onClick={convert} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 bg-ich-gold/10 text-gold hover:bg-ich-gold/20">
                 <UserPlus className="w-4 h-4" /> Convert to customer
               </button>
             )}
@@ -188,21 +188,21 @@ export default function DashboardLeadDetail() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="w-10 h-10 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
     </div>
-    <div className="stat-value text-xl font-display font-bold text-mora-primary mt-3 min-w-0 truncate">{value}</div>
+    <div className="stat-value text-xl font-display font-bold text-ich-primary mt-3 min-w-0 truncate">{value}</div>
   </div>
 );
 
 const DetailRow = ({ icon: Icon, label, value }) => (
-  <div className="flex items-start gap-3 py-2 border-b border-mora-primary/5 last:border-0">
+  <div className="flex items-start gap-3 py-2 border-b border-ich-primary/5 last:border-0">
     <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
     <div className="min-w-0">
-      <div className="text-[11px] text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-sm text-mora-primary break-words">{value || <span className="text-mora-neutral/50">Not set</span>}</div>
+      <div className="text-[11px] text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-sm text-ich-primary break-words">{value || <span className="text-ich-neutral/50">Not set</span>}</div>
     </div>
   </div>
 );

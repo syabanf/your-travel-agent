@@ -29,11 +29,11 @@ export default function Privacy() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Privacy Policy" subtitle="How we handle your data" showBack />
       <div className="px-6 space-y-3 mt-2">
-        <p className="text-xs text-mora-neutral/50 px-1">Last updated June 2026</p>
+        <p className="text-xs text-ich-neutral/50 px-1">Last updated June 2026</p>
         {sections.map((s) => (
           <GlassCard key={s.title} className="p-5">
-            <h2 className="text-sm font-semibold text-mora-primary mb-2">{s.title}</h2>
-            <p className="text-sm text-mora-neutral/70 leading-relaxed">{s.body}</p>
+            <h2 className="text-sm font-semibold text-ich-primary mb-2">{s.title}</h2>
+            <p className="text-sm text-ich-neutral/70 leading-relaxed">{s.body}</p>
           </GlassCard>
         ))}
       </div>

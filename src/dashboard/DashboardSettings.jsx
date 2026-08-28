@@ -63,7 +63,7 @@ export default function DashboardSettings() {
   if (form == null) {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
@@ -71,13 +71,13 @@ export default function DashboardSettings() {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-mora-primary">Settings</h1>
-        <p className="text-sm text-mora-neutral mt-0.5">App-wide brand, support, social & feature flags.</p>
+        <h1 className="text-2xl font-display font-bold text-ich-primary">Settings</h1>
+        <p className="text-sm text-ich-neutral mt-0.5">App-wide brand, support, social & feature flags.</p>
       </header>
 
       {!canEdit && (
-        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-mora-primary/10 bg-mora-primary/5 px-4 py-3 text-sm text-mora-neutral">
-          <Lock className="w-4 h-4 shrink-0 text-mora-neutral/70" />
+        <div className="mb-6 flex items-center gap-2 rounded-2xl border border-ich-primary/10 bg-ich-primary/5 px-4 py-3 text-sm text-ich-neutral">
+          <Lock className="w-4 h-4 shrink-0 text-ich-neutral/70" />
           You have read-only access to settings.
         </div>
       )}
@@ -107,8 +107,8 @@ export default function DashboardSettings() {
         {/* Social & currency */}
         <Section icon={Share2} title="Social & currency">
           <Row2>
-            <FieldD label="Instagram"><input value={form.instagram || ""} onChange={(e) => upd("instagram", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="@moratravel" /></FieldD>
-            <FieldD label="Facebook"><input value={form.facebook || ""} onChange={(e) => upd("facebook", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="facebook.com/moratravel" /></FieldD>
+            <FieldD label="Instagram"><input value={form.instagram || ""} onChange={(e) => upd("instagram", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="@iconholiday" /></FieldD>
+            <FieldD label="Facebook"><input value={form.facebook || ""} onChange={(e) => upd("facebook", e.target.value)} disabled={!canEdit} className="dash-input" placeholder="facebook.com/iconholiday" /></FieldD>
           </Row2>
           <FieldD label="Currency">
             <SearchableSelect
@@ -139,8 +139,8 @@ export default function DashboardSettings() {
                   className="accent-[#AD1F23] w-4 h-4 mt-0.5 shrink-0"
                 />
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-mora-primary">{f.label}</span>
-                  <span className="block text-xs text-mora-neutral">{f.help}</span>
+                  <span className="block text-sm font-semibold text-ich-primary">{f.label}</span>
+                  <span className="block text-xs text-ich-neutral">{f.help}</span>
                 </span>
               </label>
             ))}
@@ -149,7 +149,7 @@ export default function DashboardSettings() {
       </div>
 
       {/* Save bar */}
-      <div className="sticky bottom-0 mt-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 py-4 bg-white/80 backdrop-blur border-t border-mora-primary/10 flex justify-end">
+      <div className="sticky bottom-0 mt-6 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 py-4 bg-white/80 backdrop-blur border-t border-ich-primary/10 flex justify-end">
         <button
           onClick={save}
           disabled={!canEdit || saving}
@@ -163,9 +163,9 @@ export default function DashboardSettings() {
 }
 
 const Section = ({ icon: Icon, title, children }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
-    <h2 className="flex items-center gap-2 font-display font-semibold text-mora-primary mb-4">
-      <span className="w-8 h-8 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-4 h-4" /></span>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+    <h2 className="flex items-center gap-2 font-display font-semibold text-ich-primary mb-4">
+      <span className="w-8 h-8 rounded-lg bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-4 h-4" /></span>
       {title}
     </h2>
     <div className="space-y-3">{children}</div>
@@ -175,7 +175,7 @@ const Section = ({ icon: Icon, title, children }) => (
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

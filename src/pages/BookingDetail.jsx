@@ -13,7 +13,7 @@ import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const statusColors = {
-  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
+  pending: "bg-ich-gold/10 text-gold border-ich-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
@@ -57,7 +57,7 @@ export default function BookingDetail() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
     </div>
   );
 
@@ -95,7 +95,7 @@ export default function BookingDetail() {
       {booking.image_url && (
         <div className="relative h-52">
           <img src={booking.image_url} alt={booking.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ich-primary via-ich-primary/40 to-transparent" />
           <div className="absolute top-0 left-0 right-0">
             <PageHeader showBack title="" />
           </div>
@@ -106,36 +106,36 @@ export default function BookingDetail() {
       <div className="px-6 mt-6 space-y-4 pb-28">
         <GlassCard className="p-5">
           <div className="flex items-start justify-between gap-3 mb-4">
-            <h1 className="text-xl font-display font-bold text-mora-white">{booking.title}</h1>
+            <h1 className="text-xl font-display font-bold text-ich-white">{booking.title}</h1>
             <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize flex-shrink-0 ${statusColors[booking.status] || statusColors.pending}`}>
               {booking.status}
             </span>
           </div>
           <div className="space-y-3">
             {booking.provider && (
-              <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
+              <div className="flex items-center gap-3 text-sm text-ich-neutral/70">
                 <Hash className="w-4 h-4 text-gold/50 flex-shrink-0" />
                 <span>{booking.provider}</span>
               </div>
             )}
             {booking.location && (
-              <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
+              <div className="flex items-center gap-3 text-sm text-ich-neutral/70">
                 <MapPin className="w-4 h-4 text-gold/50 flex-shrink-0" />
                 <span>{booking.location}</span>
               </div>
             )}
             {booking.check_in && (
-              <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
+              <div className="flex items-center gap-3 text-sm text-ich-neutral/70">
                 <Calendar className="w-4 h-4 text-gold/50 flex-shrink-0" />
                 <span>{moment(booking.check_in).format("MMM D, YYYY")} {booking.check_out && `→ ${moment(booking.check_out).format("MMM D, YYYY")}`}</span>
               </div>
             )}
             {booking.price > 0 && (
-              <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
+              <div className="flex items-center gap-3 text-sm text-ich-neutral/70">
                 <Wallet className="w-4 h-4 text-gold/50 flex-shrink-0" />
                 <span className="stat-value font-display font-semibold text-gold">{formatIDR(booking.price)}</span>
                 {balance > 0 && paidOf(booking) > 0 && (
-                  <span className="text-xs text-mora-neutral/50">
+                  <span className="text-xs text-ich-neutral/50">
                     · {formatIDR(paidOf(booking))} paid
                   </span>
                 )}
@@ -144,21 +144,21 @@ export default function BookingDetail() {
             {balance > 0 && paidOf(booking) > 0 && (
               <div className="flex items-center gap-3 text-sm">
                 <Wallet className="w-4 h-4 text-transparent flex-shrink-0" />
-                <span className="text-mora-neutral/70">Balance due</span>
+                <span className="text-ich-neutral/70">Balance due</span>
                 <span className="text-gold font-medium">{formatIDR(balance)}</span>
               </div>
             )}
             {booking.confirmation_code && (
-              <div className="flex items-center gap-3 text-sm text-mora-neutral/70">
+              <div className="flex items-center gap-3 text-sm text-ich-neutral/70">
                 <Hash className="w-4 h-4 text-gold/50 flex-shrink-0" />
-                <span>Confirmation: <span className="text-mora-white font-medium">{booking.confirmation_code}</span></span>
+                <span>Confirmation: <span className="text-ich-white font-medium">{booking.confirmation_code}</span></span>
               </div>
             )}
           </div>
           {booking.notes && (
             <div className="mt-4 pt-4 border-t border-white/5">
-              <p className="text-xs text-mora-neutral/50 mb-1.5">Notes</p>
-              <p className="text-sm text-mora-neutral/70 leading-relaxed">{booking.notes}</p>
+              <p className="text-xs text-ich-neutral/50 mb-1.5">Notes</p>
+              <p className="text-sm text-ich-neutral/70 leading-relaxed">{booking.notes}</p>
             </div>
           )}
         </GlassCard>
@@ -176,7 +176,7 @@ export default function BookingDetail() {
         {paidOf(booking) > 0 && (
           <button
             onClick={() => printDocument("Icon Holiday Receipt", receiptHTML(booking))}
-            className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-mora-primary hover:bg-mora-primary/5 flex items-center justify-center gap-2 transition-all"
+            className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 flex items-center justify-center gap-2 transition-all"
           >
             <ReceiptText className="w-4 h-4" /> Export receipt
           </button>

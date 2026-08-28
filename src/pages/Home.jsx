@@ -93,8 +93,8 @@ export default function Home() {
   if (!user) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center min-h-screen px-6 text-center">
-        <h1 className="text-3xl font-display font-semibold text-mora-primary mb-3">Welcome to Icon Holiday</h1>
-        <p className="text-mora-neutral mb-8">Sign in to plan your next adventure</p>
+        <h1 className="text-3xl font-display font-semibold text-ich-primary mb-3">Welcome to Icon Holiday</h1>
+        <p className="text-ich-neutral mb-8">Sign in to plan your next adventure</p>
         <Link
           to="/login"
           className="px-6 py-3 glass-gold rounded-xl text-gold font-medium hover:glow-gold transition-all"
@@ -109,7 +109,7 @@ export default function Home() {
     <div className="animate-fade-in" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && user && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
         </div>
       )}
       {/* Greeting */}

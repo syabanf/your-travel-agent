@@ -14,20 +14,20 @@ const AXIS = { fontSize: 11, stroke: "#5A6B85" };
 const TOOLTIP_STYLE = { background: "#fff", border: "1px solid rgba(11,27,59,0.12)", borderRadius: 12, color: "#0B1B3B", fontSize: 12 };
 
 function Kpi({ icon: Icon, label, value, sub, tone = "primary" }) {
-  const toneClass = tone === "good" ? "text-emerald-600" : tone === "bad" ? "text-red-600" : "text-mora-primary";
+  const toneClass = tone === "good" ? "text-emerald-600" : tone === "bad" ? "text-red-600" : "text-ich-primary";
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-4 min-w-0">
-      <div className="flex items-center gap-1.5 text-mora-neutral text-[11px] uppercase tracking-wider"><Icon className="w-4 h-4 text-gold shrink-0" />{label}</div>
+    <div className="bg-white rounded-2xl border border-ich-primary/10 p-4 min-w-0">
+      <div className="flex items-center gap-1.5 text-ich-neutral text-[11px] uppercase tracking-wider"><Icon className="w-4 h-4 text-gold shrink-0" />{label}</div>
       <div className={`text-lg lg:text-xl font-display font-bold mt-1.5 leading-tight break-words tabular-nums ${toneClass}`}>{value}</div>
-      {sub && <div className="text-xs text-mora-neutral/70 mt-0.5">{sub}</div>}
+      {sub && <div className="text-xs text-ich-neutral/70 mt-0.5">{sub}</div>}
     </div>
   );
 }
 function Card({ icon: Icon, title, subtitle, children, right }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
-      <div className="px-5 py-4 border-b border-mora-primary/10 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-gold" /><div><h2 className="font-display font-semibold text-mora-primary leading-tight">{title}</h2>{subtitle && <p className="text-xs text-mora-neutral mt-0.5">{subtitle}</p>}</div></div>
+    <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
+      <div className="px-5 py-4 border-b border-ich-primary/10 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-gold" /><div><h2 className="font-display font-semibold text-ich-primary leading-tight">{title}</h2>{subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}</div></div>
         {right}
       </div>
       {children}
@@ -116,15 +116,15 @@ export default function DashboardERP() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `mora-income-statement-${moment().format("YYYY-MM-DD")}.csv`;
+    a.href = url; a.download = `ich-income-statement-${moment().format("YYYY-MM-DD")}.csv`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     toast.success("Income statement exported");
   };
 
   const SRow = ({ label, value, bold, negative, total }) => (
-    <div className={`flex items-center justify-between px-5 py-3 ${total ? "bg-mora-primary/[0.03]" : ""} ${bold ? "" : "border-b border-mora-primary/5"}`}>
-      <span className={`text-sm ${bold ? "font-semibold text-mora-primary" : "text-mora-neutral"}`}>{label}</span>
-      <span className={`text-sm tabular-nums ${bold ? "font-display font-bold" : ""} ${negative ? "text-red-600" : value < 0 ? "text-red-600" : "text-mora-primary"}`}>
+    <div className={`flex items-center justify-between px-5 py-3 ${total ? "bg-ich-primary/[0.03]" : ""} ${bold ? "" : "border-b border-ich-primary/5"}`}>
+      <span className={`text-sm ${bold ? "font-semibold text-ich-primary" : "text-ich-neutral"}`}>{label}</span>
+      <span className={`text-sm tabular-nums ${bold ? "font-display font-bold" : ""} ${negative ? "text-red-600" : value < 0 ? "text-red-600" : "text-ich-primary"}`}>
         {negative ? `(${formatIDR(Math.abs(value))})` : formatIDR(value)}
       </span>
     </div>
@@ -135,8 +135,8 @@ export default function DashboardERP() {
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Scale className="w-3.5 h-3.5" /> Finance</p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Financial Report</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Income statement, receivables, payables, cash flow & tax — derived from your bookings.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Financial Report</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Income statement, receivables, payables, cash flow & tax — derived from your bookings.</p>
         </div>
         <button onClick={exportPL} disabled={!f} className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium btn-primary disabled:opacity-50"><Download className="w-4 h-4" /> Export P&L</button>
       </header>
@@ -153,7 +153,7 @@ export default function DashboardERP() {
         <>
           <div className="flex gap-2 mb-4">
             {[{ k: "all", l: "All time" }, { k: "year", l: "This year" }].map((p) => (
-              <button key={p.k} onClick={() => setPeriod(p.k)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${period === p.k ? "bg-mora-gold/10 text-gold" : "text-mora-neutral hover:bg-mora-primary/5"}`}>{p.l}</button>
+              <button key={p.k} onClick={() => setPeriod(p.k)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${period === p.k ? "bg-ich-gold/10 text-gold" : "text-ich-neutral hover:bg-ich-primary/5"}`}>{p.l}</button>
             ))}
           </div>
 
@@ -198,7 +198,7 @@ export default function DashboardERP() {
                       <Bar dataKey="profit" name="Profit" fill="#AD1F23" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
-                ) : <div className="h-[200px] flex items-center justify-center text-sm text-mora-neutral/60">No data yet</div>}
+                ) : <div className="h-[200px] flex items-center justify-center text-sm text-ich-neutral/60">No data yet</div>}
               </div>
             </Card>
           </div>
@@ -208,11 +208,11 @@ export default function DashboardERP() {
             <Card icon={Receipt} title="Accounts receivable" subtitle="Pending bookings awaiting payment.">
               <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[420px]">
-                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5"><th className="px-5 py-2.5 font-medium">Customer</th><th className="px-5 py-2.5 font-medium">Booking</th><th className="px-5 py-2.5 font-medium text-right">Due</th></tr></thead>
+                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5"><th className="px-5 py-2.5 font-medium">Customer</th><th className="px-5 py-2.5 font-medium">Booking</th><th className="px-5 py-2.5 font-medium text-right">Due</th></tr></thead>
                 <tbody>
-                  {f.arRows.map((r, i) => (<tr key={i} className="border-b border-mora-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-mora-primary">{r[0]}</td><td className="px-5 py-2.5 text-mora-neutral truncate max-w-[160px]">{r[1]}</td><td className="px-5 py-2.5 text-right text-gold font-semibold">{r[2]}</td></tr>))}
-                  {f.arRows.length === 0 && <tr><td colSpan={3} className="px-5 py-8 text-center text-mora-neutral/60">Nothing outstanding.</td></tr>}
-                  {f.arRows.length > 0 && <tr className="bg-mora-primary/[0.03]"><td className="px-5 py-2.5 font-semibold" colSpan={2}>Total receivable</td><td className="px-5 py-2.5 text-right font-display font-bold text-mora-primary">{formatIDR(f.ar)}</td></tr>}
+                  {f.arRows.map((r, i) => (<tr key={i} className="border-b border-ich-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-ich-primary">{r[0]}</td><td className="px-5 py-2.5 text-ich-neutral truncate max-w-[160px]">{r[1]}</td><td className="px-5 py-2.5 text-right text-gold font-semibold">{r[2]}</td></tr>))}
+                  {f.arRows.length === 0 && <tr><td colSpan={3} className="px-5 py-8 text-center text-ich-neutral/60">Nothing outstanding.</td></tr>}
+                  {f.arRows.length > 0 && <tr className="bg-ich-primary/[0.03]"><td className="px-5 py-2.5 font-semibold" colSpan={2}>Total receivable</td><td className="px-5 py-2.5 text-right font-display font-bold text-ich-primary">{formatIDR(f.ar)}</td></tr>}
                 </tbody>
               </table>
               </div>
@@ -222,11 +222,11 @@ export default function DashboardERP() {
             <Card icon={Landmark} title="Accounts payable" subtitle="Supplier cost on confirmed bookings.">
               <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[420px]">
-                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5"><th className="px-5 py-2.5 font-medium">Supplier</th><th className="px-5 py-2.5 font-medium text-right">Bookings</th><th className="px-5 py-2.5 font-medium text-right">Payable</th></tr></thead>
+                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5"><th className="px-5 py-2.5 font-medium">Supplier</th><th className="px-5 py-2.5 font-medium text-right">Bookings</th><th className="px-5 py-2.5 font-medium text-right">Payable</th></tr></thead>
                 <tbody>
-                  {f.apList.map((v, i) => (<tr key={i} className="border-b border-mora-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-mora-primary">{v.name}</td><td className="px-5 py-2.5 text-right text-mora-neutral">{v.n}</td><td className="px-5 py-2.5 text-right text-mora-primary font-semibold">{formatIDR(v.payable)}</td></tr>))}
-                  {f.apList.length === 0 && <tr><td colSpan={3} className="px-5 py-8 text-center text-mora-neutral/60">Nothing payable.</td></tr>}
-                  {f.apList.length > 0 && <tr className="bg-mora-primary/[0.03]"><td className="px-5 py-2.5 font-semibold">Total payable</td><td /><td className="px-5 py-2.5 text-right font-display font-bold text-mora-primary">{formatIDR(f.ap)}</td></tr>}
+                  {f.apList.map((v, i) => (<tr key={i} className="border-b border-ich-primary/5 last:border-0"><td className="px-5 py-2.5 font-medium text-ich-primary">{v.name}</td><td className="px-5 py-2.5 text-right text-ich-neutral">{v.n}</td><td className="px-5 py-2.5 text-right text-ich-primary font-semibold">{formatIDR(v.payable)}</td></tr>))}
+                  {f.apList.length === 0 && <tr><td colSpan={3} className="px-5 py-8 text-center text-ich-neutral/60">Nothing payable.</td></tr>}
+                  {f.apList.length > 0 && <tr className="bg-ich-primary/[0.03]"><td className="px-5 py-2.5 font-semibold">Total payable</td><td /><td className="px-5 py-2.5 text-right font-display font-bold text-ich-primary">{formatIDR(f.ap)}</td></tr>}
                 </tbody>
               </table>
               </div>

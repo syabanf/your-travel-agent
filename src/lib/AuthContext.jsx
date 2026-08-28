@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 
 const AuthContext = createContext();
-const SESSION_KEY = 'mora_session';
+const SESSION_KEY = 'ich_session';
 
 const readSession = () => {
   try { return localStorage.getItem(SESSION_KEY) === '1'; } catch { return false; }
@@ -30,8 +30,8 @@ export const AuthProvider = ({ children }) => {
   const login = (profile = {}) => {
     try {
       localStorage.setItem(SESSION_KEY, '1');
-      if (profile.name) localStorage.setItem('mora_user_name', profile.name);
-      if (profile.email) localStorage.setItem('mora_user_email', profile.email);
+      if (profile.name) localStorage.setItem('ich_user_name', profile.name);
+      if (profile.email) localStorage.setItem('ich_user_email', profile.email);
     } catch { /* ignore */ }
     setIsAuthenticated(true);
   };
@@ -40,8 +40,8 @@ export const AuthProvider = ({ children }) => {
     try {
       localStorage.removeItem(SESSION_KEY);
       // Don't leave the previous person's name greeting the next one.
-      localStorage.removeItem('mora_user_name');
-      localStorage.removeItem('mora_user_email');
+      localStorage.removeItem('ich_user_name');
+      localStorage.removeItem('ich_user_email');
     } catch { /* ignore */ }
     setIsAuthenticated(false);
   };

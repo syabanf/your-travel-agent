@@ -18,7 +18,7 @@ export function SkeletonText({ lines = 3, className = "" }) {
 // Dashboard KPI/stat card placeholder.
 export function SkeletonStat({ className = "" }) {
   return (
-    <div className={`bg-white rounded-2xl border border-mora-primary/10 p-5 ${className}`} aria-hidden="true">
+    <div className={`bg-white rounded-2xl border border-ich-primary/10 p-5 ${className}`} aria-hidden="true">
       <div className="skeleton h-9 w-9 rounded-xl mb-3" />
       <div className="skeleton h-6 w-24 mb-2" />
       <div className="skeleton h-3 w-16" />

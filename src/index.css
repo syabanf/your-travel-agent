@@ -14,7 +14,7 @@
     height: 2.6rem;
     padding: 0 0.75rem;
     font-size: 0.875rem;
-    color: var(--mora-navy);
+    color: var(--ich-navy);
     outline: none;
     transition: border-color 0.15s ease;
   }
@@ -70,17 +70,17 @@
     --sidebar-ring: 358 70% 45%;
 
     /* brand */
-    --mora-navy: #0B1B3B;
-    --mora-navy-soft: #1B2D52;
-    --mora-crimson: #AD1F23;
-    --mora-crimson-bright: #C42A2E;
-    --mora-cream: #FBFAF5;
-    --mora-slate: #46566F;
+    --ich-navy: #0B1B3B;
+    --ich-navy-soft: #1B2D52;
+    --ich-crimson: #AD1F23;
+    --ich-crimson-bright: #C42A2E;
+    --ich-cream: #FBFAF5;
+    --ich-slate: #46566F;
 
     /* Golden ratio — informs type scale, spacing rhythm & key proportions */
     --phi: 1.618;
     /* Secondary accent — muted gold for non-destructive highlights */
-    --mora-amber: #C99A3F;
+    --ich-amber: #C99A3F;
   }
 }
 
@@ -93,7 +93,7 @@
   }
   body {
     @apply text-foreground font-body;
-    color: var(--mora-navy);
+    color: var(--ich-navy);
     background:
       radial-gradient(1200px 600px at 110% -10%, rgba(173, 31, 35, 0.06), transparent 60%),
       radial-gradient(1000px 700px at -10% 110%, rgba(11, 27, 59, 0.06), transparent 55%),
@@ -189,15 +189,15 @@
 
   /* ----- Text colors (kept names; aligned to palette) ----- */
   .text-gold { color: #AD1F23; }
-  .text-mora-white { color: #0B1B3B; }       /* legacy name → primary dark text on light */
-  .text-mora-primary { color: #0B1B3B; }
-  .text-mora-neutral { color: #46566F; }
-  .text-mora-neutral-light { color: #6B7A93; }
-  .text-mora-green-light { color: #05308C; }
+  .text-ich-white { color: #0B1B3B; }       /* legacy name → primary dark text on light */
+  .text-ich-primary { color: #0B1B3B; }
+  .text-ich-neutral { color: #46566F; }
+  .text-ich-neutral-light { color: #6B7A93; }
+  .text-ich-green-light { color: #05308C; }
 
   /* ----- Fills / borders ----- */
-  .bg-mora-green { background-color: #05308C; }
-  .bg-mora-gold { background-color: #AD1F23; }
+  .bg-ich-green { background-color: #05308C; }
+  .bg-ich-gold { background-color: #AD1F23; }
   .border-gold { border-color: rgba(173, 31, 35, 0.3); }
 
   /* ----- Accents ----- */
@@ -243,20 +243,20 @@
 }
 
 /* ---------------- Motion, skeletons & accents (UI polish) ---------------- */
-@keyframes mora-shimmer { 100% { transform: translateX(100%); } }
-@keyframes mora-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes ich-shimmer { 100% { transform: translateX(100%); } }
+@keyframes ich-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* Shimmering placeholder for loading states */
 .skeleton { position: relative; overflow: hidden; background: rgba(11, 27, 59, 0.07); border-radius: 0.6rem; }
 .skeleton::after {
   content: ""; position: absolute; inset: 0; transform: translateX(-100%);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-  animation: mora-shimmer 1.4s infinite;
+  animation: ich-shimmer 1.4s infinite;
 }
 
 /* Entrance motion */
-.animate-rise { animation: mora-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.stagger > * { animation: mora-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-rise { animation: ich-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > * { animation: ich-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .stagger > *:nth-child(1) { animation-delay: 0.03s; }
 .stagger > *:nth-child(2) { animation-delay: 0.06s; }
 .stagger > *:nth-child(3) { animation-delay: 0.09s; }
@@ -273,7 +273,7 @@
 .press:active { transform: scale(0.985); }
 
 /* Secondary accent (muted gold) */
-.text-amber-accent { color: var(--mora-amber); }
+.text-amber-accent { color: var(--ich-amber); }
 .bg-amber-soft { background-color: rgba(201, 154, 63, 0.12); }
 .border-amber-soft { border-color: rgba(201, 154, 63, 0.30); }
 
@@ -369,12 +369,12 @@
 }
 
 /* Visible keyboard-focus ring (only for keyboard navigation, not mouse/touch) */
-:focus-visible { outline: 2px solid var(--mora-crimson); outline-offset: 2px; border-radius: 6px; }
+:focus-visible { outline: 2px solid var(--ich-crimson); outline-offset: 2px; border-radius: 6px; }
 
 /* Skip-to-content link (shown only when focused) */
 .skip-link {
   position: absolute; left: 0.75rem; top: 0.5rem; z-index: 100;
-  background: var(--mora-navy); color: #fff; padding: 0.5rem 0.9rem; border-radius: 0.6rem;
+  background: var(--ich-navy); color: #fff; padding: 0.5rem 0.9rem; border-radius: 0.6rem;
   font-size: 0.8rem; font-weight: 600; transform: translateY(-150%); transition: transform 0.15s ease;
 }
 .skip-link:focus { transform: translateY(0); }

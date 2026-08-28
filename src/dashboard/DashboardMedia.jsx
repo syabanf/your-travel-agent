@@ -117,8 +117,8 @@ export default function DashboardMedia() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Media Library</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Reusable images for destinations, promotions &amp; content.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Media Library</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Reusable images for destinations, promotions &amp; content.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
@@ -133,10 +133,10 @@ export default function DashboardMedia() {
       </header>
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mb-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit media" : "New media"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit media" : "New media"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -149,17 +149,17 @@ export default function DashboardMedia() {
                 <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                 </button>
-                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
               </div>
             </div>
 
             {/* Preview */}
             <div>
-              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Preview</label>
-              <div className="rounded-xl overflow-hidden border border-mora-primary/10 bg-mora-primary/5 aspect-video flex items-center justify-center">
+              <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Preview</label>
+              <div className="rounded-xl overflow-hidden border border-ich-primary/10 bg-ich-primary/5 aspect-video flex items-center justify-center">
                 {editing.url
                   ? <img src={editing.url} alt={editing.title || "Media preview"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
-                  : <ImageIcon className="w-8 h-8 text-mora-neutral/40" />}
+                  : <ImageIcon className="w-8 h-8 text-ich-neutral/40" />}
               </div>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function DashboardMedia() {
       {items == null ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+            <div key={i} className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
               <Skeleton className="aspect-square rounded-none" />
               <div className="p-3 space-y-2">
                 <Skeleton className="h-4 w-3/4" />
@@ -189,7 +189,7 @@ export default function DashboardMedia() {
           <ReadOnlyBanner resource="media" />
           <div className="flex gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search media…" />
             </div>
             <DateRangeSelect value={range} onChange={setRange} />
@@ -205,24 +205,24 @@ export default function DashboardMedia() {
               className="max-w-[160px]"
             />
             {(query || range !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
             <ViewToggle value={view} onChange={setView} />
           </div>
 
-          <div className="text-xs text-mora-neutral uppercase tracking-wider mb-3">{sorted.length} {sorted.length === 1 ? "asset" : "assets"}</div>
+          <div className="text-xs text-ich-neutral uppercase tracking-wider mb-3">{sorted.length} {sorted.length === 1 ? "asset" : "assets"}</div>
 
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "thumb", label: "", render: (a) => a.url ? <img src={a.url} alt={a.title || "Media"} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-mora-primary/5 flex items-center justify-center text-mora-neutral/40"><ImageIcon className="w-4 h-4" /></span> },
-                { key: "title", label: "Title", className: "font-medium text-mora-primary", render: (a) => a.title },
+                { key: "thumb", label: "", render: (a) => a.url ? <img src={a.url} alt={a.title || "Media"} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-ich-primary/5 flex items-center justify-center text-ich-neutral/40"><ImageIcon className="w-4 h-4" /></span> },
+                { key: "title", label: "Title", className: "font-medium text-ich-primary", render: (a) => a.title },
                 { key: "type", label: "Tags", render: (a) => Array.isArray(a.tags) && a.tags.length ? (
-                  <span className="flex flex-wrap gap-1">{a.tags.map((t, i) => <span key={i} className="text-[10px] bg-mora-primary/5 text-mora-neutral rounded-full px-1.5 py-0.5">{t}</span>)}</span>
+                  <span className="flex flex-wrap gap-1">{a.tags.map((t, i) => <span key={i} className="text-[10px] bg-ich-primary/5 text-ich-neutral rounded-full px-1.5 py-0.5">{t}</span>)}</span>
                 ) : "—" },
-                { key: "url", label: "URL", render: (a) => <span className="text-mora-neutral/70 truncate block max-w-[280px]">{a.url}</span> },
+                { key: "url", label: "URL", render: (a) => <span className="text-ich-neutral/70 truncate block max-w-[280px]">{a.url}</span> },
               ]}
               rows={pg.pageItems}
               onRowClick={(a) => navigate(`/dashboard/media/${a.id}`)}
@@ -231,30 +231,30 @@ export default function DashboardMedia() {
           ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
             {pg.pageItems.map((m) => (
-              <div key={m.id} onClick={() => navigate(`/dashboard/media/${m.id}`)} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow press">
-                <div className="aspect-square bg-mora-primary/5 relative">
+              <div key={m.id} onClick={() => navigate(`/dashboard/media/${m.id}`)} className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-shadow press">
+                <div className="aspect-square bg-ich-primary/5 relative">
                   {m.url && <img src={m.url} alt={m.title} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} className="w-full h-full object-cover rounded-t-2xl" />}
-                  <div className="absolute inset-0 items-center justify-center text-mora-neutral/40" style={{ display: m.url ? "none" : "flex" }}>
+                  <div className="absolute inset-0 items-center justify-center text-ich-neutral/40" style={{ display: m.url ? "none" : "flex" }}>
                     <ImageIcon className="w-8 h-8" />
                   </div>
                 </div>
                 <div className="p-3 flex flex-col flex-1">
-                  <div className="truncate font-medium text-sm text-mora-primary" title={m.title}>{m.title}</div>
-                  {m.created_date && <div className="text-[10px] text-mora-neutral/60 mt-0.5">{moment(m.created_date).format("MMM D, YYYY")}</div>}
+                  <div className="truncate font-medium text-sm text-ich-primary" title={m.title}>{m.title}</div>
+                  {m.created_date && <div className="text-[10px] text-ich-neutral/60 mt-0.5">{moment(m.created_date).format("MMM D, YYYY")}</div>}
                   {Array.isArray(m.tags) && m.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {m.tags.map((t, i) => (
-                        <span key={i} className="text-[10px] bg-mora-primary/5 text-mora-neutral rounded-full px-1.5">{t}</span>
+                        <span key={i} className="text-[10px] bg-ich-primary/5 text-ich-neutral rounded-full px-1.5">{t}</span>
                       ))}
                     </div>
                   )}
                   <div className="flex items-center gap-1.5 mt-auto pt-2">
-                    <button onClick={(e) => { e.stopPropagation(); copyUrl(m.url); }} className="flex items-center gap-1 text-[11px] font-medium text-mora-neutral hover:text-gold">
+                    <button onClick={(e) => { e.stopPropagation(); copyUrl(m.url); }} className="flex items-center gap-1 text-[11px] font-medium text-ich-neutral hover:text-gold">
                       <Copy className="w-3.5 h-3.5" /> Copy URL
                     </button>
                     <div className="flex gap-1 ml-auto">
                       {can(role, "media", "edit") && (
-                        <button onClick={(e) => { e.stopPropagation(); startEdit(m); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); startEdit(m); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>
                       )}
                       {can(role, "media", "delete") && (
                         <button onClick={(e) => { e.stopPropagation(); remove(m); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -294,7 +294,7 @@ export default function DashboardMedia() {
 
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

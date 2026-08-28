@@ -17,7 +17,7 @@ export default function ProfilePreferences() {
   );
 
   const handleSave = () => {
-    localStorage.setItem("mora_preferences", JSON.stringify({
+    localStorage.setItem("ich_preferences", JSON.stringify({
       style: selectedStyle,
       pace: selectedPace,
       interests: selectedInterests,
@@ -34,7 +34,7 @@ export default function ProfilePreferences() {
           <div className="flex flex-wrap gap-2">
             {styles.map(s => (
               <button key={s} onClick={() => setSelectedStyle(s)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${selectedStyle === s ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
+                className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${selectedStyle === s ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"}`}>
                 {s}
               </button>
             ))}
@@ -45,7 +45,7 @@ export default function ProfilePreferences() {
           <div className="grid grid-cols-3 gap-2">
             {paces.map(p => (
               <button key={p} onClick={() => setSelectedPace(p)}
-                className={`py-3 rounded-xl text-xs font-medium capitalize transition-all ${selectedPace === p ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
+                className={`py-3 rounded-xl text-xs font-medium capitalize transition-all ${selectedPace === p ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"}`}>
                 {p}
               </button>
             ))}
@@ -56,7 +56,7 @@ export default function ProfilePreferences() {
           <div className="flex flex-wrap gap-2">
             {interests.map(i => (
               <button key={i} onClick={() => toggleInterest(i)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${selectedInterests.includes(i) ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
+                className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${selectedInterests.includes(i) ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"}`}>
                 {i}
               </button>
             ))}

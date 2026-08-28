@@ -23,26 +23,26 @@ export default function Pagination({ page, pageCount, total, pageSize, onPage, n
 
   return (
     <div className={`flex flex-wrap items-center justify-between gap-3 pt-4 ${className}`}>
-      <p className="text-xs text-mora-neutral">
-        Showing <span className="font-semibold text-mora-primary">{from}–{to}</span> of{" "}
-        <span className="font-semibold text-mora-primary">{total}</span> {noun}
+      <p className="text-xs text-ich-neutral">
+        Showing <span className="font-semibold text-ich-primary">{from}–{to}</span> of{" "}
+        <span className="font-semibold text-ich-primary">{total}</span> {noun}
       </p>
       {pageCount > 1 && (
         <div className="flex items-center gap-1">
           <button
             onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page"
-            className="h-10 px-3 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
+            className="h-10 px-3 rounded-lg border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           {win.map((p, i) =>
             p === "…" ? (
-              <span key={`e${i}`} className="px-1.5 text-mora-neutral/50 text-sm select-none">…</span>
+              <span key={`e${i}`} className="px-1.5 text-ich-neutral/50 text-sm select-none">…</span>
             ) : (
               <button
                 key={p} onClick={() => onPage(p)} aria-label={`Page ${p}`} aria-current={p === page ? "page" : undefined}
                 className={`h-10 min-w-[40px] px-3 rounded-lg text-sm font-medium press ${
-                  p === page ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"
+                  p === page ? "btn-primary text-white" : "border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5"
                 }`}
               >
                 {p}
@@ -51,7 +51,7 @@ export default function Pagination({ page, pageCount, total, pageSize, onPage, n
           )}
           <button
             onClick={() => onPage(page + 1)} disabled={page >= pageCount} aria-label="Next page"
-            className="h-10 px-3 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
+            className="h-10 px-3 rounded-lg border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center press"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

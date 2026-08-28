@@ -19,10 +19,10 @@ export default function DestinationDetail() {
   }, [id]);
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
   );
   if (!d) return (
-    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-mora-neutral/70">This destination is no longer available.</p></div>
+    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-ich-neutral/70">This destination is no longer available.</p></div>
   );
 
   const vibes = Array.isArray(d.vibes) ? d.vibes : [];
@@ -32,7 +32,7 @@ export default function DestinationDetail() {
   return (
     <div className="animate-fade-in pb-28">
       {/* Hero gallery */}
-      <div className="relative h-72 bg-mora-primary">
+      <div className="relative h-72 bg-ich-primary">
         {gallery.map((url, i) => (
           <img
             key={i}
@@ -55,7 +55,7 @@ export default function DestinationDetail() {
         {d.fromPrice > 0 && (
           <div className="absolute top-16 right-4 glass-light px-3 py-1.5 rounded-full flex items-center gap-1.5">
             <Plane className="w-3 h-3 text-gold flex-shrink-0" />
-            <span className="stat-value text-[11px] font-semibold text-mora-primary whitespace-nowrap">from {formatIDR(d.fromPrice)}</span>
+            <span className="stat-value text-[11px] font-semibold text-ich-primary whitespace-nowrap">from {formatIDR(d.fromPrice)}</span>
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -80,15 +80,15 @@ export default function DestinationDetail() {
 
       <div className="px-6 -mt-4 relative z-10 space-y-4">
         <GlassCard className="p-5">
-          <h2 className="text-sm font-semibold text-mora-primary mb-2">About {d.name}</h2>
-          <p className="text-sm text-mora-neutral leading-relaxed">
+          <h2 className="text-sm font-semibold text-ich-primary mb-2">About {d.name}</h2>
+          <p className="text-sm text-ich-neutral leading-relaxed">
             {d.tagline ? `${d.name} — ${d.tagline.toLowerCase()}. ` : ""}
             A favorite among Icon Holiday travelers, {d.name} blends {vibes.slice(0, 3).map((v) => v.toLowerCase()).join(", ") || "unforgettable experiences"} into one trip. Tap below and let the concierge craft a day-by-day plan.
           </p>
           {vibes.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4">
               {vibes.map((v) => (
-                <span key={v} className="text-[11px] font-medium text-gold bg-mora-gold/10 border border-mora-gold/20 px-2.5 py-1 rounded-full">{v}</span>
+                <span key={v} className="text-[11px] font-medium text-gold bg-ich-gold/10 border border-ich-gold/20 px-2.5 py-1 rounded-full">{v}</span>
               ))}
             </div>
           )}
@@ -105,7 +105,7 @@ export default function DestinationDetail() {
         <Link to={`/assistant/ai?destination=${encodeURIComponent(d.name)}`} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2">
           <Sparkles className="w-4 h-4" /> Plan a trip to {d.name}
         </Link>
-        <Link to="/ota" className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-mora-primary flex items-center justify-center gap-2 hover:bg-mora-primary/5 transition-colors">
+        <Link to="/ota" className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-ich-primary flex items-center justify-center gap-2 hover:bg-ich-primary/5 transition-colors">
           <CalendarSearch className="w-4 h-4 text-gold" /> Browse flights & stays
         </Link>
       </div>

@@ -9,7 +9,7 @@ import { formatIDR } from "@/lib/currency";
 function CardFace({ dest }) {
   const [imgError, setImgError] = useState(false);
   return (
-    <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(11,27,59,0.18)] select-none bg-mora-primary">
+    <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(11,27,59,0.18)] select-none bg-ich-primary">
       {!imgError ? (
         <img
           src={dest.image}
@@ -27,7 +27,7 @@ function CardFace({ dest }) {
 
       <div className="absolute top-4 left-4 glass-light px-3 py-1.5 rounded-full flex items-center gap-1.5">
         <Plane className="w-3 h-3 text-gold" />
-        <span className="text-[11px] font-semibold text-mora-primary">from {formatIDR(dest.fromPrice)}</span>
+        <span className="text-[11px] font-semibold text-ich-primary">from {formatIDR(dest.fromPrice)}</span>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
@@ -109,8 +109,8 @@ export default function DestinationSwipe({ onLikedChange }) {
             <div className="w-16 h-16 rounded-2xl glass-gold flex items-center justify-center mb-4">
               <Check className="w-8 h-8 text-gold" />
             </div>
-            <h3 className="text-xl font-display font-semibold text-mora-primary mb-1">That's everyone!</h3>
-            <p className="text-sm text-mora-neutral mb-4">
+            <h3 className="text-xl font-display font-semibold text-ich-primary mb-1">That's everyone!</h3>
+            <p className="text-sm text-ich-neutral mb-4">
               {liked.length > 0
                 ? `You saved ${liked.length} destination${liked.length > 1 ? "s" : ""} as references.`
                 : "No favorites yet — tap Continue to plan anyway."}
@@ -167,7 +167,7 @@ export default function DestinationSwipe({ onLikedChange }) {
           <button onClick={() => decide("left")} className="w-14 h-14 rounded-full glass-card flex items-center justify-center text-red-400 hover:scale-105 active:scale-95 transition-transform" aria-label="Skip">
             <X className="w-6 h-6" strokeWidth={2.5} />
           </button>
-          <button onClick={undo} disabled={!history.length} className="w-11 h-11 rounded-full glass-light flex items-center justify-center text-mora-neutral hover:scale-105 active:scale-95 transition-transform disabled:opacity-30" aria-label="Undo">
+          <button onClick={undo} disabled={!history.length} className="w-11 h-11 rounded-full glass-light flex items-center justify-center text-ich-neutral hover:scale-105 active:scale-95 transition-transform disabled:opacity-30" aria-label="Undo">
             <RotateCcw className="w-4.5 h-4.5" />
           </button>
           <button onClick={() => decide("right")} className="w-14 h-14 rounded-full flex items-center justify-center text-white btn-primary hover:scale-105 active:scale-95 transition-transform" aria-label="Favorite">
@@ -176,7 +176,7 @@ export default function DestinationSwipe({ onLikedChange }) {
         </div>
       )}
 
-      <p className="text-[11px] text-mora-neutral/60 mt-4">
+      <p className="text-[11px] text-ich-neutral/60 mt-4">
         {done ? "" : `${index + 1} / ${deck.length} · `}
         <span className="text-gold font-medium">{liked.length} saved</span>
       </p>

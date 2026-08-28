@@ -1,5 +1,5 @@
 // Client-side CSV export — download an array of rows as a .csv file.
-//   downloadCSV("mora-customers", ["Name","Email"], rows)
+//   downloadCSV("ich-customers", ["Name","Email"], rows)
 import moment from "moment";
 
 export function downloadCSV(filename, header, rows) {

@@ -27,7 +27,7 @@ function readSearch() {
 }
 
 const statusColors = {
-  pending: "bg-mora-gold/10 text-gold border-mora-gold/20",
+  pending: "bg-ich-gold/10 text-gold border-ich-gold/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
   cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
@@ -194,7 +194,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
           const Icon = t.icon;
           return (
             <button key={t.uid || t.key} onClick={() => handleTabChange(t.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === t.key ? "glass-gold text-gold" : "glass-light text-mora-neutral/60"}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === t.key ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"}`}>
               <Icon className="w-3.5 h-3.5" />
               {t.label}
             </button>
@@ -209,17 +209,17 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
             <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-gold" /></div>
           ) : myBookings.length === 0 ? (
             <GlassCard className="p-8 text-center">
-              <Ticket className="w-8 h-8 text-mora-neutral/30 mx-auto mb-2" />
-              <p className="text-sm text-mora-neutral/50">No bookings yet</p>
+              <Ticket className="w-8 h-8 text-ich-neutral/30 mx-auto mb-2" />
+              <p className="text-sm text-ich-neutral/50">No bookings yet</p>
             </GlassCard>
           ) : (
             myBookings.map((b) => (
               <GlassCard key={b.id} className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="text-sm font-semibold text-mora-white">{b.title}</p>
+                  <p className="text-sm font-semibold text-ich-white">{b.title}</p>
                   <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[b.status] || statusColors.pending}`}>{b.status}</span>
                 </div>
-                <p className="text-xs text-mora-neutral/50">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
+                <p className="text-xs text-ich-neutral/50">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
                 {b.price > 0 && <p className="text-sm font-display font-bold text-gold mt-1.5">{formatIDR(b.price)}</p>}
               </GlassCard>
             ))
@@ -239,7 +239,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                   <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                   <input value={form.from} onChange={e => upd("from", e.target.value)}
                     placeholder="Origin"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
+                    className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white placeholder:text-ich-neutral/30 outline-none" />
                 </div>
               </div>
             )}
@@ -251,7 +251,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                 <input value={form.to} onChange={e => upd("to", e.target.value)}
                   placeholder={activeTab === "hotel" ? "City or area" : activeTab === "car_rental" ? "City or airport" : activeTab === "attraction" ? "City or destination" : "Destination"}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white placeholder:text-mora-neutral/30 outline-none" />
+                  className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white placeholder:text-ich-neutral/30 outline-none" />
               </div>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                   <div className="relative">
                     <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                     <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white outline-none" />
+                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white outline-none" />
                   </div>
                 </div>
               </>
@@ -288,7 +288,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                   <div className="relative">
                     <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
                     <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-mora-white outline-none" />
+                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white outline-none" />
                   </div>
                 </div>
               </>
@@ -306,38 +306,38 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
       {/* Results */}
       {searched && results.length === 0 && !loading && (
         <div className="mt-4 text-center">
-          <p className="text-sm text-mora-neutral/50">No results found. Try a different search.</p>
+          <p className="text-sm text-ich-neutral/50">No results found. Try a different search.</p>
         </div>
       )}
 
       {results.length > 0 && (
         <div className="mt-4 space-y-3">
-          <h3 className="text-xs font-semibold text-mora-white/70 uppercase tracking-widest">{results.length} Results Found</h3>
+          <h3 className="text-xs font-semibold text-ich-white/70 uppercase tracking-widest">{results.length} Results Found</h3>
           {results.map((item, i) => (
             <GlassCard key={i} className="p-4">
               {activeTab === "flight" && (
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-sm font-semibold text-mora-white">{item.airline}</p>
-                      <p className="text-[10px] text-mora-neutral/50">{item.flight_number} · {item.class}</p>
+                      <p className="text-sm font-semibold text-ich-white">{item.airline}</p>
+                      <p className="text-[10px] text-ich-neutral/50">{item.flight_number} · {item.class}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
-                      <p className="text-[10px] text-mora-neutral/40">per person</p>
+                      <p className="text-[10px] text-ich-neutral/40">per person</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm font-bold text-mora-white">{item.departure_time}</span>
+                    <span className="text-sm font-bold text-ich-white">{item.departure_time}</span>
                     <div className="flex-1 flex items-center gap-1">
                       <div className="h-px flex-1 bg-white/10" />
-                      <span className="text-[10px] text-mora-neutral/40">{item.stops === 0 ? "Direct" : `${item.stops} stop`}</span>
+                      <span className="text-[10px] text-ich-neutral/40">{item.stops === 0 ? "Direct" : `${item.stops} stop`}</span>
                       <div className="h-px flex-1 bg-white/10" />
                     </div>
-                    <span className="text-sm font-bold text-mora-white">{item.arrival_time}</span>
+                    <span className="text-sm font-bold text-ich-white">{item.arrival_time}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-xs text-mora-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
+                    <span className="flex items-center gap-1 text-xs text-ich-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
                     <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
                   </div>
                 </div>
@@ -347,21 +347,21 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-mora-white">{item.name}</p>
-                      <p className="text-[10px] text-mora-neutral/50 mt-0.5">{item.location}</p>
+                      <p className="text-sm font-semibold text-ich-white">{item.name}</p>
+                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.location}</p>
                       <div className="flex items-center gap-1 mt-1">
                         {Array.from({ length: Math.round(item.rating || 4) }).map((_, j) => (
                           <Star key={j} className="w-2.5 h-2.5 text-gold fill-gold" />
                         ))}
-                        <span className="text-[10px] text-mora-neutral/50 ml-1">{item.rating}</span>
+                        <span className="text-[10px] text-ich-neutral/50 ml-1">{item.rating}</span>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_night)}</p>
-                      <p className="text-[10px] text-mora-neutral/40">/ night</p>
+                      <p className="text-[10px] text-ich-neutral/40">/ night</p>
                     </div>
                   </div>
-                  <p className="text-xs text-mora-neutral/50 mb-3">{item.room_type} · {item.amenities?.join(" · ")}</p>
+                  <p className="text-xs text-ich-neutral/50 mb-3">{item.room_type} · {item.amenities?.join(" · ")}</p>
                   <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Reserve Now</button>
                 </div>
               )}
@@ -370,25 +370,25 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-sm font-semibold text-mora-white">{item.operator}</p>
-                      <p className="text-[10px] text-mora-neutral/50">{item.train_name || item.bus_type || item.ship_name} · {item.class || item.ship_type || ""}</p>
+                      <p className="text-sm font-semibold text-ich-white">{item.operator}</p>
+                      <p className="text-[10px] text-ich-neutral/50">{item.train_name || item.bus_type || item.ship_name} · {item.class || item.ship_type || ""}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
-                      <p className="text-[10px] text-mora-neutral/40">per person</p>
+                      <p className="text-[10px] text-ich-neutral/40">per person</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm font-bold text-mora-white">{item.departure_time}</span>
+                    <span className="text-sm font-bold text-ich-white">{item.departure_time}</span>
                     <div className="flex-1 flex items-center gap-1">
                       <div className="h-px flex-1 bg-white/10" />
-                      <ArrowRight className="w-3 h-3 text-mora-neutral/30" />
+                      <ArrowRight className="w-3 h-3 text-ich-neutral/30" />
                       <div className="h-px flex-1 bg-white/10" />
                     </div>
-                    <span className="text-sm font-bold text-mora-white">{item.arrival_time}</span>
+                    <span className="text-sm font-bold text-ich-white">{item.arrival_time}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-xs text-mora-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
+                    <span className="flex items-center gap-1 text-xs text-ich-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
                     <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
                   </div>
                 </div>
@@ -398,16 +398,16 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="text-sm font-semibold text-mora-white">{item.car_name}</p>
-                      <p className="text-[10px] text-mora-neutral/50 mt-0.5">{item.provider} · {item.car_type} · {item.transmission}</p>
-                      <p className="text-[10px] text-mora-neutral/40 mt-0.5">{item.seats} seats · {item.mileage}</p>
+                      <p className="text-sm font-semibold text-ich-white">{item.car_name}</p>
+                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.provider} · {item.car_type} · {item.transmission}</p>
+                      <p className="text-[10px] text-ich-neutral/40 mt-0.5">{item.seats} seats · {item.mileage}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_day)}</p>
-                      <p className="text-[10px] text-mora-neutral/40">/ day</p>
+                      <p className="text-[10px] text-ich-neutral/40">/ day</p>
                     </div>
                   </div>
-                  <p className="text-xs text-mora-neutral/50 mb-3">{item.features?.join(" · ")}</p>
+                  <p className="text-xs text-ich-neutral/50 mb-3">{item.features?.join(" · ")}</p>
                   <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Rent Now</button>
                 </div>
               )}
@@ -416,22 +416,22 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-mora-white">{item.name}</p>
-                      <p className="text-[10px] text-mora-neutral/50 mt-0.5">{item.location} · {item.category}</p>
+                      <p className="text-sm font-semibold text-ich-white">{item.name}</p>
+                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.location} · {item.category}</p>
                       <div className="flex items-center gap-1 mt-1">
                         {Array.from({ length: Math.round(item.rating || 4) }).map((_, j) => (
                           <Star key={j} className="w-2.5 h-2.5 text-gold fill-gold" />
                         ))}
-                        <span className="text-[10px] text-mora-neutral/50 ml-1">{item.rating}</span>
+                        <span className="text-[10px] text-ich-neutral/50 ml-1">{item.rating}</span>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_person)}</p>
-                      <p className="text-[10px] text-mora-neutral/40">/ person</p>
+                      <p className="text-[10px] text-ich-neutral/40">/ person</p>
                     </div>
                   </div>
-                  <p className="text-xs text-mora-neutral/60 mb-2 leading-relaxed">{item.description}</p>
-                  <p className="text-xs text-mora-neutral/50 mb-3"><Clock className="w-3 h-3 inline mr-1" />{item.duration_hours}h · Includes: {item.includes?.join(", ")}</p>
+                  <p className="text-xs text-ich-neutral/60 mb-2 leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-ich-neutral/50 mb-3"><Clock className="w-3 h-3 inline mr-1" />{item.duration_hours}h · Includes: {item.includes?.join(", ")}</p>
                   <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Activity</button>
                 </div>
               )}

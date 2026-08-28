@@ -143,8 +143,8 @@ export default function DashboardDestinations() {
       <ReadOnlyBanner resource="destinations" />
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Destinations</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Manage the places travelers discover & swipe in the app.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Destinations</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Manage the places travelers discover & swipe in the app.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
@@ -167,10 +167,10 @@ export default function DashboardDestinations() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit destination" : "New destination"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit destination" : "New destination"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -182,12 +182,12 @@ export default function DashboardDestinations() {
               </Row2>
               <FieldD label="Tagline"><input value={editing.tagline} onChange={(e) => upd("tagline", e.target.value)} className="dash-input" placeholder="Island Paradise" /></FieldD>
               <div>
-                <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Images <span className="text-mora-neutral/50 normal-case tracking-normal">· first is the cover</span></label>
+                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Images <span className="text-ich-neutral/50 normal-case tracking-normal">· first is the cover</span></label>
                 <div className="space-y-2">
                   {(editing.images || [""]).map((url, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <div className="w-12 h-10 rounded-lg overflow-hidden bg-mora-primary/5 shrink-0 flex items-center justify-center">
-                        {url ? <img src={url} alt={editing.name || "Destination preview"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-mora-neutral/40" />}
+                      <div className="w-12 h-10 rounded-lg overflow-hidden bg-ich-primary/5 shrink-0 flex items-center justify-center">
+                        {url ? <img src={url} alt={editing.name || "Destination preview"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" /> : <ImageIcon className="w-4 h-4 text-ich-neutral/40" />}
                       </div>
                       <input value={url} onChange={(e) => updImage(i, e.target.value)} className="dash-input flex-1" placeholder="https://…" />
                       {(editing.images || []).length > 1 && (
@@ -212,15 +212,15 @@ export default function DashboardDestinations() {
                 <FieldD label="Languages"><input value={editing.languages ?? ""} onChange={(e) => upd("languages", e.target.value)} className="dash-input" placeholder="Indonesian, English" /></FieldD>
               </Row2>
               <FieldD label="Visa note"><textarea value={editing.visa_note ?? ""} onChange={(e) => upd("visa_note", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Visa-on-arrival for 30 days…" /></FieldD>
-              <div className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
+              <div className="flex items-center gap-2 text-sm text-ich-neutral pt-1">
                 <MapPin className="w-4 h-4 text-gold" />
-                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-mora-neutral/60">Click the map or search to set coordinates</span>}
+                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-ich-neutral/60">Click the map or search to set coordinates</span>}
               </div>
               <div className="flex gap-2 pt-3">
                 <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                 </button>
-                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
               </div>
             </div>
 
@@ -228,9 +228,9 @@ export default function DashboardDestinations() {
             <div>
               <div className="flex gap-2 mb-2">
                 <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && geocode()} placeholder="Search a place…" className="dash-input flex-1" />
-                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
+                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
               </div>
-              <div className="rounded-xl overflow-hidden border border-mora-primary/10" style={{ height: 340 }}>
+              <div className="rounded-xl overflow-hidden border border-ich-primary/10" style={{ height: 340 }}>
                 <OLMap
                   center={editing.lat != null ? [editing.lng, editing.lat] : [100, 5]}
                   zoom={editing.lat != null ? 5 : 2}
@@ -244,7 +244,7 @@ export default function DashboardDestinations() {
       ) : items == null ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+            <div key={i} className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
               <Skeleton className="h-28 rounded-none" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-4 w-32" />
@@ -259,7 +259,7 @@ export default function DashboardDestinations() {
         <>
         <div className="flex gap-2 mb-4">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
             <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search destinations…" />
           </div>
           <SearchableSelect
@@ -295,7 +295,7 @@ export default function DashboardDestinations() {
             className="max-w-[160px]"
           />
           {(query || statusF !== "all" || countryF !== "all" || range !== "all" || sortBy !== "newest") && (
-            <button onClick={() => { setQuery(""); setStatusF("all"); setCountryF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+            <button onClick={() => { setQuery(""); setStatusF("all"); setCountryF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
               <X className="w-3.5 h-3.5" /> Clear
             </button>
           )}
@@ -304,10 +304,10 @@ export default function DashboardDestinations() {
         {view === "table" ? (
           <DataTable
             columns={[
-              { key: "name", label: "Destination", className: "font-medium text-mora-primary", render: (d) => (
+              { key: "name", label: "Destination", className: "font-medium text-ich-primary", render: (d) => (
                 <span className="flex items-center gap-2.5 min-w-0">
-                  <span className="w-8 h-8 rounded-full bg-mora-gold/10 flex items-center justify-center text-base shrink-0">{d.emoji || "🌍"}</span>
-                  <span className="min-w-0"><span className="block truncate">{d.name}</span>{d.tagline ? <span className="block text-[11px] text-mora-neutral/60 truncate">{d.tagline}</span> : null}</span>
+                  <span className="w-8 h-8 rounded-full bg-ich-gold/10 flex items-center justify-center text-base shrink-0">{d.emoji || "🌍"}</span>
+                  <span className="min-w-0"><span className="block truncate">{d.name}</span>{d.tagline ? <span className="block text-[11px] text-ich-neutral/60 truncate">{d.tagline}</span> : null}</span>
                 </span>
               ) },
               { key: "country", label: "Country", render: (d) => d.country || "—" },
@@ -322,8 +322,8 @@ export default function DashboardDestinations() {
         ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {pg.pageItems.map((d) => (
-            <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
-              <div className="h-28 relative bg-mora-primary">
+            <Link key={d.id} to={`/dashboard/destinations/${d.id}`} className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden group hover:shadow-md transition-shadow block press">
+              <div className="h-28 relative bg-ich-primary">
                 {d.image && <img src={d.image} alt={d.name} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 {d.images?.length > 1 && (
                   <span className="absolute bottom-2 left-2 z-10 text-[10px] bg-black/55 text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
@@ -331,18 +331,18 @@ export default function DashboardDestinations() {
                   </span>
                 )}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} aria-label="Edit" className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "destinations", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(d); }} aria-label="Edit" className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
                   {can(role, "destinations", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(d); }} aria-label="Delete" className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </div>
               <div className="p-4">
                 <div className="flex items-center gap-2">
                   <span>{d.emoji}</span>
-                  <h3 className="font-display font-semibold text-mora-primary">{d.name}</h3>
+                  <h3 className="font-display font-semibold text-ich-primary">{d.name}</h3>
                 </div>
-                <p className="text-xs text-mora-neutral mt-0.5">{d.country}{d.tagline ? ` · ${d.tagline}` : ""}</p>
+                <p className="text-xs text-ich-neutral mt-0.5">{d.country}{d.tagline ? ` · ${d.tagline}` : ""}</p>
                 <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-mora-neutral/70">{d.lat != null ? `${d.lat.toFixed(2)}, ${d.lng.toFixed(2)}` : "No coords"}</span>
+                  <span className="text-xs text-ich-neutral/70">{d.lat != null ? `${d.lat.toFixed(2)}, ${d.lng.toFixed(2)}` : "No coords"}</span>
                   {d.fromPrice > 0 && <span className="text-sm font-semibold text-gold">{formatIDR(d.fromPrice)}</span>}
                 </div>
               </div>
@@ -380,7 +380,7 @@ export default function DashboardDestinations() {
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

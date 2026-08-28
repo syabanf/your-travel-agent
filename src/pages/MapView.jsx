@@ -153,7 +153,7 @@ export default function MapView() {
                 onKeyDown={(e) => e.key === "Enter" && geocodeSearch()}
                 placeholder="Search location…"
                 aria-label="Search for a location"
-                className="bg-white/95 border-mora-primary/10 text-mora-primary placeholder:text-mora-neutral/50 rounded-lg h-10 pl-9 shadow-sm"
+                className="bg-white/95 border-ich-primary/10 text-ich-primary placeholder:text-ich-neutral/50 rounded-lg h-10 pl-9 shadow-sm"
               />
               <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold" />
             </div>
@@ -164,7 +164,7 @@ export default function MapView() {
 
           {/* Back to all destinations */}
           {selectedDest && (
-            <button onClick={clearDest} className="absolute bottom-3 left-3 z-[5] px-3 py-1.5 rounded-full bg-white/95 shadow-sm text-xs font-semibold text-mora-primary flex items-center gap-1 press">
+            <button onClick={clearDest} className="absolute bottom-3 left-3 z-[5] px-3 py-1.5 rounded-full bg-white/95 shadow-sm text-xs font-semibold text-ich-primary flex items-center gap-1 press">
               <ChevronLeft className="w-3.5 h-3.5" /> All destinations
             </button>
           )}
@@ -181,8 +181,8 @@ export default function MapView() {
 
         {/* Legend (only meaningful once a destination is selected) */}
         {selectedDest && (
-          <div className="flex items-center gap-4 mt-2 px-1 text-[11px] text-mora-neutral">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-3.5 rounded-sm bg-mora-gold inline-block" /> Destination</span>
+          <div className="flex items-center gap-4 mt-2 px-1 text-[11px] text-ich-neutral">
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-3.5 rounded-sm bg-ich-gold inline-block" /> Destination</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: "#C99A3F" }} /> Things to do</span>
           </div>
         )}
@@ -191,7 +191,7 @@ export default function MapView() {
       {/* List */}
       <div className="px-6">
         {loading ? (
-          <div className="flex justify-center py-8"><div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-8"><div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
         ) : selectedDest ? (
           <>
             {/* Selected destination header → opens full detail */}
@@ -201,11 +201,11 @@ export default function MapView() {
                   <img src={selectedDest.image} alt={selectedDest.name} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-mora-white truncate">{selectedDest.name}</h3>
-                  <p className="text-xs text-mora-neutral/60 truncate">{selectedDest.country}</p>
+                  <h3 className="text-sm font-bold text-ich-white truncate">{selectedDest.name}</h3>
+                  <p className="text-xs text-ich-neutral/60 truncate">{selectedDest.country}</p>
                   <span className="text-[11px] text-amber-accent font-medium">View destination →</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-mora-neutral/40 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 text-ich-neutral/40 flex-shrink-0" />
               </GlassCard>
             </Link>
 
@@ -213,7 +213,7 @@ export default function MapView() {
               Things to do ({selectedDest.activities.length})
             </h3>
             {selectedDest.activities.length === 0 ? (
-              <p className="text-sm text-mora-neutral/60 py-4">No highlighted activities for this destination yet.</p>
+              <p className="text-sm text-ich-neutral/60 py-4">No highlighted activities for this destination yet.</p>
             ) : (
               <div className="space-y-2.5">
                 {selectedDest.activities.map((a, i) => {
@@ -222,15 +222,15 @@ export default function MapView() {
                   const isFocus = focus && Math.abs(focus.lat - c.lat) < 1e-9 && Math.abs(focus.lng - c.lng) < 1e-9;
                   return (
                     <button key={i} onClick={() => setFocus(c)} className="w-full text-left press" aria-label={`Show ${a.name} on map`}>
-                      <GlassCard className={`p-3.5 flex items-center gap-3 hover:bg-white/10 transition-all ${isFocus ? "ring-1 ring-mora-gold" : ""}`}>
+                      <GlassCard className={`p-3.5 flex items-center gap-3 hover:bg-white/10 transition-all ${isFocus ? "ring-1 ring-ich-gold" : ""}`}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "rgba(201,154,63,0.14)" }}>
                           <Icon className="w-4 h-4 text-amber-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-semibold text-mora-white truncate">{a.name}</h4>
-                          <p className="text-[11px] text-mora-neutral/60">{label}</p>
+                          <h4 className="text-sm font-semibold text-ich-white truncate">{a.name}</h4>
+                          <p className="text-[11px] text-ich-neutral/60">{label}</p>
                         </div>
-                        <MapPin className="w-4 h-4 text-mora-neutral/40 flex-shrink-0" />
+                        <MapPin className="w-4 h-4 text-ich-neutral/40 flex-shrink-0" />
                       </GlassCard>
                     </button>
                   );
@@ -245,14 +245,14 @@ export default function MapView() {
                 Destinations ({dests.length})
               </h3>
               {pinpoints.length > 0 && (
-                <button onClick={() => setPinpoints([])} className="text-xs text-mora-neutral/60 hover:text-gold transition-colors">
+                <button onClick={() => setPinpoints([])} className="text-xs text-ich-neutral/60 hover:text-gold transition-colors">
                   Clear pins ({pinpoints.length})
                 </button>
               )}
             </div>
 
             {dests.length === 0 ? (
-              <p className="text-sm text-mora-neutral/60 text-center py-6">No destinations available.</p>
+              <p className="text-sm text-ich-neutral/60 text-center py-6">No destinations available.</p>
             ) : (
               <div className="space-y-3">
                 {dests.map((d) => (
@@ -262,19 +262,19 @@ export default function MapView() {
                         <img src={d.image} alt={d.name} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                       )}
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-mora-white truncate">{d.name}</h4>
-                        <p className="text-xs text-mora-neutral/60 truncate">{d.country}</p>
+                        <h4 className="text-sm font-semibold text-ich-white truncate">{d.name}</h4>
+                        <p className="text-xs text-ich-neutral/60 truncate">{d.country}</p>
                         {d.activities?.length > 0 && (
                           <div className="flex items-center gap-1.5 mt-1.5">
                             {d.activities.slice(0, 3).map((a, i) => {
                               const { icon: Icon } = catOf(a.category);
                               return <Icon key={i} className="w-3.5 h-3.5 text-amber-accent" />;
                             })}
-                            <span className="text-[10px] text-mora-neutral/50 ml-0.5">{d.activities.length} things to do</span>
+                            <span className="text-[10px] text-ich-neutral/50 ml-0.5">{d.activities.length} things to do</span>
                           </div>
                         )}
                       </div>
-                      <ChevronRight className="w-4 h-4 text-mora-neutral/40 flex-shrink-0" />
+                      <ChevronRight className="w-4 h-4 text-ich-neutral/40 flex-shrink-0" />
                     </GlassCard>
                   </button>
                 ))}

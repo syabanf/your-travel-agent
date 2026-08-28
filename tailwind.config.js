@@ -67,7 +67,7 @@ module.exports = {
   		colors: {
   		background: 'hsl(var(--background))',
   		foreground: 'hsl(var(--foreground))',
-  		  mora: {
+  		  ich: {
   		    'deep-blue': '#05308C',
   		    'lobster-red': '#AD1F23',
   		    'steel-marine': '#0B1B3B',

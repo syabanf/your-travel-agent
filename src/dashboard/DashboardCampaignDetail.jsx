@@ -19,8 +19,8 @@ const CHANNEL_META = {
 };
 
 const STATUS_BADGE = {
-  draft: "bg-mora-primary/10 text-mora-neutral",
-  scheduled: "bg-mora-gold/10 text-gold",
+  draft: "bg-ich-primary/10 text-ich-neutral",
+  scheduled: "bg-ich-gold/10 text-gold",
   sent: "bg-emerald-100 text-emerald-700",
 };
 
@@ -73,7 +73,7 @@ export default function DashboardCampaignDetail() {
   };
 
   const back = (
-    <Link to="/dashboard/marketing" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary mb-4">
+    <Link to="/dashboard/marketing" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary mb-4">
       <ChevronLeft className="w-4 h-4" /> Back to campaigns
     </Link>
   );
@@ -82,7 +82,7 @@ export default function DashboardCampaignDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
@@ -91,7 +91,7 @@ export default function DashboardCampaignDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="bg-white rounded-2xl border border-mora-primary/10">
+        <div className="bg-white rounded-2xl border border-ich-primary/10">
           <EmptyState icon={Send} title="Campaign not found" hint="This campaign may have been removed." />
         </div>
       </div>
@@ -109,12 +109,12 @@ export default function DashboardCampaignDetail() {
       {back}
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 flex items-start gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 flex items-start gap-5">
+        <div className="w-16 h-16 rounded-2xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0">
           <meta.icon className="w-7 h-7" />
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-display font-bold text-mora-primary truncate">{campaign.name || "Untitled campaign"}</h1>
+          <h1 className="text-2xl font-display font-bold text-ich-primary truncate">{campaign.name || "Untitled campaign"}</h1>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[status] || STATUS_BADGE.draft}`}>{status}</span>
@@ -122,7 +122,7 @@ export default function DashboardCampaignDetail() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {status !== "sent" && can(role, "marketing", "edit") && (
-            <button onClick={sendNow} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 bg-mora-gold/10 text-gold hover:bg-mora-gold/20">
+            <button onClick={sendNow} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 bg-ich-gold/10 text-gold hover:bg-ich-gold/20">
               <Send className="w-4 h-4" /> Send now
             </button>
           )}
@@ -143,8 +143,8 @@ export default function DashboardCampaignDetail() {
       </div>
 
       {/* Details card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
-        <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Campaign details</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mt-6">
+        <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Campaign details</h2>
         <div className="space-y-1">
           <DetailRow icon={Layers} label="Segment" value={`${cap(segment)} (${recipients} recipients)`} />
           <DetailRow icon={Tag} label="Promo code" value={campaign.promo_code} />
@@ -157,21 +157,21 @@ export default function DashboardCampaignDetail() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="w-10 h-10 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
     </div>
-    <div className="stat-value text-xl font-display font-bold text-mora-primary mt-3 min-w-0 truncate">{value}</div>
+    <div className="stat-value text-xl font-display font-bold text-ich-primary mt-3 min-w-0 truncate">{value}</div>
   </div>
 );
 
 const DetailRow = ({ icon: Icon, label, value }) => (
-  <div className="flex items-start gap-3 py-2 border-b border-mora-primary/5 last:border-0">
+  <div className="flex items-start gap-3 py-2 border-b border-ich-primary/5 last:border-0">
     <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
     <div className="min-w-0">
-      <div className="text-[11px] text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-sm text-mora-primary break-words">{value || <span className="text-mora-neutral/50">Not set</span>}</div>
+      <div className="text-[11px] text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-sm text-ich-primary break-words">{value || <span className="text-ich-neutral/50">Not set</span>}</div>
     </div>
   </div>
 );

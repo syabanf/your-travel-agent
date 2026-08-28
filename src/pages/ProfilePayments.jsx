@@ -5,7 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import { CreditCard, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-const STORAGE_KEY = "mora_payment_methods";
+const STORAGE_KEY = "ich_payment_methods";
 
 const BRANDS = ["Visa", "Mastercard", "Amex", "JCB"];
 
@@ -82,16 +82,16 @@ export default function ProfilePayments() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Payment Methods" subtitle="Cards & digital wallets" showBack />
       <div className="px-6 space-y-4 mt-2">
-        <p className="text-[11px] text-mora-neutral/60 text-center">Demo only — no real charges</p>
+        <p className="text-[11px] text-ich-neutral/60 text-center">Demo only — no real charges</p>
 
         {showForm && (
           <GlassCard className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-mora-primary">Add card</h2>
+              <h2 className="text-sm font-semibold text-ich-primary">Add card</h2>
               <button
                 onClick={resetForm}
                 aria-label="Cancel"
-                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors"
+                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral hover:text-ich-primary transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -102,7 +102,7 @@ export default function ProfilePayments() {
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="Label (e.g. Personal Visa) *"
                 autoFocus
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
               />
               <input
                 value={last4}
@@ -110,12 +110,12 @@ export default function ProfilePayments() {
                 inputMode="numeric"
                 maxLength={4}
                 placeholder="Last 4 digits *"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
               />
               <select
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary outline-none focus:ring-1 focus:ring-ich-gold/40"
               >
                 {BRANDS.map((b) => (
                   <option key={b} value={b}>{b}</option>
@@ -141,12 +141,12 @@ export default function ProfilePayments() {
           <div className="space-y-3 stagger">
             {methods.map((m) => (
               <GlassCard key={m.id} className="p-4 flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
                   <CreditCard className="w-5 h-5 text-gold" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-mora-primary truncate">{m.label}</p>
-                  <p className="text-xs text-mora-neutral mt-0.5">
+                  <p className="text-sm font-medium text-ich-primary truncate">{m.label}</p>
+                  <p className="text-xs text-ich-neutral mt-0.5">
                     {m.brand} ···· {m.last4}
                   </p>
                 </div>

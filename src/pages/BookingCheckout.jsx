@@ -119,7 +119,7 @@ export default function BookingCheckout() {
   // Saved travellers give one-tap fill.
   useEffect(() => {
     try {
-      const parsed = JSON.parse(window.localStorage.getItem("mora_travelers") || "[]");
+      const parsed = JSON.parse(window.localStorage.getItem("ich_travelers") || "[]");
       if (Array.isArray(parsed)) setTravelers(parsed.filter((t) => t && t.name));
     } catch {
       /* saved travellers are a convenience — ignore unreadable storage */
@@ -176,7 +176,7 @@ export default function BookingCheckout() {
   };
 
   const fieldClass = (name) =>
-    `bg-white/5 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 ${
+    `bg-white/5 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 ${
       errors[name] ? "border-red-500/70 focus-visible:ring-red-500/50" : "border-white/10"
     }`;
 
@@ -324,7 +324,7 @@ export default function BookingCheckout() {
 
   if (!booking) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
     </div>
   );
 
@@ -337,13 +337,13 @@ export default function BookingCheckout() {
           <button
             onClick={handleBack}
             aria-label={step > 1 && step < 4 ? "Back one step" : "Go back"}
-            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-mora-primary hover:text-gold press-spring shrink-0"
+            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-ich-primary hover:text-gold press-spring shrink-0"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="min-w-0">
-            <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-mora-primary truncate">Checkout</h1>
-            <p className="text-sm text-mora-neutral mt-0.5 truncate">{booking.title}</p>
+            <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-ich-primary truncate">Checkout</h1>
+            <p className="text-sm text-ich-neutral mt-0.5 truncate">{booking.title}</p>
           </div>
         </div>
       </div>
@@ -360,12 +360,12 @@ export default function BookingCheckout() {
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                     done ? "bg-emerald-500/20 border border-emerald-500/40" :
-                    active ? "glass-gold border border-mora-gold/40" :
+                    active ? "glass-gold border border-ich-gold/40" :
                     "glass-light border border-white/10"
                   }`}>
-                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-gold" : "text-mora-neutral/30"}`} />
+                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-gold" : "text-ich-neutral/30"}`} />
                   </div>
-                  <span className={`text-[9px] mt-1 ${active ? "text-gold" : done ? "text-emerald-600" : "text-mora-neutral/30"}`}>{s.label}</span>
+                  <span className={`text-[9px] mt-1 ${active ? "text-gold" : done ? "text-emerald-600" : "text-ich-neutral/30"}`}>{s.label}</span>
                 </div>
                 {i < steps.length - 1 && (
                   <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-emerald-500/30" : "bg-white/10"}`} />
@@ -383,37 +383,37 @@ export default function BookingCheckout() {
           <>
             <GlassCard className="p-4">
               <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-3">Booking Summary</h3>
-              <p className="text-base font-display font-bold text-mora-white mb-1">{booking.title}</p>
-              {booking.provider && <p className="text-xs text-mora-neutral/60 mb-2">{booking.provider}</p>}
-              {booking.location && <p className="text-xs text-mora-neutral/60 mb-2">📍 {booking.location}</p>}
+              <p className="text-base font-display font-bold text-ich-white mb-1">{booking.title}</p>
+              {booking.provider && <p className="text-xs text-ich-neutral/60 mb-2">{booking.provider}</p>}
+              {booking.location && <p className="text-xs text-ich-neutral/60 mb-2">📍 {booking.location}</p>}
               {booking.check_in && (
-                <p className="text-xs text-mora-neutral/60 mb-2">
+                <p className="text-xs text-ich-neutral/60 mb-2">
                   📅 {moment(booking.check_in).format("MMM D, YYYY")}
                   {booking.check_out && ` → ${moment(booking.check_out).format("MMM D, YYYY")}`}
                 </p>
               )}
-              {booking.guests > 0 && <p className="text-xs text-mora-neutral/60 mb-2">👥 {booking.guests} guest(s)</p>}
-              {booking.notes && <p className="text-xs text-mora-neutral/50 mt-2 border-t border-white/5 pt-2">{booking.notes}</p>}
+              {booking.guests > 0 && <p className="text-xs text-ich-neutral/60 mb-2">👥 {booking.guests} guest(s)</p>}
+              {booking.notes && <p className="text-xs text-ich-neutral/50 mt-2 border-t border-white/5 pt-2">{booking.notes}</p>}
             </GlassCard>
 
             <GlassCard className="p-4">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-mora-neutral/70 shrink-0">Total Price</span>
+                <span className="text-sm text-ich-neutral/70 shrink-0">Total Price</span>
                 <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(total)}</span>
               </div>
               {alreadyPaid > 0 ? (
                 <div className="mt-2 pt-2 border-t border-white/5 space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-mora-neutral/50">Already paid</span>
+                    <span className="text-xs text-ich-neutral/50">Already paid</span>
                     <span className="text-xs text-emerald-600">{formatIDR(alreadyPaid)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-mora-neutral/50">Balance to settle</span>
+                    <span className="text-xs text-ich-neutral/50">Balance to settle</span>
                     <span className="text-xs text-gold font-medium">{formatIDR(outstanding)}</span>
                   </div>
                 </div>
               ) : booking.package_id ? (
-                <p className="text-[11px] text-mora-neutral/60 mt-2 pt-2 border-t border-white/5 leading-relaxed">
+                <p className="text-[11px] text-ich-neutral/60 mt-2 pt-2 border-t border-white/5 leading-relaxed">
                   Pay in full, or start from {minDpPercent(pkg)}% down — {formatIDR(amountForPercent(total, minDpPercent(pkg)))}.
                 </p>
               ) : null}
@@ -430,14 +430,14 @@ export default function BookingCheckout() {
           <>
             {travelers.length > 0 && (
               <div>
-                <p className="text-[10px] text-mora-neutral/50 mb-2">Fill from a saved traveller</p>
+                <p className="text-[10px] text-ich-neutral/50 mb-2">Fill from a saved traveller</p>
                 <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-1 px-1">
                   {travelers.map((t, i) => (
                     <button
                       key={t.id || `${t.name}-${i}`}
                       type="button"
                       onClick={() => applyTraveler(t)}
-                      className="px-3.5 py-2 rounded-full glass-light text-xs font-medium text-mora-neutral hover:text-gold whitespace-nowrap shrink-0 press-spring transition-colors"
+                      className="px-3.5 py-2 rounded-full glass-light text-xs font-medium text-ich-neutral hover:text-gold whitespace-nowrap shrink-0 press-spring transition-colors"
                     >
                       {t.name}
                     </button>
@@ -449,31 +449,31 @@ export default function BookingCheckout() {
             <GlassCard className="p-4 space-y-3">
               <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Guest Information</h3>
               <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Full Name *</label>
+                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Full Name *</label>
                 <Input ref={setFieldRef("full_name")} value={guestInfo.full_name} onChange={e => updateGuest("full_name", e.target.value)}
                   placeholder="As on ID/passport"
                   aria-invalid={errors.full_name ? "true" : undefined}
                   className={fieldClass("full_name")} />
               </div>
               <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Email *</label>
+                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Email *</label>
                 <Input ref={setFieldRef("email")} type="email" value={guestInfo.email} onChange={e => updateGuest("email", e.target.value)}
                   placeholder="your@email.com"
                   aria-invalid={errors.email ? "true" : undefined}
                   className={fieldClass("email")} />
               </div>
               <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Phone Number *</label>
+                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Phone Number *</label>
                 <Input ref={setFieldRef("phone")} type="tel" value={guestInfo.phone} onChange={e => updateGuest("phone", e.target.value)}
                   placeholder="+62 812 xxxx xxxx"
                   aria-invalid={errors.phone ? "true" : undefined}
                   className={fieldClass("phone")} />
               </div>
               <div>
-                <label className="text-[10px] text-mora-neutral/50 mb-1 block">Special Request</label>
+                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Special Request</label>
                 <Input value={guestInfo.special_request} onChange={e => updateGuest("special_request", e.target.value)}
                   placeholder="Dietary needs, accessibility, etc."
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11" />
+                  className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11" />
               </div>
             </GlassCard>
 
@@ -507,8 +507,8 @@ export default function BookingCheckout() {
                         aria-pressed={selected}
                         className={`rounded-xl px-3 py-2.5 text-left press-spring transition-all border ${
                           selected
-                            ? "glass-gold border-mora-gold/40 text-gold"
-                            : "glass-light border-white/10 text-mora-neutral hover:text-mora-primary"
+                            ? "glass-gold border-ich-gold/40 text-gold"
+                            : "glass-light border-white/10 text-ich-neutral hover:text-ich-primary"
                         }`}
                       >
                         <span className="block text-xs font-semibold">{p.label}</span>
@@ -519,7 +519,7 @@ export default function BookingCheckout() {
                     );
                   })}
                 </div>
-                <p className="text-[11px] text-mora-neutral/60 leading-relaxed">
+                <p className="text-[11px] text-ich-neutral/60 leading-relaxed">
                   {remaining > 0
                     ? `Minimum down payment for this package is ${minDpPercent(pkg)}%. The remaining ${formatIDR(remaining)} is due 14 days after booking — your trip detail unlocks once it's settled.`
                     : "Paying in full unlocks your full trip itinerary straight away."}
@@ -539,7 +539,7 @@ export default function BookingCheckout() {
               <GlassCard className="p-4 space-y-3">
                 <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Card details</h3>
                 <div>
-                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">Card Number</label>
+                  <label className="text-[10px] text-ich-neutral/50 mb-1 block">Card Number</label>
                   <Input
                     ref={setFieldRef("card_number")}
                     value={paymentInfo.card_number}
@@ -550,7 +550,7 @@ export default function BookingCheckout() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-mora-neutral/50 mb-1 block">Cardholder Name</label>
+                  <label className="text-[10px] text-ich-neutral/50 mb-1 block">Cardholder Name</label>
                   <Input
                     ref={setFieldRef("card_name")}
                     value={paymentInfo.card_name}
@@ -562,7 +562,7 @@ export default function BookingCheckout() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-mora-neutral/50 mb-1 block">Expiry Date</label>
+                    <label className="text-[10px] text-ich-neutral/50 mb-1 block">Expiry Date</label>
                     <Input
                       ref={setFieldRef("expiry")}
                       value={paymentInfo.expiry}
@@ -573,7 +573,7 @@ export default function BookingCheckout() {
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-mora-neutral/50 mb-1 block">CVV</label>
+                    <label className="text-[10px] text-ich-neutral/50 mb-1 block">CVV</label>
                     <Input
                       ref={setFieldRef("cvv")}
                       value={paymentInfo.cvv}
@@ -590,11 +590,11 @@ export default function BookingCheckout() {
 
             {method && !method.isNewCard && (
               <GlassCard className="p-4">
-                <p className="text-xs text-mora-neutral/70">
+                <p className="text-xs text-ich-neutral/70">
                   {method.type === "bank"
                     ? "A virtual-account number will be issued to complete your transfer."
                     : `You'll be redirected to ${method.label} to approve the payment.`}
-                  <span className="text-mora-neutral/50"> Payment is simulated in this demo.</span>
+                  <span className="text-ich-neutral/50"> Payment is simulated in this demo.</span>
                 </p>
               </GlassCard>
             )}
@@ -602,26 +602,26 @@ export default function BookingCheckout() {
             <GlassCard className="p-4 space-y-2">
               {(remaining > 0 || alreadyPaid > 0) && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-mora-neutral/50 shrink-0">Package total</span>
-                  <span className="text-xs text-mora-neutral/70 text-right">{formatIDR(total)}</span>
+                  <span className="text-xs text-ich-neutral/50 shrink-0">Package total</span>
+                  <span className="text-xs text-ich-neutral/70 text-right">{formatIDR(total)}</span>
                 </div>
               )}
               {alreadyPaid > 0 && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-mora-neutral/50 shrink-0">Already paid</span>
+                  <span className="text-xs text-ich-neutral/50 shrink-0">Already paid</span>
                   <span className="text-xs text-emerald-600 text-right">−{formatIDR(alreadyPaid)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-mora-neutral/70 shrink-0">
+                <span className="text-sm text-ich-neutral/70 shrink-0">
                   {remaining > 0 ? `Pay now (${payPercent}%)` : alreadyPaid > 0 ? "Balance due now" : "Total Charge"}
                 </span>
                 <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(amountDue)}</span>
               </div>
               {remaining > 0 && (
                 <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/5">
-                  <span className="text-xs text-mora-neutral/50 shrink-0">Balance due later</span>
-                  <span className="text-xs text-mora-neutral/70 text-right">{formatIDR(remaining)}</span>
+                  <span className="text-xs text-ich-neutral/50 shrink-0">Balance due later</span>
+                  <span className="text-xs text-ich-neutral/70 text-right">{formatIDR(remaining)}</span>
                 </div>
               )}
             </GlassCard>
@@ -643,32 +643,32 @@ export default function BookingCheckout() {
             <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
               <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
-            <h2 className="text-xl font-display font-bold text-mora-white mb-2">Booking Confirmed!</h2>
-            <p className="text-sm text-mora-neutral/60 mb-6">
+            <h2 className="text-xl font-display font-bold text-ich-white mb-2">Booking Confirmed!</h2>
+            <p className="text-sm text-ich-neutral/60 mb-6">
               {remaining > 0
                 ? `Your deposit is in. ${formatIDR(remaining)} remains — settle it to unlock your full trip detail.`
                 : "Your booking has been successfully confirmed and saved."}
             </p>
 
             <GlassCard className="p-4 text-left mb-6">
-              <p className="text-xs text-mora-neutral/50 mb-1">Confirmation Code</p>
+              <p className="text-xs text-ich-neutral/50 mb-1">Confirmation Code</p>
               <p className="text-lg font-display font-bold text-gold tracking-widest">{confirmCode}</p>
               <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
-                <p className="text-xs text-mora-neutral/60">{booking.title}</p>
-                <p className="text-xs text-mora-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>
-                {method && <p className="text-xs text-mora-neutral/50">Paid with {method.label}</p>}
+                <p className="text-xs text-ich-neutral/60">{booking.title}</p>
+                <p className="text-xs text-ich-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>
+                {method && <p className="text-xs text-ich-neutral/50">Paid with {method.label}</p>}
               </div>
               {remaining > 0 && (
                 <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-mora-neutral/50">Paid today</span>
+                    <span className="text-xs text-ich-neutral/50">Paid today</span>
                     <span className="text-xs text-emerald-600 font-medium">{formatIDR(amountDue)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-mora-neutral/50">Balance due</span>
+                    <span className="text-xs text-ich-neutral/50">Balance due</span>
                     <span className="text-xs text-gold font-medium">{formatIDR(remaining)}</span>
                   </div>
-                  <p className="text-[10px] text-mora-neutral/40 pt-1">
+                  <p className="text-[10px] text-ich-neutral/40 pt-1">
                     Due by {moment().add(14, "days").format("MMM D, YYYY")}
                   </p>
                 </div>

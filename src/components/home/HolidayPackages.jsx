@@ -20,7 +20,7 @@ export default function HolidayPackages() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="eyebrow text-sm font-semibold text-mora-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-ich-primary tracking-wide uppercase">
           Holiday Packages
         </h2>
         <Link to="/packages" className="text-xs text-gold flex items-center gap-1 press-spring">
@@ -41,9 +41,9 @@ export default function HolidayPackages() {
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
                     className="w-full h-full object-cover img-zoom"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ich-primary/60 to-transparent" />
                   {off != null && (
-                    <span className="absolute top-2 left-2 chip-glass !bg-mora-gold/90 !border-white/30">{off}% off</span>
+                    <span className="absolute top-2 left-2 chip-glass !bg-ich-gold/90 !border-white/30">{off}% off</span>
                   )}
                   {p.rating > 0 && (
                     <span className="absolute bottom-2 right-2 chip-glass">
@@ -52,13 +52,13 @@ export default function HolidayPackages() {
                   )}
                 </div>
                 <div className="p-3">
-                  <h3 className="text-sm font-semibold text-mora-primary line-clamp-1">{p.title}</h3>
-                  <p className="text-[11px] text-mora-neutral/60 truncate mt-0.5 flex items-center gap-1">
+                  <h3 className="text-sm font-semibold text-ich-primary line-clamp-1">{p.title}</h3>
+                  <p className="text-[11px] text-ich-neutral/60 truncate mt-0.5 flex items-center gap-1">
                     <CalendarDays className="w-3 h-3" />{p.duration_days}D/{p.duration_nights}N · {p.destination}
                   </p>
                   <p className="mt-1.5">
                     <span className="stat-value text-sm font-display font-bold text-gold">{formatIDR(p.price)}</span>
-                    <span className="text-[10px] text-mora-neutral/60"> /person</span>
+                    <span className="text-[10px] text-ich-neutral/60"> /person</span>
                   </p>
                 </div>
               </div>

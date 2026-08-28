@@ -7,15 +7,15 @@ import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { confirmDialog } from "@/components/ConfirmDialog";
 
-const DB_PREFIX = "mora_db_";
+const DB_PREFIX = "ich_db_";
 
 export default function ProfilePrivacy() {
   const [marketing, setMarketing] = useState(true);
   const [personalization, setPersonalization] = useState(true);
 
   useEffect(() => {
-    const m = localStorage.getItem("mora_consent_marketing");
-    const p = localStorage.getItem("mora_consent_personalization");
+    const m = localStorage.getItem("ich_consent_marketing");
+    const p = localStorage.getItem("ich_consent_personalization");
     if (m !== null) setMarketing(m === "true");
     if (p !== null) setPersonalization(p === "true");
   }, []);
@@ -23,13 +23,13 @@ export default function ProfilePrivacy() {
   const toggleMarketing = () => {
     const next = !marketing;
     setMarketing(next);
-    localStorage.setItem("mora_consent_marketing", String(next));
+    localStorage.setItem("ich_consent_marketing", String(next));
   };
 
   const togglePersonalization = () => {
     const next = !personalization;
     setPersonalization(next);
-    localStorage.setItem("mora_consent_personalization", String(next));
+    localStorage.setItem("ich_consent_personalization", String(next));
   };
 
   const handleExport = () => {
@@ -47,7 +47,7 @@ export default function ProfilePrivacy() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `mora-data-${moment().format("YYYY-MM-DD")}.json`;
+    a.download = `ich-data-${moment().format("YYYY-MM-DD")}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -92,12 +92,12 @@ export default function ProfilePrivacy() {
         {/* Your data */}
         <GlassCard className="p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
               <ShieldCheck className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-sm font-medium text-mora-primary">Your data</p>
-              <p className="text-xs text-mora-neutral/50 mt-0.5">Export or erase everything stored locally</p>
+              <p className="text-sm font-medium text-ich-primary">Your data</p>
+              <p className="text-xs text-ich-neutral/50 mt-0.5">Export or erase everything stored locally</p>
             </div>
           </div>
           <button
@@ -117,30 +117,30 @@ export default function ProfilePrivacy() {
         {/* Consent */}
         <GlassCard className="p-5 space-y-4">
           <div>
-            <p className="text-sm font-medium text-mora-primary">Consent</p>
-            <p className="text-xs text-mora-neutral/50 mt-0.5">Choose how we communicate with you</p>
+            <p className="text-sm font-medium text-ich-primary">Consent</p>
+            <p className="text-xs text-ich-neutral/50 mt-0.5">Choose how we communicate with you</p>
           </div>
           {consentRows.map((row, i) => (
             <div key={row.label}>
               {i > 0 && <div className="h-px bg-white/5 mb-4" />}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-mora-white">{row.label}</p>
-                  <p className="text-xs text-mora-neutral/50 mt-0.5">{row.desc}</p>
+                  <p className="text-sm font-medium text-ich-white">{row.label}</p>
+                  <p className="text-xs text-ich-neutral/50 mt-0.5">{row.desc}</p>
                 </div>
                 <button
                   onClick={row.onToggle}
                   role="switch"
                   aria-checked={row.value}
                   aria-label={row.label}
-                  className={`w-11 h-6 rounded-full transition-all flex-shrink-0 ${row.value ? "bg-mora-gold" : "bg-white/10"}`}
+                  className={`w-11 h-6 rounded-full transition-all flex-shrink-0 ${row.value ? "bg-ich-gold" : "bg-white/10"}`}
                 >
                   <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${row.value ? "translate-x-5" : ""}`} />
                 </button>
               </div>
             </div>
           ))}
-          <p className="text-xs text-mora-neutral/40 leading-relaxed">
+          <p className="text-xs text-ich-neutral/40 leading-relaxed">
             You can change these preferences at any time. They are saved on this device.
           </p>
         </GlassCard>
@@ -151,27 +151,27 @@ export default function ProfilePrivacy() {
             to="/privacy"
             className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all border-b border-white/5"
           >
-            <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
               <ShieldCheck className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-mora-white">Privacy Policy</p>
-              <p className="text-xs text-mora-neutral/50 mt-0.5">How we handle your data</p>
+              <p className="text-sm font-medium text-ich-white">Privacy Policy</p>
+              <p className="text-xs text-ich-neutral/50 mt-0.5">How we handle your data</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-mora-neutral/30" />
+            <ChevronRight className="w-4 h-4 text-ich-neutral/30" />
           </Link>
           <Link
             to="/terms"
             className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
               <FileText className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-mora-white">Terms of Service</p>
-              <p className="text-xs text-mora-neutral/50 mt-0.5">The rules of using Icon Holiday</p>
+              <p className="text-sm font-medium text-ich-white">Terms of Service</p>
+              <p className="text-xs text-ich-neutral/50 mt-0.5">The rules of using Icon Holiday</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-mora-neutral/30" />
+            <ChevronRight className="w-4 h-4 text-ich-neutral/30" />
           </Link>
         </GlassCard>
 

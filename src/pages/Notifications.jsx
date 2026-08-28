@@ -98,7 +98,7 @@ export default function Notifications() {
               onClick={() => setFilter(c.value)}
               aria-pressed={filter === c.value}
               className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                filter === c.value ? "btn-primary text-white" : "glass-light text-mora-neutral"
+                filter === c.value ? "btn-primary text-white" : "glass-light text-ich-neutral"
               }`}
             >
               {c.label}
@@ -143,24 +143,24 @@ export default function Notifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className={`text-sm font-medium ${!notification.is_read ? "text-mora-white" : "text-mora-neutral/70"}`}>
+                    <h3 className={`text-sm font-medium ${!notification.is_read ? "text-ich-white" : "text-ich-neutral/70"}`}>
                       {notification.title}
                     </h3>
                     <div className="flex items-center gap-2 flex-shrink-0 mt-1">
                       {!notification.is_read && (
-                        <div className="w-2 h-2 bg-mora-gold rounded-full" />
+                        <div className="w-2 h-2 bg-ich-gold rounded-full" />
                       )}
                       <button
                         onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}
                         aria-label="Delete notification"
-                        className="text-mora-neutral/40 hover:text-mora-primary transition-colors"
+                        className="text-ich-neutral/40 hover:text-ich-primary transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                  <p className="text-xs text-mora-neutral/70 mt-0.5 leading-relaxed">{notification.message}</p>
-                  <p className="text-[10px] text-mora-neutral/60 mt-1.5">
+                  <p className="text-xs text-ich-neutral/70 mt-0.5 leading-relaxed">{notification.message}</p>
+                  <p className="text-[10px] text-ich-neutral/60 mt-1.5">
                     {moment(notification.created_date).fromNow()}
                   </p>
                 </div>

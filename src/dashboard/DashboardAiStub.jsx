@@ -82,44 +82,44 @@ export default function DashboardAiStub({ resource, data, label = "Ask AI", cont
 
   return (
     <>
-      <button onClick={run} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-gold/30 text-gold bg-mora-gold/5 hover:bg-mora-gold/10 press">
+      <button onClick={run} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-ich-gold/30 text-gold bg-ich-gold/5 hover:bg-ich-gold/10 press">
         <Sparkles className="w-4 h-4" /> {label}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="relative w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl border border-mora-primary/10 shadow-xl max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-mora-primary/10 sticky top-0 bg-white">
-              <h3 className="font-display font-semibold text-mora-primary flex items-center gap-2"><Sparkles className="w-4 h-4 text-gold" /> AI insights · <span className="capitalize">{resource}</span></h3>
-              <button onClick={() => setOpen(false)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral"><X className="w-4 h-4" /></button>
+          <div className="relative w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl border border-ich-primary/10 shadow-xl max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-ich-primary/10 sticky top-0 bg-white">
+              <h3 className="font-display font-semibold text-ich-primary flex items-center gap-2"><Sparkles className="w-4 h-4 text-gold" /> AI insights · <span className="capitalize">{resource}</span></h3>
+              <button onClick={() => setOpen(false)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral"><X className="w-4 h-4" /></button>
             </div>
 
             <div className="p-5 space-y-4">
               {loading && !result ? (
-                <div className="flex items-center gap-2 text-sm text-mora-neutral py-6 justify-center"><Loader2 className="w-4 h-4 animate-spin" /> Analysing {resource}…</div>
+                <div className="flex items-center gap-2 text-sm text-ich-neutral py-6 justify-center"><Loader2 className="w-4 h-4 animate-spin" /> Analysing {resource}…</div>
               ) : result && (
                 <>
                   <ul className="space-y-2.5">
                     {result.insights.map((t, i) => (
-                      <li key={i} className="flex gap-2.5 text-sm text-mora-primary">
+                      <li key={i} className="flex gap-2.5 text-sm text-ich-primary">
                         <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /> <span>{t}</span>
                       </li>
                     ))}
                   </ul>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-mora-neutral/60 mb-2">Suggested</p>
+                    <p className="text-[11px] uppercase tracking-wider text-ich-neutral/60 mb-2">Suggested</p>
                     <div className="flex flex-wrap gap-2">
                       {result.actions.map((a) => (
-                        <button key={a} onClick={() => ask(a)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+                        <button key={a} onClick={() => ask(a)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
                           {a} <ArrowRight className="w-3 h-3" />
                         </button>
                       ))}
                     </div>
                   </div>
-                  {loading && <div className="flex items-center gap-2 text-sm text-mora-neutral"><Loader2 className="w-4 h-4 animate-spin" /> Thinking…</div>}
-                  {answer && <div className="rounded-xl bg-mora-gold/[0.06] border border-mora-gold/20 p-3 text-sm text-mora-primary">{answer}</div>}
-                  <p className="text-[11px] text-mora-neutral/50 pt-1">Demo AI — responses are simulated. Wire a real model via <code className="text-mora-neutral/70">configureLLM()</code>.</p>
+                  {loading && <div className="flex items-center gap-2 text-sm text-ich-neutral"><Loader2 className="w-4 h-4 animate-spin" /> Thinking…</div>}
+                  {answer && <div className="rounded-xl bg-ich-gold/[0.06] border border-ich-gold/20 p-3 text-sm text-ich-primary">{answer}</div>}
+                  <p className="text-[11px] text-ich-neutral/50 pt-1">Demo AI — responses are simulated. Wire a real model via <code className="text-ich-neutral/70">configureLLM()</code>.</p>
                 </>
               )}
             </div>

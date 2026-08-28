@@ -26,21 +26,21 @@ export default function AppHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 glass-light border-b border-mora-primary/[0.06]">
+    <header className="sticky top-0 z-30 glass-light border-b border-ich-primary/[0.06]">
       <div className="px-5 h-12 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 press">
           <div className="w-7 h-7 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
-          <span className="font-display font-bold text-mora-primary tracking-tight">Icon Holiday</span>
+          <span className="font-display font-bold text-ich-primary tracking-tight">Icon Holiday</span>
         </Link>
 
         <div className="flex items-center gap-1.5">
-          <Link to="/search" aria-label="Search" className="w-9 h-9 rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold hover:bg-mora-primary/5 transition-colors">
+          <Link to="/search" aria-label="Search" className="w-9 h-9 rounded-xl flex items-center justify-center text-ich-neutral hover:text-gold hover:bg-ich-primary/5 transition-colors">
             <Search className="w-[18px] h-[18px]" />
           </Link>
-          <Link to="/notifications" aria-label="Notifications" className="relative w-9 h-9 rounded-xl flex items-center justify-center text-mora-neutral hover:text-gold hover:bg-mora-primary/5 transition-colors">
+          <Link to="/notifications" aria-label="Notifications" className="relative w-9 h-9 rounded-xl flex items-center justify-center text-ich-neutral hover:text-gold hover:bg-ich-primary/5 transition-colors">
             <Bell className="w-[18px] h-[18px]" />
             {unread > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[15px] h-[15px] px-1 bg-mora-gold text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+              <span className="absolute top-1.5 right-1.5 min-w-[15px] h-[15px] px-1 bg-ich-gold text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}

@@ -12,7 +12,7 @@ const TABS = [
 export default function DashboardReportsHub() {
   return (
     <div>
-      <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 bg-[#F3F6FB] border-b border-mora-primary/10 sticky top-0 z-10">
+      <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 bg-[#F3F6FB] border-b border-ich-primary/10 sticky top-0 z-10">
         <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-2">Insight Center · Reports</p>
         <div className="flex gap-1 overflow-x-auto -mb-px">
           {TABS.map((t) => (
@@ -22,7 +22,7 @@ export default function DashboardReportsHub() {
               end={t.end}
               className={({ isActive }) =>
                 `flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  isActive ? "border-gold text-gold" : "border-transparent text-mora-neutral hover:text-mora-primary"
+                  isActive ? "border-gold text-gold" : "border-transparent text-ich-neutral hover:text-ich-primary"
                 }`
               }
             >

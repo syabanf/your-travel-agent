@@ -189,8 +189,8 @@ export default function DashboardLeads() {
       <ReadOnlyBanner resource="leads" />
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Leads</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Track enquiries through the sales pipeline.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Leads</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Track enquiries through the sales pipeline.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
@@ -225,10 +225,10 @@ export default function DashboardLeads() {
       )}
 
       {editing && (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6 max-w-2xl">
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mb-6 max-w-2xl">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit lead" : "New lead"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit lead" : "New lead"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Row2>
@@ -266,19 +266,19 @@ export default function DashboardLeads() {
             <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
             </button>
-            <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+            <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
           </div>
         </div>
       )}
 
       {items == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <>
           {!editing && (
             <div className="flex flex-wrap gap-2 mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -298,7 +298,7 @@ export default function DashboardLeads() {
                 className="max-w-[170px]"
               />
               {(query || sourceF !== "all" || agentF !== "all" || range !== "all" || sortBy !== "newest") && (
-                <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+                <button onClick={() => { setQuery(""); setSourceF("all"); setAgentF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
                   <X className="w-3.5 h-3.5" /> Clear
                 </button>
               )}
@@ -306,7 +306,7 @@ export default function DashboardLeads() {
             </div>
           )}
           {items.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-mora-primary/10">
+            <div className="bg-white rounded-2xl border border-ich-primary/10">
               <EmptyState
                 icon={Users}
                 title="No leads yet"
@@ -317,13 +317,13 @@ export default function DashboardLeads() {
               />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-mora-neutral/60 text-center py-10">No leads match your filters.</p>
+            <p className="text-ich-neutral/60 text-center py-10">No leads match your filters.</p>
           ) : (
           <>
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "name", label: "Name", className: "font-medium text-mora-primary", render: (l) => l.name },
+                { key: "name", label: "Name", className: "font-medium text-ich-primary", render: (l) => l.name },
                 { key: "status", label: "Status", render: (l) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[l.status] || STATUS_BADGE.new}`}>{l.status || "new"}</span> },
                 { key: "source", label: "Source", render: (l) => cap(l.source || "—") },
                 { key: "assigned_to", label: "Assigned to", render: (l) => l.assigned_to || "—" },
@@ -343,20 +343,20 @@ export default function DashboardLeads() {
                 <div key={status} className="w-72 shrink-0">
                   <div className="flex items-center gap-2 mb-3 px-1">
                     <span className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
-                    <h3 className="font-display font-semibold text-mora-primary">{cap(status)}</h3>
-                    <span className="text-xs text-mora-neutral/60">{col.length}</span>
+                    <h3 className="font-display font-semibold text-ich-primary">{cap(status)}</h3>
+                    <span className="text-xs text-ich-neutral/60">{col.length}</span>
                   </div>
                   <div className="space-y-3">
                     {col.map((l) => (
-                      <Link key={l.id} to={`/dashboard/leads/${l.id}`} className="block bg-white rounded-xl border border-mora-primary/10 p-3 hover:shadow-md transition-shadow press">
-                        <div className="font-medium text-mora-primary truncate">{l.name}</div>
-                        <div className="text-xs text-mora-neutral mt-0.5 truncate">
+                      <Link key={l.id} to={`/dashboard/leads/${l.id}`} className="block bg-white rounded-xl border border-ich-primary/10 p-3 hover:shadow-md transition-shadow press">
+                        <div className="font-medium text-ich-primary truncate">{l.name}</div>
+                        <div className="text-xs text-ich-neutral mt-0.5 truncate">
                           {[l.destination, l.source].filter(Boolean).join(" · ") || "—"}
                         </div>
                         <div className="text-sm font-semibold text-gold mt-1">{formatIDR(Number(l.budget) || 0)}</div>
-                        {l.assigned_to && <div className="text-[10px] text-mora-neutral/60 uppercase tracking-wider mt-1">{l.assigned_to}</div>}
+                        {l.assigned_to && <div className="text-[10px] text-ich-neutral/60 uppercase tracking-wider mt-1">{l.assigned_to}</div>}
 
-                        <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-mora-primary/5">
+                        <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-ich-primary/5">
                           {canEdit && (
                             <span
                               className="flex-1 min-w-0"
@@ -383,7 +383,7 @@ export default function DashboardLeads() {
                           {canConvert && (
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); convert(l); }}
-                              className="w-9 h-9 rounded-lg hover:bg-mora-gold/10 flex items-center justify-center text-gold shrink-0"
+                              className="w-9 h-9 rounded-lg hover:bg-ich-gold/10 flex items-center justify-center text-gold shrink-0"
                               aria-label="Convert to customer"
                               title="Convert to customer"
                             >
@@ -393,7 +393,7 @@ export default function DashboardLeads() {
                           {canEdit && (
                             <button
                               onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                              className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold shrink-0"
+                              className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold shrink-0"
                               aria-label="Edit"
                               title="Edit"
                             >
@@ -414,7 +414,7 @@ export default function DashboardLeads() {
                       </Link>
                     ))}
                     {col.length === 0 && (
-                      <p className="text-xs text-mora-neutral/50 text-center py-6 border border-dashed border-mora-primary/10 rounded-xl">No leads</p>
+                      <p className="text-xs text-ich-neutral/50 text-center py-6 border border-dashed border-ich-primary/10 rounded-xl">No leads</p>
                     )}
                   </div>
                 </div>
@@ -433,11 +433,11 @@ export default function DashboardLeads() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4">
-    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4">
+    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-xl font-display font-bold text-mora-primary truncate">{value}</div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-xl font-display font-bold text-ich-primary truncate">{value}</div>
     </div>
   </div>
 );
@@ -445,7 +445,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

@@ -20,7 +20,7 @@ export default function QuickActions() {
             >
               <Icon className="w-[22px] h-[22px] text-white" strokeWidth={2} />
             </div>
-            <span className="text-[11px] text-mora-primary text-center leading-tight whitespace-pre-line font-medium">
+            <span className="text-[11px] text-ich-primary text-center leading-tight whitespace-pre-line font-medium">
               {label}
             </span>
           </div>

@@ -22,14 +22,14 @@ const SEED = [
 
 const STATUS = {
   connected: "bg-emerald-100 text-emerald-700",
-  syncing: "bg-mora-gold/15 text-gold",
+  syncing: "bg-ich-gold/15 text-gold",
   disconnected: "bg-slate-100 text-slate-500",
 };
 
 // Deterministic mock booking transactions for a channel's detail drawer.
 const GUESTS = ["Putri W.", "Andi P.", "Maria S.", "Kenji S.", "Sarah L.", "Budi H.", "Dewi A.", "Rio M."];
 const LISTINGS = ["Ocean Suite · Azure Bay", "Pool Villa · Azure Bay", "Garden Villa · Ubud", "Studio Loft · Seminyak", "Spa Suite · Ubud"];
-const TX_STATUS = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-mora-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
+const TX_STATUS = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-ich-gold/15 text-gold", refunded: "bg-slate-100 text-slate-500" };
 function txnsFor(ch) {
   if (!ch || !ch.bookings) return [];
   const n = Math.min(8, Math.max(3, Math.round(ch.bookings / 10)));
@@ -110,8 +110,8 @@ export default function DashboardOTA() {
   };
 
   const columns = [
-    { key: "name", label: "Channel", className: "font-medium text-mora-primary", render: (c) => (
-      <span className="flex items-center gap-2.5"><span className="w-8 h-8 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center text-xs font-display font-bold uppercase">{c.name[0]}</span>{c.name}</span>
+    { key: "name", label: "Channel", className: "font-medium text-ich-primary", render: (c) => (
+      <span className="flex items-center gap-2.5"><span className="w-8 h-8 rounded-lg bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-bold uppercase">{c.name[0]}</span>{c.name}</span>
     ) },
     { key: "status", label: "Status", render: (c) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${STATUS[c.status]}`}>{c.status}</span> },
     { key: "listings", label: "Listings", align: "right", render: (c) => c.listings },
@@ -121,10 +121,10 @@ export default function DashboardOTA() {
     { key: "lastSync", label: "Last sync", render: (c) => c.lastSync },
     { key: "action", label: "", align: "right", render: (c) => (
       <span className="inline-flex items-center gap-1.5 justify-end">
-        <button onClick={(e) => { e.stopPropagation(); toggle(c); }} className={`text-xs font-medium px-3 py-1.5 rounded-lg press ${c.status === "disconnected" ? "btn-primary text-white" : "border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5"}`}>
+        <button onClick={(e) => { e.stopPropagation(); toggle(c); }} className={`text-xs font-medium px-3 py-1.5 rounded-lg press ${c.status === "disconnected" ? "btn-primary text-white" : "border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5"}`}>
           {c.status === "disconnected" ? "Connect" : "Disconnect"}
         </button>
-        <button onClick={(e) => { e.stopPropagation(); openEdit(c); }} aria-label="Edit channel" className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); openEdit(c); }} aria-label="Edit channel" className="w-9 h-9 rounded-lg border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
         <button onClick={(e) => { e.stopPropagation(); removeChannel(c); }} aria-label="Remove channel" className="w-9 h-9 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
       </span>
     ) },
@@ -135,15 +135,15 @@ export default function DashboardOTA() {
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> Distribution</p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">OTA Channel Manager</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Connect and sync listings across online travel agencies.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">OTA Channel Manager</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Connect and sync listings across online travel agencies.</p>
         </div>
         <div className="flex items-center gap-2">
           <DashboardAiStub resource="ota" data={channels} />
-          <button onClick={syncAll} disabled={syncing} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press disabled:opacity-50">
+          <button onClick={syncAll} disabled={syncing} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press disabled:opacity-50">
             <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} /> Sync all
           </button>
-          <Link to="/dashboard/ota/categories" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press"><Tags className="w-4 h-4" /> Categories</Link>
+          <Link to="/dashboard/ota/categories" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press"><Tags className="w-4 h-4" /> Categories</Link>
           <button onClick={openNew} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add channel</button>
         </div>
       </header>
@@ -179,12 +179,12 @@ export default function DashboardOTA() {
             </div>
             <DataTable
               columns={[
-                { key: "ref", label: "Ref", className: "font-medium text-mora-primary" },
+                { key: "ref", label: "Ref", className: "font-medium text-ich-primary" },
                 { key: "guest", label: "Guest" },
                 { key: "listing", label: "Listing" },
                 { key: "checkIn", label: "Check-in" },
                 { key: "gross", label: "Gross", align: "right", className: "text-right", render: (t) => formatIDR(t.gross) },
-                { key: "commission", label: "Commission", align: "right", className: "text-right text-mora-neutral", render: (t) => `−${formatIDR(t.commission)}` },
+                { key: "commission", label: "Commission", align: "right", className: "text-right text-ich-neutral", render: (t) => `−${formatIDR(t.commission)}` },
                 { key: "net", label: "Net", align: "right", className: "text-right font-semibold text-gold", render: (t) => formatIDR(t.net) },
                 { key: "status", label: "Status", render: (t) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize ${TX_STATUS[t.status]}`}>{t.status}</span> },
               ]}
@@ -193,7 +193,7 @@ export default function DashboardOTA() {
               minWidth={600}
               empty="No transactions for this channel yet."
             />
-            <p className="text-[11px] text-mora-neutral/50">Demo data — transactions are simulated.</p>
+            <p className="text-[11px] text-ich-neutral/50">Demo data — transactions are simulated.</p>
           </>
         )}
       </Drawer>
@@ -202,15 +202,15 @@ export default function DashboardOTA() {
         {editing && (
         <form onSubmit={save} className="space-y-4">
           <div>
-            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Channel name</label>
+            <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Channel name</label>
             <input autoFocus value={editing.name} onChange={(e) => setEditing((f) => ({ ...f, name: e.target.value }))} className="dash-input" placeholder="e.g. Trip.com" />
           </div>
           <div>
-            <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Commission %</label>
+            <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Commission %</label>
             <input type="number" min="0" max="100" value={editing.commission} onChange={(e) => setEditing((f) => ({ ...f, commission: e.target.value }))} className="dash-input" />
           </div>
           <div className="flex gap-2 pt-2">
-            <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+            <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5">Cancel</button>
             <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">{editing.id ? "Save changes" : "Add channel"}</button>
           </div>
         </form>
@@ -221,16 +221,16 @@ export default function DashboardOTA() {
 }
 
 const Mini = ({ label, value }) => (
-  <div className="bg-white rounded-xl border border-mora-primary/10 p-3 min-w-0">
-    <p className="stat-value text-sm font-display font-bold text-mora-primary">{value}</p>
-    <p className="text-[11px] text-mora-neutral mt-0.5">{label}</p>
+  <div className="bg-white rounded-xl border border-ich-primary/10 p-3 min-w-0">
+    <p className="stat-value text-sm font-display font-bold text-ich-primary">{value}</p>
+    <p className="text-[11px] text-ich-neutral mt-0.5">{label}</p>
   </div>
 );
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
-    <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3"><Icon className="w-5 h-5 text-gold" /></div>
-    <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
-    <p className="text-xs text-mora-neutral mt-1">{label}</p>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
+    <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center mb-3"><Icon className="w-5 h-5 text-gold" /></div>
+    <p className="stat-value text-lg lg:text-xl font-display font-bold text-ich-primary">{value}</p>
+    <p className="text-xs text-ich-neutral mt-1">{label}</p>
   </div>
 );

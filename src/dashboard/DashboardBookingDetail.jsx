@@ -19,13 +19,13 @@ const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) :
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
-  pending: "bg-mora-gold/10 text-gold",
+  pending: "bg-ich-gold/10 text-gold",
   cancelled: "bg-red-500/15 text-red-600",
   completed: "bg-blue-500/15 text-blue-600",
 };
 const paymentPill = {
   paid: "bg-emerald-500/15 text-emerald-600",
-  deposit: "bg-mora-gold/10 text-gold",
+  deposit: "bg-ich-gold/10 text-gold",
   unpaid: "bg-red-500/15 text-red-600",
 };
 const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
@@ -33,11 +33,11 @@ const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
 function Row({ icon: Icon, label, children }) {
   if (children == null || children === "") return null;
   return (
-    <div className="flex items-start gap-3 py-3 border-b border-mora-primary/5 last:border-0">
-      <Icon className="w-4 h-4 text-mora-neutral/60 mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 py-3 border-b border-ich-primary/5 last:border-0">
+      <Icon className="w-4 h-4 text-ich-neutral/60 mt-0.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">{label}</div>
-        <div className="text-sm text-mora-primary mt-0.5">{children}</div>
+        <div className="text-[11px] uppercase tracking-wider text-ich-neutral/70">{label}</div>
+        <div className="text-sm text-ich-primary mt-0.5">{children}</div>
       </div>
     </div>
   );
@@ -71,19 +71,19 @@ export default function DashboardBookingDetail() {
   }, [id]);
 
   const backLink = (
-    <Link to="/dashboard/bookings" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary transition-colors">
+    <Link to="/dashboard/bookings" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary transition-colors">
       <ArrowLeft className="w-4 h-4" /> Back to bookings
     </Link>
   );
 
   if (loading) {
-    return <div className="p-4 sm:p-6 lg:p-8"><div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div></div>;
+    return <div className="p-4 sm:p-6 lg:p-8"><div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div></div>;
   }
   if (!b) {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="mb-6">{backLink}</div>
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center text-mora-neutral">Booking not found.</div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-10 text-center text-ich-neutral">Booking not found.</div>
       </div>
     );
   }
@@ -141,9 +141,9 @@ export default function DashboardBookingDetail() {
       )}
 
       <header className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-mora-primary">{b.title}</h1>
+        <h1 className="text-2xl font-display font-bold text-ich-primary">{b.title}</h1>
         <div className="flex items-center gap-2 mt-2">
-          {b.type && <span className="text-[11px] px-2 py-0.5 rounded-full capitalize bg-mora-primary/10 text-mora-neutral">{b.type}</span>}
+          {b.type && <span className="text-[11px] px-2 py-0.5 rounded-full capitalize bg-ich-primary/10 text-ich-neutral">{b.type}</span>}
           <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[b.status] || statusPill.pending}`}>{b.status}</span>
         </div>
       </header>
@@ -151,15 +151,15 @@ export default function DashboardBookingDetail() {
       {b.status === "cancelled" && (
         <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-4 mb-6 text-sm">
           <p className="font-medium text-red-600">Cancelled{b.cancelled_date ? ` on ${moment(b.cancelled_date).format("MMM D, YYYY")}` : ""}</p>
-          {b.refunded_amount ? <p className="text-mora-neutral mt-0.5">Refunded {formatIDR(b.refunded_amount)}</p> : null}
-          {b.cancellation_reason ? <p className="text-mora-neutral mt-0.5">Reason: {b.cancellation_reason}</p> : null}
+          {b.refunded_amount ? <p className="text-ich-neutral mt-0.5">Refunded {formatIDR(b.refunded_amount)}</p> : null}
+          {b.cancellation_reason ? <p className="text-ich-neutral mt-0.5">Reason: {b.cancellation_reason}</p> : null}
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mb-6">
         <Row icon={Building2} label="Provider">{b.provider}</Row>
-        <Row icon={User} label="Customer">{customer ? <Link to={`/dashboard/customers/${customer.id}`} className="text-mora-primary hover:text-gold font-medium">{customer.name}</Link> : (b.customer_id ? "—" : null)}</Row>
-        <Row icon={Truck} label="Supplier">{supplier ? <Link to={`/dashboard/suppliers/${supplier.id}`} className="text-mora-primary hover:text-gold font-medium">{supplier.name}</Link> : (b.supplier_id ? "—" : null)}</Row>
+        <Row icon={User} label="Customer">{customer ? <Link to={`/dashboard/customers/${customer.id}`} className="text-ich-primary hover:text-gold font-medium">{customer.name}</Link> : (b.customer_id ? "—" : null)}</Row>
+        <Row icon={Truck} label="Supplier">{supplier ? <Link to={`/dashboard/suppliers/${supplier.id}`} className="text-ich-primary hover:text-gold font-medium">{supplier.name}</Link> : (b.supplier_id ? "—" : null)}</Row>
         <Row icon={MapPin} label="Location">{b.location}</Row>
         <Row icon={Globe} label="Channel">{b.channel || "—"}</Row>
         <Row icon={Tag} label="Supplier ref">{b.supplier_ref ? <span className="font-mono">{b.supplier_ref}</span> : "—"}</Row>
@@ -170,44 +170,44 @@ export default function DashboardBookingDetail() {
       </div>
 
       {/* Financials / margin */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
-        <h2 className="text-sm font-semibold text-mora-primary mb-4 flex items-center gap-2"><Wallet className="w-4 h-4 text-gold" /> Financials</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mb-6">
+        <h2 className="text-sm font-semibold text-ich-primary mb-4 flex items-center gap-2"><Wallet className="w-4 h-4 text-gold" /> Financials</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Sell price</div><div className="stat-value text-base lg:text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Cost</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{formatIDR(costPrice)}</div></div>
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-mora-neutral">({marginPct}%)</span></div></div>
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-mora-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-mora-primary">{b.commission ? formatIDR(b.commission) : (commission != null ? formatIDR(commission) : "—")}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-ich-neutral/70">Sell price</div><div className="stat-value text-base lg:text-lg font-display font-bold text-gold">{formatIDR(price)}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-ich-neutral/70">Cost</div><div className="stat-value text-base lg:text-lg font-display font-bold text-ich-primary">{formatIDR(costPrice)}</div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-ich-neutral/70 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-ich-neutral">({marginPct}%)</span></div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-ich-neutral/70 flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-ich-primary">{b.commission ? formatIDR(b.commission) : (commission != null ? formatIDR(commission) : "—")}</div></div>
         </div>
-        <div className="mt-4 pt-4 border-t border-mora-primary/5 flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-mora-neutral/60 shrink-0" />
-          <span className="text-[11px] uppercase tracking-wider text-mora-neutral/70">Payment status</span>
+        <div className="mt-4 pt-4 border-t border-ich-primary/5 flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-ich-neutral/60 shrink-0" />
+          <span className="text-[11px] uppercase tracking-wider text-ich-neutral/70">Payment status</span>
           {b.payment_status
             ? <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${paymentPill[b.payment_status] || paymentPill.unpaid}`}>{b.payment_status}</span>
-            : <span className="text-sm text-mora-neutral">—</span>}
+            : <span className="text-sm text-ich-neutral">—</span>}
         </div>
       </div>
 
       {/* Documents & sharing */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mb-6">
-        <h2 className="text-sm font-semibold text-mora-primary mb-4">Documents & sharing</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mb-6">
+        <h2 className="text-sm font-semibold text-ich-primary mb-4">Documents & sharing</h2>
         <div className="flex flex-wrap gap-2">
-          <button onClick={printVoucher} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><Printer className="w-4 h-4" /> Print voucher (PDF)</button>
-          <button onClick={printReceipt} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><ReceiptText className="w-4 h-4" /> Export receipt</button>
-          <button onClick={printQuotation} className="inline-flex items-center gap-1.5 text-sm font-medium text-mora-primary bg-mora-primary/5 hover:bg-mora-primary/10 px-3.5 py-2 rounded-xl transition-colors"><FileText className="w-4 h-4" /> Export quotation</button>
+          <button onClick={printVoucher} className="inline-flex items-center gap-1.5 text-sm font-medium text-ich-primary bg-ich-primary/5 hover:bg-ich-primary/10 px-3.5 py-2 rounded-xl transition-colors"><Printer className="w-4 h-4" /> Print voucher (PDF)</button>
+          <button onClick={printReceipt} className="inline-flex items-center gap-1.5 text-sm font-medium text-ich-primary bg-ich-primary/5 hover:bg-ich-primary/10 px-3.5 py-2 rounded-xl transition-colors"><ReceiptText className="w-4 h-4" /> Export receipt</button>
+          <button onClick={printQuotation} className="inline-flex items-center gap-1.5 text-sm font-medium text-ich-primary bg-ich-primary/5 hover:bg-ich-primary/10 px-3.5 py-2 rounded-xl transition-colors"><FileText className="w-4 h-4" /> Export quotation</button>
           <button onClick={sendWhatsApp} className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15 px-3.5 py-2 rounded-xl transition-colors"><MessageCircle className="w-4 h-4" /> Send confirmation via WhatsApp</button>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
-        <h2 className="text-sm font-semibold text-mora-primary mb-4">Actions</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+        <h2 className="text-sm font-semibold text-ich-primary mb-4">Actions</h2>
         {!canEdit && !canDelete ? (
-          <p className="text-sm text-mora-neutral/60">You have read-only access.</p>
+          <p className="text-sm text-ich-neutral/60">You have read-only access.</p>
         ) : (
           <div className="space-y-4">
             {canEdit && (
               <div>
-                <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Status</label>
+                <label className="block text-[11px] uppercase tracking-wider text-ich-neutral/70 mb-1.5">Status</label>
                 <SearchableSelect
                   value={b.status}
                   onChange={(v) => updateStatus(v)}
@@ -220,15 +220,15 @@ export default function DashboardBookingDetail() {
 
             {canEdit && b.status !== "cancelled" && (
               cancelOpen ? (
-                <div className="rounded-xl border border-mora-primary/10 bg-mora-primary/[0.02] p-4 max-w-md">
-                  <p className="text-sm font-medium text-mora-primary mb-3">Cancel & refund</p>
-                  <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1">Refund amount (IDR)</label>
+                <div className="rounded-xl border border-ich-primary/10 bg-ich-primary/[0.02] p-4 max-w-md">
+                  <p className="text-sm font-medium text-ich-primary mb-3">Cancel & refund</p>
+                  <label className="block text-[11px] uppercase tracking-wider text-ich-neutral/70 mb-1">Refund amount (IDR)</label>
                   <input type="number" value={refundAmount} onChange={(e) => setRefundAmount(e.target.value)} className="dash-input mb-3" placeholder={String(price)} />
-                  <label className="block text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1">Reason</label>
+                  <label className="block text-[11px] uppercase tracking-wider text-ich-neutral/70 mb-1">Reason</label>
                   <input value={refundReason} onChange={(e) => setRefundReason(e.target.value)} className="dash-input mb-3" placeholder="Customer requested / supplier issue…" />
                   <div className="flex gap-2">
                     <button onClick={cancelBooking} className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl"><Ban className="w-4 h-4" /> Confirm cancellation</button>
-                    <button onClick={() => setCancelOpen(false)} className="text-sm font-medium text-mora-neutral hover:bg-mora-primary/5 px-4 py-2 rounded-xl">Keep booking</button>
+                    <button onClick={() => setCancelOpen(false)} className="text-sm font-medium text-ich-neutral hover:bg-ich-primary/5 px-4 py-2 rounded-xl">Keep booking</button>
                   </div>
                 </div>
               ) : (

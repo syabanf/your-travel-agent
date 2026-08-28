@@ -44,7 +44,7 @@ export const featureMeta = (key) => PAID_FEATURES[key] || null;
 /** The email access is recorded against — the demo session's, or the demo user. */
 export function currentEmail() {
   try {
-    return localStorage.getItem("mora_user_email") || "traveler@iconholiday.app";
+    return localStorage.getItem("ich_user_email") || "traveler@iconholiday.app";
   } catch {
     return "traveler@iconholiday.app";
   }

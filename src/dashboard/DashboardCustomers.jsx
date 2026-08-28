@@ -37,7 +37,7 @@ const TIERS = ["bronze", "silver", "gold", "platinum"];
 const TIER_BADGE = {
   bronze: "bg-amber-100 text-amber-700",
   silver: "bg-slate-200 text-slate-700",
-  gold: "bg-mora-gold/15 text-gold",
+  gold: "bg-ich-gold/15 text-gold",
   platinum: "bg-indigo-100 text-indigo-700",
 };
 
@@ -155,7 +155,7 @@ export default function DashboardCustomers() {
   const pg = usePagination(sorted, 10, `${listQuery}|${tierF}|${statusF}|${countryF}|${range}|${sort}`);
 
   const exportCSV = () => downloadCSV(
-    "mora-customers",
+    "ich-customers",
     ["Name", "Email", "Phone", "City", "Country", "Tier", "Status", "Lifetime spend"],
     sorted.map((c) => [
       c.name, c.email, c.phone, c.city, c.country,
@@ -183,13 +183,13 @@ export default function DashboardCustomers() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Customers</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Customers</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="customers" data={items} />
-            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 press">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
             {can(role, "customers", "create") && (
@@ -221,10 +221,10 @@ export default function DashboardCustomers() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-mora-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -288,20 +288,20 @@ export default function DashboardCustomers() {
                   ariaLabel="Source"
                 />
               </FieldD>
-              <label className="flex items-center gap-2 text-sm text-mora-primary cursor-pointer pt-1">
-                <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-mora-primary/30 text-gold focus:ring-gold" />
+              <label className="flex items-center gap-2 text-sm text-ich-primary cursor-pointer pt-1">
+                <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-ich-primary/30 text-gold focus:ring-gold" />
                 Marketing opt-in
               </label>
               <FieldD label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input" rows={3} placeholder="Preferences, VIP notes…" /></FieldD>
-              <div className="flex items-center gap-2 text-sm text-mora-neutral pt-1">
+              <div className="flex items-center gap-2 text-sm text-ich-neutral pt-1">
                 <MapPin className="w-4 h-4 text-gold" />
-                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-mora-neutral/60">Click the map or search to set location</span>}
+                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-ich-neutral/60">Click the map or search to set location</span>}
               </div>
               <div className="flex gap-2 pt-3">
                 <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                 </button>
-                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
               </div>
             </div>
 
@@ -309,9 +309,9 @@ export default function DashboardCustomers() {
             <div>
               <div className="flex gap-2 mb-2">
                 <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && geocode()} placeholder="Search a place…" className="dash-input flex-1" />
-                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
+                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
               </div>
-              <div className="rounded-xl overflow-hidden border border-mora-primary/10" style={{ height: 300 }}>
+              <div className="rounded-xl overflow-hidden border border-ich-primary/10" style={{ height: 300 }}>
                 <OLMap
                   center={editing.lat != null ? [editing.lng, editing.lat] : [110, -2]}
                   zoom={editing.lat != null ? 6 : 4}
@@ -323,13 +323,13 @@ export default function DashboardCustomers() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={6} /></div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <ReadOnlyBanner resource="customers" />
           <div className="flex flex-wrap gap-2">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mora-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
               <input
                 className="dash-input pl-9"
                 placeholder="Search customers…"
@@ -390,7 +390,7 @@ export default function DashboardCustomers() {
               className="max-w-[160px]"
             />
             {(listQuery || tierF !== "all" || statusF !== "all" || countryF !== "all" || range !== "all" || sort !== "newest") && (
-              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -399,10 +399,10 @@ export default function DashboardCustomers() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "name", label: "Customer", className: "font-medium text-mora-primary", render: (c) => (
+                { key: "name", label: "Customer", className: "font-medium text-ich-primary", render: (c) => (
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-8 h-8 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(c.name || "?").trim().charAt(0)}</span>
-                    <span className="min-w-0"><span className="block truncate">{c.name}</span><span className="block text-[11px] text-mora-neutral/60 truncate">{c.email}</span></span>
+                    <span className="w-8 h-8 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(c.name || "?").trim().charAt(0)}</span>
+                    <span className="min-w-0"><span className="block truncate">{c.name}</span><span className="block text-[11px] text-ich-neutral/60 truncate">{c.email}</span></span>
                   </span>
                 ) },
                 { key: "tier", label: "Tier", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span> },
@@ -417,35 +417,35 @@ export default function DashboardCustomers() {
           ) : (
           <div className="space-y-3 stagger">
           {pg.pageItems.map((c) => (
-            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-mora-primary/10 p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press">
-              <div className="w-11 h-11 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
+            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press">
+              <div className="w-11 h-11 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-display font-semibold text-mora-primary truncate">{c.name}</h3>
+                  <h3 className="font-display font-semibold text-ich-primary truncate">{c.name}</h3>
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span>
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span>
                 </div>
-                <p className="text-xs text-mora-neutral mt-0.5 flex items-center gap-1.5 truncate">
+                <p className="text-xs text-ich-neutral mt-0.5 flex items-center gap-1.5 truncate">
                   <Mail className="w-3 h-3 shrink-0" /> {c.email}
                 </p>
-                <p className="text-xs text-mora-neutral/70 mt-0.5">
+                <p className="text-xs text-ich-neutral/70 mt-0.5">
                   {[c.city, c.country].filter(Boolean).join(" · ") || "No location"}
                   {c.joined_date ? ` · joined ${moment(c.joined_date).format("MMM YYYY")}` : ""}
                 </p>
                 <p className="text-sm font-semibold text-gold mt-1 sm:hidden">
-                  {formatIDR(Number(c.lifetime_spend) || 0)} <span className="text-[10px] text-mora-neutral/60 uppercase tracking-wider font-normal">lifetime</span>
+                  {formatIDR(Number(c.lifetime_spend) || 0)} <span className="text-[10px] text-ich-neutral/60 uppercase tracking-wider font-normal">lifetime</span>
                 </p>
               </div>
               <div className="text-right shrink-0 hidden sm:block">
                 <div className="text-sm font-semibold text-gold">{formatIDR(Number(c.lifetime_spend) || 0)}</div>
-                <div className="text-[10px] text-mora-neutral/60 uppercase tracking-wider">lifetime</div>
+                <div className="text-[10px] text-ich-neutral/60 uppercase tracking-wider">lifetime</div>
               </div>
               {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
                 <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   {can(role, "customers", "edit") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                   )}
                   {can(role, "customers", "delete") && (
                     <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
@@ -467,7 +467,7 @@ export default function DashboardCustomers() {
               )}
             />
           )}
-          {items.length > 0 && sorted.length === 0 && <p className="text-mora-neutral/60 text-center py-10">No customers match your filters.</p>}
+          {items.length > 0 && sorted.length === 0 && <p className="text-ich-neutral/60 text-center py-10">No customers match your filters.</p>}
         </div>
       )}
     </div>
@@ -475,11 +475,11 @@ export default function DashboardCustomers() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4 min-w-0">
-    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4 min-w-0">
+    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="stat-value text-xl font-display font-bold text-mora-primary">{value}</div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="stat-value text-xl font-display font-bold text-ich-primary">{value}</div>
     </div>
   </div>
 );
@@ -487,7 +487,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

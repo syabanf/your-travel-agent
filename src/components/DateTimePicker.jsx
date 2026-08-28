@@ -25,7 +25,7 @@ export default function DateTimePicker({ value, onChange, type = "date", label }
     <>
       <button
         onClick={() => setOpen(true)}
-        className="w-full bg-white/5 border border-white/10 rounded-xl h-11 px-3 text-sm text-mora-white text-left flex items-center gap-2 hover:border-white/20 transition-all"
+        className="w-full bg-white/5 border border-white/10 rounded-xl h-11 px-3 text-sm text-ich-white text-left flex items-center gap-2 hover:border-white/20 transition-all"
       >
         <Icon className="w-4 h-4 text-gold/50 flex-shrink-0" />
         <span>{formatDisplay(value)}</span>
@@ -41,7 +41,7 @@ export default function DateTimePicker({ value, onChange, type = "date", label }
               type={type}
               value={value}
               onChange={handleDateSelect}
-              className="w-full bg-white/5 border border-white/10 rounded-xl h-12 px-3 text-mora-white text-center [color-scheme:dark]"
+              className="w-full bg-white/5 border border-white/10 rounded-xl h-12 px-3 text-ich-white text-center [color-scheme:dark]"
             />
           </div>
         </DrawerContent>

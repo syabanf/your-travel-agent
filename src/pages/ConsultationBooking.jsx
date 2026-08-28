@@ -32,10 +32,10 @@ export default function ConsultationBooking() {
   }, [assistantId]);
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
   );
   if (!assistant) return (
-    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-mora-neutral/70">This expert is no longer available.</p></div>
+    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-ich-neutral/70">This expert is no longer available.</p></div>
   );
 
   const packages = assistant.packages?.length
@@ -81,8 +81,8 @@ export default function ConsultationBooking() {
           <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <Check className="w-10 h-10 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-display font-bold text-mora-primary mb-1">You're booked!</h2>
-          <p className="text-sm text-mora-neutral/70 mb-6">A consultation with {assistant.name} is confirmed.</p>
+          <h2 className="text-xl font-display font-bold text-ich-primary mb-1">You're booked!</h2>
+          <p className="text-sm text-ich-neutral/70 mb-6">A consultation with {assistant.name} is confirmed.</p>
 
           <GlassCard className="p-4 text-left mb-6 space-y-2">
             <Row label="Expert" value={assistant.name} />
@@ -96,7 +96,7 @@ export default function ConsultationBooking() {
           <button onClick={() => navigate(`/booking/${confirmed.id}`)} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 mb-3">
             View booking <ChevronRight className="w-4 h-4" />
           </button>
-          <button onClick={() => navigate("/assistant")} className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-mora-primary hover:bg-mora-primary/5 transition-colors">
+          <button onClick={() => navigate("/assistant")} className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-colors">
             Done
           </button>
         </div>
@@ -111,14 +111,14 @@ export default function ConsultationBooking() {
       <div className="px-6 space-y-5">
         {/* Expert */}
         <GlassCard className="p-4 flex items-center gap-3">
-          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-mora-gold/10">
+          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-ich-gold/10">
             {assistant.photo_url
               ? <img src={assistant.photo_url} alt={assistant.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
               : <div className="w-full h-full flex items-center justify-center text-xl font-display text-gold">{assistant.name?.[0]}</div>}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-mora-primary truncate">{assistant.name}</h3>
-            <p className="text-xs text-mora-neutral/60 truncate">{assistant.specialization}</p>
+            <h3 className="text-sm font-semibold text-ich-primary truncate">{assistant.name}</h3>
+            <p className="text-xs text-ich-neutral/60 truncate">{assistant.specialization}</p>
             {assistant.rating && <span className="flex items-center gap-1 text-xs text-gold mt-0.5"><Star className="w-3 h-3 fill-current" /> {assistant.rating}</span>}
           </div>
         </GlassCard>
@@ -131,15 +131,15 @@ export default function ConsultationBooking() {
               const active = i === pkgIdx;
               return (
                 <button key={i} onClick={() => setPkgIdx(i)} className={`w-full text-left rounded-2xl p-4 border transition-all flex items-start gap-3 ${active ? "glass-gold border-gold" : "glass-light border-transparent"}`}>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${active ? "border-gold bg-mora-gold/20" : "border-mora-neutral/30"}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${active ? "border-gold bg-ich-gold/20" : "border-ich-neutral/30"}`}>
                     {active && <div className="w-2 h-2 rounded-full bg-gold" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-mora-primary min-w-0 truncate">{p.name}</p>
+                      <p className="text-sm font-semibold text-ich-primary min-w-0 truncate">{p.name}</p>
                       {p.price ? <span className="stat-value text-sm font-display font-semibold text-gold flex-shrink-0">{formatIDR(p.price)}</span> : null}
                     </div>
-                    {p.description && <p className="text-xs text-mora-neutral/60 mt-0.5">{p.description}</p>}
+                    {p.description && <p className="text-xs text-ich-neutral/60 mt-0.5">{p.description}</p>}
                   </div>
                 </button>
               );
@@ -158,7 +158,7 @@ export default function ConsultationBooking() {
           <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Time</label>
           <div className="grid grid-cols-3 gap-2">
             {TIME_SLOTS.map((t) => (
-              <button key={t} onClick={() => setTime(t)} className={`py-2.5 rounded-xl text-xs font-medium transition-all ${time === t ? "glass-gold text-gold" : "glass-light text-mora-neutral/70"}`}>{t}</button>
+              <button key={t} onClick={() => setTime(t)} className={`py-2.5 rounded-xl text-xs font-medium transition-all ${time === t ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{t}</button>
             ))}
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function ConsultationBooking() {
         <GlassCard className="p-4">
           <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">What would you like help with?</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. a 10-day honeymoon in Japan…" rows={3}
-            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-mora-white placeholder:text-mora-neutral/40 outline-none resize-none" />
+            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-ich-white placeholder:text-ich-neutral/40 outline-none resize-none" />
         </GlassCard>
 
         {/* Payment method */}
@@ -178,7 +178,7 @@ export default function ConsultationBooking() {
 
         {/* Summary + confirm */}
         <GlassCard className="p-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm text-mora-neutral min-w-0">
+          <div className="flex items-center gap-2 text-sm text-ich-neutral min-w-0">
             <CalendarDays className="w-4 h-4 text-gold flex-shrink-0" />
             <span className="truncate">{date && time ? `${moment(date).format("MMM D")} · ${time}` : "Select date & time"}</span>
           </div>
@@ -197,8 +197,8 @@ export default function ConsultationBooking() {
 function Row({ label, value, accent }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-mora-neutral/60 flex-shrink-0">{label}</span>
-      <span className={`stat-value text-sm font-medium text-right ${accent ? "text-gold font-display font-bold" : "text-mora-primary"}`}>{value}</span>
+      <span className="text-xs text-ich-neutral/60 flex-shrink-0">{label}</span>
+      <span className={`stat-value text-sm font-medium text-right ${accent ? "text-gold font-display font-bold" : "text-ich-primary"}`}>{value}</span>
     </div>
   );
 }

@@ -60,10 +60,10 @@ export default function Profile() {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-display font-semibold text-mora-primary truncate">
+              <h2 className="text-lg font-display font-semibold text-ich-primary truncate">
                 {user?.full_name || "Traveler"}
               </h2>
-              <p className="text-xs text-mora-neutral mt-0.5">{user?.email}</p>
+              <p className="text-xs text-ich-neutral mt-0.5">{user?.email}</p>
               <div className="flex items-center gap-1 mt-1.5">
                 <div className="px-2.5 py-0.5 bg-amber-soft border border-amber-soft rounded-full">
                   <span className="text-[9px] text-amber-accent font-semibold tracking-wider uppercase">Premium Member</span>
@@ -73,18 +73,18 @@ export default function Profile() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-mora-primary/10">
+          <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-ich-primary/10">
             <div className="text-center min-w-0">
-              <p className="stat-value text-lg font-display font-bold text-mora-primary">{tripCount}</p>
-              <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Trips</p>
+              <p className="stat-value text-lg font-display font-bold text-ich-primary">{tripCount}</p>
+              <p className="text-[10px] text-ich-neutral uppercase tracking-wider">Trips</p>
             </div>
             <div className="text-center min-w-0">
-              <p className="stat-value text-lg font-display font-bold text-mora-primary">{bookingCount}</p>
-              <p className="text-[10px] text-mora-neutral uppercase tracking-wider">Bookings</p>
+              <p className="stat-value text-lg font-display font-bold text-ich-primary">{bookingCount}</p>
+              <p className="text-[10px] text-ich-neutral uppercase tracking-wider">Bookings</p>
             </div>
             <div className="text-center min-w-0">
               <p className="stat-value text-lg font-display font-bold text-gold">4.9</p>
-              <p className="text-[10px] text-mora-neutral/70 uppercase tracking-wider">Rating</p>
+              <p className="text-[10px] text-ich-neutral/70 uppercase tracking-wider">Rating</p>
             </div>
           </div>
         </GlassCard>
@@ -99,10 +99,10 @@ export default function Profile() {
                 <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-mora-primary">{label}</h3>
-                <p className="text-[10px] text-mora-neutral">{desc}</p>
+                <h3 className="text-sm font-medium text-ich-primary">{label}</h3>
+                <p className="text-[10px] text-ich-neutral">{desc}</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-mora-neutral flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-ich-neutral flex-shrink-0" />
             </GlassCard>
           </Link>
         ))}

@@ -39,19 +39,19 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
     <GlassCard className="p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center">
             <span className="text-sm font-display font-bold text-gold">{dayNumber}</span>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-mora-white">Day {dayNumber}</h3>
+            <h3 className="text-sm font-semibold text-ich-white">Day {dayNumber}</h3>
             {date && (
-              <p className="text-[10px] text-mora-neutral/60">{moment(date).format("dddd, MMM D")}</p>
+              <p className="text-[10px] text-ich-neutral/60">{moment(date).format("dddd, MMM D")}</p>
             )}
           </div>
         </div>
         <Link 
           to={`/itinerary/${tripId}/add?day=${dayNumber}`}
-          className="w-9 h-9 glass-light rounded-lg flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
+          className="w-9 h-9 glass-light rounded-lg flex items-center justify-center text-ich-neutral/50 hover:text-gold transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
         </Link>
@@ -59,7 +59,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
 
       {items.length === 0 ? (
         <div className="py-4 text-center">
-          <p className="text-xs text-mora-neutral/40">No activities planned</p>
+          <p className="text-xs text-ich-neutral/40">No activities planned</p>
         </div>
       ) : (
         <div className="space-y-0.5">
@@ -85,25 +85,25 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                         <span className="text-[10px] text-gold font-medium">{item.time}</span>
                       )}
                       {item.duration_minutes && (
-                        <span className="text-[10px] text-mora-neutral/40 flex items-center gap-0.5">
+                        <span className="text-[10px] text-ich-neutral/40 flex items-center gap-0.5">
                           <Clock className="w-2.5 h-2.5" /> {item.duration_minutes}min
                         </span>
                       )}
                     </div>
-                    <h4 className={`text-sm font-medium ${item.is_completed ? "text-mora-neutral/50 line-through" : "text-mora-white"}`}>
+                    <h4 className={`text-sm font-medium ${item.is_completed ? "text-ich-neutral/50 line-through" : "text-ich-white"}`}>
                       {item.activity_name}
                     </h4>
                     {item.location && (
                       <div className="flex items-center gap-1.5 mt-1">
                         <button
                           onClick={() => navigate(`/itinerary/map?location=${encodeURIComponent(item.location)}`)}
-                          className="text-[10px] text-mora-neutral/50 flex items-center gap-1 hover:text-gold transition-colors"
+                          className="text-[10px] text-ich-neutral/50 flex items-center gap-1 hover:text-gold transition-colors"
                         >
                           <MapPin className="w-3 h-3" /> {item.location}
                         </button>
                         <button
                           onClick={() => navigate(`/itinerary/map?location=${encodeURIComponent(item.location)}`)}
-                          className="w-5 h-5 flex items-center justify-center text-mora-neutral/50 hover:text-gold transition-colors"
+                          className="w-5 h-5 flex items-center justify-center text-ich-neutral/50 hover:text-gold transition-colors"
                           title="View on map"
                           aria-label="View on map"
                         >
@@ -124,7 +124,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                     {item.is_completed ? (
                       <CheckCircle className="w-4.5 h-4.5 text-emerald-600" />
                     ) : (
-                      <Circle className="w-4.5 h-4.5 text-mora-neutral/30" />
+                      <Circle className="w-4.5 h-4.5 text-ich-neutral/30" />
                     )}
                   </button>
                 </div>

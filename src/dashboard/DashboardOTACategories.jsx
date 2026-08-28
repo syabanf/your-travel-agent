@@ -75,11 +75,11 @@ export default function DashboardOTACategories() {
   };
 
   const columns = [
-    { key: "label", label: "Category", className: "font-medium text-mora-primary", render: (r) => {
+    { key: "label", label: "Category", className: "font-medium text-ich-primary", render: (r) => {
       const Icon = iconFor(r.icon);
-      return <span className="flex items-center gap-2.5"><span className="w-8 h-8 rounded-lg bg-mora-gold/10 text-gold flex items-center justify-center"><Icon className="w-4 h-4" /></span>{r.label}</span>;
+      return <span className="flex items-center gap-2.5"><span className="w-8 h-8 rounded-lg bg-ich-gold/10 text-gold flex items-center justify-center"><Icon className="w-4 h-4" /></span>{r.label}</span>;
     } },
-    { key: "behavior", label: "Search flow", render: (r) => <span className="text-mora-neutral capitalize">{(r.behavior || "").replace("_", " ")}</span> },
+    { key: "behavior", label: "Search flow", render: (r) => <span className="text-ich-neutral capitalize">{(r.behavior || "").replace("_", " ")}</span> },
     { key: "order", label: "Order", align: "right", render: (r) => r.order },
     { key: "active", label: "Status", render: (r) => (
       <button onClick={(e) => { e.stopPropagation(); toggleActive(r); }} disabled={!canEdit} className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${r.active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"} ${canEdit ? "hover:opacity-80" : ""}`}>
@@ -88,7 +88,7 @@ export default function DashboardOTACategories() {
     ) },
     { key: "actions", label: "", align: "right", render: (r) => (
       <span className="inline-flex gap-1">
-        {canEdit && <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} className="w-9 h-9 rounded-lg border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>}
+        {canEdit && <button onClick={(e) => { e.stopPropagation(); openEdit(r); }} className="w-9 h-9 rounded-lg border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 inline-flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>}
         {canDelete && <button onClick={(e) => { e.stopPropagation(); remove(r); }} className="w-9 h-9 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>}
       </span>
     ) },
@@ -96,14 +96,14 @@ export default function DashboardOTACategories() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <Link to="/dashboard/ota" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary mb-4">
+      <Link to="/dashboard/ota" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary mb-4">
         <ChevronLeft className="w-4 h-4" /> Back to OTA channels
       </Link>
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Tags className="w-3.5 h-3.5" /> Distribution</p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Booking Categories</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Manage the categories travellers see in the mobile app's Book tab. Hidden categories disappear from the app.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Booking Categories</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Manage the categories travellers see in the mobile app's Book tab. Hidden categories disappear from the app.</p>
         </div>
         {canCreate && (
           <button onClick={openNew} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press shrink-0"><Plus className="w-4 h-4" /> Add category</button>
@@ -117,30 +117,30 @@ export default function DashboardOTACategories() {
         {editing && (
           <form onSubmit={save} className="space-y-4">
             <div>
-              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Label</label>
+              <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Label</label>
               <input autoFocus value={editing.label} onChange={(e) => setEditing((p) => ({ ...p, label: e.target.value }))} className="dash-input" placeholder="e.g. Cruise" />
             </div>
             <div>
-              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Icon</label>
+              <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Icon</label>
               <SearchableSelect value={editing.icon} onChange={(v) => setEditing((p) => ({ ...p, icon: v }))} options={ICON_OPTIONS} placeholder="Pick an icon" />
             </div>
             <div>
-              <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Search flow</label>
+              <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Search flow</label>
               <SearchableSelect value={editing.behavior} onChange={(v) => setEditing((p) => ({ ...p, behavior: v }))} options={BEHAVIORS} placeholder="How it searches" />
-              <p className="text-[11px] text-mora-neutral/60 mt-1">Determines the search form & results the app shows for this category.</p>
+              <p className="text-[11px] text-ich-neutral/60 mt-1">Determines the search form & results the app shows for this category.</p>
             </div>
             <div className="grid grid-cols-2 gap-3 items-end">
               <div>
-                <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">Order</label>
+                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Order</label>
                 <input type="number" value={editing.order} onChange={(e) => setEditing((p) => ({ ...p, order: e.target.value }))} className="dash-input" />
               </div>
-              <label className="flex items-center gap-2 h-[2.6rem] px-1 text-sm text-mora-primary cursor-pointer">
-                <input type="checkbox" checked={!!editing.active} onChange={(e) => setEditing((p) => ({ ...p, active: e.target.checked }))} className="w-4 h-4 accent-mora-crimson" />
+              <label className="flex items-center gap-2 h-[2.6rem] px-1 text-sm text-ich-primary cursor-pointer">
+                <input type="checkbox" checked={!!editing.active} onChange={(e) => setEditing((p) => ({ ...p, active: e.target.checked }))} className="w-4 h-4 accent-ich-crimson" />
                 Visible in app
               </label>
             </div>
             <div className="flex gap-2 pt-2">
-              <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-mora-primary/15 text-mora-primary hover:bg-mora-primary/5">Cancel</button>
+              <button type="button" onClick={() => setEditing(null)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5">Cancel</button>
               <button type="submit" className="flex-1 btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold">{editing.id ? "Save changes" : "Add category"}</button>
             </div>
           </form>

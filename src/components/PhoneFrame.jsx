@@ -24,12 +24,12 @@ export default function PhoneFrame({ children }) {
 
         {/* Status Bar */}
         <div className="relative z-20 flex items-center justify-between px-7 pb-1 flex-shrink-0" style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}>
-          <span className="text-[13px] font-semibold text-mora-white">{timeStr}</span>
+          <span className="text-[13px] font-semibold text-ich-white">{timeStr}</span>
           <div className="md:block hidden absolute left-1/2 -translate-x-1/2 top-2 w-28 h-7 bg-[#0d0d0d] rounded-full" />
           <div className="flex items-center gap-1.5">
-            <Signal className="w-3.5 h-3.5 text-mora-white" />
-            <Wifi className="w-3.5 h-3.5 text-mora-white" />
-            <Battery className="w-4 h-4 text-mora-white" />
+            <Signal className="w-3.5 h-3.5 text-ich-white" />
+            <Wifi className="w-3.5 h-3.5 text-ich-white" />
+            <Battery className="w-4 h-4 text-ich-white" />
           </div>
         </div>
 

@@ -8,8 +8,8 @@ import moment from "moment";
 
 const statusColors = {
   active: "bg-emerald-500",
-  planned: "bg-mora-gold",
-  draft: "bg-mora-neutral/50",
+  planned: "bg-ich-gold",
+  draft: "bg-ich-neutral/50",
   completed: "bg-blue-400",
   cancelled: "bg-red-400",
 };
@@ -53,14 +53,14 @@ export default function CalendarView() {
         <GlassCard className="p-4">
           <div className="flex items-center justify-between mb-4">
             <button onClick={() => setCurrentMonth(m => m.clone().subtract(1, "month"))} aria-label="Previous month"
-              className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-mora-neutral/70 hover:text-gold transition-colors">
+              className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral/70 hover:text-gold transition-colors">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <h2 className="text-base font-display font-semibold text-mora-white">
+            <h2 className="text-base font-display font-semibold text-ich-white">
               {currentMonth.format("MMMM YYYY")}
             </h2>
             <button onClick={() => setCurrentMonth(m => m.clone().add(1, "month"))} aria-label="Next month"
-              className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-mora-neutral/70 hover:text-gold transition-colors">
+              className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral/70 hover:text-gold transition-colors">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -68,7 +68,7 @@ export default function CalendarView() {
           {/* Day labels */}
           <div className="grid grid-cols-7 mb-1">
             {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
-              <div key={d} className="text-center text-[10px] text-mora-neutral/40 py-1">{d}</div>
+              <div key={d} className="text-center text-[10px] text-ich-neutral/40 py-1">{d}</div>
             ))}
           </div>
 
@@ -84,11 +84,11 @@ export default function CalendarView() {
               return (
                 <div key={day}
                   className={`min-h-[40px] rounded-lg p-1 flex flex-col items-center ${isToday ? "glass-gold" : ""}`}>
-                  <span className={`text-xs font-medium mb-0.5 ${isToday ? "text-gold" : "text-mora-white/70"}`}>{day}</span>
+                  <span className={`text-xs font-medium mb-0.5 ${isToday ? "text-gold" : "text-ich-white/70"}`}>{day}</span>
                   <div className="flex flex-wrap gap-0.5 justify-center">
                     {dayTrips.slice(0, 2).map(t => (
                       <div key={t.id}
-                        className={`w-1.5 h-1.5 rounded-full ${statusColors[t.status] || "bg-mora-neutral/50"}`} />
+                        className={`w-1.5 h-1.5 rounded-full ${statusColors[t.status] || "bg-ich-neutral/50"}`} />
                     ))}
                   </div>
                 </div>
@@ -105,7 +105,7 @@ export default function CalendarView() {
         </h3>
         {monthTrips.length === 0 ? (
           <GlassCard className="p-6 text-center">
-            <p className="text-sm text-mora-neutral/50">No trips this month</p>
+            <p className="text-sm text-ich-neutral/50">No trips this month</p>
           </GlassCard>
         ) : (
           <div className="space-y-3">
@@ -117,16 +117,16 @@ export default function CalendarView() {
                       className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-mora-white truncate">{trip.title}</h4>
-                    <p className="text-xs text-mora-neutral/50 mt-0.5">{trip.destination}</p>
+                    <h4 className="text-sm font-semibold text-ich-white truncate">{trip.title}</h4>
+                    <p className="text-xs text-ich-neutral/50 mt-0.5">{trip.destination}</p>
                     <p className="text-[10px] text-gold mt-1">
                       {moment(trip.start_date).format("MMM D")} — {trip.end_date ? moment(trip.end_date).format("MMM D") : "—"}
                     </p>
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${
                     trip.status === "active" ? "bg-emerald-500/15 text-emerald-600" :
-                    trip.status === "planned" ? "bg-mora-gold/10 text-gold" :
-                    "bg-white/5 text-mora-neutral/50"
+                    trip.status === "planned" ? "bg-ich-gold/10 text-gold" :
+                    "bg-white/5 text-ich-neutral/50"
                   }`}>{trip.status}</span>
                 </GlassCard>
               </Link>

@@ -60,32 +60,32 @@ function KpiCard({ icon: Icon, value, label, to, delta, deltaLabel, higherIsBett
   const inner = (
     <>
       <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center">
           <Icon className="w-5 h-5 text-gold" />
         </div>
         {delta !== undefined && <Delta pct={delta} label={deltaLabel} higherIsBetter={higherIsBetter} />}
       </div>
-      <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
-      <p className="text-xs text-mora-neutral mt-1 flex items-center gap-1">{label}{to && <span className="text-mora-neutral/40">→</span>}</p>
+      <p className="stat-value text-lg lg:text-xl font-display font-bold text-ich-primary">{value}</p>
+      <p className="text-xs text-ich-neutral mt-1 flex items-center gap-1">{label}{to && <span className="text-ich-neutral/40">→</span>}</p>
     </>
   );
-  const base = "bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0 block";
+  const base = "bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0 block";
   return to
-    ? <Link to={to} className={`${base} hover:shadow-md hover:border-mora-gold/30 transition-all press`}>{inner}</Link>
+    ? <Link to={to} className={`${base} hover:shadow-md hover:border-ich-gold/30 transition-all press`}>{inner}</Link>
     : <div className={base}>{inner}</div>;
 }
 
 function ChartCard({ title, subtitle, hasData, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+    <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
       <div className="mb-4">
-        <h2 className="font-display font-semibold text-mora-primary">{title}</h2>
-        {subtitle && <p className="text-xs text-mora-neutral mt-0.5">{subtitle}</p>}
+        <h2 className="font-display font-semibold text-ich-primary">{title}</h2>
+        {subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}
       </div>
       {hasData ? (
         children
       ) : (
-        <div className="h-[240px] flex items-center justify-center text-sm text-mora-neutral/60">
+        <div className="h-[240px] flex items-center justify-center text-sm text-ich-neutral/60">
           No data yet
         </div>
       )}
@@ -100,11 +100,11 @@ const cap = (s) => {
 
 function ReportTable({ title, subtitle, columns, rows, onExport }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
       <div className="flex items-start justify-between gap-4 px-5 py-4">
         <div>
-          <h2 className="font-display font-semibold text-mora-primary">{title}</h2>
-          {subtitle && <p className="text-xs text-mora-neutral mt-0.5">{subtitle}</p>}
+          <h2 className="font-display font-semibold text-ich-primary">{title}</h2>
+          {subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}
         </div>
         <button
           onClick={onExport}
@@ -117,7 +117,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -133,7 +133,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
               rows.map((row, i) => (
                 <tr
                   key={i}
-                  className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]"
+                  className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]"
                 >
                   {columns.map((col) => (
                     <td
@@ -149,7 +149,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-5 py-8 text-center text-sm text-mora-neutral/60"
+                  className="px-5 py-8 text-center text-sm text-ich-neutral/60"
                 >
                   No data yet.
                 </td>
@@ -386,7 +386,7 @@ export default function DashboardReports() {
   // The top "Export CSV" button downloads the full bookings ledger.
   const exportBookings = () =>
     downloadCSV(
-      "mora-bookings",
+      "ich-bookings",
       ["title", "type", "provider", "status", "date", "price"],
       bookings.map((b) => [
         b.title,
@@ -422,8 +422,8 @@ export default function DashboardReports() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Reports</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Reports</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">
             Revenue, bookings and customer analytics across the Icon Holiday platform.
           </p>
         </div>
@@ -453,7 +453,7 @@ export default function DashboardReports() {
           {/* Period + comparison controls */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
             <PeriodControls period={period} onPeriod={setPeriod} comparison={comparison} onComparison={setComparison} />
-            <p className="text-xs text-mora-neutral">
+            <p className="text-xs text-ich-neutral">
               {cmp
                 ? <>Comparing against the {comparison === "year" ? "same period last year" : "previous period"}.</>
                 : period === "all"
@@ -479,10 +479,10 @@ export default function DashboardReports() {
           {/* Key ratios */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {ratios.map((r) => (
-              <div key={r.label} className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
-                <p className="text-xs text-mora-neutral uppercase tracking-wider">{r.label}</p>
-                <p className="stat-value text-xl font-display font-bold text-mora-primary mt-1">{r.value}</p>
-                <p className="text-[11px] text-mora-neutral/60 mt-0.5 truncate">{r.hint}</p>
+              <div key={r.label} className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
+                <p className="text-xs text-ich-neutral uppercase tracking-wider">{r.label}</p>
+                <p className="stat-value text-xl font-display font-bold text-ich-primary mt-1">{r.value}</p>
+                <p className="text-[11px] text-ich-neutral/60 mt-0.5 truncate">{r.hint}</p>
               </div>
             ))}
           </div>
@@ -498,8 +498,8 @@ export default function DashboardReports() {
                 onClick={() => setTab(t.key)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   tab === t.key
-                    ? "bg-mora-gold/10 text-gold"
-                    : "text-mora-neutral hover:bg-mora-primary/5"
+                    ? "bg-ich-gold/10 text-gold"
+                    : "text-ich-neutral hover:bg-ich-primary/5"
                 }`}
               >
                 {t.label}
@@ -510,10 +510,10 @@ export default function DashboardReports() {
           {tab === "analytics" && (
           <>
           {/* Revenue by month */}
-          <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mb-4">
+          <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 mb-4">
             <div className="mb-4">
-              <h2 className="font-display font-semibold text-mora-primary">Revenue by month</h2>
-              <p className="text-xs text-mora-neutral mt-0.5">
+              <h2 className="font-display font-semibold text-ich-primary">Revenue by month</h2>
+              <p className="text-xs text-ich-neutral mt-0.5">
                 Confirmed booking revenue grouped by month.
               </p>
             </div>
@@ -550,7 +550,7 @@ export default function DashboardReports() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[240px] flex items-center justify-center text-sm text-mora-neutral/60">
+              <div className="h-[240px] flex items-center justify-center text-sm text-ich-neutral/60">
                 No data yet
               </div>
             )}
@@ -564,10 +564,10 @@ export default function DashboardReports() {
             <ChartCard title="Top customers by value" subtitle="Lifetime spend." hasData={topCustomers.length > 0}>
               <CategoryBars data={topCustomers} />
             </ChartCard>
-            <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
-              <div className="mb-3"><h2 className="font-display font-semibold text-mora-primary">Insights</h2><p className="text-xs text-mora-neutral mt-0.5">Auto-generated observations.</p></div>
+            <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
+              <div className="mb-3"><h2 className="font-display font-semibold text-ich-primary">Insights</h2><p className="text-xs text-ich-neutral mt-0.5">Auto-generated observations.</p></div>
               <ul className="space-y-2.5">
-                {insights.map((t, i) => <li key={i} className="flex gap-2.5 text-sm text-mora-primary"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /><span>{t}</span></li>)}
+                {insights.map((t, i) => <li key={i} className="flex gap-2.5 text-sm text-ich-primary"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /><span>{t}</span></li>)}
               </ul>
             </div>
           </div>
@@ -715,7 +715,7 @@ export default function DashboardReports() {
               }))}
               onExport={() =>
                 downloadCSV(
-                  "mora-revenue-by-month",
+                  "ich-revenue-by-month",
                   ["Month", "Confirmed bookings", "Revenue"],
                   revenueByMonth.map((r) => [
                     r.month,
@@ -750,7 +750,7 @@ export default function DashboardReports() {
               rows={bookingsByType}
               onExport={() =>
                 downloadCSV(
-                  "mora-bookings-by-type",
+                  "ich-bookings-by-type",
                   ["Type", "Count", "Total value", "Share"],
                   bookingsByType.map((r) => [
                     cap(r.name),
@@ -780,7 +780,7 @@ export default function DashboardReports() {
               rows={tripsByStatus}
               onExport={() =>
                 downloadCSV(
-                  "mora-trips-by-status",
+                  "ich-trips-by-status",
                   ["Status", "Count", "Share"],
                   tripsByStatus.map((r) => [
                     cap(r.status),
@@ -817,7 +817,7 @@ export default function DashboardReports() {
               rows={customersByTier}
               onExport={() =>
                 downloadCSV(
-                  "mora-customers-by-tier",
+                  "ich-customers-by-tier",
                   ["Tier", "Customers", "Lifetime value", "Avg / customer"],
                   customersByTier.map((r) => {
                     const s = tierStats[r.name] || { count: 0, spend: 0 };
@@ -843,7 +843,7 @@ export default function DashboardReports() {
               rows={topDestinations}
               onExport={() =>
                 downloadCSV(
-                  "mora-top-destinations",
+                  "ich-top-destinations",
                   ["Destination", "Trips"],
                   topDestinations.map((r) => [r.name, r.count])
                 )

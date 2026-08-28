@@ -167,10 +167,10 @@ ${content}`,
             <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
               <Lock className="w-6 h-6 text-gold" />
             </div>
-            <h2 className="text-base font-display font-bold text-mora-primary mb-1.5">
+            <h2 className="text-base font-display font-bold text-ich-primary mb-1.5">
               Itinerary building is a paid add-on
             </h2>
-            <p className="text-sm text-mora-neutral leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">
               {meta.tagline}
             </p>
             <button
@@ -181,7 +181,7 @@ ${content}`,
             </button>
             <button
               onClick={() => navigate("/assistant")}
-              className="w-full py-3 mt-2 text-[11px] text-mora-neutral hover:text-mora-primary transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-3 mt-2 text-[11px] text-ich-neutral hover:text-ich-primary transition-colors flex items-center justify-center gap-1.5"
             >
               <Headphones className="w-3.5 h-3.5" /> Or talk to a human concierge — free
             </button>
@@ -206,13 +206,13 @@ ${content}`,
               <div className="w-16 h-16 glass-gold rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-gold" />
               </div>
-              <h2 className="text-lg font-display font-semibold text-mora-primary mb-1">
+              <h2 className="text-lg font-display font-semibold text-ich-primary mb-1">
                 Your AI Travel Concierge
               </h2>
-              <p className="text-xs text-mora-neutral leading-relaxed max-w-[260px] mx-auto">
+              <p className="text-xs text-ich-neutral leading-relaxed max-w-[260px] mx-auto">
                 I can create personalized itineraries, optimize routes, suggest hidden gems, and more.
               </p>
-              <p className="text-[10px] text-mora-neutral/80 leading-relaxed max-w-[260px] mx-auto mt-2">
+              <p className="text-[10px] text-ich-neutral/80 leading-relaxed max-w-[260px] mx-auto mt-2">
                 I'm an AI assistant — a human concierge is available anytime if you'd prefer to talk to a person.
               </p>
             </div>
@@ -227,7 +227,7 @@ ${content}`,
                 >
                   <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">
                     <Sparkles className="w-4 h-4 text-gold flex-shrink-0" />
-                    <span className="text-xs text-mora-primary">{prompt}</span>
+                    <span className="text-xs text-ich-primary">{prompt}</span>
                   </GlassCard>
                 </button>
               ))}
@@ -259,7 +259,7 @@ ${content}`,
             <div className={isUser ? "max-w-[85%]" : "w-full"}>
               {!isUser && (
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-mora-gold/10 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg bg-ich-gold/10 flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-gold" />
                   </div>
                   <span className="text-[10px] text-gold">Icon Holiday AI</span>
@@ -282,7 +282,7 @@ ${content}`,
                   </button>
                   <button
                     onClick={() => sendMessage("Regenerate this itinerary with different suggestions")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-mora-neutral hover:text-mora-primary hover:bg-mora-primary/5 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-ich-neutral hover:text-ich-primary hover:bg-ich-primary/5 transition-all"
                   >
                     <RefreshCw className="w-3 h-3" /> Regenerate
                   </button>
@@ -297,11 +297,11 @@ ${content}`,
           // Borderless too, so the thinking state sits where the reply will.
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
-              <div className="w-2 h-2 bg-mora-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-2 h-2 bg-mora-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-2 h-2 bg-mora-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 bg-ich-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-ich-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-ich-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs text-mora-neutral">Planning your journey...</span>
+            <span className="text-xs text-ich-neutral">Planning your journey...</span>
           </div>
         )}
         
@@ -316,7 +316,7 @@ ${content}`,
               key={prompt}
               onClick={() => sendMessage(prompt)}
               disabled={loading}
-              className="flex-shrink-0 glass-light rounded-full px-3 py-1.5 text-xs text-mora-primary hover:bg-white/10 transition-all disabled:opacity-40"
+              className="flex-shrink-0 glass-light rounded-full px-3 py-1.5 text-xs text-ich-primary hover:bg-white/10 transition-all disabled:opacity-40"
             >
               {prompt}
             </button>
@@ -324,7 +324,7 @@ ${content}`,
         </div>
         <button
           onClick={() => navigate("/assistant")}
-          className="flex items-center gap-1.5 text-[11px] text-mora-neutral hover:text-mora-primary transition-all"
+          className="flex items-center gap-1.5 text-[11px] text-ich-neutral hover:text-ich-primary transition-all"
         >
           <Headphones className="w-3.5 h-3.5" /> Talk to a human concierge
         </button>
@@ -338,7 +338,7 @@ ${content}`,
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && sendMessage(input)}
             placeholder="Ask anything about your trip..."
-            className="flex-1 bg-transparent text-sm text-mora-primary placeholder:text-mora-neutral px-3 py-2.5 outline-none"
+            className="flex-1 bg-transparent text-sm text-ich-primary placeholder:text-ich-neutral px-3 py-2.5 outline-none"
           />
           <button
             onClick={() => sendMessage(input)}

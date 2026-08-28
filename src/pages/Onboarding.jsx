@@ -14,7 +14,7 @@ const slides = [
 ];
 
 const finish = (navigate) => {
-  try { localStorage.setItem("mora_onboarded", "1"); } catch { /* ignore */ }
+  try { localStorage.setItem("ich_onboarded", "1"); } catch { /* ignore */ }
   navigate("/login");
 };
 
@@ -36,9 +36,9 @@ export default function Onboarding() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg btn-primary flex items-center justify-center"><Plane className="w-4 h-4 text-white" /></div>
-            <span className="font-display font-bold text-mora-primary">Icon Holiday</span>
+            <span className="font-display font-bold text-ich-primary">Icon Holiday</span>
           </div>
-          <button onClick={() => finish(navigate)} className="text-sm text-mora-neutral hover:text-mora-primary transition-colors press">Skip</button>
+          <button onClick={() => finish(navigate)} className="text-sm text-ich-neutral hover:text-ich-primary transition-colors press">Skip</button>
         </div>
 
         {/* Slide */}
@@ -53,7 +53,7 @@ export default function Onboarding() {
                 <div className="absolute inset-x-0 top-0 h-24 opacity-50" style={{ background: `linear-gradient(135deg, ${s.color[0]}55, transparent 70%)` }} />
 
                 <div className="absolute top-4 left-4 glass-light px-3 py-1 rounded-full">
-                  <span className="text-[11px] font-semibold text-mora-primary">Step {i + 1} of {slides.length}</span>
+                  <span className="text-[11px] font-semibold text-ich-primary">Step {i + 1} of {slides.length}</span>
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -64,7 +64,7 @@ export default function Onboarding() {
                 </div>
               </div>
 
-              <p className="text-sm text-mora-neutral leading-relaxed text-center mt-5 px-3">{s.desc}</p>
+              <p className="text-sm text-ich-neutral leading-relaxed text-center mt-5 px-3">{s.desc}</p>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -76,7 +76,7 @@ export default function Onboarding() {
               key={idx}
               onClick={() => setI(idx)}
               aria-label={`Go to slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-mora-gold" : "w-1.5 bg-mora-primary/15"}`}
+              className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-ich-gold" : "w-1.5 bg-ich-primary/15"}`}
             />
           ))}
         </div>

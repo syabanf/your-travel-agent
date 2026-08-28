@@ -77,7 +77,7 @@ export default function Itinerary() {
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
         </div>
       )}
       <PageHeader
@@ -99,7 +99,7 @@ export default function Itinerary() {
           <Link key={path} to={path}>
             <GlassCard className="flex items-center gap-2.5 px-4 py-3 whitespace-nowrap">
               <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
-              <span className="text-xs text-mora-primary font-medium">{label}</span>
+              <span className="text-xs text-ich-primary font-medium">{label}</span>
             </GlassCard>
           </Link>
         ))}
@@ -108,19 +108,19 @@ export default function Itinerary() {
       {/* My Itineraries Section */}
       {!loading && trips.length > 0 && (
         <div className="px-6 mb-6">
-          <h2 className="text-xs font-semibold text-mora-primary uppercase tracking-widest mb-3">My Itineraries</h2>
+          <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">My Itineraries</h2>
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
             {trips.slice(0, 5).map((trip) => (
               <Link key={trip.id} to={`/itinerary/${trip.id}`} className="press block">
-                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-mora-primary/5 transition-all">
-                 <p className="text-xs font-semibold text-mora-primary truncate">{trip.title}</p>
-                 <p className="text-[10px] text-mora-neutral mt-1">{trip.destination}</p>
+                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-ich-primary/5 transition-all">
+                 <p className="text-xs font-semibold text-ich-primary truncate">{trip.title}</p>
+                 <p className="text-[10px] text-ich-neutral mt-1">{trip.destination}</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
                       trip.status === "active" ? "bg-emerald-500/20 text-emerald-600" :
                       trip.status === "planned" ? "bg-blue-500/20 text-blue-400" :
                       trip.status === "completed" ? "bg-slate-500/20 text-slate-400" :
-                      "bg-mora-gold/20 text-gold"
+                      "bg-ich-gold/20 text-gold"
                     }`}>{trip.status}</span>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export default function Itinerary() {
             onClick={() => setActiveTab(tab.id)}
             aria-pressed={activeTab === tab.id}
             className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-              activeTab === tab.id ? "btn-primary text-white" : "glass-light text-mora-neutral"
+              activeTab === tab.id ? "btn-primary text-white" : "glass-light text-ich-neutral"
             }`}
           >
             {tab.label}

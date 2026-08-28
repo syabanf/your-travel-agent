@@ -1,7 +1,7 @@
 // Favorite ("reference") destinations — the ones a traveler swipes right on.
 // Persisted in localStorage so they carry across the wizard and the home screen.
 
-const KEY = 'mora_fav_destinations';
+const KEY = 'ich_fav_destinations';
 
 function read() {
   try {

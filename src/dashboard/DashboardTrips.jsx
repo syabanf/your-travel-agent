@@ -32,13 +32,13 @@ const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
   planned: "bg-blue-500/15 text-blue-600",
   completed: "bg-blue-500/15 text-blue-600",
-  draft: "bg-mora-primary/10 text-mora-neutral",
+  draft: "bg-ich-primary/10 text-ich-neutral",
   cancelled: "bg-red-500/15 text-red-600",
 };
 const itinStatusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
-  pending: "bg-mora-gold/10 text-gold",
-  not_booked: "bg-mora-primary/10 text-mora-neutral",
+  pending: "bg-ich-gold/10 text-gold",
+  not_booked: "bg-ich-primary/10 text-ich-neutral",
 };
 
 const EMPTY = {
@@ -297,8 +297,8 @@ export default function DashboardTrips() {
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
           <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5"><Map className="w-3.5 h-3.5" /> Planning</p>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">Trips</h1>
-          <p className="text-sm text-mora-neutral mt-0.5">Every itinerary the agency is building, with its day-by-day plan and payment lock.</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary">Trips</h1>
+          <p className="text-sm text-ich-neutral mt-0.5">Every itinerary the agency is building, with its day-by-day plan and payment lock.</p>
         </div>
         {canCreate && (
           <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 press shrink-0">
@@ -320,12 +320,12 @@ export default function DashboardTrips() {
       </div>
 
       {trips == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={6} /></div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-mora-neutral pointer-events-none" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ich-neutral pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search title, destination or lead traveler…" />
             </div>
             <SearchableSelect
@@ -336,7 +336,7 @@ export default function DashboardTrips() {
               className="min-w-[160px]"
             />
             {filtersDirty && (
-              <button onClick={() => { setQuery(""); setStatusF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setStatusF("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -345,7 +345,7 @@ export default function DashboardTrips() {
           <DataTable
             minWidth={1180}
             columns={[
-              { key: "title", label: "Trip", className: "font-medium text-mora-primary", render: (t) => (
+              { key: "title", label: "Trip", className: "font-medium text-ich-primary", render: (t) => (
                 <span className="block max-w-[220px] truncate">{t.title || "Untitled trip"}</span>
               ) },
               { key: "destination", label: "Destination", render: (t) => t.destination || "—" },
@@ -367,9 +367,9 @@ export default function DashboardTrips() {
               { key: "lock", label: "Lock", render: (t) => <LockCell trip={t} bookings={bookings} /> },
               { key: "actions", label: "", align: "right", className: "text-right", render: (t) => (
                 <span className="inline-flex gap-1.5">
-                  <button onClick={(e) => { e.stopPropagation(); openItinerary(t); }} aria-label={`Itinerary for ${t.title || "trip"}`} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 inline-flex items-center justify-center text-mora-primary hover:text-gold press"><ListChecks className="w-4 h-4" /></button>
+                  <button onClick={(e) => { e.stopPropagation(); openItinerary(t); }} aria-label={`Itinerary for ${t.title || "trip"}`} className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 inline-flex items-center justify-center text-ich-primary hover:text-gold press"><ListChecks className="w-4 h-4" /></button>
                   {canEdit && (
-                    <button onClick={(e) => { e.stopPropagation(); setEditing(toForm(t)); }} aria-label={`Edit ${t.title || "trip"}`} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 inline-flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setEditing(toForm(t)); }} aria-label={`Edit ${t.title || "trip"}`} className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 inline-flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
                   )}
                   {canDelete && (
                     <button onClick={(e) => { e.stopPropagation(); remove(t); }} aria-label={`Delete ${t.title || "trip"}`} className="w-9 h-9 rounded-lg hover:bg-red-50 inline-flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
@@ -461,8 +461,8 @@ export default function DashboardTrips() {
             <Fld label="Special requests"><textarea value={editing.special_requests} onChange={(e) => upd("special_requests", e.target.value)} className="dash-input !h-auto py-2" rows={2} placeholder="Dietary needs, accessibility, celebrations…" /></Fld>
             <Fld label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input !h-auto py-2" rows={2} /></Fld>
 
-            <div className="rounded-xl border border-mora-primary/10 bg-white p-4 space-y-3">
-              <label className="flex items-center gap-2 text-sm text-mora-neutral">
+            <div className="rounded-xl border border-ich-primary/10 bg-white p-4 space-y-3">
+              <label className="flex items-center gap-2 text-sm text-ich-neutral">
                 <input type="checkbox" checked={!!editing.locked_until_paid} onChange={(e) => upd("locked_until_paid", e.target.checked)} className="accent-[#AD1F23] w-4 h-4" />
                 Hide the day-by-day plan until the booking is paid in full
               </label>
@@ -479,7 +479,7 @@ export default function DashboardTrips() {
               <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
             </div>
           </div>
         )}
@@ -497,7 +497,7 @@ export default function DashboardTrips() {
         {itinTrip && (
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-mora-neutral">
+              <p className="text-sm text-ich-neutral">
                 {itinItems == null ? "Loading…" : `${itinItems.length} ${itinItems.length === 1 ? "activity" : "activities"}`}
               </p>
               {!itemForm && canCreate && itinItems != null && (
@@ -508,7 +508,7 @@ export default function DashboardTrips() {
             </div>
 
             {itemForm && (
-              <div className="rounded-xl border border-mora-primary/10 bg-white p-4">
+              <div className="rounded-xl border border-ich-primary/10 bg-white p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Fld label="Day"><input type="number" min="1" value={itemForm.day_number} onChange={(e) => updItem("day_number", e.target.value)} className="dash-input" placeholder="1" /></Fld>
                   <Fld label="Time"><input type="time" value={itemForm.time} onChange={(e) => updItem("time", e.target.value)} className="dash-input" /></Fld>
@@ -536,13 +536,13 @@ export default function DashboardTrips() {
                   <button onClick={saveItem} disabled={savingItem} className="btn-primary rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
                     {savingItem ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                   </button>
-                  <button onClick={() => setItemForm(null)} className="rounded-xl px-4 py-2 text-sm font-medium text-mora-neutral hover:bg-mora-primary/5">Cancel</button>
+                  <button onClick={() => setItemForm(null)} className="rounded-xl px-4 py-2 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
                 </div>
               </div>
             )}
 
             {itinItems == null ? (
-              <div className="bg-white rounded-2xl border border-mora-primary/10 p-4"><SkeletonRows rows={4} /></div>
+              <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={4} /></div>
             ) : itinDays.length === 0 ? (
               !itemForm && (
                 <EmptyState
@@ -560,30 +560,30 @@ export default function DashboardTrips() {
               <div className="space-y-5">
                 {itinDays.map((day) => (
                   <div key={day}>
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-mora-neutral mb-2">Day {day}</h3>
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-ich-neutral mb-2">Day {day}</h3>
                     <ul className="space-y-2">
                       {itinGroups[day].map((item) => (
-                        <li key={item.id} className="flex items-start gap-3 rounded-xl bg-white border border-mora-primary/10 px-3 py-2.5 group">
+                        <li key={item.id} className="flex items-start gap-3 rounded-xl bg-white border border-ich-primary/10 px-3 py-2.5 group">
                           <span className="shrink-0 w-14 text-xs font-medium text-gold tabular-nums mt-0.5 inline-flex items-center gap-1">
                             {item.time ? <><Clock className="w-3 h-3" />{item.time}</> : "—"}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-mora-primary truncate">{item.activity_name || "Activity"}</p>
+                            <p className="text-sm font-medium text-ich-primary truncate">{item.activity_name || "Activity"}</p>
                             {item.location && (
-                              <span className="inline-flex items-center gap-1 text-xs text-mora-neutral mt-0.5">
+                              <span className="inline-flex items-center gap-1 text-xs text-ich-neutral mt-0.5">
                                 <MapPin className="w-3.5 h-3.5" /> {item.location}
                               </span>
                             )}
                             <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-mora-primary/[0.06] text-mora-neutral">{nice(item.category || "activity")}</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-ich-primary/[0.06] text-ich-neutral">{nice(item.category || "activity")}</span>
                               <span className={`text-[10px] px-2 py-0.5 rounded-full ${itinStatusPill[item.booking_status] || itinStatusPill.not_booked}`}>{nice(item.booking_status || "not_booked")}</span>
-                              {item.duration_minutes > 0 && <span className="text-[10px] text-mora-neutral/60">{item.duration_minutes} min</span>}
-                              {item.budget > 0 && <span className="text-[10px] font-medium text-mora-primary">{formatIDR(item.budget)}</span>}
+                              {item.duration_minutes > 0 && <span className="text-[10px] text-ich-neutral/60">{item.duration_minutes} min</span>}
+                              {item.budget > 0 && <span className="text-[10px] font-medium text-ich-primary">{formatIDR(item.budget)}</span>}
                             </div>
                           </div>
                           {(canEdit || canDelete) && (
                             <div className="flex gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                              {canEdit && <button onClick={() => setItemForm(toItemForm(item))} aria-label={`Edit ${item.activity_name || "activity"}`} className="w-9 h-9 rounded-lg hover:bg-mora-primary/5 flex items-center justify-center text-mora-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>}
+                              {canEdit && <button onClick={() => setItemForm(toItemForm(item))} aria-label={`Edit ${item.activity_name || "activity"}`} className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-3.5 h-3.5" /></button>}
                               {canDelete && <button onClick={() => removeItem(item)} aria-label={`Delete ${item.activity_name || "activity"}`} className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-3.5 h-3.5" /></button>}
                             </div>
                           )}
@@ -605,7 +605,7 @@ export default function DashboardTrips() {
 // than open, because tripAccess() deliberately fails open in that case.
 const LockCell = ({ trip, bookings }) => {
   if (!trip.locked_until_paid) {
-    return <span className="inline-flex items-center gap-1.5 text-xs text-mora-neutral/60"><Unlock className="w-3.5 h-3.5" /> Open</span>;
+    return <span className="inline-flex items-center gap-1.5 text-xs text-ich-neutral/60"><Unlock className="w-3.5 h-3.5" /> Open</span>;
   }
   const access = tripAccess(trip, bookings);
   if (!access.booking) {
@@ -617,17 +617,17 @@ const LockCell = ({ trip, bookings }) => {
   return (
     <span className="inline-flex flex-col">
       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600"><Lock className="w-3.5 h-3.5" /> Locked</span>
-      <span className="text-[10px] text-mora-neutral/60">{formatIDR(access.balance)} due</span>
+      <span className="text-[10px] text-ich-neutral/60">{formatIDR(access.balance)} due</span>
     </span>
   );
 };
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 flex items-center gap-4 min-w-0">
-    <div className="w-11 h-11 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4 min-w-0">
+    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="stat-value text-xl font-display font-bold text-mora-primary truncate">{value}</div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="stat-value text-xl font-display font-bold text-ich-primary truncate">{value}</div>
     </div>
   </div>
 );
@@ -636,9 +636,9 @@ const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 g
 
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-mora-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );
 
-const Hint = ({ children }) => <p className="text-[11px] text-mora-neutral/60 mt-1">{children}</p>;
+const Hint = ({ children }) => <p className="text-[11px] text-ich-neutral/60 mt-1">{children}</p>;

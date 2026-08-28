@@ -78,10 +78,10 @@ export default function DashboardAudit() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary flex items-center gap-2">
+          <h1 className="text-2xl font-display font-bold text-ich-primary flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
           </h1>
-          <p className="text-sm text-mora-neutral mt-0.5">
+          <p className="text-sm text-ich-neutral mt-0.5">
             Every change made in the admin console is recorded here.
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function DashboardAudit() {
       </header>
 
       <div className="flex items-center gap-3 mb-4">
-        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-mora-neutral/70">
+        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-ich-neutral/70">
           <Filter className="w-3.5 h-3.5" /> Filter
         </span>
         <SearchableSelect
@@ -120,7 +120,7 @@ export default function DashboardAudit() {
         />
         <DateRangeSelect value={range} onChange={setRange} />
         {(action !== "all" || entity !== "all" || range !== "all") && (
-          <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-mora-primary/15 text-sm text-mora-neutral hover:bg-mora-primary/5 inline-flex items-center gap-1.5 press">
+          <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}
@@ -135,15 +135,15 @@ export default function DashboardAudit() {
       )}
 
       {logs == null ? (
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-5"><SkeletonRows rows={8} /></div>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={8} /></div>
       ) : (
         <>
-          <p className="text-xs text-mora-neutral/70 mb-3">{filtered.length} events</p>
-          <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden">
+          <p className="text-xs text-ich-neutral/70 mb-3">{filtered.length} events</p>
+          <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
             <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
                   <th className="px-5 py-3 font-medium">When</th>
                   <th className="px-5 py-3 font-medium">Actor</th>
                   <th className="px-5 py-3 font-medium">Action</th>
@@ -153,19 +153,19 @@ export default function DashboardAudit() {
               </thead>
               <tbody className="stagger">
                 {pg.pageItems.map((l) => (
-                  <tr key={l.id} className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]">
+                  <tr key={l.id} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]">
                     <td className="px-5 py-3 whitespace-nowrap">
-                      <div className="text-mora-primary">{moment(l.created_date).format("MMM D, HH:mm")}</div>
-                      <div className="text-[11px] text-mora-neutral/60">{moment(l.created_date).fromNow()}</div>
+                      <div className="text-ich-primary">{moment(l.created_date).format("MMM D, HH:mm")}</div>
+                      <div className="text-[11px] text-ich-neutral/60">{moment(l.created_date).fromNow()}</div>
                     </td>
-                    <td className="px-5 py-3 text-mora-neutral">{l.actor || "—"}</td>
+                    <td className="px-5 py-3 text-ich-neutral">{l.actor || "—"}</td>
                     <td className="px-5 py-3">
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${ACTION_BADGE[l.action] || "bg-mora-primary/10 text-mora-neutral"}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${ACTION_BADGE[l.action] || "bg-ich-primary/10 text-ich-neutral"}`}>
                         {l.action}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-mora-neutral">{l.entity || "—"}</td>
-                    <td className="px-5 py-3 text-mora-neutral max-w-[320px] truncate" title={l.summary}>{l.summary || "—"}</td>
+                    <td className="px-5 py-3 text-ich-neutral">{l.entity || "—"}</td>
+                    <td className="px-5 py-3 text-ich-neutral max-w-[320px] truncate" title={l.summary}>{l.summary || "—"}</td>
                   </tr>
                 ))}
                 {filtered.length === 0 && (

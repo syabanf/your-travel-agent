@@ -44,27 +44,27 @@ const MONTH_ORDER = [
 
 function KpiCard({ icon: Icon, value, label }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 flex items-center justify-center mb-3">
+    <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
+      <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center mb-3">
         <Icon className="w-5 h-5 text-gold" />
       </div>
-      <p className="stat-value text-lg lg:text-xl font-display font-bold text-mora-primary">{value}</p>
-      <p className="text-xs text-mora-neutral mt-1">{label}</p>
+      <p className="stat-value text-lg lg:text-xl font-display font-bold text-ich-primary">{value}</p>
+      <p className="text-xs text-ich-neutral mt-1">{label}</p>
     </div>
   );
 }
 
 function ChartCard({ title, subtitle, hasData, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-mora-primary/10 p-5">
+    <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
       <div className="mb-4">
-        <h2 className="font-display font-semibold text-mora-primary">{title}</h2>
-        {subtitle && <p className="text-xs text-mora-neutral mt-0.5">{subtitle}</p>}
+        <h2 className="font-display font-semibold text-ich-primary">{title}</h2>
+        {subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}
       </div>
       {hasData ? (
         children
       ) : (
-        <div className="h-[240px] flex items-center justify-center text-sm text-mora-neutral/60">
+        <div className="h-[240px] flex items-center justify-center text-sm text-ich-neutral/60">
           No data yet
         </div>
       )}
@@ -246,14 +246,14 @@ export default function DashboardBusiness() {
 
   const exportSuppliers = () =>
     downloadCSV(
-      "mora-supplier-performance",
+      "ich-supplier-performance",
       ["Supplier", "Bookings", "Sales", "Est. commission"],
       supplierPerf.map((r) => [r.name, r.count, Math.round(r.sales), Math.round(r.commission)])
     );
 
   const exportAgents = () =>
     downloadCSV(
-      "mora-agent-performance",
+      "ich-agent-performance",
       ["Agent", "Leads", "Won", "Conversion", "Pipeline"],
       agentPerf.map((r) => [
         r.agent,
@@ -276,8 +276,8 @@ export default function DashboardBusiness() {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-display font-bold text-mora-primary">Business</h1>
-        <p className="text-sm text-mora-neutral mt-0.5">
+        <h1 className="text-2xl font-display font-bold text-ich-primary">Business</h1>
+        <p className="text-sm text-ich-neutral mt-0.5">
           Funnel, margins and partner performance.
         </p>
       </header>
@@ -300,18 +300,18 @@ export default function DashboardBusiness() {
           </div>
 
           {/* Sales funnel */}
-          <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 mb-4">
+          <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 mb-4">
             <div className="mb-4">
-              <h2 className="font-display font-semibold text-mora-primary">Sales funnel</h2>
-              <p className="text-xs text-mora-neutral mt-0.5">
+              <h2 className="font-display font-semibold text-ich-primary">Sales funnel</h2>
+              <p className="text-xs text-ich-neutral mt-0.5">
                 From first lead through to confirmed bookings.
               </p>
             </div>
             <div className="space-y-3">
               {funnel.map((stage, i) => (
                 <div key={stage.label} className="flex items-center gap-3">
-                  <div className="w-24 shrink-0 text-sm text-mora-neutral">{stage.label}</div>
-                  <div className="flex-1 h-7 rounded-lg bg-mora-primary/5 overflow-hidden">
+                  <div className="w-24 shrink-0 text-sm text-ich-neutral">{stage.label}</div>
+                  <div className="flex-1 h-7 rounded-lg bg-ich-primary/5 overflow-hidden">
                     <div
                       className="h-full rounded-lg transition-all"
                       style={{
@@ -320,7 +320,7 @@ export default function DashboardBusiness() {
                       }}
                     />
                   </div>
-                  <div className="w-12 shrink-0 text-right text-sm font-semibold text-mora-primary">
+                  <div className="w-12 shrink-0 text-right text-sm font-semibold text-ich-primary">
                     {stage.count}
                   </div>
                 </div>
@@ -379,14 +379,14 @@ export default function DashboardBusiness() {
           </ChartCard>
 
           {/* Supplier performance */}
-          <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden mt-4">
+          <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden mt-4">
             <div className="flex items-start justify-between gap-4 px-5 py-4">
               <div>
-                <h2 className="font-display font-semibold text-mora-primary flex items-center gap-2">
+                <h2 className="font-display font-semibold text-ich-primary flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-gold" />
                   Supplier performance
                 </h2>
-                <p className="text-xs text-mora-neutral mt-0.5">
+                <p className="text-xs text-ich-neutral mt-0.5">
                   Bookings, sales and estimated commission per supplier.
                 </p>
               </div>
@@ -401,7 +401,7 @@ export default function DashboardBusiness() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
                     <th className="px-5 py-3 font-medium">Supplier</th>
                     <th className="px-5 py-3 font-medium text-right">Bookings</th>
                     <th className="px-5 py-3 font-medium text-right">Sales</th>
@@ -413,7 +413,7 @@ export default function DashboardBusiness() {
                     supplierPerf.map((r) => (
                       <tr
                         key={r.id}
-                        className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]"
+                        className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]"
                       >
                         <td className="px-5 py-3">{r.name}</td>
                         <td className="px-5 py-3 text-right">{r.count}</td>
@@ -423,7 +423,7 @@ export default function DashboardBusiness() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="px-5 py-8 text-center text-sm text-mora-neutral/60">
+                      <td colSpan={4} className="px-5 py-8 text-center text-sm text-ich-neutral/60">
                         No data yet.
                       </td>
                     </tr>
@@ -434,14 +434,14 @@ export default function DashboardBusiness() {
           </div>
 
           {/* Agent performance */}
-          <div className="bg-white rounded-2xl border border-mora-primary/10 overflow-hidden mt-4">
+          <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden mt-4">
             <div className="flex items-start justify-between gap-4 px-5 py-4">
               <div>
-                <h2 className="font-display font-semibold text-mora-primary flex items-center gap-2">
+                <h2 className="font-display font-semibold text-ich-primary flex items-center gap-2">
                   <Users className="w-4 h-4 text-gold" />
                   Agent performance
                 </h2>
-                <p className="text-xs text-mora-neutral mt-0.5">
+                <p className="text-xs text-ich-neutral mt-0.5">
                   Lead volume, wins and open pipeline per agent.
                 </p>
               </div>
@@ -456,7 +456,7 @@ export default function DashboardBusiness() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-wider text-mora-neutral/70 border-b border-mora-primary/5">
+                  <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
                     <th className="px-5 py-3 font-medium">Agent</th>
                     <th className="px-5 py-3 font-medium text-right">Leads</th>
                     <th className="px-5 py-3 font-medium text-right">Won</th>
@@ -469,7 +469,7 @@ export default function DashboardBusiness() {
                     agentPerf.map((r) => (
                       <tr
                         key={r.agent}
-                        className="border-b border-mora-primary/5 last:border-0 hover:bg-mora-primary/[0.02]"
+                        className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]"
                       >
                         <td className="px-5 py-3">{r.agent}</td>
                         <td className="px-5 py-3 text-right">{r.total}</td>
@@ -480,7 +480,7 @@ export default function DashboardBusiness() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="px-5 py-8 text-center text-sm text-mora-neutral/60">
+                      <td colSpan={5} className="px-5 py-8 text-center text-sm text-ich-neutral/60">
                         No data yet.
                       </td>
                     </tr>

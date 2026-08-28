@@ -11,8 +11,8 @@ export default function Splash() {
 
   useEffect(() => {
     const t = setTimeout(() => {
-      if (read("mora_session")) navigate("/", { replace: true });
-      else if (!read("mora_onboarded")) navigate("/onboarding", { replace: true });
+      if (read("ich_session")) navigate("/", { replace: true });
+      else if (!read("ich_onboarded")) navigate("/onboarding", { replace: true });
       else navigate("/login", { replace: true });
     }, 1700);
     return () => clearTimeout(t);
@@ -30,8 +30,8 @@ export default function Splash() {
           <div className="w-20 h-20 rounded-3xl btn-primary flex items-center justify-center mb-5 shadow-[0_16px_40px_rgba(173,31,35,0.35)]">
             <Plane className="w-10 h-10 text-white" strokeWidth={1.5} />
           </div>
-          <h1 className="text-5xl font-display font-bold text-mora-primary tracking-tight">Icon Holiday</h1>
-          <p className="text-xs text-mora-neutral mt-2 tracking-[0.25em] uppercase">Your Travel Agent</p>
+          <h1 className="text-5xl font-display font-bold text-ich-primary tracking-tight">Icon Holiday</h1>
+          <p className="text-xs text-ich-neutral mt-2 tracking-[0.25em] uppercase">Your Travel Agent</p>
         </motion.div>
 
         <motion.div
@@ -40,8 +40,8 @@ export default function Splash() {
           transition={{ delay: 0.6 }}
           className="absolute bottom-16 flex items-center gap-2"
         >
-          <div className="w-4 h-4 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
-          <span className="text-xs text-mora-neutral/60">Preparing your journey…</span>
+          <div className="w-4 h-4 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <span className="text-xs text-ich-neutral/60">Preparing your journey…</span>
         </motion.div>
       </div>
     </PhoneFrame>

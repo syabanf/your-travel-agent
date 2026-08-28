@@ -95,13 +95,13 @@ export default function Login({ register = false }) {
           >
             <Icon className={`w-7 h-7 ${pending ? "text-gold" : "text-red-400"}`} strokeWidth={1.5} />
           </div>
-          <h1 className="text-2xl font-display font-bold text-mora-primary">
+          <h1 className="text-2xl font-display font-bold text-ich-primary">
             {pending ? "Awaiting approval" : "Registration declined"}
           </h1>
-          <p className="text-sm text-mora-neutral mt-2 leading-relaxed">{gate.message}</p>
+          <p className="text-sm text-ich-neutral mt-2 leading-relaxed">{gate.message}</p>
 
           {pending && (
-            <p className="text-xs text-mora-neutral/70 mt-4 leading-relaxed">
+            <p className="text-xs text-ich-neutral/70 mt-4 leading-relaxed">
               Registrations are usually reviewed within one business day.
             </p>
           )}
@@ -114,7 +114,7 @@ export default function Login({ register = false }) {
           </button>
           <button
             onClick={guest}
-            className="w-full h-11 mt-3 glass-light rounded-xl text-sm font-medium text-mora-primary hover:bg-mora-primary/5 transition-colors"
+            className="w-full h-11 mt-3 glass-light rounded-xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-colors"
           >
             Look around as a guest
           </button>
@@ -130,8 +130,8 @@ export default function Login({ register = false }) {
           <div className="w-14 h-14 rounded-2xl btn-primary flex items-center justify-center mb-5">
             <Plane className="w-7 h-7 text-white" strokeWidth={1.5} />
           </div>
-          <h1 className="text-3xl font-display font-bold text-mora-primary">{isRegister ? "Request access" : "Welcome back"}</h1>
-          <p className="text-sm text-mora-neutral mt-1">
+          <h1 className="text-3xl font-display font-bold text-ich-primary">{isRegister ? "Request access" : "Welcome back"}</h1>
+          <p className="text-sm text-ich-neutral mt-1">
             {isRegister
               ? "An admin reviews your registration before the account goes live."
               : "Sign in to continue your journey."}
@@ -142,22 +142,22 @@ export default function Login({ register = false }) {
           {isRegister && (
             <Field icon={User} label="Full name">
               <Input value={form.name} onChange={(e) => upd("name", e.target.value)} placeholder="Alex Rivera"
-                className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-mora-white placeholder:text-mora-neutral/40" />
+                className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-ich-white placeholder:text-ich-neutral/40" />
             </Field>
           )}
           {isRegister && (
             <Field icon={Phone} label="Phone">
               <Input value={form.phone} onChange={(e) => upd("phone", e.target.value)} placeholder="+62 812 3456 7890"
-                className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-mora-white placeholder:text-mora-neutral/40" />
+                className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-ich-white placeholder:text-ich-neutral/40" />
             </Field>
           )}
           <Field icon={Mail} label="Email">
             <Input type="email" value={form.email} onChange={(e) => upd("email", e.target.value)} placeholder="you@email.com"
-              className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-mora-white placeholder:text-mora-neutral/40" />
+              className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-ich-white placeholder:text-ich-neutral/40" />
           </Field>
           <Field icon={Lock} label="Password">
             <Input type="password" value={form.password} onChange={(e) => upd("password", e.target.value)} placeholder="••••••••"
-              className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-mora-white placeholder:text-mora-neutral/40" />
+              className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 text-ich-white placeholder:text-ich-neutral/40" />
           </Field>
 
           <button type="submit" disabled={busy}
@@ -166,11 +166,11 @@ export default function Login({ register = false }) {
           </button>
         </form>
 
-        <button onClick={guest} className="w-full h-11 mt-3 glass-light rounded-xl text-sm font-medium text-mora-primary hover:bg-mora-primary/5 transition-colors">
+        <button onClick={guest} className="w-full h-11 mt-3 glass-light rounded-xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-colors">
           Continue as guest
         </button>
 
-        <p className="text-center text-sm text-mora-neutral mt-6">
+        <p className="text-center text-sm text-ich-neutral mt-6">
           {isRegister ? "Already have an account?" : "New to Icon Holiday?"}{" "}
           <button onClick={() => setMode(isRegister ? "login" : "register")} className="text-gold font-semibold">
             {isRegister ? "Sign in" : "Create one"}

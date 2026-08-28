@@ -30,7 +30,7 @@
       // is not replayed — stash it so <InstallPrompt /> can still offer to install.
       window.addEventListener("beforeinstallprompt", function (e) {
         e.preventDefault();
-        window.__moraInstallEvent = e;
+        window.__ichInstallEvent = e;
       });
     </script>
   </head>

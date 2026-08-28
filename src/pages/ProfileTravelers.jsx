@@ -5,7 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import { Users, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
-const STORAGE_KEY = "mora_travelers";
+const STORAGE_KEY = "ich_travelers";
 
 function loadTravelers() {
   try {
@@ -78,11 +78,11 @@ export default function ProfileTravelers() {
         {showForm && (
           <GlassCard className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-mora-primary">Add traveler</h2>
+              <h2 className="text-sm font-semibold text-ich-primary">Add traveler</h2>
               <button
                 onClick={resetForm}
                 aria-label="Cancel"
-                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-mora-neutral hover:text-mora-primary transition-colors"
+                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral hover:text-ich-primary transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -94,7 +94,7 @@ export default function ProfileTravelers() {
                 placeholder="Full name *"
                 aria-label="Full name"
                 autoFocus
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
               />
               <input
                 value={email}
@@ -102,14 +102,14 @@ export default function ProfileTravelers() {
                 type="email"
                 placeholder="Email (optional)"
                 aria-label="Email (optional)"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
               />
               <input
                 value={relation}
                 onChange={(e) => setRelation(e.target.value)}
                 placeholder="Relation (e.g. Spouse, Child)"
                 aria-label="Relation"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-mora-primary placeholder:text-mora-neutral/50 outline-none focus:ring-1 focus:ring-mora-gold/40"
+                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
               />
               <button
                 type="submit"
@@ -131,13 +131,13 @@ export default function ProfileTravelers() {
           <div className="space-y-3 stagger">
             {travelers.map((t) => (
               <GlassCard key={t.id} className="p-4 flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-mora-gold/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
                   <span className="text-base font-display text-gold">{t.name?.[0]?.toUpperCase() || "?"}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-mora-primary truncate">{t.name}</p>
+                  <p className="text-sm font-medium text-ich-primary truncate">{t.name}</p>
                   {(t.relation || t.email) && (
-                    <p className="text-xs text-mora-neutral mt-0.5 truncate">
+                    <p className="text-xs text-ich-neutral mt-0.5 truncate">
                       {[t.relation, t.email].filter(Boolean).join(" · ")}
                     </p>
                   )}

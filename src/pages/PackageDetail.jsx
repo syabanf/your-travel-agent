@@ -18,7 +18,7 @@ const Img = (props) => <img {...props} onError={(e) => { e.currentTarget.style.d
 
 const Section = ({ title, icon: Icon, children }) => (
   <GlassCard className="p-5">
-    <h2 className="text-sm font-semibold text-mora-primary mb-3 flex items-center gap-2">
+    <h2 className="text-sm font-semibold text-ich-primary mb-3 flex items-center gap-2">
       {Icon && <Icon className="w-4 h-4 text-gold" />} {title}
     </h2>
     {children}
@@ -63,7 +63,7 @@ export default function PackageDetail() {
       <div className="animate-fade-in">
         <PageHeader title="" showBack />
         <div className="flex justify-center py-24">
-          <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -148,13 +148,13 @@ export default function PackageDetail() {
   return (
     <div className="animate-fade-in" style={{ paddingBottom: 24 }}>
       {/* Hero */}
-      <div className="relative h-60 bg-mora-primary">
+      <div className="relative h-60 bg-ich-primary">
         <Img src={pkg.image} alt={pkg.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
         <div className="absolute top-0 left-0 right-0"><PageHeader showBack title="" /></div>
         <div className="absolute top-3 right-4 flex gap-2">
           {pkg.featured && <span className="chip-glass">Featured</span>}
-          {off != null && <span className="chip-glass !bg-mora-gold/90 !border-white/30">{off}% off</span>}
+          {off != null && <span className="chip-glass !bg-ich-gold/90 !border-white/30">{off}% off</span>}
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span className="chip-glass mb-2">{categoryLabel(pkg.category)}</span>
@@ -174,9 +174,9 @@ export default function PackageDetail() {
         <GlassCard className="p-5">
           <div className="flex items-end justify-between gap-3">
             <div>
-              {off != null && <p className="text-xs text-mora-neutral/50 line-through leading-none">{formatIDR(pkg.price_before)}</p>}
+              {off != null && <p className="text-xs text-ich-neutral/50 line-through leading-none">{formatIDR(pkg.price_before)}</p>}
               <p className="stat-value text-2xl font-display font-bold text-gold">{formatIDR(pkg.price)}</p>
-              <p className="text-[11px] text-mora-neutral/70">per person</p>
+              <p className="text-[11px] text-ich-neutral/70">per person</p>
             </div>
             {pkg.slots_left > 0 && (
               <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${pkg.slots_left <= 5 ? "bg-red-500/10 text-red-600" : "bg-emerald-500/10 text-emerald-700"}`}>
@@ -186,8 +186,8 @@ export default function PackageDetail() {
           </div>
 
           {/* Travellers */}
-          <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-mora-primary/10">
-            <div className="flex items-center gap-2 text-sm text-mora-primary">
+          <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-ich-primary/10">
+            <div className="flex items-center gap-2 text-sm text-ich-primary">
               <Users className="w-4 h-4 text-gold" /> Travellers
             </div>
             <div className="flex items-center gap-3">
@@ -195,22 +195,22 @@ export default function PackageDetail() {
                 onClick={() => changePax(pax - 1)}
                 disabled={pax <= minPax}
                 aria-label="Fewer travellers"
-                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-mora-primary disabled:opacity-40 press-spring"
+                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-ich-primary disabled:opacity-40 press-spring"
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="stat-value w-6 text-center text-base font-display font-bold text-mora-primary">{pax}</span>
+              <span className="stat-value w-6 text-center text-base font-display font-bold text-ich-primary">{pax}</span>
               <button
                 onClick={() => changePax(pax + 1)}
                 disabled={pax >= maxPax}
                 aria-label="More travellers"
-                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-mora-primary disabled:opacity-40 press-spring"
+                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-ich-primary disabled:opacity-40 press-spring"
               >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>
-          <p className="text-[11px] text-mora-neutral/60 mt-2">
+          <p className="text-[11px] text-ich-neutral/60 mt-2">
             This package takes {minPax}–{maxPax} travellers.
           </p>
         </GlassCard>
@@ -224,7 +224,7 @@ export default function PackageDetail() {
                   key={d}
                   onClick={() => changeDeparture(d)}
                   className={`px-4 min-h-[44px] rounded-2xl text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                    departure === d ? "btn-primary text-white" : "glass-light text-mora-neutral"
+                    departure === d ? "btn-primary text-white" : "glass-light text-ich-neutral"
                   }`}
                 >
                   {moment(d).format("D MMM YYYY")}
@@ -237,7 +237,7 @@ export default function PackageDetail() {
         {/* About */}
         {(pkg.summary || pkg.description) && (
           <Section title="About this package" icon={Sparkles}>
-            <p className="text-sm text-mora-neutral leading-relaxed">{pkg.description || pkg.summary}</p>
+            <p className="text-sm text-ich-neutral leading-relaxed">{pkg.description || pkg.summary}</p>
           </Section>
         )}
 
@@ -246,7 +246,7 @@ export default function PackageDetail() {
           <Section title="Highlights" icon={Star}>
             <ul className="space-y-2">
               {pkg.highlights.map((h, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-mora-neutral">
+                <li key={i} className="flex items-start gap-2.5 text-sm text-ich-neutral">
                   <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" />{h}
                 </li>
               ))}
@@ -259,13 +259,13 @@ export default function PackageDetail() {
           <Section title="What's included" icon={Check}>
             <ul className="space-y-2">
               {(pkg.includes || []).map((x, i) => (
-                <li key={`i${i}`} className="flex items-start gap-2.5 text-sm text-mora-neutral">
+                <li key={`i${i}`} className="flex items-start gap-2.5 text-sm text-ich-neutral">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />{x}
                 </li>
               ))}
               {(pkg.excludes || []).map((x, i) => (
-                <li key={`e${i}`} className="flex items-start gap-2.5 text-sm text-mora-neutral/60">
-                  <X className="w-4 h-4 text-mora-neutral/40 shrink-0 mt-0.5" />{x}
+                <li key={`e${i}`} className="flex items-start gap-2.5 text-sm text-ich-neutral/60">
+                  <X className="w-4 h-4 text-ich-neutral/40 shrink-0 mt-0.5" />{x}
                 </li>
               ))}
             </ul>
@@ -278,12 +278,12 @@ export default function PackageDetail() {
             <ol className="space-y-3.5">
               {pkg.itinerary.map((d, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center text-xs font-display font-bold shrink-0">
+                  <span className="w-8 h-8 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-bold shrink-0">
                     {d.day ?? i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-mora-primary">{d.title}</p>
-                    {d.detail && <p className="text-xs text-mora-neutral/70 leading-relaxed mt-0.5">{d.detail}</p>}
+                    <p className="text-sm font-semibold text-ich-primary">{d.title}</p>
+                    {d.detail && <p className="text-xs text-ich-neutral/70 leading-relaxed mt-0.5">{d.detail}</p>}
                   </div>
                 </li>
               ))}
@@ -296,7 +296,7 @@ export default function PackageDetail() {
       <div className="sticky bottom-[92px] z-20 px-6 mt-5">
         <div className="glass-nav shadow-float rounded-2xl p-3 flex items-center gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] text-mora-neutral/60 uppercase tracking-wider leading-none">Total · {pax} traveller{pax > 1 ? "s" : ""}</p>
+            <p className="text-[10px] text-ich-neutral/60 uppercase tracking-wider leading-none">Total · {pax} traveller{pax > 1 ? "s" : ""}</p>
             <p className="stat-value text-lg font-display font-bold text-gold leading-tight">{formatIDR(total)}</p>
           </div>
           <button

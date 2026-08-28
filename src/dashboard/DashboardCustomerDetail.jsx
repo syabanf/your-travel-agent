@@ -18,7 +18,7 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 
 const TIER_BADGE = {
   platinum: "bg-indigo-100 text-indigo-700",
-  gold: "bg-mora-gold/15 text-gold",
+  gold: "bg-ich-gold/15 text-gold",
   silver: "bg-slate-200 text-slate-700",
   bronze: "bg-orange-100 text-orange-700",
 };
@@ -59,7 +59,7 @@ export default function DashboardCustomerDetail() {
   };
 
   const back = (
-    <Link to="/dashboard/customers" className="inline-flex items-center gap-1.5 text-sm text-mora-neutral hover:text-mora-primary mb-4">
+    <Link to="/dashboard/customers" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-ich-primary mb-4">
       <ChevronLeft className="w-4 h-4" /> Back to customers
     </Link>
   );
@@ -68,7 +68,7 @@ export default function DashboardCustomerDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-20"><div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
       </div>
     );
   }
@@ -77,9 +77,9 @@ export default function DashboardCustomerDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         {back}
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-10 text-center">
-          <h1 className="text-xl font-display font-bold text-mora-primary">Customer not found</h1>
-          <p className="text-sm text-mora-neutral mt-1">This customer may have been removed.</p>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-10 text-center">
+          <h1 className="text-xl font-display font-bold text-ich-primary">Customer not found</h1>
+          <p className="text-sm text-ich-neutral mt-1">This customer may have been removed.</p>
         </div>
       </div>
     );
@@ -104,14 +104,14 @@ export default function DashboardCustomerDetail() {
       {back}
 
       {/* Header card */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 flex items-start gap-5">
-        <div className="w-16 h-16 rounded-full bg-mora-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 flex items-start gap-5">
+        <div className="w-16 h-16 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center font-display font-bold text-2xl shrink-0 uppercase">
           {(c.name || "?").trim().charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-display font-bold text-mora-primary truncate">{c.name || "Unnamed customer"}</h1>
-          {c.email && <p className="text-sm text-mora-neutral mt-0.5 truncate">{c.email}</p>}
-          <p className="text-sm text-mora-neutral/70 mt-0.5">{[c.city, c.country].filter(Boolean).join(" · ") || "No location"}</p>
+          <h1 className="text-2xl font-display font-bold text-ich-primary truncate">{c.name || "Unnamed customer"}</h1>
+          {c.email && <p className="text-sm text-ich-neutral mt-0.5 truncate">{c.email}</p>}
+          <p className="text-sm text-ich-neutral/70 mt-0.5">{[c.city, c.country].filter(Boolean).join(" · ") || "No location"}</p>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[tier] || TIER_BADGE.bronze}`}>{tier}</span>
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{status}</span>
@@ -146,8 +146,8 @@ export default function DashboardCustomerDetail() {
       {/* Detail grid */}
       <div className="grid lg:grid-cols-2 gap-6 mt-6">
         {/* Contact & details */}
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
-          <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Contact &amp; details</h2>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+          <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Contact &amp; details</h2>
           <div className="space-y-1">
             <DetailRow icon={Phone} label="Phone" value={c.phone} />
             <DetailRow icon={Mail} label="Email" value={c.email} />
@@ -169,14 +169,14 @@ export default function DashboardCustomerDetail() {
         </div>
 
         {/* Location */}
-        <div className="bg-white rounded-2xl border border-mora-primary/10 p-6">
-          <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Location</h2>
+        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+          <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Location</h2>
           {c.lat != null && c.lng != null ? (
-            <div className="rounded-xl overflow-hidden border border-mora-primary/10 h-64">
+            <div className="rounded-xl overflow-hidden border border-ich-primary/10 h-64">
               <OLMap center={[c.lng, c.lat]} zoom={6} markers={[{ id: c.id, lng: c.lng, lat: c.lat }]} interactive={false} />
             </div>
           ) : (
-            <div className="h-64 rounded-xl border border-dashed border-mora-primary/15 flex flex-col items-center justify-center text-mora-neutral/60">
+            <div className="h-64 rounded-xl border border-dashed border-ich-primary/15 flex flex-col items-center justify-center text-ich-neutral/60">
               <MapPinned className="w-6 h-6 mb-2" />
               <span className="text-sm">No location set</span>
             </div>
@@ -185,10 +185,10 @@ export default function DashboardCustomerDetail() {
       </div>
 
       {/* Trips & bookings */}
-      <div className="bg-white rounded-2xl border border-mora-primary/10 p-6 mt-6">
-        <h2 className="font-display font-semibold text-lg text-mora-primary mb-4">Trips &amp; bookings</h2>
+      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 mt-6">
+        <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Trips &amp; bookings</h2>
         {trips.length === 0 && bookings.length === 0 ? (
-          <p className="text-sm text-mora-neutral/70">No trips or bookings linked to this customer yet.</p>
+          <p className="text-sm text-ich-neutral/70">No trips or bookings linked to this customer yet.</p>
         ) : (
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2 mb-3">
@@ -211,15 +211,15 @@ export default function DashboardCustomerDetail() {
             </div>
             {filteredTrips.length > 0 && (
               <div>
-                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Trips</p>
-                <ul className="divide-y divide-mora-primary/5">
+                <p className="text-[11px] uppercase tracking-wider text-ich-neutral/70 mb-1.5">Trips</p>
+                <ul className="divide-y divide-ich-primary/5">
                   {filteredTrips.map((t) => (
                     <li key={t.id}>
-                      <Link to={`/dashboard/trips/${t.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
+                      <Link to={`/dashboard/trips/${t.id}`} className="flex items-center gap-3 py-2.5 hover:bg-ich-primary/[0.02] rounded-lg px-1">
                         <Plane className="w-4 h-4 text-gold shrink-0" />
-                        <span className="text-sm font-medium text-mora-primary flex-1 truncate">{t.title}</span>
-                        <span className="text-xs text-mora-neutral hidden sm:block">{t.destination}</span>
-                        <span className="text-sm font-semibold text-mora-primary w-28 text-right">{formatIDR(t.budget_total || 0)}</span>
+                        <span className="text-sm font-medium text-ich-primary flex-1 truncate">{t.title}</span>
+                        <span className="text-xs text-ich-neutral hidden sm:block">{t.destination}</span>
+                        <span className="text-sm font-semibold text-ich-primary w-28 text-right">{formatIDR(t.budget_total || 0)}</span>
                       </Link>
                     </li>
                   ))}
@@ -228,14 +228,14 @@ export default function DashboardCustomerDetail() {
             )}
             {filteredBookings.length > 0 && (
               <div>
-                <p className="text-[11px] uppercase tracking-wider text-mora-neutral/70 mb-1.5">Bookings · {formatIDR(filteredBookings.reduce((s, b) => s + (b.price || 0), 0))} total</p>
-                <ul className="divide-y divide-mora-primary/5">
+                <p className="text-[11px] uppercase tracking-wider text-ich-neutral/70 mb-1.5">Bookings · {formatIDR(filteredBookings.reduce((s, b) => s + (b.price || 0), 0))} total</p>
+                <ul className="divide-y divide-ich-primary/5">
                   {filteredBookings.map((b) => (
                     <li key={b.id}>
-                      <Link to={`/dashboard/bookings/${b.id}`} className="flex items-center gap-3 py-2.5 hover:bg-mora-primary/[0.02] rounded-lg px-1">
+                      <Link to={`/dashboard/bookings/${b.id}`} className="flex items-center gap-3 py-2.5 hover:bg-ich-primary/[0.02] rounded-lg px-1">
                         <CalendarCheck className="w-4 h-4 text-gold shrink-0" />
-                        <span className="text-sm font-medium text-mora-primary flex-1 truncate">{b.title}</span>
-                        <span className="text-xs text-mora-neutral capitalize hidden sm:block">{b.type}</span>
+                        <span className="text-sm font-medium text-ich-primary flex-1 truncate">{b.title}</span>
+                        <span className="text-xs text-ich-neutral capitalize hidden sm:block">{b.type}</span>
                         <span className="text-sm font-semibold text-gold w-28 text-right">{formatIDR(b.price || 0)}</span>
                       </Link>
                     </li>
@@ -244,7 +244,7 @@ export default function DashboardCustomerDetail() {
               </div>
             )}
             {filteredTrips.length === 0 && filteredBookings.length === 0 && (
-              <p className="text-sm text-mora-neutral/70">No matches.</p>
+              <p className="text-sm text-ich-neutral/70">No matches.</p>
             )}
           </div>
         )}
@@ -254,22 +254,22 @@ export default function DashboardCustomerDetail() {
 }
 
 const Kpi = ({ icon: Icon, label, value, sub }) => (
-  <div className="bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0">
+  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-mora-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
-      <div className="text-xs text-mora-neutral uppercase tracking-wider">{label}</div>
+      <div className="w-10 h-10 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
     </div>
-    <div className="stat-value text-xl font-display font-bold text-mora-primary mt-3">{value}</div>
-    {sub && <div className="text-xs text-mora-neutral/70 mt-0.5">{sub}</div>}
+    <div className="stat-value text-xl font-display font-bold text-ich-primary mt-3">{value}</div>
+    {sub && <div className="text-xs text-ich-neutral/70 mt-0.5">{sub}</div>}
   </div>
 );
 
 const DetailRow = ({ icon: Icon, label, value }) => (
-  <div className="flex items-start gap-3 py-2 border-b border-mora-primary/5 last:border-0">
+  <div className="flex items-start gap-3 py-2 border-b border-ich-primary/5 last:border-0">
     <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
     <div className="min-w-0">
-      <div className="text-[11px] text-mora-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-sm text-mora-primary break-words">{value || <span className="text-mora-neutral/50">—</span>}</div>
+      <div className="text-[11px] text-ich-neutral uppercase tracking-wider">{label}</div>
+      <div className="text-sm text-ich-primary break-words">{value || <span className="text-ich-neutral/50">—</span>}</div>
     </div>
   </div>
 );

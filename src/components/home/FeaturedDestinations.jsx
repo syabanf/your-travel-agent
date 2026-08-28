@@ -20,7 +20,7 @@ export default function FeaturedDestinations() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="eyebrow text-sm font-semibold text-mora-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-ich-primary tracking-wide uppercase">
           Featured Destinations
         </h2>
         <Link to="/itinerary/wizard" className="text-xs text-gold flex items-center gap-1 press-spring">
@@ -38,7 +38,7 @@ export default function FeaturedDestinations() {
                 onError={(e) => { e.currentTarget.style.display = "none"; }}
                 className="w-full h-full object-cover img-zoom"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-mora-primary/95 via-mora-primary/25 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ich-primary/95 via-ich-primary/25 to-transparent" />
               <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
               {dest.fromPrice != null && dest.fromPrice !== "" && (
                 <div className="absolute top-3 left-3 chip-glass">from {price(dest.fromPrice)}</div>

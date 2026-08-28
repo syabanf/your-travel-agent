@@ -6,10 +6,10 @@ import { formatIDR } from "@/lib/currency";
 // higherIsBetter flips the colour for "good when it goes down" metrics (e.g. outstanding).
 export function Delta({ pct, label, higherIsBetter = true, className = "" }) {
   if (pct == null) {
-    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium text-mora-neutral/40 ${className}`}>—{label && <span className="text-mora-neutral/40"> {label}</span>}</span>;
+    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium text-ich-neutral/40 ${className}`}>—{label && <span className="text-ich-neutral/40"> {label}</span>}</span>;
   }
   if (pct === 0) {
-    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold text-mora-neutral/60 ${className}`}><Minus className="w-3 h-3" />0%{label && <span className="font-medium text-mora-neutral/50"> {label}</span>}</span>;
+    return <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold text-ich-neutral/60 ${className}`}><Minus className="w-3 h-3" />0%{label && <span className="font-medium text-ich-neutral/50"> {label}</span>}</span>;
   }
   const up = pct > 0;
   const good = higherIsBetter ? up : !up;
@@ -28,15 +28,15 @@ const AXLINE = "rgba(11,27,59,0.06)";
 const TT = { contentStyle: { borderRadius: 12, border: "1px solid rgba(11,27,59,0.1)", fontSize: 12, boxShadow: "0 8px 24px rgba(11,27,59,0.08)" } };
 const fmtShort = (v) => formatIDR(v, { symbol: false });
 
-const Empty = ({ h }) => <div style={{ height: h }} className="flex items-center justify-center text-sm text-mora-neutral/50">No data yet</div>;
+const Empty = ({ h }) => <div style={{ height: h }} className="flex items-center justify-center text-sm text-ich-neutral/50">No data yet</div>;
 
 export function ChartCard({ title, subtitle, action, children, className = "" }) {
   return (
-    <div className={`bg-white rounded-2xl border border-mora-primary/10 p-5 min-w-0 ${className}`}>
+    <div className={`bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0 ${className}`}>
       <div className="flex items-start justify-between gap-2 mb-3">
         <div>
-          <h3 className="font-display font-semibold text-mora-primary text-sm">{title}</h3>
-          {subtitle && <p className="text-[11px] text-mora-neutral mt-0.5">{subtitle}</p>}
+          <h3 className="font-display font-semibold text-ich-primary text-sm">{title}</h3>
+          {subtitle && <p className="text-[11px] text-ich-neutral mt-0.5">{subtitle}</p>}
         </div>
         {action}
       </div>

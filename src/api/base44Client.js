@@ -14,7 +14,7 @@
 import { buildSeed } from './mockSeed';
 import { invokeLLM } from './mockLLM';
 
-const PREFIX = 'mora_db_';
+const PREFIX = 'ich_db_';
 const SEED_FLAG = `${PREFIX}_seeded_v4`;
 
 const MOCK_USER = {
@@ -170,6 +170,47 @@ function logAudit(action, name, id, data) {
   } catch { /* never block a write on audit logging */ }
 }
 const entities = Object.fromEntries(ENTITY_NAMES.map((n) => [n, createEntity(n)]));
+
+/* ------------------------ storage prefix rename --------------------- */
+// The product was renamed MORA → Icon Holiday, and the storage keys followed.
+// Those keys ARE the database: repointing the app at `ich_*` without moving
+// anything would silently empty every existing user's trips, bookings and
+// session. This copies each `mora_*` key across on first load, then drops the
+// originals — but only once every copy has succeeded, so a failure part-way
+// leaves the old data intact to try again next load.
+
+const LEGACY_PREFIX = 'mora_';
+const PREFIX_MIGRATED = 'ich_storage_renamed';
+
+function migrateLegacyPrefix() {
+  if (!hasLocalStorage) return;
+  try {
+    if (window.localStorage.getItem(PREFIX_MIGRATED)) return;
+
+    const legacy = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      if (key && key.startsWith(LEGACY_PREFIX)) legacy.push(key);
+    }
+
+    const moved = [];
+    for (const oldKey of legacy) {
+      const newKey = `ich_${oldKey.slice(LEGACY_PREFIX.length)}`;
+      // Never clobber data the renamed app has already written.
+      if (window.localStorage.getItem(newKey) === null) {
+        window.localStorage.setItem(newKey, window.localStorage.getItem(oldKey));
+      }
+      moved.push(oldKey);
+    }
+
+    for (const oldKey of moved) window.localStorage.removeItem(oldKey);
+    window.localStorage.setItem(PREFIX_MIGRATED, nowISO());
+  } catch {
+    // Quota or a blocked store — leave the legacy keys where they are and
+    // retry next load rather than half-moving someone's data.
+  }
+}
+migrateLegacyPrefix();
 
 /* ------------------------------ seeding ---------------------------- */
 
@@ -332,8 +373,8 @@ const auth = {
     // Sign-in stores who the person said they were. Everything in the app that
     // needs the current user goes through here, so reading it back is what makes
     // a registered name actually show up instead of the demo user's.
-    const name = readRaw('mora_user_name');
-    const email = readRaw('mora_user_email');
+    const name = readRaw('ich_user_name');
+    const email = readRaw('ich_user_email');
     return clone({
       ...MOCK_USER,
       ...(name ? { full_name: name } : {}),

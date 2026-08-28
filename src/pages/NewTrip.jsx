@@ -200,12 +200,12 @@ export default function NewTrip() {
           disabled={!form.destination || aiLoading}
           className="w-full glass-gold rounded-2xl p-4 flex items-center gap-3 hover:glow-gold transition-all disabled:opacity-40"
         >
-          <div className="w-10 h-10 rounded-xl bg-mora-gold/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-ich-gold/20 flex items-center justify-center flex-shrink-0">
             {aiLoading ? <Loader2 className="w-5 h-5 text-gold animate-spin" /> : <Sparkles className="w-5 h-5 text-gold" />}
           </div>
           <div className="text-left">
             <p className="text-sm font-semibold text-gold">{aiLoading ? "Generating suggestions..." : "AI Suggestion"}</p>
-            <p className="text-[11px] text-mora-neutral/60">Enter destination first, then auto-fill your trip details</p>
+            <p className="text-[11px] text-ich-neutral/60">Enter destination first, then auto-fill your trip details</p>
           </div>
         </button>
         )}
@@ -218,7 +218,7 @@ export default function NewTrip() {
               value={form.title}
               onChange={e => update("title", e.target.value)}
               placeholder="e.g., Bali Paradise Getaway"
-              className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11"
+              className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11"
             />
           </div>
           <div>
@@ -229,7 +229,7 @@ export default function NewTrip() {
                 value={form.destination}
                 onChange={e => update("destination", e.target.value)}
                 placeholder="City, country, or island"
-                className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 pl-10"
+                className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 pl-10"
               />
             </div>
           </div>
@@ -240,7 +240,7 @@ export default function NewTrip() {
          <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Dates</label>
          <div className="grid grid-cols-2 gap-3">
            <div>
-             <p className="text-[10px] text-mora-neutral/50 mb-1">From</p>
+             <p className="text-[10px] text-ich-neutral/50 mb-1">From</p>
              <DateTimePicker 
                type="date"
                value={form.start_date}
@@ -249,7 +249,7 @@ export default function NewTrip() {
              />
            </div>
            <div>
-             <p className="text-[10px] text-mora-neutral/50 mb-1">To</p>
+             <p className="text-[10px] text-ich-neutral/50 mb-1">To</p>
              <DateTimePicker 
                type="date"
                value={form.end_date}
@@ -272,7 +272,7 @@ export default function NewTrip() {
                   min={1}
                   value={form.travelers}
                   onChange={e => update("travelers", parseInt(e.target.value))}
-                  className="bg-white/5 border-white/10 text-mora-white rounded-xl h-11 pl-10"
+                  className="bg-white/5 border-white/10 text-ich-white rounded-xl h-11 pl-10"
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function NewTrip() {
                   value={form.budget_total}
                   onChange={e => update("budget_total", e.target.value)}
                   placeholder="Total"
-                  className="bg-white/5 border-white/10 text-mora-white placeholder:text-mora-neutral/30 rounded-xl h-11 pl-10"
+                  className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 pl-10"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function NewTrip() {
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.travel_style === style
                     ? "glass-gold text-gold"
-                    : "glass-light text-mora-neutral/60 hover:text-mora-neutral"
+                    : "glass-light text-ich-neutral/60 hover:text-ich-neutral"
                 }`}
               >
                 {style}
@@ -323,7 +323,7 @@ export default function NewTrip() {
                 className={`py-2.5 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.pace === pace
                     ? "glass-gold text-gold"
-                    : "glass-light text-mora-neutral/60"
+                    : "glass-light text-ich-neutral/60"
                 }`}
               >
                 {pace}
@@ -343,7 +343,7 @@ export default function NewTrip() {
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.trip_type === type
                     ? "glass-gold text-gold"
-                    : "glass-light text-mora-neutral/60"
+                    : "glass-light text-ich-neutral/60"
                 }`}
               >
                 {type}
@@ -369,7 +369,7 @@ export default function NewTrip() {
           <button
             onClick={() => handleSave("draft")}
             disabled={saving || !form.title || !form.destination}
-            className="flex-1 py-3.5 glass-light rounded-xl text-sm font-medium text-mora-neutral/80 hover:text-mora-white transition-all disabled:opacity-40"
+            className="flex-1 py-3.5 glass-light rounded-xl text-sm font-medium text-ich-neutral/80 hover:text-ich-white transition-all disabled:opacity-40"
           >
             Save as Draft
           </button>

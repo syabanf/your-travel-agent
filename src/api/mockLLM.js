@@ -279,7 +279,7 @@ const attractions = () =>
 // structured business report from a natural-language prompt. Swap in a real
 // model via configureLLM() and return the same { report } shape.
 
-const DB_PREFIX = 'mora_db_';
+const DB_PREFIX = 'ich_db_';
 function readCol(name) {
   try { return JSON.parse((typeof localStorage !== 'undefined' && localStorage.getItem(DB_PREFIX + name)) || '[]') || []; } catch { return []; }
 }

@@ -1,7 +1,7 @@
 // Offline-shell service worker for the Icon Holiday PWA.
 // Registered only in production (see src/main.jsx) so it never interferes with dev/HMR.
 
-const CACHE = "mora-v2";
+const CACHE = "ich-v2";
 
 // Everything is derived from where this file is served from ('/app/sw.js'), so
 // the SW keeps working if the app's base path ever moves.

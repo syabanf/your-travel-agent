@@ -94,7 +94,7 @@ describe("BookingCheckout", () => {
 
   it("offers saved-traveller chips that fill the form", async () => {
     const b = await mkBooking();
-    window.localStorage.setItem("mora_travelers", JSON.stringify([{ id: "t1", name: "Budi", email: "budi@x.co" }]));
+    window.localStorage.setItem("ich_travelers", JSON.stringify([{ id: "t1", name: "Budi", email: "budi@x.co" }]));
     const user = userEvent.setup();
     renderCheckout(b.id);
 

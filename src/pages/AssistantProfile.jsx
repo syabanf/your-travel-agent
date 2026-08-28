@@ -23,7 +23,7 @@ export default function AssistantProfile() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-mora-gold/30 border-t-mora-gold rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
     </div>
   );
   if (!assistant) return null;
@@ -38,14 +38,14 @@ export default function AssistantProfile() {
             {assistant.photo_url ? (
               <img src={assistant.photo_url} alt={assistant.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-mora-gold/10 flex items-center justify-center">
+              <div className="w-full h-full bg-ich-gold/10 flex items-center justify-center">
                 <span className="text-3xl font-display text-gold">{assistant.name?.[0]}</span>
               </div>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-display font-bold text-mora-primary truncate">{assistant.name}</h1>
-            <p className="text-sm text-mora-neutral/60 mt-0.5">{assistant.specialization}</p>
+            <h1 className="text-xl font-display font-bold text-ich-primary truncate">{assistant.name}</h1>
+            <p className="text-sm text-ich-neutral/60 mt-0.5">{assistant.specialization}</p>
             <div className="flex items-center gap-3 mt-2">
               {assistant.rating && (
                 <span className="flex items-center gap-1 text-xs text-gold">
@@ -63,7 +63,7 @@ export default function AssistantProfile() {
 
         {assistant.bio && (
           <GlassCard className="p-5">
-            <p className="text-sm text-mora-neutral/70 leading-relaxed">{assistant.bio}</p>
+            <p className="text-sm text-ich-neutral/70 leading-relaxed">{assistant.bio}</p>
           </GlassCard>
         )}
 
@@ -75,7 +75,7 @@ export default function AssistantProfile() {
             </div>
             <div className="flex flex-wrap gap-2">
               {assistant.languages.map(lang => (
-                <span key={lang} className="px-3 py-1.5 glass-light rounded-xl text-xs text-mora-neutral/80">{lang}</span>
+                <span key={lang} className="px-3 py-1.5 glass-light rounded-xl text-xs text-ich-neutral/80">{lang}</span>
               ))}
             </div>
           </GlassCard>
@@ -90,8 +90,8 @@ export default function AssistantProfile() {
                   <GlassCard className="p-4 hover:bg-white/10 transition-all">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-mora-primary">{pkg.name}</h3>
-                        <p className="text-xs text-mora-neutral/50 mt-1">{pkg.description}</p>
+                        <h3 className="text-sm font-medium text-ich-primary">{pkg.name}</h3>
+                        <p className="text-xs text-ich-neutral/50 mt-1">{pkg.description}</p>
                       </div>
                       {pkg.price && <span className="text-sm font-display font-semibold text-gold">{formatIDR(pkg.price)}</span>}
                     </div>

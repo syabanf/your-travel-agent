@@ -11,7 +11,7 @@ export default function ActiveTrip({ trip }) {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="eyebrow text-sm font-semibold text-mora-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-ich-primary tracking-wide uppercase">
           {isActive ? "Active Trip" : "Upcoming Trip"}
         </h2>
         <Link to="/itinerary" className="text-xs text-gold flex items-center gap-1 press-spring">
@@ -26,7 +26,7 @@ export default function ActiveTrip({ trip }) {
             alt={trip.title}
             className="w-full h-full object-cover img-zoom"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-mora-primary via-mora-primary/35 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ich-primary via-ich-primary/35 to-transparent" />
           <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
 
           {daysUntil > 0 && !isActive && (
