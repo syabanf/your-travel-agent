@@ -8,6 +8,7 @@ import {
   Heart, Calendar, Check, Plane,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { createInquiryForPlan } from "@/lib/inquiry";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import GlassCard from "@/components/GlassCard";
 import DateTimePicker from "@/components/DateTimePicker";
@@ -206,10 +207,14 @@ export default function TripWizard() {
         notes: res.notes || "",
         budget_total: res.budget_total || (form.budget_total ? Number(form.budget_total) : undefined),
         budget_currency: "IDR",
-        status: "planned",
+        status: "draft",
         is_ai_generated: true,
+        // AI proposes; it doesn't book. This lands as a plan, and as an
+        // inquiry for the team to price.
+        kind: "plan",
       });
       await buildItinerary(trip, res.activities);
+      await createInquiryForPlan(trip);
       finishTrip(trip);
     } catch {
       toast.error("Couldn't build your trip. Please try again.");
@@ -233,6 +238,7 @@ export default function TripWizard() {
         budget_total: form.budget_total ? Number(form.budget_total) : undefined,
         budget_currency: "IDR",
         status: "planned",
+        kind: "trip",
       });
       finishTrip(trip);
     } catch {

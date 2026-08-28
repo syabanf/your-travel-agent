@@ -8,10 +8,14 @@ import TripCard from "../components/itinerary/TripCard";
 import { SkeletonRows } from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
 import ErrorState from "@/components/ErrorState";
+import { isPlan } from "@/data/tripKinds";
 
 const tabs = [
   { id: "upcoming", label: "Upcoming" },
   { id: "active", label: "Active" },
+  // Proposals live in their own tab — they aren't booked trips and shouldn't
+  // sit in the same list as ones that are.
+  { id: "plans", label: "Plans" },
   { id: "draft", label: "Drafts" },
   { id: "past", label: "Past" },
 ];
@@ -63,7 +67,11 @@ export default function Itinerary() {
 
   const filteredTrips = trips
     .filter((trip) => {
+      // Plans are excluded from every other tab, so a proposal never reads as
+      // a trip that's going ahead.
+      if (activeTab !== "plans" && isPlan(trip)) return false;
       switch (activeTab) {
+        case "plans": return isPlan(trip);
         case "upcoming": return trip.status === "planned";
         case "active": return trip.status === "active";
         case "draft": return trip.status === "draft";
@@ -110,7 +118,7 @@ export default function Itinerary() {
         <div className="px-6 mb-6">
           <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">My Itineraries</h2>
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-            {trips.slice(0, 5).map((trip) => (
+            {trips.filter((t) => !isPlan(t)).slice(0, 5).map((trip) => (
               <Link key={trip.id} to={`/itinerary/${trip.id}`} className="press block">
                 <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-ich-primary/5 transition-all">
                  <p className="text-xs font-semibold text-ich-primary truncate">{trip.title}</p>

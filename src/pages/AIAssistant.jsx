@@ -8,6 +8,7 @@ import GlassCard from "../components/GlassCard";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useFeatureAccess, PAID_FEATURES } from "@/lib/featureAccess";
+import { createInquiryForPlan } from "@/lib/inquiry";
 import { formatIDR } from "@/lib/currency";
 
 const quickPrompts = [
@@ -122,6 +123,8 @@ ${content}`,
       status: "draft",
       is_ai_generated: true,
       travelers: 1,
+      // Proposed, not booked — saved as a plan and raised as an inquiry.
+      kind: "plan",
     });
 
     if (result.activities) {
@@ -139,7 +142,8 @@ ${content}`,
       }
     }
 
-    toast.success("Saved to your trips");
+    await createInquiryForPlan(trip);
+    toast.success("Plan saved — our team will follow up with a quote");
     navigate(`/itinerary/${trip.id}`);
     } catch {
       toast.error("Couldn't save to trips. Please try again.");
@@ -278,7 +282,7 @@ ${content}`,
                     disabled={saving}
                     className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-gold hover:bg-white/10 transition-all disabled:opacity-50"
                   >
-                    <Save className="w-3 h-3" /> Save to Trips
+                    <Save className="w-3 h-3" /> Save as trip plan
                   </button>
                   <button
                     onClick={() => sendMessage("Regenerate this itinerary with different suggestions")}

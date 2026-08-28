@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { MapPin, Calendar, Users } from "lucide-react";
+import { MapPin, Calendar, Users, Sparkles } from "lucide-react";
 import GlassCard from "../GlassCard";
 import moment from "moment";
+import { isPlan } from "@/data/tripKinds";
 
 const statusColors = {
   draft: "bg-ich-neutral/15 text-ich-neutral border-ich-neutral/20",
@@ -28,9 +29,16 @@ export default function TripCard({ trip }) {
             <h3 className="text-sm font-display font-semibold text-ich-primary truncate">
               {trip.title}
             </h3>
-            <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status]?.replace('text-ich-neutral', 'text-ich-primary').replace('bg-ich-neutral', 'bg-ich-primary') || statusColors.draft}`}>
-              {trip.status}
-            </span>
+            {isPlan(trip) ? (
+              // A proposal, not a booked trip — label it as one.
+              <span className="text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 inline-flex items-center gap-1 bg-gold/15 text-gold border-gold/25">
+                <Sparkles className="w-2.5 h-2.5" /> Plan
+              </span>
+            ) : (
+              <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status]?.replace('text-ich-neutral', 'text-ich-primary').replace('bg-ich-neutral', 'bg-ich-primary') || statusColors.draft}`}>
+                {trip.status}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1.5 text-ich-neutral mb-1.5">
               <MapPin className="w-3 h-3 text-gold" />

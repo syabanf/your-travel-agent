@@ -22,7 +22,10 @@ import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 
-const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in"];
+const SOURCES = ["website", "referral", "instagram", "whatsapp", "walk-in", "ai-plan"];
+
+// Acronyms and multi-word sources that plain capitalisation gets wrong.
+const SOURCE_LABELS = { ota: "OTA", "ai-plan": "AI trip plan", "walk-in": "Walk-in" };
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
 const PIPELINE = ["new", "contacted", "quoted"];
 
@@ -51,6 +54,7 @@ const EMPTY = {
 const PRIORITIES = ["low", "medium", "high"];
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+const sourceLabel = (s) => (s ? SOURCE_LABELS[s] || cap(s) : "—");
 
 export default function DashboardLeads() {
   const { role } = useRole();
@@ -162,7 +166,7 @@ export default function DashboardLeads() {
   const byStage = STATUSES.map((s) => ({ name: cap(s), value: stageCount[s] || 0, color: STATUS_COLOR[s] }));
   const valueByStage = STATUSES.map((s) => ({ name: cap(s), value: stageValue[s] || 0, color: STATUS_COLOR[s] })).filter((d) => d.value);
   const bySrc = {};
-  scoped.forEach((l) => { const k = l.source || "—"; if (!bySrc[k]) bySrc[k] = { name: cap(k), value: 0 }; bySrc[k].value += 1; });
+  scoped.forEach((l) => { const k = l.source || "—"; if (!bySrc[k]) bySrc[k] = { name: sourceLabel(k), value: 0 }; bySrc[k].value += 1; });
   const dataSrc = Object.values(bySrc).sort((a, b) => b.value - a.value);
 
   const sourceOptions = [...new Set((items || []).map((l) => l.source).filter(Boolean))].sort();
@@ -238,7 +242,7 @@ export default function DashboardLeads() {
             <Row2>
               <Fld label="Phone"><input value={editing.phone} onChange={(e) => upd("phone", e.target.value)} className="dash-input" placeholder="+62…" /></Fld>
               <Fld label="Source">
-                <SearchableSelect value={editing.source} onChange={(v) => upd("source", v)} options={SOURCES.map((s) => ({ value: s, label: cap(s) }))} ariaLabel="Source" />
+                <SearchableSelect value={editing.source} onChange={(v) => upd("source", v)} options={SOURCES.map((s) => ({ value: s, label: sourceLabel(s) }))} ariaLabel="Source" />
               </Fld>
             </Row2>
             <Row2>
@@ -286,7 +290,7 @@ export default function DashboardLeads() {
                   placeholder="Search leads…"
                 />
               </div>
-              <SearchableSelect value={sourceF} onChange={setSourceF} options={[{ value: "all", label: "All sources" }, ...sourceOptions.map((s) => ({ value: s, label: cap(s) }))]} placeholder="All sources" ariaLabel="Source filter" className="max-w-[160px]" />
+              <SearchableSelect value={sourceF} onChange={setSourceF} options={[{ value: "all", label: "All sources" }, ...sourceOptions.map((s) => ({ value: s, label: sourceLabel(s) }))]} placeholder="All sources" ariaLabel="Source filter" className="max-w-[160px]" />
               <SearchableSelect value={agentF} onChange={setAgentF} options={[{ value: "all", label: "All agents" }, ...agentOptions.map((a) => ({ value: a, label: a }))]} placeholder="All agents" ariaLabel="Agent filter" className="max-w-[170px]" />
               <DateRangeSelect value={range} onChange={setRange} />
               <SearchableSelect
@@ -325,7 +329,7 @@ export default function DashboardLeads() {
               columns={[
                 { key: "name", label: "Name", className: "font-medium text-ich-primary", render: (l) => l.name },
                 { key: "status", label: "Status", render: (l) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[l.status] || STATUS_BADGE.new}`}>{l.status || "new"}</span> },
-                { key: "source", label: "Source", render: (l) => cap(l.source || "—") },
+                { key: "source", label: "Source", render: (l) => sourceLabel(l.source) },
                 { key: "assigned_to", label: "Assigned to", render: (l) => l.assigned_to || "—" },
                 { key: "budget", label: "Budget", align: "right", className: "text-right font-semibold text-gold", render: (l) => formatIDR(Number(l.budget) || 0) },
                 { key: "created", label: "Created", render: (l) => l.created_date ? moment(l.created_date).format("MMM D, YYYY") : "—" },

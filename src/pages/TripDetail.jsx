@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2, Lock, CreditCard } from "lucide-react";
+import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2, Lock, CreditCard, Sparkles, MessageCircle } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
@@ -11,6 +11,17 @@ import moment from "moment";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { tripAccess } from "@/lib/payments";
+import { isPlan } from "@/data/tripKinds";
+import { inquiryForTrip } from "@/lib/inquiry";
+
+// Lead pipeline stages, said the way a traveller would understand them.
+const INQUIRY_STAGE = {
+  new: "we'll be in touch shortly",
+  contacted: "one of our team has picked it up",
+  quoted: "a quote is on its way to you",
+  won: "confirmed — see your bookings",
+  lost: "closed",
+};
 
 export default function TripDetail() {
   const { tripId } = useParams();
@@ -24,6 +35,7 @@ export default function TripDetail() {
   const [invite, setInvite] = useState({ name: "", email: "", role: "traveler" });
   const [savingInvite, setSavingInvite] = useState(false);
   const [bookings, setBookings] = useState([]);
+  const [inquiry, setInquiry] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -37,6 +49,8 @@ export default function TripDetail() {
         setMembers(mem);
         // Drives the lock: a package trip stays sealed until its booking is settled.
         setBookings(await base44.entities.Booking.filter({ trip_id: tripId }));
+        // A plan carries an inquiry; show the traveller where it got to.
+        setInquiry(await inquiryForTrip(tripId));
       } catch {
         // Never leave the page on a spinner with no explanation.
         toast.error("Couldn't load this trip. Please try again.");
@@ -188,6 +202,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
   }
 
   const access = tripAccess(trip, bookings);
+  const plan = isPlan(trip);
 
   return (
     <div className="animate-fade-in">
@@ -243,11 +258,17 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
 
         {/* Trip Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 min-w-0">
-          <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
-            trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-gold/15 text-gold border-gold/20"
-          }`}>
-            {trip.status}
-          </span>
+          {plan ? (
+            <span className="text-[10px] px-2.5 py-1 rounded-full border mb-2 inline-flex items-center gap-1 bg-gold/15 text-gold border-gold/20">
+              <Sparkles className="w-3 h-3" /> Trip plan
+            </span>
+          ) : (
+            <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
+              trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-gold/15 text-gold border-gold/20"
+            }`}>
+              {trip.status}
+            </span>
+          )}
           <h1 className="text-2xl font-display font-bold text-white mb-1 truncate">{trip.title}</h1>
           <div className="flex items-center gap-3 text-white/80">
             <span className="flex items-center gap-1 text-xs">
@@ -282,6 +303,33 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           <p className="text-[10px] text-ich-neutral uppercase tracking-wider mt-1">Done</p>
         </GlassCard>
       </div>
+
+      {/* A plan isn't booked. Say so plainly, and show where the inquiry got to. */}
+      {plan && !access.locked && (
+        <div className="px-6 mt-6">
+          <GlassCard className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl glass-gold flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4 text-gold" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-ich-primary">This is a proposal, not a booking</p>
+                <p className="text-xs text-ich-neutral leading-relaxed mt-1">
+                  {inquiry
+                    ? `Our team has your inquiry${INQUIRY_STAGE[inquiry.status] ? ` — ${INQUIRY_STAGE[inquiry.status]}` : ""}. Nothing is reserved until you confirm a quote.`
+                    : "Nothing is reserved. Send it to our team and they'll come back with a quote."}
+                </p>
+                <button
+                  onClick={() => navigate("/assistant")}
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-gold press"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> Talk to a travel expert
+                </button>
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+      )}
 
       {/* Locked: the trip is visible, its detail isn't. Settle the balance to open it. */}
       {access.locked ? (
