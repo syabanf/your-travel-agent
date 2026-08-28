@@ -378,3 +378,26 @@
   font-size: 0.8rem; font-weight: 600; transform: translateY(-150%); transition: transform 0.15s ease;
 }
 .skip-link:focus { transform: translateY(0); }
+
+/* --------------------------- protected content --------------------------- */
+/* Deterrence for priced proposals and paid itineraries. A page can't stop an
+   OS screenshot, so the watermark is the part that actually carries — it rides
+   along in whatever gets captured. These rules cover the routes a page CAN
+   close: text selection, and printing / "Save as PDF". */
+
+.ich-protected {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* iOS long-press "Copy / Save Image" sheet */
+}
+
+@media print {
+  /* Print and PDF export get the notice instead of the content. */
+  .ich-protected > *:not(.ich-print-notice) { display: none !important; }
+  .ich-protected > .ich-print-notice { display: flex !important; }
+}
+
+/* The stamp must stay legible in a screenshot without drowning the content. */
+@media (prefers-contrast: more) {
+  .ich-watermark span { color: rgb(11 27 59 / 0.14); }
+}

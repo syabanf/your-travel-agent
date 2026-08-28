@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { tripAccess } from "@/lib/payments";
 import { isPlan } from "@/data/tripKinds";
+import ProtectedContent from "@/components/ProtectedContent";
 import { inquiryForTrip } from "@/lib/inquiry";
 
 // Lead pipeline stages, said the way a traveller would understand them.
@@ -490,15 +491,31 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           </div>
         </div>
 
-        {Object.entries(dayGroups).map(([day, dayItems]) => (
-          <DayTimeline 
-            key={day} 
-            dayNumber={parseInt(day)} 
-            date={trip.start_date ? moment(trip.start_date).add(day - 1, "days").format("YYYY-MM-DD") : null}
-            items={dayItems}
-            tripId={tripId}
-          />
-        ))}
+        {(() => {
+          const days = Object.entries(dayGroups).map(([day, dayItems]) => (
+            <DayTimeline
+              key={day}
+              dayNumber={parseInt(day)}
+              date={trip.start_date ? moment(trip.start_date).add(day - 1, "days").format("YYYY-MM-DD") : null}
+              items={dayItems}
+              tripId={tripId}
+            />
+          ));
+          // A proposal is unpriced work the agency doesn't want walked to a
+          // competitor; a purchased trip's plan is something someone paid for.
+          // A trip the traveller built themselves is theirs — leave it alone.
+          const guard = plan || trip.package_id;
+          return guard ? (
+            <ProtectedContent
+              label={plan ? "Trip plan" : "Itinerary"}
+              className="space-y-5"
+            >
+              {days}
+            </ProtectedContent>
+          ) : (
+            days
+          );
+        })()}
       </div>
       </>
       )}

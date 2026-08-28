@@ -61,6 +61,12 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 - **Add activity** (`/itinerary/:tripId/add`) — name, location (map browse), time, duration, category, budget, notes.
 - Trip tools: **Calendar** (`/itinerary/calendar`), **Map** (`/itinerary/map`, OpenLayers — markers, location search, pick-a-location), **Budget tracker** (`/itinerary/budget` — planned vs remaining + category chart), **Packing checklist** (`/itinerary/checklist`).
 
+### Trip plans vs trips
+- A trip the AI **generates and proposes** is saved as a **plan**, not a booked trip — and raises an **inquiry** in the CRM (a `Lead` keyed to the trip, deduped so regenerating doesn't stack duplicates).
+- Plans get their own **Plans** tab and are excluded from every other tab and the recent strip, so a proposal is never counted among trips that are going ahead.
+- Trip detail shows a *Trip plan* badge and translates the lead's pipeline stage into plain language ("a quote is on its way to you").
+- Trips built by hand or bought as a package are the real thing. Trips predating the distinction stay trips.
+
 ### Paid trips & the trip lock
 - Paying for a holiday package **creates a trip** in My Trips, with the package's day-by-day plan copied in as itinerary items.
 - A trip bought on a deposit stays **locked**: the cover, dates and day count are visible, but the itinerary, contacts and documents are withheld behind a padlock showing **how much is paid, what's left and when it's due**, with a one-tap route to settle it. It opens by itself the moment the balance clears.
@@ -140,6 +146,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ---
 
 ## Platform-wide features
+- **Copy deterrence on priced content** — AI proposals and purchased itineraries are wrapped in `ProtectedContent`: a repeating **watermark carrying the viewer's email**, blanking when the window loses focus, a print/PDF notice in place of the content, and blocked selection, drag and context menu. A browser **cannot** stop an OS screenshot — the OS capture path is invisible to the page and on mobile doesn't even disturb the tab — so this makes casual sharing traceable and inconvenient, not impossible. A trip the traveller built themselves is theirs and is left unrestricted.
 - **Role-based access control** — Administrator / Manager / Editor / Viewer gate view/create/edit/delete per resource; live "Viewing as" switcher; read-only banner for viewers.
 - **Period-over-period comparison** — reusable period + comparison controls with up/down delta pills.
 - **Installable PWA** — manifest scoped to `/app/` with `any` + **maskable** icons, app shortcuts, and a light theme colour matched to the UI (a dark one flashed before first paint). An **install prompt** captures `beforeinstallprompt` on Android/Chrome and falls back to *Share → Add to Home Screen* instructions on iOS, snoozing for 30 days once dismissed. The service worker precaches the shell **and the hashed bundles it references**, so a cold install doesn't boot to a blank screen, and serves a branded offline page.
@@ -158,7 +165,7 @@ Each supports `list(order, limit)`, `filter(query, order, limit)`, `get(id)`, `c
 ---
 
 ## Engineering & quality
-- **Tests** — Vitest + RTL + jsdom; **91 tests** covering the mock-backend CRUD lifecycle, RBAC, currency & period math, payment/balance and trip-lock logic, DP ladders, the sign-up approval gate, receipt/quotation rendering, and the SearchableSelect component (`npm run test:run`).
+- **Tests** — Vitest + RTL + jsdom; **115 tests** covering the mock-backend CRUD lifecycle, RBAC, currency & period math, payment/balance and trip-lock logic, DP ladders, the sign-up approval gate, receipt/quotation rendering, the storage-prefix migration, trip-plan inquiries, copy deterrence, and the SearchableSelect component (`npm run test:run`).
 - **Resilience** — recoverable error boundaries per shell (a page crash keeps the nav and auto-recovers on navigation); storage writes never throw (in-memory fallback); guarded async (no stuck spinners).
 - **Accessibility** — aria-labels on icon controls, alt text, labelled inputs, visible focus ring, `prefers-reduced-motion` support, skip-to-content.
 - **Performance** — route-based code-splitting keeps the initial bundle lean.
