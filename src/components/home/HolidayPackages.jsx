@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, CalendarDays, Star } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { packageDiscount } from "@/data/packageCategories";
 
@@ -10,7 +10,7 @@ export default function HolidayPackages() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    base44.entities.TourPackage.list("-created_date", 20)
+    backend.entities.TourPackage.list("-created_date", 20)
       .then((rows) => setItems((rows || []).filter((p) => p.status !== "draft").slice(0, 8)))
       .catch(() => {});
   }, []);

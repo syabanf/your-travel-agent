@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Megaphone, CalendarDays, Newspaper, Search, Star } from "lucide-react";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ export default function DashboardPromotions() {
   const [sortBy, setSortBy] = useState("newest");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const load = async () => setItems(await base44.entities.Promotion.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Promotion.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   // Open the editor when arriving from a detail page (?edit=<id>).
@@ -70,8 +70,8 @@ export default function DashboardPromotions() {
         max_redemptions: editing.max_redemptions !== "" && editing.max_redemptions != null ? Number(editing.max_redemptions) : undefined,
         audience: editing.audience || "all",
       };
-      if (editing.id) await base44.entities.Promotion.update(editing.id, payload);
-      else await base44.entities.Promotion.create(payload);
+      if (editing.id) await backend.entities.Promotion.update(editing.id, payload);
+      else await backend.entities.Promotion.create(payload);
       toast.success(editing.id ? "Saved" : "Created");
       setEditing(null);
       await load();
@@ -87,7 +87,7 @@ export default function DashboardPromotions() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Promotion.delete(p.id);
+    await backend.entities.Promotion.delete(p.id);
     toast.success("Removed");
     load();
   };

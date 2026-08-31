@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { printDocument } from "@/lib/voucher";
 import { toast } from "sonner";
 import { Sparkles, Send, Loader2, Download, RotateCcw, Lightbulb, Wand2 } from "lucide-react";
@@ -27,7 +27,7 @@ export default function DashboardAIReports() {
     setLoading(true);
     setReport(null);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({ prompt: text, response_json_schema: REPORT_SCHEMA });
+      const res = await backend.integrations.Core.InvokeLLM({ prompt: text, response_json_schema: REPORT_SCHEMA });
       if (res?.report) setReport(res.report);
       else toast.error("Couldn't generate a report");
     } catch {

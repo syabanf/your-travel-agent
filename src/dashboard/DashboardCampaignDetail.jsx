@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -34,8 +34,8 @@ export default function DashboardCampaignDetail() {
   const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
-    base44.entities.Campaign.filter({ id }).then((r) => setCampaign(r[0] || null));
-    base44.entities.Customer.list("", 500).then((r) => setCustomers(r || []));
+    backend.entities.Campaign.filter({ id }).then((r) => setCampaign(r[0] || null));
+    backend.entities.Customer.list("", 500).then((r) => setCustomers(r || []));
   }, [id]);
 
   // How many recipients a segment resolves to, against the customer base.
@@ -51,7 +51,7 @@ export default function DashboardCampaignDetail() {
     const n = segmentCount(campaign.segment);
     try {
       const patch = { status: "sent", sent_count: n, scheduled_date: moment().format("YYYY-MM-DD") };
-      await base44.entities.Campaign.update(id, patch);
+      await backend.entities.Campaign.update(id, patch);
       setCampaign((p) => ({ ...p, ...patch }));
       toast.success(`Campaign sent to ${n} recipients`);
     } catch { toast.error("Couldn't send campaign"); }
@@ -66,7 +66,7 @@ export default function DashboardCampaignDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Campaign.delete(id);
+      await backend.entities.Campaign.delete(id);
       toast.success("Campaign removed");
       navigate("/dashboard/marketing");
     } catch { toast.error("Couldn't delete campaign"); }

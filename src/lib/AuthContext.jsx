@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { backend } from '@/api/backend';
 
 const AuthContext = createContext();
 const SESSION_KEY = 'ich_session';
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       try {
-        setUser(await base44.auth.me());
+        setUser(await backend.auth.me());
       } catch (e) {
         console.error('Auth check failed:', e);
       } finally {

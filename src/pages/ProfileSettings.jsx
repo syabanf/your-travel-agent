@@ -3,7 +3,7 @@ import GlassCard from "../components/GlassCard";
 import { Globe, Bell, Moon, HelpCircle, Info, Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 export default function ProfileSettings() {
   const [notifications, setNotifications] = useState(true);
@@ -13,7 +13,7 @@ export default function ProfileSettings() {
 
   const handleDeleteAccount = async () => {
     if (deleteInput !== "DELETE") return;
-    await base44.auth.logout();
+    await backend.auth.logout();
   };
 
   return (

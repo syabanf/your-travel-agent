@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { categoryLabel, categoryIcon, packageDiscount } from "@/data/packageCategories";
 import { can } from "@/dashboard/rbac";
@@ -25,7 +25,7 @@ export default function DashboardPackageDetail() {
   const [item, setItem] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.TourPackage.filter({ id })
+    backend.entities.TourPackage.filter({ id })
       .then((r) => setItem(r[0] || null))
       .catch(() => setItem(null));
   }, [id]);
@@ -39,7 +39,7 @@ export default function DashboardPackageDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.TourPackage.delete(id);
+      await backend.entities.TourPackage.delete(id);
       toast.success("Package removed");
       navigate("/dashboard/packages");
     } catch {

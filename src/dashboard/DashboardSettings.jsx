@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export default function DashboardSettings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    base44.entities.Setting.filter({ id: "app" }).then((r) => setForm(r[0] || DEFAULTS));
+    backend.entities.Setting.filter({ id: "app" }).then((r) => setForm(r[0] || DEFAULTS));
   }, []);
 
   const upd = (k, v) => setForm((p) => ({ ...p, [k]: v }));
@@ -49,8 +49,8 @@ export default function DashboardSettings() {
     try {
       const payload = { ...form };
       delete payload.id;
-      await base44.entities.Setting.update("app", payload).catch(async () => {
-        await base44.entities.Setting.create({ id: "app", ...payload });
+      await backend.entities.Setting.update("app", payload).catch(async () => {
+        await backend.entities.Setting.create({ id: "app", ...payload });
       });
       toast.success("Settings saved");
     } catch {

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 /**
  * Paid add-ons.
@@ -60,13 +60,13 @@ export function useFeatureAccess(feature) {
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["feature-access", feature, email],
-    queryFn: () => base44.entities.FeatureAccess.filter({ feature, user_email: email }),
+    queryFn: () => backend.entities.FeatureAccess.filter({ feature, user_email: email }),
     enabled: Boolean(feature),
   });
 
   const grant = useCallback(
     async (bookingId = null) => {
-      await base44.entities.FeatureAccess.create({
+      await backend.entities.FeatureAccess.create({
         feature,
         user_email: email,
         status: "active",

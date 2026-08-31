@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Gift, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import QuickActions from "../components/home/QuickActions";
@@ -21,14 +21,14 @@ export default function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const me = await base44.auth.me();
+        const me = await backend.auth.me();
         setUser(me);
         
-        const trips = await base44.entities.Trip.list("-created_date", 5);
+        const trips = await backend.entities.Trip.list("-created_date", 5);
         const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
         setActiveTrip(active);
         
-        const recentBookings = await base44.entities.Booking.list("-created_date", 3);
+        const recentBookings = await backend.entities.Booking.list("-created_date", 3);
         setBookings(recentBookings);
       } catch (err) {
         setUser(null);
@@ -57,10 +57,10 @@ export default function Home() {
     if (delta > 70 && !refreshing && user) {
       setRefreshing(true);
       try {
-        const trips = await base44.entities.Trip.list("-created_date", 5);
+        const trips = await backend.entities.Trip.list("-created_date", 5);
         const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
         setActiveTrip(active);
-        const recentBookings = await base44.entities.Booking.list("-created_date", 3);
+        const recentBookings = await backend.entities.Booking.list("-created_date", 3);
         setBookings(recentBookings);
       } finally {
         setRefreshing(false);

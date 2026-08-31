@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Headphones, Play, Pause, MapPin, Radio, Lock, Loader2, Volume2 } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -16,7 +16,7 @@ export default function VirtualGuiding() {
   const [playing, setPlaying] = useState(null);
 
   useEffect(() => {
-    base44.entities.Trip.list()
+    backend.entities.Trip.list()
       .then((t) => setTrips(t.filter((x) => x.status === "active" || x.status === "planned")))
       .catch(() => setTrips([]));
   }, []);

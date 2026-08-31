@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
@@ -58,7 +58,7 @@ export default function DashboardCustomers() {
   const [sort, setSort] = useState("newest");
   const searchRef = useRef(null);
 
-  const load = async () => setItems(await base44.entities.Customer.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Customer.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -112,8 +112,8 @@ export default function DashboardCustomers() {
         marketing_opt_in: !!editing.marketing_opt_in,
         source: editing.source || "",
       };
-      if (editing.id) await base44.entities.Customer.update(editing.id, payload);
-      else await base44.entities.Customer.create(payload);
+      if (editing.id) await backend.entities.Customer.update(editing.id, payload);
+      else await backend.entities.Customer.create(payload);
       toast.success(editing.id ? "Customer updated" : "Customer added");
       setEditing(null);
       await load();
@@ -129,7 +129,7 @@ export default function DashboardCustomers() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Customer.delete(c.id);
+    await backend.entities.Customer.delete(c.id);
     toast.success("Customer removed");
     load();
   };

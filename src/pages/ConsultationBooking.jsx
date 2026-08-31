@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import DateTimePicker from "../components/DateTimePicker";
@@ -28,7 +28,7 @@ export default function ConsultationBooking() {
   const [method, setMethod] = useState(null);
 
   useEffect(() => {
-    base44.entities.PersonalAssistant.filter({ id: assistantId }).then((r) => { setAssistant(r[0] || null); setLoading(false); });
+    backend.entities.PersonalAssistant.filter({ id: assistantId }).then((r) => { setAssistant(r[0] || null); setLoading(false); });
   }, [assistantId]);
 
   if (loading) return (
@@ -49,7 +49,7 @@ export default function ConsultationBooking() {
     setSaving(true);
     try {
       const dt = new Date(`${date}T${time}`);
-      const booking = await base44.entities.Booking.create({
+      const booking = await backend.entities.Booking.create({
         type: "consultation",
         title: `Consultation with ${assistant.name}`,
         provider: assistant.name,

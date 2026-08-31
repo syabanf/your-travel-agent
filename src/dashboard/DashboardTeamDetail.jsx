@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -30,7 +30,7 @@ export default function DashboardTeamDetail() {
   const [m, setM] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.StaffMember.filter({ id }).then((r) => setM(r[0] || null));
+    backend.entities.StaffMember.filter({ id }).then((r) => setM(r[0] || null));
   }, [id]);
 
   const remove = async () => {
@@ -42,7 +42,7 @@ export default function DashboardTeamDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.StaffMember.delete(id);
+      await backend.entities.StaffMember.delete(id);
       toast.success("Member removed");
       navigate("/dashboard/team");
     } catch {

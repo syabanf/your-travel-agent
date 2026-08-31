@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { Image as ImageIcon, Plus, Trash2, X, Loader2, Save, Search, Copy, Pencil } from "lucide-react";
@@ -33,7 +33,7 @@ export default function DashboardMedia() {
   const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const load = async () => setItems(await base44.entities.MediaAsset.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.MediaAsset.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -52,8 +52,8 @@ export default function DashboardMedia() {
         url: editing.url,
         tags: String(editing.tags || "").split(",").map((t) => t.trim()).filter(Boolean),
       };
-      if (editing.id) await base44.entities.MediaAsset.update(editing.id, payload);
-      else await base44.entities.MediaAsset.create(payload);
+      if (editing.id) await backend.entities.MediaAsset.update(editing.id, payload);
+      else await backend.entities.MediaAsset.create(payload);
       toast.success(editing.id ? "Media updated" : "Media added");
       setEditing(null);
       await load();
@@ -69,7 +69,7 @@ export default function DashboardMedia() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.MediaAsset.delete(m.id);
+    await backend.entities.MediaAsset.delete(m.id);
     toast.success("Media removed");
     load();
   };

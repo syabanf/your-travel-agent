@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
@@ -36,9 +36,9 @@ export default function DashboardCustomerDetail() {
   const [typeFilter, setTypeFilter] = useState("");
 
   useEffect(() => {
-    base44.entities.Customer.filter({ id }).then((r) => setC(r[0] || null));
-    base44.entities.Trip.filter({ customer_id: id }).then((r) => setTrips(r || []));
-    base44.entities.Booking.filter({ customer_id: id }).then((r) => setBookings(r || []));
+    backend.entities.Customer.filter({ id }).then((r) => setC(r[0] || null));
+    backend.entities.Trip.filter({ customer_id: id }).then((r) => setTrips(r || []));
+    backend.entities.Booking.filter({ customer_id: id }).then((r) => setBookings(r || []));
   }, [id]);
 
   const remove = async () => {
@@ -50,7 +50,7 @@ export default function DashboardCustomerDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Customer.delete(id);
+      await backend.entities.Customer.delete(id);
       toast.success("Customer removed");
       navigate("/dashboard/customers");
     } catch {

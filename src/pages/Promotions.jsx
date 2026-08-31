@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import Skeleton, { SkeletonRows } from "@/components/Skeletons";
@@ -26,7 +26,7 @@ export default function Promotions() {
   const [items, setItems] = useState(null);
   const [type, setType] = useState("all");
 
-  useEffect(() => { base44.entities.Promotion.list("-created_date", 50).then(setItems); }, []);
+  useEffect(() => { backend.entities.Promotion.list("-created_date", 50).then(setItems); }, []);
 
   const featured = items?.find((p) => p.featured);
   const promos = items?.filter((p) => p.type === "promo" && !p.featured) || [];

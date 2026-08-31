@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
@@ -41,7 +41,7 @@ export default function NewTrip() {
     if (!tripId) return;
     let active = true;
     (async () => {
-      const results = await base44.entities.Trip.filter({ id: tripId });
+      const results = await backend.entities.Trip.filter({ id: tripId });
       if (active && results.length > 0) {
         const t = results[0];
         setForm((prev) => ({
@@ -68,7 +68,7 @@ export default function NewTrip() {
     if (!form.destination) return;
     setAiLoading(true);
     try {
-    const res = await base44.integrations.Core.InvokeLLM({
+    const res = await backend.integrations.Core.InvokeLLM({
       prompt: `Suggest a luxury travel itinerary plan for a trip to ${form.destination}. Based on the destination, suggest: a catchy trip title, the best travel style (one of: luxury, adventure, cultural, relaxation, business, family, budget), ideal pace (one of: relaxed, moderate, packed), trip type (one of: solo, couple, family, business, luxury, group), ideal number of travelers, and a short notes/highlights string. Be concise.`,
       response_json_schema: {
         type: "object",
@@ -104,7 +104,7 @@ export default function NewTrip() {
     if (!form.destination) return;
     setAiGenerating(true);
     try {
-    const res = await base44.integrations.Core.InvokeLLM({
+    const res = await backend.integrations.Core.InvokeLLM({
       prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
         form.start_date ? ` from ${form.start_date}` : ''
       }${
@@ -136,7 +136,7 @@ export default function NewTrip() {
       }
     });
 
-    const trip = await base44.entities.Trip.create({
+    const trip = await backend.entities.Trip.create({
       ...form,
       title: res.title || form.title || `${form.destination} Adventure`,
       notes: res.notes || form.notes,
@@ -147,7 +147,7 @@ export default function NewTrip() {
 
     if (res.activities?.length > 0) {
       for (const act of res.activities) {
-        await base44.entities.ItineraryItem.create({
+        await backend.entities.ItineraryItem.create({
           trip_id: trip.id,
           day_number: act.day || 1,
           time: act.time || "",
@@ -176,8 +176,8 @@ export default function NewTrip() {
     try {
       const payload = { ...form, status, budget_total: form.budget_total ? Number(form.budget_total) : undefined };
       const trip = isEdit
-        ? await base44.entities.Trip.update(tripId, payload)
-        : await base44.entities.Trip.create(payload);
+        ? await backend.entities.Trip.update(tripId, payload)
+        : await backend.entities.Trip.create(payload);
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       toast.success(isEdit ? "Trip updated" : "Trip created");
       navigate(`/itinerary/${trip.id}`);

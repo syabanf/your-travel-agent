@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { ChevronRight, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 
 export default function FeaturedDestinations() {
   const [destinations, setDestinations] = useState([]);
 
   useEffect(() => {
-    base44.entities.Destination.list("created_date", 8)
+    backend.entities.Destination.list("created_date", 8)
       .then((rows) => setDestinations((rows || []).filter((d) => d.active !== false)))
       .catch(() => {});
   }, []);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { FileText, Plus, Pencil, Trash2, X, Loader2, Save, Search, CheckSquare, Square } from "lucide-react";
@@ -55,7 +55,7 @@ export default function DashboardContent() {
   const [sortBy, setSortBy] = useState("newest");
   const [selected, setSelected] = useState(new Set());
 
-  const load = async () => setItems(await base44.entities.Page.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Page.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -79,8 +79,8 @@ export default function DashboardContent() {
         cover_image: editing.cover_image || "",
         order: editing.order === "" || editing.order == null ? 0 : Number(editing.order),
       };
-      if (editing.id) await base44.entities.Page.update(editing.id, payload);
-      else await base44.entities.Page.create(payload);
+      if (editing.id) await backend.entities.Page.update(editing.id, payload);
+      else await backend.entities.Page.create(payload);
       toast.success(editing.id ? "Content saved" : "Content created");
       setEditing(null);
       await load();
@@ -96,7 +96,7 @@ export default function DashboardContent() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Page.delete(p.id);
+    await backend.entities.Page.delete(p.id);
     toast.success("Removed");
     load();
   };
@@ -117,7 +117,7 @@ export default function DashboardContent() {
     });
     if (!ok) return;
     try {
-      for (const id of ids) await base44.entities.Page.delete(id);
+      for (const id of ids) await backend.entities.Page.delete(id);
       toast.success(`${ids.length} item${ids.length === 1 ? "" : "s"} deleted`);
       setSelected(new Set());
       await load();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
@@ -55,8 +55,8 @@ export default function DashboardMarketing() {
 
   const load = async () => {
     const [campaigns, custs] = await Promise.all([
-      base44.entities.Campaign.list("-created_date", 500),
-      base44.entities.Customer.list("-created_date", 500),
+      backend.entities.Campaign.list("-created_date", 500),
+      backend.entities.Customer.list("-created_date", 500),
     ]);
     setCustomers(custs || []);
     setItems(campaigns || []);
@@ -89,8 +89,8 @@ export default function DashboardMarketing() {
         scheduled_date: editing.scheduled_date || "",
         sent_count: editing.sent_count || 0,
       };
-      if (editing.id) await base44.entities.Campaign.update(editing.id, payload);
-      else await base44.entities.Campaign.create(payload);
+      if (editing.id) await backend.entities.Campaign.update(editing.id, payload);
+      else await backend.entities.Campaign.create(payload);
       toast.success(editing.id ? "Campaign updated" : "Campaign created");
       setEditing(null);
       await load();
@@ -106,7 +106,7 @@ export default function DashboardMarketing() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Campaign.delete(c.id);
+    await backend.entities.Campaign.delete(c.id);
     toast.success("Campaign removed");
     load();
   };
@@ -114,7 +114,7 @@ export default function DashboardMarketing() {
   // Simulated send — flips status to sent and records how many recipients it reached.
   const sendNow = async (c) => {
     const n = segmentCount(c.segment);
-    await base44.entities.Campaign.update(c.id, { status: "sent", sent_count: n, scheduled_date: moment().format("YYYY-MM-DD") });
+    await backend.entities.Campaign.update(c.id, { status: "sent", sent_count: n, scheduled_date: moment().format("YYYY-MM-DD") });
     toast.success(`Campaign sent to ${n} recipients`);
     load();
   };

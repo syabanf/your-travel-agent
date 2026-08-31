@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Check, Loader2, Sparkles, Headphones, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
@@ -31,7 +31,7 @@ export default function FeatureUnlock() {
       // every time someone taps Unlock and backs out.
       let pending = null;
       try {
-        const drafts = await base44.entities.Booking.filter({ feature_key: feature, status: "pending" });
+        const drafts = await backend.entities.Booking.filter({ feature_key: feature, status: "pending" });
         pending = drafts?.[0] || null;
       } catch {
         /* couldn't look it up — a fresh order is harmless */
@@ -49,8 +49,8 @@ export default function FeatureUnlock() {
         notes: `${meta.name} — ${meta.unit}`,
       };
       const record = pending
-        ? await base44.entities.Booking.update(pending.id, details)
-        : await base44.entities.Booking.create(details);
+        ? await backend.entities.Booking.update(pending.id, details)
+        : await backend.entities.Booking.create(details);
 
       navigate(`/booking/${record.id}/checkout`);
     } catch {

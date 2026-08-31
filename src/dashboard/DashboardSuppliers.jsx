@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import ReadOnlyBanner from "@/dashboard/ReadOnlyBanner";
@@ -51,7 +51,7 @@ export default function DashboardSuppliers() {
   const [range, setRange] = useState("all");
   const [sort, setSort] = useState("newest");
 
-  const load = async () => setItems(await base44.entities.Supplier.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Supplier.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -83,8 +83,8 @@ export default function DashboardSuppliers() {
         status: editing.status || "active",
         notes: editing.notes || "",
       };
-      if (editing.id) await base44.entities.Supplier.update(editing.id, payload);
-      else await base44.entities.Supplier.create(payload);
+      if (editing.id) await backend.entities.Supplier.update(editing.id, payload);
+      else await backend.entities.Supplier.create(payload);
       toast.success(editing.id ? "Supplier updated" : "Supplier added");
       setEditing(null);
       await load();
@@ -100,7 +100,7 @@ export default function DashboardSuppliers() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Supplier.delete(s.id);
+    await backend.entities.Supplier.delete(s.id);
     toast.success("Supplier removed");
     load();
   };

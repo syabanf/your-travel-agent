@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { destImages } from "@/lib/destinationImages";
@@ -41,9 +41,9 @@ export default function DashboardDestinationDetail() {
     (async () => {
       try {
         const [d, t, b] = await Promise.all([
-          base44.entities.Destination.filter({ id }),
-          base44.entities.Trip.list("-created_date", 500),
-          base44.entities.Booking.list("-created_date", 500),
+          backend.entities.Destination.filter({ id }),
+          backend.entities.Trip.list("-created_date", 500),
+          backend.entities.Booking.list("-created_date", 500),
         ]);
         if (!alive) return;
         setDest((Array.isArray(d) ? d[0] : d) || null);
@@ -106,7 +106,7 @@ export default function DashboardDestinationDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Destination.delete(id);
+      await backend.entities.Destination.delete(id);
       toast.success("Destination removed");
       navigate("/dashboard/destinations");
     } catch {

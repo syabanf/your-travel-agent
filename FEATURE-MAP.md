@@ -30,7 +30,7 @@ Generated against `main` @ `b86d80e`.
 | Shared UI | `src/components/` | Cross-screen components; `components/ui/` is vendored shadcn/ui (not linted) |
 | Business logic | `src/lib/` | Money, access, documents — no JSX |
 | Reference data | `src/data/` | Category and kind vocabularies |
-| Mock backend | `src/api/` | `base44Client.js` (storage + migrations), `mockSeed.js`, `mockLLM.js` |
+| Mock backend | `src/api/` | `backend.js` (storage + migrations), `mockSeed.js`, `mockLLM.js` |
 | Company profile | `landing/` | Static HTML, own CSS/JS — no React |
 
 Three shells wrap the screens: `components/Layout.jsx` (mobile, bottom nav +
@@ -206,7 +206,7 @@ The dependency map — change one of these and these are the callers.
 
 | File | Role |
 |---|---|
-| `api/base44Client.js` | Entity CRUD over localStorage, audit trail, **`migrateLegacyPrefix()`**, `ensureSeeded()`, `runMigrations()` |
+| `api/backend.js` | Entity CRUD over localStorage, audit trail, **`migrateLegacyPrefix()`**, `ensureSeeded()`, `runMigrations()` |
 | `api/mockSeed.js` | `buildSeed()` — every demo row |
 | `api/mockLLM.js` | Stubbed `InvokeLLM`, swappable via `configureLLM()` |
 
@@ -218,7 +218,7 @@ without seeding — clear it and reload before assuming the migration is broken.
 
 ## Data entities
 
-22 entities, all in `ENTITY_NAMES` in `api/base44Client.js`. Those in
+22 entities, all in `ENTITY_NAMES` in `api/backend.js`. Those in
 `AUDITABLE` write to `AuditLog` on every mutation.
 
 | Entity | Written by | Read by |
@@ -245,7 +245,7 @@ without seeding — clear it and reload before assuming the migration is broken.
 
 | Test file | Covers |
 |---|---|
-| `api/base44Client.test.js` | CRUD lifecycle, filtering, audit trail |
+| `api/backend.test.js` | CRUD lifecycle, filtering, audit trail |
 | **`api/storagePrefix.test.js`** | `mora_` → `ich_` migration: copy, cleanup, no-clobber, fresh install |
 | **`lib/payments.test.js`** | Balances, derived status, `amountForPercent`, `tripAccess` (incl. fail-open) |
 | **`lib/registration.test.js`** | Approval gate, dedupe, case-insensitive lookup |
@@ -271,7 +271,7 @@ A new feature usually needs edits in this order. Doing the shared files first
 avoids merge pain when work is parallelised.
 
 1. **Entity** — add to `ENTITY_NAMES` (and `AUDITABLE` if mutations should be
-   logged) in `api/base44Client.js`; add seed rows in `api/mockSeed.js`.
+   logged) in `api/backend.js`; add seed rows in `api/mockSeed.js`.
 2. **Migration** — bump `MIGRATION_FLAG` and add a non-destructive backfill so
    existing users get the new field.
 3. **Logic** — a module in `src/lib/` (no JSX) with its own `.test.js`.

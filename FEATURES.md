@@ -28,8 +28,8 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 - **Tailwind CSS** + **shadcn/ui** (Radix primitives) — cohesive light "luxury" theme (navy + crimson + cream, glassmorphism, soft elevation).
 - **TanStack Query** (data cache), **framer-motion** (motion), **Recharts** (charts), **OpenLayers** (maps), **Sonner** (toasts), **lucide-react** (icons), **moment** (dates).
 - **Vitest + React Testing Library + jsdom** (tests).
-- **Mock backend** — [`src/api/base44Client.js`](src/api/base44Client.js): `base44.entities.<Name>.{list,filter,get,create,update,delete}` over `localStorage`, with first-run seeding, non-destructive migrations, an in-memory fallback when storage is unavailable, and an audit trail.
-- **Pluggable AI** — [`src/api/mockLLM.js`](src/api/mockLLM.js): schema-aware stub behind `base44.integrations.Core.InvokeLLM`; point it at a real model via `configureLLM()`.
+- **Mock backend** — [`src/api/backend.js`](src/api/backend.js): `backend.entities.<Name>.{list,filter,get,create,update,delete}` over `localStorage`, with first-run seeding, non-destructive migrations, an in-memory fallback when storage is unavailable, and an audit trail.
+- **Pluggable AI** — [`src/api/mockLLM.js`](src/api/mockLLM.js): schema-aware stub behind `backend.integrations.Core.InvokeLLM`; point it at a real model via `configureLLM()`.
 
 ---
 
@@ -156,7 +156,7 @@ Collapsible **drill-down sidebar**, a sticky **header** (breadcrumb, "jump to" c
 ---
 
 ## Data model
-Mock entities ([`src/api/base44Client.js`](src/api/base44Client.js)):
+Mock entities ([`src/api/backend.js`](src/api/backend.js)):
 
 `Trip` · `Booking` · `ItineraryItem` · `TripMember` · `Notification` · `PersonalAssistant` · `ChatMessage` · `Destination` · `Promotion` · `OtaCategory` · `TourPackage` · `Customer` · `Lead` · `Supplier` · `Campaign` · `StaffMember` · `Page` · `MediaAsset` · `Setting` · `AuditLog` · `Registration` · `FeatureAccess`
 

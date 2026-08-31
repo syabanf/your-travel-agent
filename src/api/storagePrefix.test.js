@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 
 const importClient = async () => {
   vi.resetModules();
-  return import("@/api/base44Client");
+  return import("@/api/backend");
 };
 
 beforeEach(() => {
@@ -28,14 +28,14 @@ describe("legacy prefix migration", () => {
     window.localStorage.setItem("mora_db__seeded_v4", "2026-01-01T00:00:00.000Z");
     window.localStorage.setItem("mora_db__migrated_v10", "2026-01-01T00:00:00.000Z");
 
-    const { base44 } = await importClient();
+    const { backend } = await importClient();
 
     expect(window.localStorage.getItem("ich_session")).toBe("1");
     expect(window.localStorage.getItem("ich_user_email")).toBe("old@example.com");
     expect(window.localStorage.getItem("ich_db__seeded_v4")).toBeTruthy();
     expect(JSON.parse(window.localStorage.getItem("ich_db_Trip"))).toEqual(trips);
     // And the data is actually reachable through the client, not just present.
-    expect(await base44.entities.Trip.get("t1")).toMatchObject({ title: "Bali Paradise Escape" });
+    expect(await backend.entities.Trip.get("t1")).toMatchObject({ title: "Bali Paradise Escape" });
   });
 
   it("removes the legacy keys once they're copied", async () => {
@@ -63,9 +63,9 @@ describe("legacy prefix migration", () => {
     // what matters is that their own row survives untouched.
     window.localStorage.setItem("mora_db_Trip", JSON.stringify([{ id: "mine", title: "My trip" }]));
 
-    const { base44 } = await importClient();
+    const { backend } = await importClient();
 
-    expect(await base44.entities.Trip.get("mine")).toMatchObject({ title: "My trip" });
+    expect(await backend.entities.Trip.get("mine")).toMatchObject({ title: "My trip" });
   });
 
   it("leaves unrelated keys alone", async () => {
@@ -75,9 +75,9 @@ describe("legacy prefix migration", () => {
   });
 
   it("is a no-op for a fresh install", async () => {
-    const { base44 } = await importClient();
+    const { backend } = await importClient();
     // Nothing to move, but the app must still seed and work normally.
-    expect((await base44.entities.Trip.list()).length).toBeGreaterThan(0);
+    expect((await backend.entities.Trip.list()).length).toBeGreaterThan(0);
     expect(window.localStorage.getItem("ich_storage_renamed")).toBeTruthy();
   });
 });

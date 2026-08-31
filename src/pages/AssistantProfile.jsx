@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useParams, useNavigate } from "react-router-dom";
 import { Star, Globe, MessageCircle } from "lucide-react";
 import PageHeader from "../components/PageHeader";
@@ -14,7 +14,7 @@ export default function AssistantProfile() {
 
   useEffect(() => {
     const load = async () => {
-      const results = await base44.entities.PersonalAssistant.filter({ id: assistantId });
+      const results = await backend.entities.PersonalAssistant.filter({ id: assistantId });
       if (results.length > 0) setAssistant(results[0]);
       setLoading(false);
     };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { PACKAGE_CATEGORIES, categoryLabel, categoryIcon, packageDiscount } from "@/data/packageCategories";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Search, Package, CheckCircle2, Wallet, Users } from "lucide-react";
@@ -102,7 +102,7 @@ export default function DashboardPackages() {
   const [sortBy, setSortBy] = useState("newest");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const load = async () => setItems(await base44.entities.TourPackage.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.TourPackage.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   // Open the editor when arriving from a detail page (?edit=<id>).
@@ -155,8 +155,8 @@ export default function DashboardPackages() {
         status: editing.status || "active",
         featured: !!editing.featured,
       };
-      if (editing.id) await base44.entities.TourPackage.update(editing.id, payload);
-      else await base44.entities.TourPackage.create(payload);
+      if (editing.id) await backend.entities.TourPackage.update(editing.id, payload);
+      else await backend.entities.TourPackage.create(payload);
       toast.success(editing.id ? "Saved" : "Created");
       setEditing(null);
       await load();
@@ -173,7 +173,7 @@ export default function DashboardPackages() {
     });
     if (!ok) return;
     try {
-      await base44.entities.TourPackage.delete(p.id);
+      await backend.entities.TourPackage.delete(p.id);
       toast.success("Removed");
       load();
     } catch { toast.error("Couldn't delete package"); }

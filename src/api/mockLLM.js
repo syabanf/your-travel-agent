@@ -1,6 +1,6 @@
 // Stubbed AI for the local mock backend.
 //
-// Replaces base44.integrations.Core.InvokeLLM with canned, schema-aware
+// Replaces backend.integrations.Core.InvokeLLM with canned, schema-aware
 // responses so the app's AI features work offline with no API key.
 //
 // To plug in a REAL provider later, call configureLLM() once at app startup:

@@ -92,7 +92,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Was previously provided by @base44/vite-plugin.
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Wallet } from "lucide-react";
 import PageHeader from "../components/PageHeader";
@@ -30,8 +30,8 @@ export default function BudgetView() {
   useEffect(() => {
     const load = async () => {
       const [tripsData, itemsData] = await Promise.all([
-        base44.entities.Trip.list("-start_date", 20),
-        base44.entities.ItineraryItem.list("-created_date", 200),
+        backend.entities.Trip.list("-start_date", 20),
+        backend.entities.ItineraryItem.list("-created_date", 200),
       ]);
       setTrips(tripsData.filter(t => t.budget_total > 0));
       setItems(itemsData);

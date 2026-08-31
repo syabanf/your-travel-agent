@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -59,13 +59,13 @@ export default function DashboardBookingDetail() {
     let active = true;
     (async () => {
       setLoading(true);
-      const rows = await base44.entities.Booking.filter({ id });
+      const rows = await backend.entities.Booking.filter({ id });
       const bk = rows[0] || null;
       if (!active) return;
       setB(bk);
       setLoading(false);
-      if (bk?.customer_id) base44.entities.Customer.filter({ id: bk.customer_id }).then((r) => active && setCustomer(r[0] || null));
-      if (bk?.supplier_id) base44.entities.Supplier.filter({ id: bk.supplier_id }).then((r) => active && setSupplier(r[0] || null));
+      if (bk?.customer_id) backend.entities.Customer.filter({ id: bk.customer_id }).then((r) => active && setCustomer(r[0] || null));
+      if (bk?.supplier_id) backend.entities.Supplier.filter({ id: bk.supplier_id }).then((r) => active && setSupplier(r[0] || null));
     })();
     return () => { active = false; };
   }, [id]);
@@ -89,7 +89,7 @@ export default function DashboardBookingDetail() {
   }
 
   const updateStatus = async (status) => {
-    await base44.entities.Booking.update(id, { status });
+    await backend.entities.Booking.update(id, { status });
     setB((prev) => ({ ...prev, status }));
     toast.success("Status updated");
   };
@@ -101,14 +101,14 @@ export default function DashboardBookingDetail() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Booking.delete(id);
+    await backend.entities.Booking.delete(id);
     toast.success("Booking deleted");
     navigate("/dashboard/bookings");
   };
   const cancelBooking = async () => {
     const amt = refundAmount ? Number(refundAmount) : 0;
     const patch = { status: "cancelled", refunded_amount: amt, cancellation_reason: refundReason || "", cancelled_date: moment().format("YYYY-MM-DD") };
-    await base44.entities.Booking.update(id, patch);
+    await backend.entities.Booking.update(id, patch);
     setB((prev) => ({ ...prev, ...patch }));
     setCancelOpen(false);
     toast.success(amt ? `Cancelled · refund ${formatIDR(amt)}` : "Booking cancelled");

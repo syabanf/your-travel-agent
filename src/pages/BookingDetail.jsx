@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapPin, Calendar, Wallet, Hash, Trash2, CreditCard, ReceiptText } from "lucide-react";
 import { printDocument, receiptHTML } from "@/lib/voucher";
@@ -30,7 +30,7 @@ export default function BookingDetail() {
     setLoading(true);
     setError(false);
     try {
-      const results = await base44.entities.Booking.filter({ id: bookingId });
+      const results = await backend.entities.Booking.filter({ id: bookingId });
       setBooking(results.length > 0 ? results[0] : null);
     } catch {
       setError(true);
@@ -51,7 +51,7 @@ export default function BookingDetail() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Booking.delete(bookingId);
+    await backend.entities.Booking.delete(bookingId);
     navigate("/booking");
   };
 

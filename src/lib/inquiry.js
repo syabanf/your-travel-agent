@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 /**
  * Turning an AI-proposed plan into an agency inquiry.
@@ -23,7 +23,7 @@ const profile = () => {
 export async function inquiryForTrip(tripId) {
   if (!tripId) return null;
   try {
-    const rows = await base44.entities.Lead.filter({ trip_id: tripId });
+    const rows = await backend.entities.Lead.filter({ trip_id: tripId });
     return rows?.[0] || null;
   } catch {
     return null;
@@ -46,7 +46,7 @@ export async function createInquiryForPlan(trip) {
         ? `${trip.start_date} → ${trip.end_date}`
         : "dates flexible";
 
-    return await base44.entities.Lead.create({
+    return await backend.entities.Lead.create({
       name: me.name || trip.lead_traveler || "App traveller",
       email: me.email || "",
       phone: "",

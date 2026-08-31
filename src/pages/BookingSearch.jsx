@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Search, Plane, Hotel, Train, Car, Ship, Ticket, Home } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -28,8 +28,8 @@ export default function BookingSearch() {
   useEffect(() => {
     const load = async () => {
       const data = typeFilter
-        ? await base44.entities.Booking.filter({ type: typeFilter })
-        : await base44.entities.Booking.list("-created_date", 50);
+        ? await backend.entities.Booking.filter({ type: typeFilter })
+        : await backend.entities.Booking.list("-created_date", 50);
       setBookings(data);
       setLoading(false);
     };

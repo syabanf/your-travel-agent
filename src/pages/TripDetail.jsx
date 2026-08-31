@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { MapPin, Calendar, Edit, Share2, Copy, Trash2, MoreVertical, Plus, Wand2, Loader2, Lock, CreditCard, Sparkles, MessageCircle } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -41,15 +41,15 @@ export default function TripDetail() {
   useEffect(() => {
     const load = async () => {
       try {
-        const trips = await base44.entities.Trip.filter({ id: tripId });
+        const trips = await backend.entities.Trip.filter({ id: tripId });
         if (trips.length > 0) setTrip(trips[0]);
 
-        const itineraryItems = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
+        const itineraryItems = await backend.entities.ItineraryItem.filter({ trip_id: tripId });
         setItems(itineraryItems.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
-        const mem = await base44.entities.TripMember.filter({ trip_id: tripId });
+        const mem = await backend.entities.TripMember.filter({ trip_id: tripId });
         setMembers(mem);
         // Drives the lock: a package trip stays sealed until its booking is settled.
-        setBookings(await base44.entities.Booking.filter({ trip_id: tripId }));
+        setBookings(await backend.entities.Booking.filter({ trip_id: tripId }));
         // A plan carries an inquiry; show the traveller where it got to.
         setInquiry(await inquiryForTrip(tripId));
       } catch {
@@ -62,12 +62,12 @@ export default function TripDetail() {
     load();
   }, [tripId]);
 
-  const reloadMembers = async () => setMembers(await base44.entities.TripMember.filter({ trip_id: tripId }));
+  const reloadMembers = async () => setMembers(await backend.entities.TripMember.filter({ trip_id: tripId }));
   const addMember = async () => {
     if (!invite.name) { toast.error("Name is required"); return; }
     setSavingInvite(true);
     try {
-      await base44.entities.TripMember.create({ trip_id: tripId, name: invite.name, email: invite.email, role: invite.role, status: "invited" });
+      await backend.entities.TripMember.create({ trip_id: tripId, name: invite.name, email: invite.email, role: invite.role, status: "invited" });
       setInvite({ name: "", email: "", role: "traveler" });
       setShowInvite(false);
       await reloadMembers();
@@ -83,7 +83,7 @@ export default function TripDetail() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.TripMember.delete(m.id);
+    await backend.entities.TripMember.delete(m.id);
     await reloadMembers();
     toast("Traveler removed");
   };
@@ -96,17 +96,17 @@ export default function TripDetail() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Trip.delete(tripId);
+    await backend.entities.Trip.delete(tripId);
     navigate("/itinerary");
   };
 
   const handleDuplicate = async () => {
     if (!trip) return;
     const { id, created_date, updated_date, created_by, ...data } = trip;
-    const newTrip = await base44.entities.Trip.create({ ...data, title: `${data.title} (Copy)`, status: "draft" });
+    const newTrip = await backend.entities.Trip.create({ ...data, title: `${data.title} (Copy)`, status: "draft" });
     for (const item of items) {
       const { id: iId, created_date: icd, updated_date: iud, created_by: icb, ...itemData } = item;
-      await base44.entities.ItineraryItem.create({ ...itemData, trip_id: newTrip.id });
+      await backend.entities.ItineraryItem.create({ ...itemData, trip_id: newTrip.id });
     }
     navigate(`/itinerary/${newTrip.id}`);
   };
@@ -115,7 +115,7 @@ export default function TripDetail() {
     if (!trip) return;
     setAiGenerating(true);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await backend.integrations.Core.InvokeLLM({
         prompt: `Generate a detailed ${trip.travel_style || 'luxury'} travel itinerary for ${trip.destination}${
         trip.start_date ? ` from ${trip.start_date} to ${trip.end_date || trip.start_date}` : ` for ${totalDays} days`
       }. Pace: ${trip.pace || 'moderate'}. Trip type: ${trip.trip_type || 'couple'}. Travelers: ${trip.travelers || 2}.
@@ -145,7 +145,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
 
       if (res.activities?.length > 0) {
         for (const act of res.activities) {
-          await base44.entities.ItineraryItem.create({
+          await backend.entities.ItineraryItem.create({
             trip_id: tripId,
             day_number: act.day || 1,
             time: act.time || "",
@@ -159,7 +159,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           });
         }
         // Reload items
-        const updated = await base44.entities.ItineraryItem.filter({ trip_id: tripId });
+        const updated = await backend.entities.ItineraryItem.filter({ trip_id: tripId });
         setItems(updated.sort((a, b) => (a.day_number - b.day_number) || (a.sort_order - b.sort_order)));
       }
     } catch {

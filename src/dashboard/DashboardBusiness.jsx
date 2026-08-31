@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import {
   ResponsiveContainer,
@@ -82,11 +82,11 @@ export default function DashboardBusiness() {
     (async () => {
       try {
         const [bookings, trips, customers, leads, suppliers] = await Promise.all([
-          base44.entities.Booking.list("-created_date", 500),
-          base44.entities.Trip.list("-created_date", 500),
-          base44.entities.Customer.list("-created_date", 500),
-          base44.entities.Lead.list("-created_date", 500),
-          base44.entities.Supplier.list("-created_date", 500),
+          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.Trip.list("-created_date", 500),
+          backend.entities.Customer.list("-created_date", 500),
+          backend.entities.Lead.list("-created_date", 500),
+          backend.entities.Supplier.list("-created_date", 500),
         ]);
         if (!cancelled) setData({ bookings, trips, customers, leads, suppliers });
       } catch (err) {

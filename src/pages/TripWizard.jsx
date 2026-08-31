@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, Sparkles, Loader2, Wand2, MapPin, Users,
   Heart, Calendar, Check, Plane,
 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { createInquiryForPlan } from "@/lib/inquiry";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import GlassCard from "@/components/GlassCard";
@@ -146,7 +146,7 @@ export default function TripWizard() {
   const buildItinerary = async (trip, activities) => {
     if (!activities?.length) return;
     for (const act of activities) {
-      await base44.entities.ItineraryItem.create({
+      await backend.entities.ItineraryItem.create({
         trip_id: trip.id,
         day_number: act.day || 1,
         time: act.time || "",
@@ -171,7 +171,7 @@ export default function TripWizard() {
   const handleGenerate = async () => {
     setBusy("ai");
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await backend.integrations.Core.InvokeLLM({
         prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
           form.start_date ? ` from ${form.start_date}` : ""
         }${form.end_date ? ` to ${form.end_date}` : " for 4 days"}. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in IDR (Indonesian Rupiah), and a full list of activities per day.`,
@@ -195,7 +195,7 @@ export default function TripWizard() {
           },
         },
       });
-      const trip = await base44.entities.Trip.create({
+      const trip = await backend.entities.Trip.create({
         title: res.title || `${cityOnly} Adventure`,
         destination: form.destination,
         start_date: form.start_date || undefined,
@@ -226,7 +226,7 @@ export default function TripWizard() {
   const handleCreate = async () => {
     setBusy("save");
     try {
-      const trip = await base44.entities.Trip.create({
+      const trip = await backend.entities.Trip.create({
         title: `${cityOnly} Trip`,
         destination: form.destination,
         start_date: form.start_date || undefined,

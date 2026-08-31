@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ export default function DashboardMediaDetail() {
   const [m, setM] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.MediaAsset.filter({ id }).then((r) => setM(r[0] || null));
+    backend.entities.MediaAsset.filter({ id }).then((r) => setM(r[0] || null));
   }, [id]);
 
   const remove = async () => {
@@ -29,7 +29,7 @@ export default function DashboardMediaDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.MediaAsset.delete(id);
+      await backend.entities.MediaAsset.delete(id);
       toast.success("Media removed");
       navigate("/dashboard/media");
     } catch {

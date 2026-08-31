@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, ChevronLeft, Tags, Eye, EyeOff } from "lucide-react";
 import DataTable from "@/dashboard/DataTable";
@@ -19,7 +19,7 @@ export default function DashboardOTACategories() {
   const [rows, setRows] = useState(null);
   const [editing, setEditing] = useState(null); // null = closed, {} = new, {...} = edit
 
-  const load = () => base44.entities.OtaCategory.list("order", 100).then((r) => setRows(r || []));
+  const load = () => backend.entities.OtaCategory.list("order", 100).then((r) => setRows(r || []));
   useEffect(() => { load(); }, []);
 
   const canEdit = can(role, "ota", "edit");
@@ -42,13 +42,13 @@ export default function DashboardOTACategories() {
     };
     try {
       if (editing.id) {
-        await base44.entities.OtaCategory.update(editing.id, payload);
+        await backend.entities.OtaCategory.update(editing.id, payload);
         toast.success("Category updated");
       } else {
         let key = slug(label) || "category";
         const existing = new Set((rows || []).map((r) => r.key));
         if (existing.has(key)) { let i = 2; while (existing.has(`${key}_${i}`)) i++; key = `${key}_${i}`; }
-        await base44.entities.OtaCategory.create({ ...payload, key });
+        await backend.entities.OtaCategory.create({ ...payload, key });
         toast.success("Category added");
       }
       setEditing(null);
@@ -58,7 +58,7 @@ export default function DashboardOTACategories() {
 
   const toggleActive = async (r) => {
     if (!canEdit) return;
-    try { await base44.entities.OtaCategory.update(r.id, { active: !r.active }); load(); }
+    try { await backend.entities.OtaCategory.update(r.id, { active: !r.active }); load(); }
     catch { toast.error("Couldn't update"); }
   };
 
@@ -70,7 +70,7 @@ export default function DashboardOTACategories() {
       destructive: true,
     });
     if (!ok) return;
-    try { await base44.entities.OtaCategory.delete(r.id); toast.success("Category deleted"); load(); }
+    try { await backend.entities.OtaCategory.delete(r.id); toast.success("Category deleted"); load(); }
     catch { toast.error("Couldn't delete"); }
   };
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Heart, X, RotateCcw, MapPin, Plane, Check } from "lucide-react";
 import { DESTINATIONS } from "@/data/destinations";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { addFavorite, removeFavorite } from "@/lib/favorites";
 import { formatIDR } from "@/lib/currency";
 
@@ -56,7 +56,7 @@ export default function DestinationSwipe({ onLikedChange }) {
   const [deck, setDeck] = useState(DESTINATIONS); // CMS-managed destinations (fallback: static list)
 
   useEffect(() => {
-    base44.entities.Destination.list("-created_date", 100)
+    backend.entities.Destination.list("-created_date", 100)
       .then((rows) => { if (rows && rows.length) setDeck(rows.filter((d) => d.active !== false)); })
       .catch(() => {});
   }, []);

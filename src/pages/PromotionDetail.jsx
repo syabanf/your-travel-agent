@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
 import { formatIDR } from "@/lib/currency";
@@ -46,7 +46,7 @@ export default function PromotionDetail() {
   };
 
   useEffect(() => {
-    base44.entities.Promotion.filter({ id }).then((r) => { setItem(r[0] || null); setLoading(false); });
+    backend.entities.Promotion.filter({ id }).then((r) => { setItem(r[0] || null); setLoading(false); });
   }, [id]);
 
   if (loading) return (

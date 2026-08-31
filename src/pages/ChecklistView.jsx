@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { CheckSquare, Square, Plus, Trash2 } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -65,7 +65,7 @@ export default function ChecklistView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Trip.list("-created_date", 30).then(data => {
+    backend.entities.Trip.list("-created_date", 30).then(data => {
       setTrips(data);
       if (data.length > 0) {
         const first = data[0];

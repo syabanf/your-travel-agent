@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { toast } from "sonner";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import BookingCheckout from "./BookingCheckout";
 import PackageDetail from "./PackageDetail";
 
@@ -27,7 +27,7 @@ beforeEach(() => {
 
 describe("BookingCheckout", () => {
   const mkBooking = () =>
-    base44.entities.Booking.create({ type: "package", title: "Bali Escape", price: 1000, status: "pending" });
+    backend.entities.Booking.create({ type: "package", title: "Bali Escape", price: 1000, status: "pending" });
 
   it("prefills from auth.me and complains loudly when required fields are blank", async () => {
     const b = await mkBooking();
@@ -122,7 +122,7 @@ describe("PackageDetail", () => {
   };
 
   const mkPkg = () =>
-    base44.entities.TourPackage.create({
+    backend.entities.TourPackage.create({
       title: "Kyoto in Bloom", destination: "Kyoto", price: 500, min_pax: 2, max_pax: 6,
       duration_days: 5, duration_nights: 4, category: "cultural",
       departure_dates: ["2026-10-01", "2026-11-05"],
@@ -147,7 +147,7 @@ describe("PackageDetail", () => {
     await screen.findByText("CHECKOUT");
     expect(toast.success).toHaveBeenCalledWith("Package reserved — just a few details left");
 
-    let all = await base44.entities.Booking.filter({ package_id: p.id });
+    let all = await backend.entities.Booking.filter({ package_id: p.id });
     expect(all).toHaveLength(1);
     expect(all[0].guests).toBe(3);
     unmount();
@@ -159,7 +159,7 @@ describe("PackageDetail", () => {
     await user.click(screen.getByRole("button", { name: /Book this package/i }));
     await screen.findByText("CHECKOUT");
 
-    all = await base44.entities.Booking.filter({ package_id: p.id });
+    all = await backend.entities.Booking.filter({ package_id: p.id });
     expect(all).toHaveLength(1);
     expect(all[0].guests).toBe(5);
     expect(all[0].price).toBe(2500);

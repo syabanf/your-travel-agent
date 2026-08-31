@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "../components/OLMap";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -15,7 +15,7 @@ export default function DestinationDetail() {
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    base44.entities.Destination.filter({ id }).then((r) => { setD(r[0] || null); setLoading(false); setIdx(0); });
+    backend.entities.Destination.filter({ id }).then((r) => { setD(r[0] || null); setLoading(false); setIdx(0); });
   }, [id]);
 
   if (loading) return (

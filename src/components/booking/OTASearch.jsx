@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Ticket, Search, MapPin, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
@@ -54,7 +54,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   // Each tab's key is the category's `behavior`, so the built-in search/book
   // flows below stay unchanged and new categories reuse a built-in flow.
   useEffect(() => {
-    base44.entities.OtaCategory.list("order", 50)
+    backend.entities.OtaCategory.list("order", 50)
       .then((rows) => setCats((rows || []).length ? rows : DEFAULT_OTA_CATEGORIES))
       .catch(() => setCats(DEFAULT_OTA_CATEGORIES));
   }, []);
@@ -87,7 +87,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   const loadMyBookings = async () => {
     setLoadingBookings(true);
     try {
-      const data = await base44.entities.Booking.list("-created_date", 50);
+      const data = await backend.entities.Booking.list("-created_date", 50);
       setMyBookings(data || []);
     } catch {
       setMyBookings([]);
@@ -129,7 +129,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
     }
 
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
+      const res = await backend.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
@@ -174,7 +174,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
    if (savingRef.current) return;
    savingRef.current = true;
    try {
-     const created = await base44.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
+     const created = await backend.entities.Booking.create({ ...bookingData, ...(tripId ? { trip_id: tripId } : {}) });
      queryClient.invalidateQueries({ queryKey: ["bookings"] });
      if (onSaveBooking) onSaveBooking();
      toast.success("Booking created — continue to checkout.");

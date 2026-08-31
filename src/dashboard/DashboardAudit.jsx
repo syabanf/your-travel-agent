@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { toast } from "sonner";
 import moment from "moment";
 import { History, Filter, ShieldCheck, X } from "lucide-react";
@@ -28,7 +28,7 @@ export default function DashboardAudit() {
   useEffect(() => {
     (async () => {
       try {
-        setLogs(await base44.entities.AuditLog.list("-created_date", 500));
+        setLogs(await backend.entities.AuditLog.list("-created_date", 500));
       } catch {
         toast.error("Couldn't load the audit log");
         setLogs([]);

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Send, Sparkles, Save, RefreshCw, Headphones, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import PageHeader from "../components/PageHeader";
@@ -57,7 +57,7 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-    const response = await base44.integrations.Core.InvokeLLM({
+    const response = await backend.integrations.Core.InvokeLLM({
       prompt: `You are Icon Holiday's premium AI travel concierge. You help travelers plan luxurious, well-organized itineraries. 
       
 When creating itineraries, format them beautifully with:
@@ -89,7 +89,7 @@ ${messages.length > 0 ? `Previous conversation context: ${messages.map(m => `${m
     if (saving) return;
     setSaving(true);
     try {
-    const result = await base44.integrations.Core.InvokeLLM({
+    const result = await backend.integrations.Core.InvokeLLM({
       prompt: `Extract the trip details from this itinerary text and return structured data:
       
 ${content}`,
@@ -117,7 +117,7 @@ ${content}`,
       }
     });
 
-    const trip = await base44.entities.Trip.create({
+    const trip = await backend.entities.Trip.create({
       title: result.title || "AI Generated Trip",
       destination: result.destination || "Unknown",
       status: "draft",
@@ -129,7 +129,7 @@ ${content}`,
 
     if (result.activities) {
       for (const act of result.activities) {
-        await base44.entities.ItineraryItem.create({
+        await backend.entities.ItineraryItem.create({
           trip_id: trip.id,
           day_number: act.day || 1,
           time: act.time || "",

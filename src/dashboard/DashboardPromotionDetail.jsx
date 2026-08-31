@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -34,7 +34,7 @@ export default function DashboardPromotionDetail() {
   const [item, setItem] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.Promotion.filter({ id }).then((r) => setItem(r[0] || null));
+    backend.entities.Promotion.filter({ id }).then((r) => setItem(r[0] || null));
   }, [id]);
 
   const remove = async () => {
@@ -46,7 +46,7 @@ export default function DashboardPromotionDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Promotion.delete(id);
+      await backend.entities.Promotion.delete(id);
       toast.success("Entry removed");
       navigate("/dashboard/promotions");
     } catch {

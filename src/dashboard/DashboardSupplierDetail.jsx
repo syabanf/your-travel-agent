@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -40,8 +40,8 @@ export default function DashboardSupplierDetail() {
   const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
-    base44.entities.Supplier.filter({ id }).then((r) => setS(r[0] || null));
-    base44.entities.Booking.list("-created_date", 500).then((all) =>
+    backend.entities.Supplier.filter({ id }).then((r) => setS(r[0] || null));
+    backend.entities.Booking.list("-created_date", 500).then((all) =>
       setBookings((all || []).filter((b) => b.supplier_id === id))
     );
   }, [id]);
@@ -55,7 +55,7 @@ export default function DashboardSupplierDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Supplier.delete(id);
+      await backend.entities.Supplier.delete(id);
       toast.success("Supplier removed");
       navigate("/dashboard/suppliers");
     } catch {

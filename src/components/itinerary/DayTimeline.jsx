@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Clock, MapPin, CheckCircle, Circle, Plus, Map } from "lucide-react";
 import GlassCard from "../GlassCard";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
@@ -28,7 +28,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
     // Optimistic update
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_completed: !i.is_completed } : i));
     try {
-      await base44.entities.ItineraryItem.update(item.id, { is_completed: !item.is_completed });
+      await backend.entities.ItineraryItem.update(item.id, { is_completed: !item.is_completed });
     } catch {
       // Revert on error
       setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_completed: item.is_completed } : i));

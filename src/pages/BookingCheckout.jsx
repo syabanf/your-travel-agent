@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useParams, useNavigate } from "react-router-dom";
 import GlassCard from "../components/GlassCard";
 import { Input } from "@/components/ui/input";
@@ -79,14 +79,14 @@ export default function BookingCheckout() {
 
   useEffect(() => {
     const load = async () => {
-      const results = await base44.entities.Booking.filter({ id: bookingId });
+      const results = await backend.entities.Booking.filter({ id: bookingId });
       if (!results.length) return;
       setBooking(results[0]);
       // Only package bookings carry an instalment plan; everything else is
       // paid in full, so we don't offer a choice that doesn't exist.
       if (results[0].package_id) {
         try {
-          setPkg(await base44.entities.TourPackage.get(results[0].package_id));
+          setPkg(await backend.entities.TourPackage.get(results[0].package_id));
         } catch {
           /* package removed — fall back to the default minimum */
         }
@@ -99,7 +99,7 @@ export default function BookingCheckout() {
   // (or restored from a reload).
   useEffect(() => {
     let cancelled = false;
-    base44.auth
+    backend.auth
       .me()
       .then((me) => {
         if (cancelled || !me) return;
@@ -240,7 +240,7 @@ export default function BookingCheckout() {
         dp_percent: payPercent,
         balance_due_date: paid < total ? moment().add(14, "days").format("YYYY-MM-DD") : null,
       };
-      await base44.entities.Booking.update(bookingId, {
+      await backend.entities.Booking.update(bookingId, {
         status: "confirmed",
         confirmation_code: code,
         payment_method: method?.label || "Card",
@@ -256,7 +256,7 @@ export default function BookingCheckout() {
       // — a deposit on a one-off service doesn't make sense.
       if (booking.feature_key && paid >= total) {
         try {
-          await base44.entities.FeatureAccess.create({
+          await backend.entities.FeatureAccess.create({
             feature: booking.feature_key,
             user_email: currentEmail(),
             status: "active",
@@ -280,7 +280,7 @@ export default function BookingCheckout() {
   const createTripFromPackage = async (code, fullyPaid) => {
     try {
       const start = booking.check_in ? moment(booking.check_in) : moment().add(30, "days");
-      const trip = await base44.entities.Trip.create({
+      const trip = await backend.entities.Trip.create({
         title: pkg.title,
         destination: pkg.destination || booking.location || "",
         cover_image: pkg.image || "",
@@ -299,12 +299,12 @@ export default function BookingCheckout() {
         booking_id: bookingId,
         locked_until_paid: true,
       });
-      await base44.entities.Booking.update(bookingId, { trip_id: trip.id });
+      await backend.entities.Booking.update(bookingId, { trip_id: trip.id });
 
       // Seed the day-by-day plan from the package. This is exactly what stays
       // hidden behind the lock until the balance is settled.
       for (const day of pkg.itinerary || []) {
-        await base44.entities.ItineraryItem.create({
+        await backend.entities.ItineraryItem.create({
           trip_id: trip.id,
           day_number: day.day || 1,
           activity_name: day.title || `Day ${day.day || 1}`,

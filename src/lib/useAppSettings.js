@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 // App-wide settings (brand, support contacts, feature flags) sourced from the
 // CMS `Setting` record (id 'app'). Falls back to sensible defaults so the UI
@@ -27,7 +27,7 @@ export function useAppSettings() {
 
   useEffect(() => {
     let alive = true;
-    base44.entities.Setting.filter({ id: "app" })
+    backend.entities.Setting.filter({ id: "app" })
       .then((r) => { if (alive) { setSettings({ ...DEFAULTS, ...(r?.[0] || {}) }); setLoaded(true); } })
       .catch(() => { if (alive) setLoaded(true); });
     return () => { alive = false; };

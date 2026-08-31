@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { CategoryBars, Delta } from "@/dashboard/charts";
 import PeriodControls from "@/dashboard/PeriodControls";
@@ -178,12 +178,12 @@ export default function DashboardReports() {
     (async () => {
       try {
         const [bookings, trips, customers, destinations, promotions, leads] = await Promise.all([
-          base44.entities.Booking.list("-created_date", 500),
-          base44.entities.Trip.list("-created_date", 500),
-          base44.entities.Customer.list("-created_date", 500),
-          base44.entities.Destination.list("-created_date", 500),
-          base44.entities.Promotion.list("-created_date", 500),
-          base44.entities.Lead.list("-created_date", 500),
+          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.Trip.list("-created_date", 500),
+          backend.entities.Customer.list("-created_date", 500),
+          backend.entities.Destination.list("-created_date", 500),
+          backend.entities.Promotion.list("-created_date", 500),
+          backend.entities.Lead.list("-created_date", 500),
         ]);
         if (!cancelled) setData({ bookings, trips, customers, destinations, promotions, leads });
       } catch (err) {

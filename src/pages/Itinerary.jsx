@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Plus, Map, Calendar, Wallet, CheckSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
@@ -38,7 +38,7 @@ export default function Itinerary() {
   const loadTrips = useCallback(async () => {
     setError(false);
     try {
-      const data = await base44.entities.Trip.list("-created_date", 50);
+      const data = await backend.entities.Trip.list("-created_date", 50);
       setTrips(data);
     } catch {
       setError(true);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -19,7 +19,7 @@ export default function CalendarView() {
   const [currentMonth, setCurrentMonth] = useState(moment());
 
   useEffect(() => {
-    base44.entities.Trip.list("-start_date", 50).then(setTrips);
+    backend.entities.Trip.list("-start_date", 50).then(setTrips);
   }, []);
 
   const startOfMonth = currentMonth.clone().startOf("month");

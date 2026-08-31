@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Bell, MapPin, CreditCard, MessageCircle, Calendar, Check, Settings, X } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -31,7 +31,7 @@ export default function Notifications() {
   const [filter, setFilter] = useState("all");
 
   const load = async () => {
-    const data = await base44.entities.Notification.list("-created_date", 50);
+    const data = await backend.entities.Notification.list("-created_date", 50);
     setNotifications(data);
     setLoading(false);
   };
@@ -41,19 +41,19 @@ export default function Notifications() {
   }, []);
 
   const markAsRead = async (id) => {
-    await base44.entities.Notification.update(id, { is_read: true });
+    await backend.entities.Notification.update(id, { is_read: true });
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
   };
 
   const markAllAsRead = async () => {
     for (const n of notifications.filter(n => !n.is_read)) {
-      await base44.entities.Notification.update(n.id, { is_read: true });
+      await backend.entities.Notification.update(n.id, { is_read: true });
     }
     await load();
   };
 
   const deleteNotification = async (id) => {
-    await base44.entities.Notification.delete(id);
+    await backend.entities.Notification.delete(id);
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 

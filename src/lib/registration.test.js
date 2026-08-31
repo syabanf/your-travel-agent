@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { submitRegistration, registrationStatus, decideRegistration } from "@/lib/registration";
 
 const wipe = async () => {
-  for (const r of await base44.entities.Registration.list()) {
-    await base44.entities.Registration.delete(r.id);
+  for (const r of await backend.entities.Registration.list()) {
+    await backend.entities.Registration.delete(r.id);
   }
 };
 
@@ -27,7 +27,7 @@ describe("sign-up approval", () => {
     await submitRegistration({ full_name: "Rina", email: "rina@example.com" });
     const second = await submitRegistration({ full_name: "Rina", email: "  RINA@example.com " });
     expect(second.duplicate).toBe(true);
-    expect(await base44.entities.Registration.list()).toHaveLength(1);
+    expect(await backend.entities.Registration.list()).toHaveLength(1);
   });
 
   it("reports the admin's decision, case- and space-insensitively", async () => {

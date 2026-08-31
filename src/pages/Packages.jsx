@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import PageHeader from "../components/PageHeader";
 import Skeleton from "@/components/Skeletons";
 import EmptyState from "@/components/EmptyState";
@@ -28,7 +28,7 @@ export default function Packages() {
   const [cat, setCat] = useState("all");
 
   useEffect(() => {
-    base44.entities.TourPackage.list("-created_date", 100)
+    backend.entities.TourPackage.list("-created_date", 100)
       .then((rows) => setItems((rows || []).filter((p) => p.status !== "draft")))
       .catch(() => setItems([]));
   }, []);

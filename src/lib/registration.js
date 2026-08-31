@@ -1,4 +1,4 @@
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 /**
  * Sign-up approval.
@@ -12,12 +12,12 @@ const normalise = (email) => String(email || "").trim().toLowerCase();
 /** File a sign-up request. Re-submitting an email returns the existing one. */
 export async function submitRegistration({ full_name, email, phone, note = "" }) {
   const addr = normalise(email);
-  const existing = (await base44.entities.Registration.list()).find(
+  const existing = (await backend.entities.Registration.list()).find(
     (r) => normalise(r.email) === addr
   );
   if (existing) return { registration: existing, duplicate: true };
 
-  const registration = await base44.entities.Registration.create({
+  const registration = await backend.entities.Registration.create({
     full_name: full_name || addr.split("@")[0],
     email: addr,
     phone: phone || "",
@@ -39,7 +39,7 @@ export async function registrationStatus(email) {
   const addr = normalise(email);
   if (!addr) return { status: "none", registration: null };
   try {
-    const match = (await base44.entities.Registration.list()).find(
+    const match = (await backend.entities.Registration.list()).find(
       (r) => normalise(r.email) === addr
     );
     return match ? { status: match.status || "pending", registration: match } : { status: "none", registration: null };
@@ -51,7 +51,7 @@ export async function registrationStatus(email) {
 
 /** Approve or reject a request, stamping who decided and when. */
 export async function decideRegistration(id, status, reviewer = "Admin") {
-  return base44.entities.Registration.update(id, {
+  return backend.entities.Registration.update(id, {
     status,
     reviewed_by: reviewer,
     reviewed_date: new Date().toISOString(),

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -96,10 +96,10 @@ export default function DashboardTripDetail() {
       setLoading(true);
       try {
         const [trips, itineraryItems, allBookings, tripMembers] = await Promise.all([
-          base44.entities.Trip.filter({ id }),
-          base44.entities.ItineraryItem.filter({ trip_id: id }),
-          base44.entities.Booking.list("-created_date", 500),
-          base44.entities.TripMember.filter({ trip_id: id }),
+          backend.entities.Trip.filter({ id }),
+          backend.entities.ItineraryItem.filter({ trip_id: id }),
+          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.TripMember.filter({ trip_id: id }),
         ]);
         if (!alive) return;
         const t0 = trips?.[0] || null;
@@ -107,7 +107,7 @@ export default function DashboardTripDetail() {
         setItems(Array.isArray(itineraryItems) ? itineraryItems : []);
         setRelated((Array.isArray(allBookings) ? allBookings : []).filter((b) => b.trip_id === id));
         setMembers(Array.isArray(tripMembers) ? tripMembers : []);
-        if (t0?.customer_id) base44.entities.Customer.filter({ id: t0.customer_id }).then((r) => alive && setCustomer(r[0] || null));
+        if (t0?.customer_id) backend.entities.Customer.filter({ id: t0.customer_id }).then((r) => alive && setCustomer(r[0] || null));
       } catch {
         if (alive) toast.error("Couldn't load this trip");
       } finally {
@@ -150,7 +150,7 @@ export default function DashboardTripDetail() {
 
   const updateStatus = async (status) => {
     try {
-      await base44.entities.Trip.update(id, { status });
+      await backend.entities.Trip.update(id, { status });
       setTrip((t) => ({ ...t, status }));
       toast.success("Status updated");
     } catch {
@@ -167,7 +167,7 @@ export default function DashboardTripDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Trip.delete(id);
+      await backend.entities.Trip.delete(id);
       toast.success("Trip deleted");
       navigate("/dashboard/bookings");
     } catch {
@@ -179,7 +179,7 @@ export default function DashboardTripDetail() {
 
   // --- Members ---
   const canManageMembers = can(role, "trips", "create") || can(role, "trips", "edit") || can(role, "trips", "delete");
-  const loadMembers = async () => setMembers(await base44.entities.TripMember.filter({ trip_id: id }));
+  const loadMembers = async () => setMembers(await backend.entities.TripMember.filter({ trip_id: id }));
   const startAddMember = () => setMemberForm({ ...EMPTY_MEMBER });
   const startEditMember = (m) => setMemberForm({ ...EMPTY_MEMBER, ...m });
   const updMember = (k, v) => setMemberForm((p) => ({ ...p, [k]: v }));
@@ -191,8 +191,8 @@ export default function DashboardTripDetail() {
         trip_id: id, name: memberForm.name, email: memberForm.email, phone: memberForm.phone,
         role: memberForm.role || "traveler", status: memberForm.status || "invited",
       };
-      if (memberForm.id) await base44.entities.TripMember.update(memberForm.id, payload);
-      else await base44.entities.TripMember.create(payload);
+      if (memberForm.id) await backend.entities.TripMember.update(memberForm.id, payload);
+      else await backend.entities.TripMember.create(payload);
       toast.success(memberForm.id ? "Member updated" : "Member added");
       setMemberForm(null);
       await loadMembers();
@@ -207,7 +207,7 @@ export default function DashboardTripDetail() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.TripMember.delete(m.id);
+    await backend.entities.TripMember.delete(m.id);
     toast.success("Member removed");
     loadMembers();
   };

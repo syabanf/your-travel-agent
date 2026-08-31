@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sparkles, Loader2, X, ArrowRight } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 
 // Fields the mock AI knows how to summarise from a page's data.
@@ -66,14 +66,14 @@ export default function DashboardAiStub({ resource, data, label = "Ask AI", cont
 
   const run = async () => {
     setOpen(true); setLoading(true); setResult(null); setAnswer(null);
-    try { await base44.integrations.Core.InvokeLLM({ prompt: `Give admin insights for ${resource} (${Array.isArray(data) ? data.length : 0} records). ${context}` }); } catch { /* stubbed */ }
+    try { await backend.integrations.Core.InvokeLLM({ prompt: `Give admin insights for ${resource} (${Array.isArray(data) ? data.length : 0} records). ${context}` }); } catch { /* stubbed */ }
     setResult(build());
     setLoading(false);
   };
 
   const ask = async (q) => {
     setLoading(true); setAnswer(null);
-    try { await base44.integrations.Core.InvokeLLM({ prompt: q }); } catch { /* stubbed */ }
+    try { await backend.integrations.Core.InvokeLLM({ prompt: q }); } catch { /* stubbed */ }
     const a = result?.a;
     const ctx = a ? `Across ${a.n} ${resource}${a.top ? `, "${a.top[0]}" leads (${a.top[1]})` : ""}${a.moneyField ? ` and total ${a.moneyField} is ${formatIDR(a.sum)}` : ""}.` : "";
     setAnswer(`${ctx} On “${q}” — prioritise the highlighted items first, then review weekly. (Demo AI — connect a model via configureLLM() to go live.)`);

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Sparkles, MessageCircle, Star, Globe, ChevronRight, Crown, Headphones } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
@@ -22,7 +22,7 @@ export default function Assistant() {
   const load = useCallback(async () => {
     setError(false);
     try {
-      const data = await base44.entities.PersonalAssistant.list("-rating", 20);
+      const data = await backend.entities.PersonalAssistant.list("-rating", 20);
       setAssistants(data);
     } catch {
       setError(true);

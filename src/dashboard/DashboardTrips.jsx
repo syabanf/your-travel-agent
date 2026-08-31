@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { tripAccess } from "@/lib/payments";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Search, Map, Lock, Unlock, ListChecks, Wallet, CalendarRange, Clock, MapPin } from "lucide-react";
@@ -126,10 +126,10 @@ export default function DashboardTrips() {
   const [savingItem, setSavingItem] = useState(false);
 
   const load = async () => {
-    setTrips(await base44.entities.Trip.list("-created_date", 500));
+    setTrips(await backend.entities.Trip.list("-created_date", 500));
     // Bookings drive the lock state; customers back the owner dropdown.
-    setBookings(await base44.entities.Booking.list("-created_date", 500));
-    setCustomers(await base44.entities.Customer.list("-created_date", 500));
+    setBookings(await backend.entities.Booking.list("-created_date", 500));
+    setCustomers(await backend.entities.Customer.list("-created_date", 500));
   };
   useEffect(() => { load(); }, []);
 
@@ -169,8 +169,8 @@ export default function DashboardTrips() {
         locked_until_paid: !!editing.locked_until_paid,
         booking_id: editing.booking_id || undefined,
       };
-      if (editing.id) await base44.entities.Trip.update(editing.id, payload);
-      else await base44.entities.Trip.create(payload);
+      if (editing.id) await backend.entities.Trip.update(editing.id, payload);
+      else await backend.entities.Trip.create(payload);
       toast.success(editing.id ? "Saved" : "Created");
       setEditing(null);
       await load();
@@ -187,7 +187,7 @@ export default function DashboardTrips() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Trip.delete(t.id);
+      await backend.entities.Trip.delete(t.id);
       toast.success("Trip deleted");
       load();
     } catch { toast.error("Couldn't delete trip"); }
@@ -196,7 +196,7 @@ export default function DashboardTrips() {
   /* ----------------------------- itinerary ---------------------------- */
 
   const loadItems = async (tripId) =>
-    setItinItems(await base44.entities.ItineraryItem.filter({ trip_id: tripId }));
+    setItinItems(await backend.entities.ItineraryItem.filter({ trip_id: tripId }));
 
   const openItinerary = async (t) => {
     setItinTrip(t);
@@ -226,8 +226,8 @@ export default function DashboardTrips() {
         booking_status: itemForm.booking_status || "not_booked",
         sort_order: numOr(itemForm.sort_order, 0),
       };
-      if (itemForm.id) await base44.entities.ItineraryItem.update(itemForm.id, payload);
-      else await base44.entities.ItineraryItem.create(payload);
+      if (itemForm.id) await backend.entities.ItineraryItem.update(itemForm.id, payload);
+      else await backend.entities.ItineraryItem.create(payload);
       toast.success(itemForm.id ? "Activity updated" : "Activity added");
       setItemForm(null);
       await loadItems(itinTrip.id);
@@ -244,7 +244,7 @@ export default function DashboardTrips() {
     });
     if (!ok) return;
     try {
-      await base44.entities.ItineraryItem.delete(item.id);
+      await backend.entities.ItineraryItem.delete(item.id);
       toast.success("Activity removed");
       await loadItems(itinTrip.id);
     } catch { toast.error("Couldn't delete this activity"); }

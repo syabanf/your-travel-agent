@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { MapPin, Map as MapIcon, CalendarCheck, Users, Wallet, TrendingUp, AlertCircle, ArrowUpRight } from "lucide-react";
 import { formatIDR } from "@/lib/currency";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
@@ -32,11 +32,11 @@ export default function DashboardOverview() {
   useEffect(() => {
     (async () => {
       const [dest, promo, trips, bookings, customers] = await Promise.all([
-        base44.entities.Destination.list("-created_date", 500),
-        base44.entities.Promotion.list("-created_date", 500),
-        base44.entities.Trip.list("-created_date", 500),
-        base44.entities.Booking.list("-created_date", 500),
-        base44.entities.Customer.list("-created_date", 500),
+        backend.entities.Destination.list("-created_date", 500),
+        backend.entities.Promotion.list("-created_date", 500),
+        backend.entities.Trip.list("-created_date", 500),
+        backend.entities.Booking.list("-created_date", 500),
+        backend.entities.Customer.list("-created_date", 500),
       ]);
       setS({ dest, promo, trips, bookings, customers });
     })();

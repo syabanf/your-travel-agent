@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -36,13 +36,13 @@ export default function DashboardLeadDetail() {
   const [lead, setLead] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.Lead.filter({ id }).then((r) => setLead(r[0] || null));
+    backend.entities.Lead.filter({ id }).then((r) => setLead(r[0] || null));
   }, [id]);
 
   const setStatus = async (status) => {
     if (!can(role, "leads", "edit")) return;
     try {
-      await base44.entities.Lead.update(id, { status });
+      await backend.entities.Lead.update(id, { status });
       setLead((p) => ({ ...p, status }));
       toast.success("Stage updated");
     } catch { toast.error("Couldn't update stage"); }
@@ -50,13 +50,13 @@ export default function DashboardLeadDetail() {
 
   const convert = async () => {
     try {
-      await base44.entities.Customer.create({
+      await backend.entities.Customer.create({
         name: lead.name, email: lead.email, phone: lead.phone,
         city: "", country: "", tier: "bronze", status: "active",
         lifetime_spend: 0, joined_date: moment().format("YYYY-MM-DD"),
         notes: `Converted from lead. ${lead.notes || ""}`.trim(),
       });
-      await base44.entities.Lead.update(id, { status: "won" });
+      await backend.entities.Lead.update(id, { status: "won" });
       toast.success("Converted to customer");
       navigate("/dashboard/customers");
     } catch { toast.error("Couldn't convert lead"); }
@@ -71,7 +71,7 @@ export default function DashboardLeadDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Lead.delete(id);
+      await backend.entities.Lead.delete(id);
       toast.success("Lead removed");
       navigate("/dashboard/leads");
     } catch { toast.error("Couldn't delete lead"); }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, LayoutDashboard, Database } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
@@ -29,13 +29,13 @@ export default function Profile() {
 
   useEffect(() => {
     const load = async () => {
-      const me = await base44.auth.me();
+      const me = await backend.auth.me();
       setUser(me);
       
-      const trips = await base44.entities.Trip.list("-created_date", 100);
+      const trips = await backend.entities.Trip.list("-created_date", 100);
       setTripCount(trips.length);
       
-      const bookings = await base44.entities.Booking.list("-created_date", 100);
+      const bookings = await backend.entities.Booking.list("-created_date", 100);
       setBookingCount(bookings.length);
     };
     load();

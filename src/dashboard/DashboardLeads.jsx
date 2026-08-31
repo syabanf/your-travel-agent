@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -69,7 +69,7 @@ export default function DashboardLeads() {
   const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const load = async () => setItems(await base44.entities.Lead.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Lead.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -104,8 +104,8 @@ export default function DashboardLeads() {
         assigned_to: editing.assigned_to || "",
         notes: editing.notes || "",
       };
-      if (editing.id) await base44.entities.Lead.update(editing.id, payload);
-      else await base44.entities.Lead.create(payload);
+      if (editing.id) await backend.entities.Lead.update(editing.id, payload);
+      else await backend.entities.Lead.create(payload);
       toast.success(editing.id ? "Lead updated" : "Lead added");
       setEditing(null);
       await load();
@@ -116,7 +116,7 @@ export default function DashboardLeads() {
   const setStatus = async (id, status) => {
     if (!canEdit) return;
     try {
-      await base44.entities.Lead.update(id, { status });
+      await backend.entities.Lead.update(id, { status });
       toast.success("Stage updated");
       await load();
     } catch { toast.error("Couldn't update stage"); }
@@ -131,7 +131,7 @@ export default function DashboardLeads() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Lead.delete(l.id);
+      await backend.entities.Lead.delete(l.id);
       toast.success("Lead removed");
       await load();
     } catch { toast.error("Couldn't remove lead"); }
@@ -139,13 +139,13 @@ export default function DashboardLeads() {
 
   const convert = async (l) => {
     try {
-      await base44.entities.Customer.create({
+      await backend.entities.Customer.create({
         name: l.name, email: l.email, phone: l.phone,
         city: "", country: "", tier: "bronze", status: "active",
         lifetime_spend: 0, joined_date: moment().format("YYYY-MM-DD"),
         notes: `Converted from lead. ${l.notes || ""}`.trim(),
       });
-      await base44.entities.Lead.update(l.id, { status: "won" });
+      await backend.entities.Lead.update(l.id, { status: "won" });
       toast.success("Converted to customer");
       await load();
     } catch { toast.error("Couldn't convert lead"); }

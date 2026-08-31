@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Link } from "react-router-dom";
 import { Search, MapPin, Tag, Star, Globe } from "lucide-react";
 import PageHeader from "../components/PageHeader";
@@ -25,9 +25,9 @@ export default function SearchPage() {
     setError(false);
     try {
       const [dest, promo, exp] = await Promise.all([
-        base44.entities.Destination.list("name", 100),
-        base44.entities.Promotion.list("-created_date", 100),
-        base44.entities.PersonalAssistant.list("-rating", 100),
+        backend.entities.Destination.list("name", 100),
+        backend.entities.Promotion.list("-created_date", 100),
+        backend.entities.PersonalAssistant.list("-rating", 100),
       ]);
       setDestinations(dest);
       setPromotions(promo);

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -43,7 +43,7 @@ export default function PackageDetail() {
   });
 
   useEffect(() => {
-    base44.entities.TourPackage.filter({ id })
+    backend.entities.TourPackage.filter({ id })
       .then((r) => {
         const found = r[0] || null;
         setPkg(found);
@@ -126,15 +126,15 @@ export default function PackageDetail() {
       // new pending booking every time Book is tapped.
       let pending = null;
       try {
-        const drafts = await base44.entities.Booking.filter({ package_id: pkg.id, status: "pending" });
+        const drafts = await backend.entities.Booking.filter({ package_id: pkg.id, status: "pending" });
         pending = drafts?.[0] || null;
       } catch {
         /* couldn't look it up — fall through and create a fresh booking */
       }
 
       const record = pending
-        ? await base44.entities.Booking.update(pending.id, details)
-        : await base44.entities.Booking.create(details);
+        ? await backend.entities.Booking.update(pending.id, details)
+        : await backend.entities.Booking.create(details);
 
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       toast.success("Package reserved — just a few details left");

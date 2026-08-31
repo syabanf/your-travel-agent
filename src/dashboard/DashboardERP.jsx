@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import { Wallet, TrendingUp, Receipt, Banknote, Landmark, Download, Scale } from "lucide-react";
@@ -44,9 +44,9 @@ export default function DashboardERP() {
     (async () => {
       try {
         const [bookings, suppliers, customers] = await Promise.all([
-          base44.entities.Booking.list("-created_date", 500),
-          base44.entities.Supplier.list("-created_date", 500),
-          base44.entities.Customer.list("-created_date", 500),
+          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.Supplier.list("-created_date", 500),
+          backend.entities.Customer.list("-created_date", 500),
         ]);
         if (alive) setData({ bookings, suppliers, customers });
       } catch {

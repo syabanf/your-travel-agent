@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "@/components/OLMap";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, MapPin, Search, X, Loader2, Save, Image as ImageIcon } from "lucide-react";
@@ -37,7 +37,7 @@ export default function DashboardDestinations() {
   const [sortBy, setSortBy] = useState("newest");
   const searchRef = useRef(null);
 
-  const load = async () => setItems(await base44.entities.Destination.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Destination.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -85,8 +85,8 @@ export default function DashboardDestinations() {
         best_season: editing.best_season, currency: editing.currency, timezone: editing.timezone,
         languages: editing.languages, visa_note: editing.visa_note,
       };
-      if (editing.id) await base44.entities.Destination.update(editing.id, payload);
-      else await base44.entities.Destination.create(payload);
+      if (editing.id) await backend.entities.Destination.update(editing.id, payload);
+      else await backend.entities.Destination.create(payload);
       toast.success(editing.id ? "Destination updated" : "Destination added");
       setEditing(null);
       await load();
@@ -102,7 +102,7 @@ export default function DashboardDestinations() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Destination.delete(d.id);
+    await backend.entities.Destination.delete(d.id);
     toast.success("Destination removed");
     load();
   };

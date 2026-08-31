@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { can } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ export default function DashboardContentDetail() {
   const [p, setP] = useState(undefined); // undefined = loading, null = not found
 
   useEffect(() => {
-    base44.entities.Page.filter({ id }).then((r) => setP(r[0] || null));
+    backend.entities.Page.filter({ id }).then((r) => setP(r[0] || null));
   }, [id]);
 
   const remove = async () => {
@@ -41,7 +41,7 @@ export default function DashboardContentDetail() {
     });
     if (!ok) return;
     try {
-      await base44.entities.Page.delete(id);
+      await backend.entities.Page.delete(id);
       toast.success("Removed");
       navigate("/dashboard/content");
     } catch {

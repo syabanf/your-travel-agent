@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "../components/PageHeader";
@@ -101,7 +101,7 @@ export default function AddActivity() {
     if (!form.activity_name) return;
     setSaving(true);
     try {
-      await base44.entities.ItineraryItem.create({
+      await backend.entities.ItineraryItem.create({
         ...form,
         day_number: safeDay(form.day_number),
         duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,

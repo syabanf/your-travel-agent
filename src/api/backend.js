@@ -1,12 +1,11 @@
-// Local mock backend — a drop-in replacement for the Base44 SDK.
+// The app's entire backend, running in the browser.
 //
-// The app was originally built on Base44, which provided the data store, auth,
-// and AI. That dependency has been removed. This module re-implements the small
-// surface the app actually uses, backed by the browser's localStorage:
+// There is no server. This module implements the surface the app talks to,
+// backed by localStorage:
 //
-//   base44.entities.<Name>.{ list, filter, get, create, update, delete }
-//   base44.auth.{ me, logout, redirectToLogin }
-//   base44.integrations.Core.InvokeLLM   (stubbed — see ./mockLLM.js)
+//   backend.entities.<Name>.{ list, filter, get, create, update, delete }
+//   backend.auth.{ me, logout, redirectToLogin }
+//   backend.integrations.Core.InvokeLLM   (stubbed — see ./mockLLM.js)
 //
 // All data lives on-device. Clear it by running `localStorage.clear()` in the
 // browser console (it will be re-seeded on next load).
@@ -400,5 +399,5 @@ const integrations = {
   },
 };
 
-export const base44 = { entities, auth, integrations };
-export default base44;
+export const backend = { entities, auth, integrations };
+export default backend;

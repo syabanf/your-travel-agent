@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import OLMap from "../components/OLMap";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -46,7 +46,7 @@ export default function MapView() {
 
   // Load catalog destinations and merge their curated activities.
   useEffect(() => {
-    base44.entities.Destination.list("-created_date", 100)
+    backend.entities.Destination.list("-created_date", 100)
       .then((data) => {
         const mapped = (data || [])
           .filter((d) => d.active !== false && d.lat != null && d.lng != null)

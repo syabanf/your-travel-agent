@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { ROLES, RESOURCES, can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
 import { UserPlus, Trash2, X, Loader2, Lock, ShieldCheck, Search, Users, ChevronUp, ChevronDown } from "lucide-react";
@@ -106,12 +106,12 @@ export default function DashboardTeam() {
     </th>
   );
 
-  const load = async () => setMembers(await base44.entities.StaffMember.list("-created_date", 500));
+  const load = async () => setMembers(await backend.entities.StaffMember.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const changeRole = async (id, newRole) => {
     try {
-      await base44.entities.StaffMember.update(id, { role: newRole });
+      await backend.entities.StaffMember.update(id, { role: newRole });
       setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, role: newRole } : m)));
       toast.success(`Role updated to ${roleLabel(newRole)}`);
     } catch { toast.error("Couldn't update role"); }
@@ -126,7 +126,7 @@ export default function DashboardTeam() {
     });
     if (!ok) return;
     try {
-      await base44.entities.StaffMember.delete(m.id);
+      await backend.entities.StaffMember.delete(m.id);
       toast.success(`Removed ${m.name || m.email}`);
       load();
     } catch { toast.error("Couldn't remove member"); }
@@ -137,7 +137,7 @@ export default function DashboardTeam() {
     if (!invite.email.trim()) { toast.error("Email is required"); return; }
     setSaving(true);
     try {
-      await base44.entities.StaffMember.create({
+      await backend.entities.StaffMember.create({
         name: invite.name.trim(),
         email: invite.email.trim(),
         role: invite.role,

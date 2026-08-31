@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
@@ -38,7 +38,7 @@ export default function Booking() {
   const loadBookings = useCallback(async () => {
     setError(false);
     try {
-      const data = await base44.entities.Booking.list("-created_date", 50);
+      const data = await backend.entities.Booking.list("-created_date", 50);
       setBookings(data);
     } catch {
       setError(true);

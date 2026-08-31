@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 // Customer is seeded, but setup.js clears localStorage before each test, so we
 // start from an empty collection and control the data ourselves.
-const Cust = () => base44.entities.Customer;
+const Cust = () => backend.entities.Customer;
 
-describe("base44 mock entity CRUD", () => {
+describe("backend mock entity CRUD", () => {
   beforeEach(async () => {
     for (const r of await Cust().list()) await Cust().delete(r.id);
   });

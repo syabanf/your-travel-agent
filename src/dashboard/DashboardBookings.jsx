@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { Plus, Pencil, Trash2, X, Loader2, Save, Search, ChevronUp, ChevronDown, Briefcase, Map, Download } from "lucide-react";
 import { toast } from "sonner";
@@ -59,10 +59,10 @@ export default function DashboardBookings() {
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
 
   const load = async () => {
-    setTrips(await base44.entities.Trip.list("-created_date", 500));
-    setBookings(await base44.entities.Booking.list("-created_date", 500));
-    setCustomers(await base44.entities.Customer.list("-created_date", 500));
-    setSuppliers(await base44.entities.Supplier.list("-created_date", 500));
+    setTrips(await backend.entities.Trip.list("-created_date", 500));
+    setBookings(await backend.entities.Booking.list("-created_date", 500));
+    setCustomers(await backend.entities.Customer.list("-created_date", 500));
+    setSuppliers(await backend.entities.Supplier.list("-created_date", 500));
   };
   useEffect(() => { load(); }, []);
 
@@ -75,7 +75,7 @@ export default function DashboardBookings() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Trip.delete(id);
+    await backend.entities.Trip.delete(id);
     toast.success("Trip deleted");
     load();
   };
@@ -88,12 +88,12 @@ export default function DashboardBookings() {
       destructive: true,
     });
     if (!ok) return;
-    await base44.entities.Booking.delete(id);
+    await backend.entities.Booking.delete(id);
     toast.success("Booking deleted");
     load();
   };
-  const setBookingStatus = async (id, status) => { await base44.entities.Booking.update(id, { status }); toast.success("Status updated"); load(); };
-  const setTripStatus = async (id, status) => { await base44.entities.Trip.update(id, { status }); toast.success("Status updated"); load(); };
+  const setBookingStatus = async (id, status) => { await backend.entities.Booking.update(id, { status }); toast.success("Status updated"); load(); };
+  const setTripStatus = async (id, status) => { await backend.entities.Trip.update(id, { status }); toast.success("Status updated"); load(); };
 
   const startAddBooking = () => setEditing({ kind: "booking", data: { ...EMPTY_BOOKING } });
   const startAddTrip = () => setEditing({ kind: "trip", data: { ...EMPTY_TRIP } });
@@ -139,8 +139,8 @@ export default function DashboardBookings() {
           confirmation_code: data.confirmation_code || undefined,
           image_url: data.image_url || undefined, notes: data.notes || "",
         };
-        if (data.id) await base44.entities.Booking.update(data.id, payload);
-        else await base44.entities.Booking.create(payload);
+        if (data.id) await backend.entities.Booking.update(data.id, payload);
+        else await backend.entities.Booking.create(payload);
       } else {
         const payload = {
           title: data.title, destination: data.destination, customer_id: data.customer_id || undefined, status: data.status || "draft",
@@ -155,8 +155,8 @@ export default function DashboardBookings() {
           special_requests: data.special_requests || undefined,
           cover_image: data.cover_image || undefined, notes: data.notes || "",
         };
-        if (data.id) await base44.entities.Trip.update(data.id, payload);
-        else await base44.entities.Trip.create(payload);
+        if (data.id) await backend.entities.Trip.update(data.id, payload);
+        else await backend.entities.Trip.create(payload);
       }
       toast.success(data.id ? "Saved" : "Created");
       setEditing(null);

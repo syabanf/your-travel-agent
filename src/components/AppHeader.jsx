@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Bell, Plane } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 
 // Slim, sticky brand app-bar shown on the mobile app's main tab screens.
 // Carries the brand + global actions (search, notifications, profile) so each
@@ -14,11 +14,11 @@ export default function AppHeader() {
     let alive = true;
     (async () => {
       try {
-        const me = await base44.auth.me();
+        const me = await backend.auth.me();
         if (alive && me?.full_name) setInitial(me.full_name.trim().charAt(0).toUpperCase());
       } catch { /* guest */ }
       try {
-        const n = await base44.entities.Notification.filter({ is_read: false });
+        const n = await backend.entities.Notification.filter({ is_read: false });
         if (alive) setUnread((n || []).length);
       } catch { /* ignore */ }
     })();

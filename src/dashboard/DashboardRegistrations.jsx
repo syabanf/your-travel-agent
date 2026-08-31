@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { decideRegistration } from "@/lib/registration";
 import { can, roleLabel } from "@/dashboard/rbac";
 import { useRole } from "@/dashboard/RoleContext";
@@ -36,7 +36,7 @@ export default function DashboardRegistrations() {
   const [query, setQuery] = useState("");
   const [busyId, setBusyId] = useState(null);
 
-  const load = async () => setItems(await base44.entities.Registration.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Registration.list("-created_date", 500));
   useEffect(() => { load(); }, []);
 
   const canEdit = can(role, "registrations", "edit");

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { HelpCircle, ChevronDown, Mail, Phone, MessageCircle, Shield, FileText } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
@@ -17,7 +17,7 @@ export default function Help() {
 
   useEffect(() => {
     const load = async () => {
-      const data = await base44.entities.Page.filter({ type: "faq" });
+      const data = await backend.entities.Page.filter({ type: "faq" });
       const published = data
         .filter((p) => p.status === "published")
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

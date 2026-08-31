@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { base44 } from "@/api/base44Client";
+import { backend } from "@/api/backend";
 import { createInquiryForPlan, inquiryForTrip } from "@/lib/inquiry";
 import { isPlan, kindOf, kindLabel } from "@/data/tripKinds";
 
@@ -15,8 +15,8 @@ const plan = {
 };
 
 beforeEach(async () => {
-  for (const l of await base44.entities.Lead.filter({ trip_id: plan.id })) {
-    await base44.entities.Lead.delete(l.id);
+  for (const l of await backend.entities.Lead.filter({ trip_id: plan.id })) {
+    await backend.entities.Lead.delete(l.id);
   }
 });
 
@@ -52,7 +52,7 @@ describe("createInquiryForPlan", () => {
     const first = await createInquiryForPlan(plan);
     const second = await createInquiryForPlan(plan);
     expect(second.id).toBe(first.id);
-    expect(await base44.entities.Lead.filter({ trip_id: plan.id })).toHaveLength(1);
+    expect(await backend.entities.Lead.filter({ trip_id: plan.id })).toHaveLength(1);
   });
 
   it("is findable afterwards, so the app can show its stage", async () => {
