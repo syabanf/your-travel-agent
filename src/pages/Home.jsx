@@ -24,11 +24,11 @@ export default function Home() {
         const me = await backend.auth.me();
         setUser(me);
         
-        const trips = await backend.entities.Trip.list("-created_date", 5);
+        const trips = await backend.entities.Trip.list("-created_at", 5);
         const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
         setActiveTrip(active);
         
-        const recentBookings = await backend.entities.Booking.list("-created_date", 3);
+        const recentBookings = await backend.entities.Booking.list("-created_at", 3);
         setBookings(recentBookings);
       } catch (err) {
         setUser(null);
@@ -57,10 +57,10 @@ export default function Home() {
     if (delta > 70 && !refreshing && user) {
       setRefreshing(true);
       try {
-        const trips = await backend.entities.Trip.list("-created_date", 5);
+        const trips = await backend.entities.Trip.list("-created_at", 5);
         const active = trips.find(t => t.status === "active") || trips.find(t => t.status === "planned") || trips[0];
         setActiveTrip(active);
-        const recentBookings = await backend.entities.Booking.list("-created_date", 3);
+        const recentBookings = await backend.entities.Booking.list("-created_at", 3);
         setBookings(recentBookings);
       } finally {
         setRefreshing(false);

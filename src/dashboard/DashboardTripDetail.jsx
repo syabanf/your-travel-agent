@@ -98,7 +98,7 @@ export default function DashboardTripDetail() {
         const [trips, itineraryItems, allBookings, tripMembers] = await Promise.all([
           backend.entities.Trip.filter({ id }),
           backend.entities.ItineraryItem.filter({ trip_id: id }),
-          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.Booking.list("-created_at", 500),
           backend.entities.TripMember.filter({ trip_id: id }),
         ]);
         if (!alive) return;

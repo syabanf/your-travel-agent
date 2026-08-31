@@ -102,10 +102,10 @@ export default function TripDetail() {
 
   const handleDuplicate = async () => {
     if (!trip) return;
-    const { id, created_date, updated_date, created_by, ...data } = trip;
+    const { id, created_at, updated_at, created_by, ...data } = trip;
     const newTrip = await backend.entities.Trip.create({ ...data, title: `${data.title} (Copy)`, status: "draft" });
     for (const item of items) {
-      const { id: iId, created_date: icd, updated_date: iud, created_by: icb, ...itemData } = item;
+      const { id: iId, created_at: icd, updated_at: iud, created_by: icb, ...itemData } = item;
       await backend.entities.ItineraryItem.create({ ...itemData, trip_id: newTrip.id });
     }
     navigate(`/itinerary/${newTrip.id}`);

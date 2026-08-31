@@ -46,7 +46,7 @@ export default function MapView() {
 
   // Load catalog destinations and merge their curated activities.
   useEffect(() => {
-    backend.entities.Destination.list("-created_date", 100)
+    backend.entities.Destination.list("-created_at", 100)
       .then((data) => {
         const mapped = (data || [])
           .filter((d) => d.active !== false && d.lat != null && d.lng != null)

@@ -71,7 +71,7 @@ export function useFeatureAccess(feature) {
         user_email: email,
         status: "active",
         booking_id: bookingId,
-        granted_date: new Date().toISOString(),
+        granted_at: new Date().toISOString(),
       });
       await qc.invalidateQueries({ queryKey: ["feature-access", feature, email] });
     },

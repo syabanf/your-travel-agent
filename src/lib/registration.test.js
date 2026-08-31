@@ -38,7 +38,7 @@ describe("sign-up approval", () => {
     const after = await registrationStatus("rina@example.com");
     expect(after.status).toBe("approved");
     expect(after.registration.reviewed_by).toBe("Dewi");
-    expect(after.registration.reviewed_date).toBeTruthy();
+    expect(after.registration.reviewed_at).toBeTruthy();
   });
 
   it("returns 'none' for an address that never registered", async () => {

@@ -38,7 +38,7 @@ export default function Booking() {
   const loadBookings = useCallback(async () => {
     setError(false);
     try {
-      const data = await backend.entities.Booking.list("-created_date", 50);
+      const data = await backend.entities.Booking.list("-created_at", 50);
       setBookings(data);
     } catch {
       setError(true);

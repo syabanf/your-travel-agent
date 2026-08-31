@@ -41,7 +41,7 @@ export default function DashboardSupplierDetail() {
 
   useEffect(() => {
     backend.entities.Supplier.filter({ id }).then((r) => setS(r[0] || null));
-    backend.entities.Booking.list("-created_date", 500).then((all) =>
+    backend.entities.Booking.list("-created_at", 500).then((all) =>
       setBookings((all || []).filter((b) => b.supplier_id === id))
     );
   }, [id]);

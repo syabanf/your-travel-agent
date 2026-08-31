@@ -56,7 +56,7 @@ export default function DestinationSwipe({ onLikedChange }) {
   const [deck, setDeck] = useState(DESTINATIONS); // CMS-managed destinations (fallback: static list)
 
   useEffect(() => {
-    backend.entities.Destination.list("-created_date", 100)
+    backend.entities.Destination.list("-created_at", 100)
       .then((rows) => { if (rows && rows.length) setDeck(rows.filter((d) => d.active !== false)); })
       .catch(() => {});
   }, []);

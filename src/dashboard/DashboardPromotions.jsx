@@ -41,7 +41,7 @@ export default function DashboardPromotions() {
   const [sortBy, setSortBy] = useState("newest");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const load = async () => setItems(await backend.entities.Promotion.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Promotion.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   // Open the editor when arriving from a detail page (?edit=<id>).
@@ -93,7 +93,7 @@ export default function DashboardPromotions() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((p) => inRange(p.created_date, range));
+  const scoped = (items || []).filter((p) => inRange(p.created_at, range));
 
   const filtered = scoped.filter((p) => {
     const q = query.trim().toLowerCase();
@@ -105,7 +105,7 @@ export default function DashboardPromotions() {
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     if (sortBy === "type") return (a.type || "promo").localeCompare(b.type || "promo");
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
 
   const pg = usePagination(sorted, 12, `${query}|${typeF}|${range}|${sortBy}`);

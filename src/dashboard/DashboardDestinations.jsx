@@ -37,7 +37,7 @@ export default function DashboardDestinations() {
   const [sortBy, setSortBy] = useState("newest");
   const searchRef = useRef(null);
 
-  const load = async () => setItems(await backend.entities.Destination.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Destination.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -108,7 +108,7 @@ export default function DashboardDestinations() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((d) => inRange(d.created_date, range));
+  const scoped = (items || []).filter((d) => inRange(d.created_at, range));
   const countryOptions = [...new Set((items || []).map((d) => d.country).filter(Boolean))].sort();
 
   const filtered = scoped.filter((d) => {
@@ -120,7 +120,7 @@ export default function DashboardDestinations() {
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     if (sortBy === "price") return (Number(b.fromPrice) || 0) - (Number(a.fromPrice) || 0);
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
   const pg = usePagination(sorted, 12, `${query}|${statusF}|${countryF}|${range}|${sortBy}`);
 

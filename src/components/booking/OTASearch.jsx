@@ -87,7 +87,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   const loadMyBookings = async () => {
     setLoadingBookings(true);
     try {
-      const data = await backend.entities.Booking.list("-created_date", 50);
+      const data = await backend.entities.Booking.list("-created_at", 50);
       setMyBookings(data || []);
     } catch {
       setMyBookings([]);

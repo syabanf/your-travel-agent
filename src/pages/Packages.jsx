@@ -28,7 +28,7 @@ export default function Packages() {
   const [cat, setCat] = useState("all");
 
   useEffect(() => {
-    backend.entities.TourPackage.list("-created_date", 100)
+    backend.entities.TourPackage.list("-created_at", 100)
       .then((rows) => setItems((rows || []).filter((p) => p.status !== "draft")))
       .catch(() => setItems([]));
   }, []);

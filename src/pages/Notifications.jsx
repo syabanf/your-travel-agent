@@ -31,7 +31,7 @@ export default function Notifications() {
   const [filter, setFilter] = useState("all");
 
   const load = async () => {
-    const data = await backend.entities.Notification.list("-created_date", 50);
+    const data = await backend.entities.Notification.list("-created_at", 50);
     setNotifications(data);
     setLoading(false);
   };
@@ -161,7 +161,7 @@ export default function Notifications() {
                   </div>
                   <p className="text-xs text-ich-neutral/70 mt-0.5 leading-relaxed">{notification.message}</p>
                   <p className="text-[10px] text-ich-neutral/60 mt-1.5">
-                    {moment(notification.created_date).fromNow()}
+                    {moment(notification.created_at).fromNow()}
                   </p>
                 </div>
               </GlassCard>

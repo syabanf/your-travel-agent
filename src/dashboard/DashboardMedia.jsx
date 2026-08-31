@@ -33,7 +33,7 @@ export default function DashboardMedia() {
   const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const load = async () => setItems(await backend.entities.MediaAsset.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.MediaAsset.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -82,7 +82,7 @@ export default function DashboardMedia() {
   };
 
   // Date range scopes the whole view (chart & table); search refines the table.
-  const scoped = (items || []).filter((m) => inRange(m.created_date, range));
+  const scoped = (items || []).filter((m) => inRange(m.created_at, range));
 
   const filtered = scoped.filter((m) => {
     const q = query.trim().toLowerCase();
@@ -95,7 +95,7 @@ export default function DashboardMedia() {
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     // newest
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
 
   const pg = usePagination(sorted, 12, `${query}|${range}|${sortBy}`);
@@ -240,7 +240,7 @@ export default function DashboardMedia() {
                 </div>
                 <div className="p-3 flex flex-col flex-1">
                   <div className="truncate font-medium text-sm text-ich-primary" title={m.title}>{m.title}</div>
-                  {m.created_date && <div className="text-[10px] text-ich-neutral/60 mt-0.5">{moment(m.created_date).format("MMM D, YYYY")}</div>}
+                  {m.created_at && <div className="text-[10px] text-ich-neutral/60 mt-0.5">{moment(m.created_at).format("MMM D, YYYY")}</div>}
                   {Array.isArray(m.tags) && m.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {m.tags.map((t, i) => (

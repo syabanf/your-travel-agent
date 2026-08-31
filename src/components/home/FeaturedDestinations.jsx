@@ -8,7 +8,7 @@ export default function FeaturedDestinations() {
   const [destinations, setDestinations] = useState([]);
 
   useEffect(() => {
-    backend.entities.Destination.list("created_date", 8)
+    backend.entities.Destination.list("created_at", 8)
       .then((rows) => setDestinations((rows || []).filter((d) => d.active !== false)))
       .catch(() => {});
   }, []);

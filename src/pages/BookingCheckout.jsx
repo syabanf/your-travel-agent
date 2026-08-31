@@ -261,7 +261,7 @@ export default function BookingCheckout() {
             user_email: currentEmail(),
             status: "active",
             booking_id: bookingId,
-            granted_date: new Date().toISOString(),
+            granted_at: new Date().toISOString(),
           });
         } catch {
           /* payment succeeded; the grant is retried by re-opening the unlock page */

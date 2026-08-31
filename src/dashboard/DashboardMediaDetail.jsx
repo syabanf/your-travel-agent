@@ -101,7 +101,7 @@ export default function DashboardMediaDetail() {
             <div className="w-12 h-12 rounded-2xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><ImageIcon className="w-6 h-6" /></div>
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl font-display font-bold text-ich-primary break-words">{m.title || "Untitled asset"}</h1>
-              {m.created_date && <p className="text-sm text-ich-neutral/70 mt-0.5">Added {moment(m.created_date).format("D MMM YYYY")}</p>}
+              {m.created_at && <p className="text-sm text-ich-neutral/70 mt-0.5">Added {moment(m.created_at).format("D MMM YYYY")}</p>}
             </div>
             {can(role, "media", "delete") && (
               <button onClick={remove} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 text-red-600 hover:bg-red-50 shrink-0">
@@ -112,7 +112,7 @@ export default function DashboardMediaDetail() {
 
           <div className="mt-5 space-y-1">
             <DetailRow icon={Link2} label="URL" value={m.url ? <a href={m.url} target="_blank" rel="noreferrer" className="text-ich-primary hover:text-gold break-all">{m.url}</a> : null} />
-            <DetailRow icon={CalendarDays} label="Added" value={m.created_date ? moment(m.created_date).format("D MMM YYYY") : null} />
+            <DetailRow icon={CalendarDays} label="Added" value={m.created_at ? moment(m.created_at).format("D MMM YYYY") : null} />
             <DetailRow icon={Tag} label="Tags" value={tags.length ? (
               <span className="flex flex-wrap gap-1.5">
                 {tags.map((t, i) => <span key={i} className="text-[11px] bg-ich-primary/5 text-ich-neutral rounded-full px-2 py-0.5">{t}</span>)}

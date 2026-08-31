@@ -311,7 +311,7 @@ export function reportFor(prompt = '') {
 
   if (type === 'financial') {
     const byMonth = {};
-    confirmed.forEach((b) => { const m = monthOf(b.check_in || b.created_date); if (m) { byMonth[m] = byMonth[m] || { n: 0, rev: 0 }; byMonth[m].n++; byMonth[m].rev += b.price || 0; } });
+    confirmed.forEach((b) => { const m = monthOf(b.check_in || b.created_at); if (m) { byMonth[m] = byMonth[m] || { n: 0, rev: 0 }; byMonth[m].n++; byMonth[m].rev += b.price || 0; } });
     const monthRows = MONTHS.filter((m) => byMonth[m]).map((m) => [m, String(byMonth[m].n), formatIDR(byMonth[m].rev)]);
     const byType = {};
     bookings.forEach((b) => { const t = b.type || 'other'; byType[t] = byType[t] || { n: 0, rev: 0 }; byType[t].n++; byType[t].rev += b.price || 0; });

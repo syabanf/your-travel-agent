@@ -54,7 +54,7 @@ export async function decideRegistration(id, status, reviewer = "Admin") {
   return backend.entities.Registration.update(id, {
     status,
     reviewed_by: reviewer,
-    reviewed_date: new Date().toISOString(),
+    reviewed_at: new Date().toISOString(),
   });
 }
 

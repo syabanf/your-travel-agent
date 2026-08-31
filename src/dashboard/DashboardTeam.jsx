@@ -53,7 +53,7 @@ export default function DashboardTeam() {
   const [sortDir, setSortDir] = useState("asc");
 
   // Date range scopes the whole view (chart & table); search/selects refine the table.
-  const scoped = (members || []).filter((member) => inRange(member.created_date, range));
+  const scoped = (members || []).filter((member) => inRange(member.created_at, range));
 
   const filtered = scoped.filter((member) => {
     const q = query.trim().toLowerCase();
@@ -106,7 +106,7 @@ export default function DashboardTeam() {
     </th>
   );
 
-  const load = async () => setMembers(await backend.entities.StaffMember.list("-created_date", 500));
+  const load = async () => setMembers(await backend.entities.StaffMember.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const changeRole = async (id, newRole) => {

@@ -42,8 +42,8 @@ export default function DashboardDestinationDetail() {
       try {
         const [d, t, b] = await Promise.all([
           backend.entities.Destination.filter({ id }),
-          backend.entities.Trip.list("-created_date", 500),
-          backend.entities.Booking.list("-created_date", 500),
+          backend.entities.Trip.list("-created_at", 500),
+          backend.entities.Booking.list("-created_at", 500),
         ]);
         if (!alive) return;
         setDest((Array.isArray(d) ? d[0] : d) || null);

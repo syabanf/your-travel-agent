@@ -29,7 +29,7 @@ export default function BookingSearch() {
     const load = async () => {
       const data = typeFilter
         ? await backend.entities.Booking.filter({ type: typeFilter })
-        : await backend.entities.Booking.list("-created_date", 50);
+        : await backend.entities.Booking.list("-created_at", 50);
       setBookings(data);
       setLoading(false);
     };

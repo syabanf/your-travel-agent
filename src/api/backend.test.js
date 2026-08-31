@@ -13,7 +13,7 @@ describe("backend mock entity CRUD", () => {
   it("create assigns an id + timestamps and is retrievable", async () => {
     const created = await Cust().create({ name: "Test One", tier: "gold" });
     expect(created.id).toBeTruthy();
-    expect(created.created_date).toBeTruthy();
+    expect(created.created_at).toBeTruthy();
     expect(created.name).toBe("Test One");
     expect(await Cust().get(created.id)).toMatchObject({ id: created.id, name: "Test One", tier: "gold" });
   });
@@ -23,7 +23,7 @@ describe("backend mock entity CRUD", () => {
     await Cust().create({ name: "B" });
     await Cust().create({ name: "C" });
     expect((await Cust().list()).length).toBe(3);
-    expect((await Cust().list("-created_date", 2)).length).toBe(2);
+    expect((await Cust().list("-created_at", 2)).length).toBe(2);
   });
 
   it("filter matches by field equality", async () => {

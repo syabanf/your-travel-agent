@@ -59,10 +59,10 @@ export default function DashboardBookings() {
   const [tSort, setTSort] = useState({ key: null, dir: "asc" });
 
   const load = async () => {
-    setTrips(await backend.entities.Trip.list("-created_date", 500));
-    setBookings(await backend.entities.Booking.list("-created_date", 500));
-    setCustomers(await backend.entities.Customer.list("-created_date", 500));
-    setSuppliers(await backend.entities.Supplier.list("-created_date", 500));
+    setTrips(await backend.entities.Trip.list("-created_at", 500));
+    setBookings(await backend.entities.Booking.list("-created_at", 500));
+    setCustomers(await backend.entities.Customer.list("-created_at", 500));
+    setSuppliers(await backend.entities.Supplier.list("-created_at", 500));
   };
   useEffect(() => { load(); }, []);
 
@@ -184,8 +184,8 @@ export default function DashboardBookings() {
   const d = editing?.data;
 
   const q = query.trim().toLowerCase();
-  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF) && (typeF === "all" || b.type === typeF) && inRange(b.created_date, range));
-  const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF) && inRange(t.created_date, range));
+  const fBookings = (bookings || []).filter((b) => (!q || [b.title, b.provider, b.location, b.type].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || b.status === statusF) && (typeF === "all" || b.type === typeF) && inRange(b.created_at, range));
+  const fTrips = (trips || []).filter((t) => (!q || [t.title, t.destination].some((v) => (v || "").toLowerCase().includes(q))) && (statusF === "all" || t.status === statusF) && inRange(t.created_at, range));
 
   // Sort a copy of the filtered array (never mutate the source).
   const sortRows = (rows, { key, dir }) => {
@@ -225,8 +225,8 @@ export default function DashboardBookings() {
 
   // Insight aggregations (date-scoped so charts follow the range)
   const cap1 = (str) => (str ? str[0].toUpperCase() + str.slice(1) : str);
-  const scopedBookings = (bookings || []).filter((b) => inRange(b.created_date, range));
-  const scopedTrips = (trips || []).filter((t) => inRange(t.created_date, range));
+  const scopedBookings = (bookings || []).filter((b) => inRange(b.created_at, range));
+  const scopedTrips = (trips || []).filter((t) => inRange(t.created_at, range));
   const typeCount = {}, statusRevenue = {}, tripStatusCount = {};
   scopedBookings.forEach((b) => {
     const t = b.type || "other";

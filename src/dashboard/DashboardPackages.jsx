@@ -102,7 +102,7 @@ export default function DashboardPackages() {
   const [sortBy, setSortBy] = useState("newest");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const load = async () => setItems(await backend.entities.TourPackage.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.TourPackage.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   // Open the editor when arriving from a detail page (?edit=<id>).
@@ -180,7 +180,7 @@ export default function DashboardPackages() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((p) => inRange(p.created_date, range));
+  const scoped = (items || []).filter((p) => inRange(p.created_at, range));
 
   const filtered = scoped.filter((p) => {
     const q = query.trim().toLowerCase();
@@ -195,7 +195,7 @@ export default function DashboardPackages() {
     if (sortBy === "price_low") return (Number(a.price) || 0) - (Number(b.price) || 0);
     if (sortBy === "price_high") return (Number(b.price) || 0) - (Number(a.price) || 0);
     if (sortBy === "seats") return (Number(b.slots_left) || 0) - (Number(a.slots_left) || 0);
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
 
   const pg = usePagination(sorted, 12, `${query}|${catF}|${statusF}|${range}|${sortBy}`);

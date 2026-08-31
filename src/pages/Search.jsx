@@ -26,7 +26,7 @@ export default function SearchPage() {
     try {
       const [dest, promo, exp] = await Promise.all([
         backend.entities.Destination.list("name", 100),
-        backend.entities.Promotion.list("-created_date", 100),
+        backend.entities.Promotion.list("-created_at", 100),
         backend.entities.PersonalAssistant.list("-rating", 100),
       ]);
       setDestinations(dest);

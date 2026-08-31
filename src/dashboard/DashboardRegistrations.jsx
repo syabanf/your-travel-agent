@@ -36,7 +36,7 @@ export default function DashboardRegistrations() {
   const [query, setQuery] = useState("");
   const [busyId, setBusyId] = useState(null);
 
-  const load = async () => setItems(await backend.entities.Registration.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Registration.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const canEdit = can(role, "registrations", "edit");
@@ -86,10 +86,10 @@ export default function DashboardRegistrations() {
     ) },
     { key: "phone", label: "Phone", render: (r) => r.phone || "—" },
     { key: "source", label: "Source", render: (r) => cap((r.source || "—").replace(/_/g, " ")) },
-    { key: "created_date", label: "Requested", render: (r) => (r.created_date ? (
+    { key: "created_at", label: "Requested", render: (r) => (r.created_at ? (
       <span className="block leading-tight">
-        <span className="block">{moment(r.created_date).format("MMM D, YYYY")}</span>
-        <span className="block text-[11px] text-ich-neutral/60">{moment(r.created_date).fromNow()}</span>
+        <span className="block">{moment(r.created_at).format("MMM D, YYYY")}</span>
+        <span className="block text-[11px] text-ich-neutral/60">{moment(r.created_at).fromNow()}</span>
       </span>
     ) : "—") },
     { key: "status", label: "Status", render: (r) => (
@@ -97,10 +97,10 @@ export default function DashboardRegistrations() {
         {r.status || "pending"}
       </span>
     ) },
-    { key: "reviewed_by", label: "Decided by", render: (r) => (r.reviewed_by || r.reviewed_date ? (
+    { key: "reviewed_by", label: "Decided by", render: (r) => (r.reviewed_by || r.reviewed_at ? (
       <span className="block leading-tight">
         <span className="block text-ich-primary">{r.reviewed_by || "—"}</span>
-        {r.reviewed_date && <span className="block text-[11px] text-ich-neutral/60">{moment(r.reviewed_date).format("MMM D, YYYY")}</span>}
+        {r.reviewed_at && <span className="block text-[11px] text-ich-neutral/60">{moment(r.reviewed_at).format("MMM D, YYYY")}</span>}
       </span>
     ) : "—") },
   ];

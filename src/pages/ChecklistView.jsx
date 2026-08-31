@@ -65,7 +65,7 @@ export default function ChecklistView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    backend.entities.Trip.list("-created_date", 30).then(data => {
+    backend.entities.Trip.list("-created_at", 30).then(data => {
       setTrips(data);
       if (data.length > 0) {
         const first = data[0];

@@ -82,11 +82,11 @@ export default function DashboardBusiness() {
     (async () => {
       try {
         const [bookings, trips, customers, leads, suppliers] = await Promise.all([
-          backend.entities.Booking.list("-created_date", 500),
-          backend.entities.Trip.list("-created_date", 500),
-          backend.entities.Customer.list("-created_date", 500),
-          backend.entities.Lead.list("-created_date", 500),
-          backend.entities.Supplier.list("-created_date", 500),
+          backend.entities.Booking.list("-created_at", 500),
+          backend.entities.Trip.list("-created_at", 500),
+          backend.entities.Customer.list("-created_at", 500),
+          backend.entities.Lead.list("-created_at", 500),
+          backend.entities.Supplier.list("-created_at", 500),
         ]);
         if (!cancelled) setData({ bookings, trips, customers, leads, suppliers });
       } catch (err) {
@@ -174,7 +174,7 @@ export default function DashboardBusiness() {
   const marginByMonth = useMemo(() => {
     const acc = {};
     for (const b of confirmed) {
-      const label = moment(b.check_in || b.created_date).format("MMM");
+      const label = moment(b.check_in || b.created_at).format("MMM");
       if (!acc[label]) acc[label] = { sales: 0, margin: 0 };
       const price = Number(b.price) || 0;
       const cp = Number(b.cost_price) || 0;

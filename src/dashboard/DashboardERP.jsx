@@ -44,9 +44,9 @@ export default function DashboardERP() {
     (async () => {
       try {
         const [bookings, suppliers, customers] = await Promise.all([
-          backend.entities.Booking.list("-created_date", 500),
-          backend.entities.Supplier.list("-created_date", 500),
-          backend.entities.Customer.list("-created_date", 500),
+          backend.entities.Booking.list("-created_at", 500),
+          backend.entities.Supplier.list("-created_at", 500),
+          backend.entities.Customer.list("-created_at", 500),
         ]);
         if (alive) setData({ bookings, suppliers, customers });
       } catch {
@@ -57,7 +57,7 @@ export default function DashboardERP() {
   }, []);
 
   const thisYear = moment().year();
-  const inPeriod = (b) => period === "all" || moment(b.created_date).year() === thisYear;
+  const inPeriod = (b) => period === "all" || moment(b.created_at).year() === thisYear;
 
   const f = useMemo(() => {
     if (!data) return null;
@@ -95,7 +95,7 @@ export default function DashboardERP() {
 
     // Monthly revenue / cost / profit
     const byMonth = {};
-    confirmed.forEach((b) => { const m = MONTHS[moment(b.check_in || b.created_date).month()]; byMonth[m] = byMonth[m] || { month: m, revenue: 0, cost: 0 }; byMonth[m].revenue += b.price || 0; byMonth[m].cost += b.cost_price || 0; });
+    confirmed.forEach((b) => { const m = MONTHS[moment(b.check_in || b.created_at).month()]; byMonth[m] = byMonth[m] || { month: m, revenue: 0, cost: 0 }; byMonth[m].revenue += b.price || 0; byMonth[m].cost += b.cost_price || 0; });
     const monthly = MONTHS.filter((m) => byMonth[m]).map((m) => ({ ...byMonth[m], profit: byMonth[m].revenue - byMonth[m].cost }));
 
     return { revenue, cogs, gross, grossPct, opex, ebit, tax, net, ar, arRows, apList, ap, refunds, inflow, outflow, netCash, monthly, confirmedCount: confirmed.length, pendingCount: pending.length };

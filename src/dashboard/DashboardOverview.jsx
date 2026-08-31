@@ -32,11 +32,11 @@ export default function DashboardOverview() {
   useEffect(() => {
     (async () => {
       const [dest, promo, trips, bookings, customers] = await Promise.all([
-        backend.entities.Destination.list("-created_date", 500),
-        backend.entities.Promotion.list("-created_date", 500),
-        backend.entities.Trip.list("-created_date", 500),
-        backend.entities.Booking.list("-created_date", 500),
-        backend.entities.Customer.list("-created_date", 500),
+        backend.entities.Destination.list("-created_at", 500),
+        backend.entities.Promotion.list("-created_at", 500),
+        backend.entities.Trip.list("-created_at", 500),
+        backend.entities.Booking.list("-created_at", 500),
+        backend.entities.Customer.list("-created_at", 500),
       ]);
       setS({ dest, promo, trips, bookings, customers });
     })();
@@ -49,16 +49,16 @@ export default function DashboardOverview() {
   const scoped = period !== "all";
 
   // Period-filtered bookings & trips power the cards, charts and trend.
-  const periodBookings = s ? s.bookings.filter((b) => inSpan(b.created_date, curRange)) : [];
-  const periodTrips = s ? s.trips.filter((t) => inSpan(t.created_date, curRange)) : [];
+  const periodBookings = s ? s.bookings.filter((b) => inSpan(b.created_at, curRange)) : [];
+  const periodTrips = s ? s.trips.filter((t) => inSpan(t.created_at, curRange)) : [];
 
   const metricsFor = (span) => {
     if (!s) return null;
-    const conf = s.bookings.filter((b) => b.status === "confirmed" && inSpan(b.created_date, span));
+    const conf = s.bookings.filter((b) => b.status === "confirmed" && inSpan(b.created_at, span));
     return {
-      customers: s.customers.filter((c) => inSpan(c.joined_date || c.created_date, span)).length,
-      trips: s.trips.filter((t) => inSpan(t.created_date, span)).length,
-      bookings: s.bookings.filter((b) => inSpan(b.created_date, span)).length,
+      customers: s.customers.filter((c) => inSpan(c.joined_date || c.created_at, span)).length,
+      trips: s.trips.filter((t) => inSpan(t.created_at, span)).length,
+      bookings: s.bookings.filter((b) => inSpan(b.created_at, span)).length,
       revenue: conf.reduce((sum, b) => sum + (Number(b.price) || 0), 0),
       confirmed: conf.length,
     };
@@ -105,7 +105,7 @@ export default function DashboardOverview() {
   const revByMonth = (() => {
     if (!s) return [];
     const acc = {};
-    periodBookings.filter((b) => b.status === "confirmed").forEach((b) => { const m = moment(b.check_in || b.created_date); const k = m.format("YYYY-MM"); if (!acc[k]) acc[k] = { label: m.format("MMM"), value: 0, k }; acc[k].value += Number(b.price) || 0; });
+    periodBookings.filter((b) => b.status === "confirmed").forEach((b) => { const m = moment(b.check_in || b.created_at); const k = m.format("YYYY-MM"); if (!acc[k]) acc[k] = { label: m.format("MMM"), value: 0, k }; acc[k].value += Number(b.price) || 0; });
     return Object.values(acc).sort((a, b) => a.k.localeCompare(b.k));
   })();
 

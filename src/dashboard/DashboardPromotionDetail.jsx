@@ -151,7 +151,7 @@ export default function DashboardPromotionDetail() {
           <DetailRow icon={Users} label="Audience" value={item.audience ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${(AUDIENCE_META[item.audience] || AUDIENCE_META.all).pill}`}>{(AUDIENCE_META[item.audience] || AUDIENCE_META.all).label}</span> : "—"} />
           {isPromo && item.valid_until && <DetailRow icon={CalendarClock} label="Valid until" value={moment(item.valid_until).format("MMM D, YYYY")} />}
           {!isPromo && item.date && <DetailRow icon={CalendarDays} label="Date" value={moment(item.date).format("MMM D, YYYY")} />}
-          {item.created_date && <DetailRow icon={Clock} label="Created" value={moment(item.created_date).format("MMM D, YYYY")} />}
+          {item.created_at && <DetailRow icon={Clock} label="Created" value={moment(item.created_at).format("MMM D, YYYY")} />}
           <DetailRow icon={FileText} label="Terms & conditions" value={item.terms ? <span className="whitespace-pre-line">{item.terms}</span> : "—"} />
         </div>
       </div>

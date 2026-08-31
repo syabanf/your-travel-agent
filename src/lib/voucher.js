@@ -129,7 +129,7 @@ export function receiptHTML(booking, opts = {}) {
     <p class="muted"><span class="pill">${esc(label(b.type, "booking"))}</span> &nbsp; ${esc(b.status || "")}</p>
     <div class="grid">
       ${row("Receipt no", `RCP-${code}`)}
-      ${row("Issue date", fmt(opts.issuedAt || b.updated_date || b.created_date))}
+      ${row("Issue date", fmt(opts.issuedAt || b.updated_at || b.created_at))}
       ${row("Billed to", opts.customerName || b.customer_name || "—")}
       ${row("Email", opts.customerEmail || b.customer_email || "—")}
       ${row("Booking ref", code)}

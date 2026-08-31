@@ -149,7 +149,7 @@ export default function DashboardCampaignDetail() {
           <DetailRow icon={Layers} label="Segment" value={`${cap(segment)} (${recipients} recipients)`} />
           <DetailRow icon={Tag} label="Promo code" value={campaign.promo_code} />
           <DetailRow icon={Radio} label="Channel" value={meta.label} />
-          <DetailRow icon={CalendarDays} label="Created" value={campaign.created_date ? moment(campaign.created_date).format("D MMM YYYY") : null} />
+          <DetailRow icon={CalendarDays} label="Created" value={campaign.created_at ? moment(campaign.created_at).format("D MMM YYYY") : null} />
         </div>
       </div>
     </div>

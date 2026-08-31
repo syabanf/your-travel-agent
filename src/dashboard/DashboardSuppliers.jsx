@@ -51,7 +51,7 @@ export default function DashboardSuppliers() {
   const [range, setRange] = useState("all");
   const [sort, setSort] = useState("newest");
 
-  const load = async () => setItems(await backend.entities.Supplier.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Supplier.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -106,7 +106,7 @@ export default function DashboardSuppliers() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((s) => inRange(s.created_date, range));
+  const scoped = (items || []).filter((s) => inRange(s.created_at, range));
 
   const total = scoped.length;
   const activeCount = scoped.filter((s) => s.status === "active").length;
@@ -135,7 +135,7 @@ export default function DashboardSuppliers() {
     if (sort === "name") return (a.name || "").localeCompare(b.name || "");
     if (sort === "rating") return (Number(b.rating) || 0) - (Number(a.rating) || 0);
     if (sort === "commission") return (Number(b.commission_rate) || 0) - (Number(a.commission_rate) || 0);
-    return String(b.created_date || "").localeCompare(String(a.created_date || ""));
+    return String(b.created_at || "").localeCompare(String(a.created_at || ""));
   });
   const pg = usePagination(sorted, 12, `${query}|${typeF}|${statusF}|${range}|${sort}`);
 

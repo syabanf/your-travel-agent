@@ -69,7 +69,7 @@ export default function DashboardLeads() {
   const [range, setRange] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  const load = async () => setItems(await backend.entities.Lead.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Lead.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -152,7 +152,7 @@ export default function DashboardLeads() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((l) => inRange(l.created_date, range));
+  const scoped = (items || []).filter((l) => inRange(l.created_at, range));
 
   const total = scoped.length;
   const open = scoped.filter((l) => l.status !== "won" && l.status !== "lost").length;
@@ -184,7 +184,7 @@ export default function DashboardLeads() {
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "budget") return (Number(b.budget) || 0) - (Number(a.budget) || 0);
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
   const pg = usePagination(sorted, 10, `${query}|${sourceF}|${agentF}|${range}|${sortBy}`);
 
@@ -332,7 +332,7 @@ export default function DashboardLeads() {
                 { key: "source", label: "Source", render: (l) => sourceLabel(l.source) },
                 { key: "assigned_to", label: "Assigned to", render: (l) => l.assigned_to || "—" },
                 { key: "budget", label: "Budget", align: "right", className: "text-right font-semibold text-gold", render: (l) => formatIDR(Number(l.budget) || 0) },
-                { key: "created", label: "Created", render: (l) => l.created_date ? moment(l.created_date).format("MMM D, YYYY") : "—" },
+                { key: "created", label: "Created", render: (l) => l.created_at ? moment(l.created_at).format("MMM D, YYYY") : "—" },
               ]}
               rows={pg.pageItems}
               onRowClick={(l) => navigate(`/dashboard/leads/${l.id}`)}

@@ -31,7 +31,7 @@ export default function BudgetView() {
     const load = async () => {
       const [tripsData, itemsData] = await Promise.all([
         backend.entities.Trip.list("-start_date", 20),
-        backend.entities.ItineraryItem.list("-created_date", 200),
+        backend.entities.ItineraryItem.list("-created_at", 200),
       ]);
       setTrips(tripsData.filter(t => t.budget_total > 0));
       setItems(itemsData);

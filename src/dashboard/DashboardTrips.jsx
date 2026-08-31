@@ -126,10 +126,10 @@ export default function DashboardTrips() {
   const [savingItem, setSavingItem] = useState(false);
 
   const load = async () => {
-    setTrips(await backend.entities.Trip.list("-created_date", 500));
+    setTrips(await backend.entities.Trip.list("-created_at", 500));
     // Bookings drive the lock state; customers back the owner dropdown.
-    setBookings(await backend.entities.Booking.list("-created_date", 500));
-    setCustomers(await backend.entities.Customer.list("-created_date", 500));
+    setBookings(await backend.entities.Booking.list("-created_at", 500));
+    setCustomers(await backend.entities.Customer.list("-created_at", 500));
   };
   useEffect(() => { load(); }, []);
 

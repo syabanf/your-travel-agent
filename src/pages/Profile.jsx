@@ -32,10 +32,10 @@ export default function Profile() {
       const me = await backend.auth.me();
       setUser(me);
       
-      const trips = await backend.entities.Trip.list("-created_date", 100);
+      const trips = await backend.entities.Trip.list("-created_at", 100);
       setTripCount(trips.length);
       
-      const bookings = await backend.entities.Booking.list("-created_date", 100);
+      const bookings = await backend.entities.Booking.list("-created_at", 100);
       setBookingCount(bookings.length);
     };
     load();

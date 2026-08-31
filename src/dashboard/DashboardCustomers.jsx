@@ -58,7 +58,7 @@ export default function DashboardCustomers() {
   const [sort, setSort] = useState("newest");
   const searchRef = useRef(null);
 
-  const load = async () => setItems(await backend.entities.Customer.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Customer.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -135,7 +135,7 @@ export default function DashboardCustomers() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((c) => inRange(c.created_date, range));
+  const scoped = (items || []).filter((c) => inRange(c.created_at, range));
   const countryOptions = [...new Set((items || []).map((c) => c.country).filter(Boolean))].sort();
 
   const filtered = scoped.filter((c) => {

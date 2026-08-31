@@ -178,12 +178,12 @@ export default function DashboardReports() {
     (async () => {
       try {
         const [bookings, trips, customers, destinations, promotions, leads] = await Promise.all([
-          backend.entities.Booking.list("-created_date", 500),
-          backend.entities.Trip.list("-created_date", 500),
-          backend.entities.Customer.list("-created_date", 500),
-          backend.entities.Destination.list("-created_date", 500),
-          backend.entities.Promotion.list("-created_date", 500),
-          backend.entities.Lead.list("-created_date", 500),
+          backend.entities.Booking.list("-created_at", 500),
+          backend.entities.Trip.list("-created_at", 500),
+          backend.entities.Customer.list("-created_at", 500),
+          backend.entities.Destination.list("-created_at", 500),
+          backend.entities.Promotion.list("-created_at", 500),
+          backend.entities.Lead.list("-created_at", 500),
         ]);
         if (!cancelled) setData({ bookings, trips, customers, destinations, promotions, leads });
       } catch (err) {
@@ -203,15 +203,15 @@ export default function DashboardReports() {
   const cmpLabel = comparisonLabel(comparison);
 
   // Period-filtered bookings & trips (customers/destinations/promos shown in full).
-  const bookings = useMemo(() => (data ? data.bookings.filter((b) => inSpan(b.created_date, curRange)) : []), [data, curRange]);
-  const trips = useMemo(() => (data ? data.trips.filter((t) => inSpan(t.created_date, curRange)) : []), [data, curRange]);
+  const bookings = useMemo(() => (data ? data.bookings.filter((b) => inSpan(b.created_at, curRange)) : []), [data, curRange]);
+  const trips = useMemo(() => (data ? data.trips.filter((t) => inSpan(t.created_at, curRange)) : []), [data, curRange]);
 
   // Comparable scalar metrics for an arbitrary window — drives the period-over-period deltas.
   const { cur, cmp } = useMemo(() => {
     const calc = (span) => {
       if (!data) return null;
-      const bk = data.bookings.filter((b) => inSpan(b.created_date, span));
-      const tr = data.trips.filter((t) => inSpan(t.created_date, span));
+      const bk = data.bookings.filter((b) => inSpan(b.created_at, span));
+      const tr = data.trips.filter((t) => inSpan(t.created_at, span));
       const conf = bk.filter((b) => b.status === "confirmed");
       const rev = conf.reduce((s, b) => s + (Number(b.price) || 0), 0);
       const cost = conf.reduce((s, b) => s + (Number(b.cost_price) || 0), 0);
@@ -219,8 +219,8 @@ export default function DashboardReports() {
       const outstanding = bk
         .filter((b) => b.payment_status && b.payment_status !== "paid" && b.status !== "cancelled")
         .reduce((s, b) => s + (Number(b.price) || 0), 0);
-      const newCustomers = data.customers.filter((c) => inSpan(c.joined_date || c.created_date, span)).length;
-      const lds = data.leads.filter((l) => inSpan(l.created_date, span));
+      const newCustomers = data.customers.filter((c) => inSpan(c.joined_date || c.created_at, span)).length;
+      const lds = data.leads.filter((l) => inSpan(l.created_at, span));
       const won = lds.filter((l) => l.status === "won").length;
       return {
         revenue: rev, cost, commission, outstanding, newCustomers,
@@ -247,7 +247,7 @@ export default function DashboardReports() {
   const revenueByMonth = useMemo(() => {
     const acc = {};
     for (const b of confirmed) {
-      const label = moment(b.check_in || b.created_date).format("MMM");
+      const label = moment(b.check_in || b.created_at).format("MMM");
       acc[label] = (acc[label] || 0) + (Number(b.price) || 0);
     }
     return MONTH_ORDER.filter((m) => acc[m] != null).map((m) => ({ month: m, revenue: acc[m] }));
@@ -307,7 +307,7 @@ export default function DashboardReports() {
   const confirmedCountByMonth = useMemo(() => {
     const acc = {};
     for (const b of confirmed) {
-      const label = moment(b.check_in || b.created_date).format("MMM");
+      const label = moment(b.check_in || b.created_at).format("MMM");
       acc[label] = (acc[label] || 0) + 1;
     }
     return acc;
@@ -393,7 +393,7 @@ export default function DashboardReports() {
         b.type,
         b.provider,
         b.status,
-        moment(b.check_in || b.created_date).format("YYYY-MM-DD"),
+        moment(b.check_in || b.created_at).format("YYYY-MM-DD"),
         Number(b.price) || 0,
       ])
     );
@@ -862,7 +862,7 @@ export default function DashboardReports() {
                 {
                   key: "date",
                   label: "Date",
-                  render: (r) => moment(r.check_in || r.created_date).format("MMM D, YYYY"),
+                  render: (r) => moment(r.check_in || r.created_at).format("MMM D, YYYY"),
                 },
                 {
                   key: "price",

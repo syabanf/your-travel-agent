@@ -10,7 +10,7 @@ export default function HolidayPackages() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    backend.entities.TourPackage.list("-created_date", 20)
+    backend.entities.TourPackage.list("-created_at", 20)
       .then((rows) => setItems((rows || []).filter((p) => p.status !== "draft").slice(0, 8)))
       .catch(() => {});
   }, []);

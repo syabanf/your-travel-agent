@@ -55,7 +55,7 @@ export default function DashboardContent() {
   const [sortBy, setSortBy] = useState("newest");
   const [selected, setSelected] = useState(new Set());
 
-  const load = async () => setItems(await backend.entities.Page.list("-created_date", 500));
+  const load = async () => setItems(await backend.entities.Page.list("-created_at", 500));
   useEffect(() => { load(); }, []);
 
   const startAdd = () => setEditing({ ...EMPTY });
@@ -125,7 +125,7 @@ export default function DashboardContent() {
   };
 
   // Date range scopes the whole view (charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((p) => inRange(p.created_date, range));
+  const scoped = (items || []).filter((p) => inRange(p.created_at, range));
 
   const filtered = scoped.filter((p) => {
     const q = query.trim().toLowerCase();
@@ -140,7 +140,7 @@ export default function DashboardContent() {
     if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
     if (sortBy === "type") return (a.type || "page").localeCompare(b.type || "page");
     // newest
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
 
   const pg = usePagination(sorted, 10, `${query}|${typeF}|${statusF}|${range}|${sortBy}`);
@@ -346,7 +346,7 @@ export default function DashboardContent() {
                   {p.excerpt && <p className="text-xs text-ich-neutral truncate">{p.excerpt}</p>}
                 </div>
                 <div className="text-right shrink-0 mr-2 hidden sm:block">
-                  {p.created_date && <p className="text-[11px] text-ich-neutral/60">{moment(p.created_date).format("MMM D, YYYY")}</p>}
+                  {p.created_at && <p className="text-[11px] text-ich-neutral/60">{moment(p.created_at).format("MMM D, YYYY")}</p>}
                 </div>
                 {(can(role, "content", "edit") || canDelete) && (
                   <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">

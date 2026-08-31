@@ -28,7 +28,7 @@ export default function DashboardAudit() {
   useEffect(() => {
     (async () => {
       try {
-        setLogs(await backend.entities.AuditLog.list("-created_date", 500));
+        setLogs(await backend.entities.AuditLog.list("-created_at", 500));
       } catch {
         toast.error("Couldn't load the audit log");
         setLogs([]);
@@ -47,7 +47,7 @@ export default function DashboardAudit() {
         (l) =>
           (action === "all" || l.action === action) &&
           (entity === "all" || l.entity === entity) &&
-          inRange(l.created_date, range)
+          inRange(l.created_at, range)
       ),
     [logs, action, entity, range]
   );
@@ -61,7 +61,7 @@ export default function DashboardAudit() {
     actionCount[a] = (actionCount[a] || 0) + 1;
     const e = l.entity || "—";
     entityCount[e] = (entityCount[e] || 0) + 1;
-    const ts = moment(l.created_date);
+    const ts = moment(l.created_at);
     const k = ts.format("MMM D");
     if (!dayAgg[k]) dayAgg[k] = { label: k, value: 0, ts: ts.valueOf() };
     dayAgg[k].value += 1;
@@ -155,8 +155,8 @@ export default function DashboardAudit() {
                 {pg.pageItems.map((l) => (
                   <tr key={l.id} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]">
                     <td className="px-5 py-3 whitespace-nowrap">
-                      <div className="text-ich-primary">{moment(l.created_date).format("MMM D, HH:mm")}</div>
-                      <div className="text-[11px] text-ich-neutral/60">{moment(l.created_date).fromNow()}</div>
+                      <div className="text-ich-primary">{moment(l.created_at).format("MMM D, HH:mm")}</div>
+                      <div className="text-[11px] text-ich-neutral/60">{moment(l.created_at).fromNow()}</div>
                     </td>
                     <td className="px-5 py-3 text-ich-neutral">{l.actor || "—"}</td>
                     <td className="px-5 py-3">

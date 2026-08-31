@@ -153,7 +153,7 @@ export default function DashboardLeadDetail() {
           <DetailRow icon={CalendarDays} label="Expected travel date" value={lead.expected_travel_date ? moment(lead.expected_travel_date).format("D MMM YYYY") : null} />
           <DetailRow icon={Users} label="Party size" value={lead.party_size ? `${lead.party_size} ${Number(lead.party_size) > 1 ? "travellers" : "traveller"}` : null} />
           <DetailRow icon={Flag} label="Priority" value={lead.priority ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${PRIORITY_BADGE[lead.priority] || "bg-slate-100 text-slate-500"}`}>{lead.priority}</span> : null} />
-          <DetailRow icon={CalendarDays} label="Created" value={lead.created_date ? moment(lead.created_date).format("D MMM YYYY") : null} />
+          <DetailRow icon={CalendarDays} label="Created" value={lead.created_at ? moment(lead.created_at).format("D MMM YYYY") : null} />
           {lead.notes && <DetailRow icon={StickyNote} label="Notes" value={lead.notes} />}
         </div>
       </div>

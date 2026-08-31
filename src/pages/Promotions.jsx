@@ -26,7 +26,7 @@ export default function Promotions() {
   const [items, setItems] = useState(null);
   const [type, setType] = useState("all");
 
-  useEffect(() => { backend.entities.Promotion.list("-created_date", 50).then(setItems); }, []);
+  useEffect(() => { backend.entities.Promotion.list("-created_at", 50).then(setItems); }, []);
 
   const featured = items?.find((p) => p.featured);
   const promos = items?.filter((p) => p.type === "promo" && !p.featured) || [];

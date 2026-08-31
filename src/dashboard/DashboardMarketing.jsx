@@ -55,8 +55,8 @@ export default function DashboardMarketing() {
 
   const load = async () => {
     const [campaigns, custs] = await Promise.all([
-      backend.entities.Campaign.list("-created_date", 500),
-      backend.entities.Customer.list("-created_date", 500),
+      backend.entities.Campaign.list("-created_at", 500),
+      backend.entities.Customer.list("-created_at", 500),
     ]);
     setCustomers(custs || []);
     setItems(campaigns || []);
@@ -120,7 +120,7 @@ export default function DashboardMarketing() {
   };
 
   // Date range scopes the whole view (KPIs, charts & table); search/selects refine the table.
-  const scoped = (items || []).filter((c) => inRange(c.created_date, range));
+  const scoped = (items || []).filter((c) => inRange(c.created_at, range));
 
   const total = scoped.length;
   const sentCount = scoped.filter((c) => c.status === "sent").length;
@@ -138,7 +138,7 @@ export default function DashboardMarketing() {
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "name") return (a.name || "").localeCompare(b.name || "");
     if (sortBy === "status") return (a.status || "draft").localeCompare(b.status || "draft");
-    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
   const pg = usePagination(sorted, 12, `${query}|${channelF}|${statusF}|${range}|${sortBy}`);
 

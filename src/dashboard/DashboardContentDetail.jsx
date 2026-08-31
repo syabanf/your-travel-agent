@@ -119,7 +119,7 @@ export default function DashboardContentDetail() {
             <DetailRow icon={Hash} label="Status" value={sm.label} />
             <DetailRow icon={Link2} label="Slug" value={p.slug ? `/${p.slug}` : null} />
             <DetailRow icon={ListOrdered} label="Order" value={p.order != null ? String(p.order) : null} />
-            <DetailRow icon={CalendarDays} label="Created" value={p.created_date ? moment(p.created_date).format("D MMM YYYY") : null} />
+            <DetailRow icon={CalendarDays} label="Created" value={p.created_at ? moment(p.created_at).format("D MMM YYYY") : null} />
           </div>
         </div>
 

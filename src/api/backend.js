@@ -121,8 +121,8 @@ function createEntity(name) {
       const row = {
         ...data,
         id: uid(),
-        created_date: nowISO(),
-        updated_date: nowISO(),
+        created_at: nowISO(),
+        updated_at: nowISO(),
         created_by: MOCK_USER.email,
       };
       rows.push(row);
@@ -134,7 +134,7 @@ function createEntity(name) {
       const rows = readCollection(name);
       const idx = rows.findIndex((r) => r.id === id);
       if (idx === -1) throw new Error(`${name} ${id} not found`);
-      rows[idx] = { ...rows[idx], ...data, id, updated_date: nowISO() };
+      rows[idx] = { ...rows[idx], ...data, id, updated_at: nowISO() };
       writeCollection(name, rows);
       logAudit('update', name, id, rows[idx]);
       return clone(rows[idx]);
@@ -159,7 +159,7 @@ function logAudit(action, name, id, data) {
   try {
     const rows = readCollection('AuditLog');
     const label = data?.title || data?.name || id;
-    rows.unshift({ id: uid(), created_date: nowISO(), actor: MOCK_USER.full_name, action, entity: name, entity_id: id, summary: `${action} ${name}${label ? ` — ${label}` : ''}` });
+    rows.unshift({ id: uid(), created_at: nowISO(), actor: MOCK_USER.full_name, action, entity: name, entity_id: id, summary: `${action} ${name}${label ? ` — ${label}` : ''}` });
     writeCollection('AuditLog', rows.slice(0, 500));
   } catch { /* never block a write on audit logging */ }
 }
@@ -218,6 +218,54 @@ function ensureSeeded() {
   }
   writeRaw(SEED_FLAG, nowISO());
 }
+/* --------------------- timestamp column rename --------------------- */
+// `created_date`/`updated_date` were the previous backend's naming. They're
+// timestamps, so they're now `_at`; the calendar-date fields (start_date,
+// joined_date, …) keep `_date` because that is what they are.
+//
+// Existing installs still hold rows under the old keys, and the whole app now
+// reads and sorts by the new ones — so without this, every row would look like
+// it had no dates at all and default sorting would collapse.
+
+const TIMESTAMP_RENAMES = [
+  ['created_date', 'created_at'],
+  ['updated_date', 'updated_at'],
+  ['reviewed_date', 'reviewed_at'],
+  ['granted_date', 'granted_at'],
+];
+const COLUMNS_RENAMED = `${PREFIX}_columns_renamed_v1`;
+
+function renameTimestampColumns() {
+  if (readRaw(COLUMNS_RENAMED)) return;
+  try {
+    for (const name of ENTITY_NAMES) {
+      const rows = readCollection(name);
+      if (!rows.length) continue;
+      let changed = false;
+      const next = rows.map((row) => {
+        if (!row || typeof row !== 'object') return row;
+        let out = row;
+        for (const [from, to] of TIMESTAMP_RENAMES) {
+          if (!(from in out)) continue;
+          if (out === row) out = { ...row };
+          // A row can already carry the new name (a seed backfill can add it).
+          // The value the user actually has wins — but the old key always goes,
+          // or the stale duplicate lingers forever.
+          if (!(to in out)) out[to] = out[from];
+          delete out[from];
+          changed = true;
+        }
+        return out;
+      });
+      if (changed) writeCollection(name, next);
+    }
+    writeRaw(COLUMNS_RENAMED, nowISO());
+  } catch {
+    /* leave the old keys in place and retry next load rather than half-renaming */
+  }
+}
+renameTimestampColumns();
+
 ensureSeeded();
 
 /* ----------------------------- migrations -------------------------- */
@@ -359,6 +407,7 @@ function runMigrations() {
   writeRaw(MIGRATION_FLAG, nowISO());
 }
 runMigrations();
+
 
 /* ------------------------------- auth ------------------------------ */
 

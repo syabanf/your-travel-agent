@@ -38,7 +38,7 @@ export default function Itinerary() {
   const loadTrips = useCallback(async () => {
     setError(false);
     try {
-      const data = await backend.entities.Trip.list("-created_date", 50);
+      const data = await backend.entities.Trip.list("-created_at", 50);
       setTrips(data);
     } catch {
       setError(true);
@@ -79,7 +79,7 @@ export default function Itinerary() {
         default: return true;
       }
     })
-    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   return (
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
