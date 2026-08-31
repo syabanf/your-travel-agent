@@ -51,14 +51,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     login,
     logout,
-    // backward-compat aliases used by existing screens
     isLoading,
-    isLoadingAuth: isLoading,
-    isLoadingPublicSettings: false,
-    authError: null,
-    appPublicSettings: { id: 'local', public_settings: {} },
-    navigateToLogin: () => { if (typeof window !== 'undefined') window.location.href = `${import.meta.env.BASE_URL}login`; },
-    checkAppState: () => {},
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

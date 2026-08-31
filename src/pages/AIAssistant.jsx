@@ -57,7 +57,7 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-    const response = await backend.integrations.Core.InvokeLLM({
+    const response = await backend.ask({
       prompt: `You are Icon Holiday's premium AI travel concierge. You help travelers plan luxurious, well-organized itineraries. 
       
 When creating itineraries, format them beautifully with:
@@ -73,8 +73,6 @@ Be elegant, helpful, and provide detailed travel recommendations.
 User request: ${text}
 
 ${messages.length > 0 ? `Previous conversation context: ${messages.map(m => `${m.role}: ${m.content}`).join('\n')}` : ''}`,
-      model: "gemini_3_flash",
-      add_context_from_internet: true,
     });
 
     setMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -89,11 +87,11 @@ ${messages.length > 0 ? `Previous conversation context: ${messages.map(m => `${m
     if (saving) return;
     setSaving(true);
     try {
-    const result = await backend.integrations.Core.InvokeLLM({
+    const result = await backend.ask({
       prompt: `Extract the trip details from this itinerary text and return structured data:
       
 ${content}`,
-      response_json_schema: {
+      schema: {
         type: "object",
         properties: {
           title: { type: "string" },

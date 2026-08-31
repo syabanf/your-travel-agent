@@ -27,7 +27,7 @@ function analyze(data) {
   return { n, catField, top, moneyField: moneyField && moneyField.replace(/_/g, " "), sum, avg: n ? Math.round(sum / n) : 0 };
 }
 
-// Per-resource canned "AI insights" for the demo (the real InvokeLLM seam is
+// Per-resource canned "AI insights" for the demo (the real LLM seam is
 // called for latency/feel; swap configureLLM() to wire a real model later).
 const CANNED = {
   overview: { insights: ["Revenue is concentrated in a few confirmed bookings — protect those relationships.", "Most trips sit in draft/planned — nudge them toward confirmation.", "Customer base skews high-tier; lookalike acquisition could compound growth."], actions: ["Summarise this week", "Flag at-risk trips", "Draft a status update"] },
@@ -66,14 +66,14 @@ export default function DashboardAiStub({ resource, data, label = "Ask AI", cont
 
   const run = async () => {
     setOpen(true); setLoading(true); setResult(null); setAnswer(null);
-    try { await backend.integrations.Core.InvokeLLM({ prompt: `Give admin insights for ${resource} (${Array.isArray(data) ? data.length : 0} records). ${context}` }); } catch { /* stubbed */ }
+    try { await backend.ask({ prompt: `Give admin insights for ${resource} (${Array.isArray(data) ? data.length : 0} records). ${context}` }); } catch { /* stubbed */ }
     setResult(build());
     setLoading(false);
   };
 
   const ask = async (q) => {
     setLoading(true); setAnswer(null);
-    try { await backend.integrations.Core.InvokeLLM({ prompt: q }); } catch { /* stubbed */ }
+    try { await backend.ask({ prompt: q }); } catch { /* stubbed */ }
     const a = result?.a;
     const ctx = a ? `Across ${a.n} ${resource}${a.top ? `, "${a.top[0]}" leads (${a.top[1]})` : ""}${a.moneyField ? ` and total ${a.moneyField} is ${formatIDR(a.sum)}` : ""}.` : "";
     setAnswer(`${ctx} On “${q}” — prioritise the highlighted items first, then review weekly. (Demo AI — connect a model via configureLLM() to go live.)`);

@@ -68,9 +68,9 @@ export default function NewTrip() {
     if (!form.destination) return;
     setAiLoading(true);
     try {
-    const res = await backend.integrations.Core.InvokeLLM({
+    const res = await backend.ask({
       prompt: `Suggest a luxury travel itinerary plan for a trip to ${form.destination}. Based on the destination, suggest: a catchy trip title, the best travel style (one of: luxury, adventure, cultural, relaxation, business, family, budget), ideal pace (one of: relaxed, moderate, packed), trip type (one of: solo, couple, family, business, luxury, group), ideal number of travelers, and a short notes/highlights string. Be concise.`,
-      response_json_schema: {
+      schema: {
         type: "object",
         properties: {
           title: { type: "string" },
@@ -104,13 +104,13 @@ export default function NewTrip() {
     if (!form.destination) return;
     setAiGenerating(true);
     try {
-    const res = await backend.integrations.Core.InvokeLLM({
+    const res = await backend.ask({
       prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
         form.start_date ? ` from ${form.start_date}` : ''
       }${
         form.end_date ? ` to ${form.end_date}` : ' for 3 days'
       }. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in IDR (Indonesian Rupiah), and a full list of activities per day.`,
-      response_json_schema: {
+      schema: {
         type: "object",
         properties: {
           title: { type: "string" },

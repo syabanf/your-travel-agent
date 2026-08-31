@@ -129,9 +129,9 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
     }
 
     try {
-      const res = await backend.integrations.Core.InvokeLLM({
+      const res = await backend.ask({
         prompt,
-        response_json_schema: {
+        schema: {
           type: "object",
           properties: { results: { type: "array", items: { type: "object" } } }
         }

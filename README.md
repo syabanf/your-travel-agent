@@ -82,14 +82,14 @@ uses:
 
 - **Data** — `backend.entities.<Name>` for each of the 22 entities (`Trip`,
   `Booking`, `Customer`, `Lead`, `TourPackage`, `Registration`, …) with
-  `list / filter / get / create / update / delete` (+ `bulkCreate`), persisted in
+  `list / filter / get / create / update / delete`, persisted in
   `localStorage`. Mutations to business entities are written to `AuditLog`. Demo
   data is seeded on first load (see [`src/api/mockSeed.js`](src/api/mockSeed.js)),
   and versioned migrations backfill new fields onto existing installs.
 - **Auth** — a local session gate: sign in, register (admin-approved) or continue
   as a guest. It is a prototype, not real authentication — the session is a
   `localStorage` flag and role checks are client-side only.
-- **AI** — `backend.integrations.Core.InvokeLLM` is **stubbed** with canned,
+- **AI** — `backend.ask({ prompt, schema })` is **stubbed** with canned,
   schema-aware responses (see [`src/api/mockLLM.js`](src/api/mockLLM.js)), so the
   AI assistant and trip generation work offline.
 
@@ -107,9 +107,9 @@ your own proxy) by calling `configureLLM` once at startup, e.g. in
 ```js
 import { configureLLM } from '@/api/mockLLM';
 
-configureLLM(async ({ prompt, response_json_schema }) => {
+configureLLM(async ({ prompt, schema }) => {
   // Call your LLM here. Return a string when there's no schema,
-  // or an object matching response_json_schema when there is.
+  // or an object matching `schema` when there is.
 });
 ```
 

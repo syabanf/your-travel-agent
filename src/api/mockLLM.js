@@ -1,14 +1,14 @@
 // Stubbed AI for the local mock backend.
 //
-// Replaces backend.integrations.Core.InvokeLLM with canned, schema-aware
-// responses so the app's AI features work offline with no API key.
+// Backs backend.ask() with canned, schema-aware responses so the app's AI
+// features work offline with no API key.
 //
 // To plug in a REAL provider later, call configureLLM() once at app startup:
 //
 //   import { configureLLM } from '@/api/mockLLM';
-//   configureLLM(async ({ prompt, response_json_schema }) => {
+//   configureLLM(async ({ prompt, schema }) => {
 //     // call Claude / OpenAI / your proxy here and return either a string
-//     // (when no schema) or an object matching response_json_schema.
+//     // (when no schema) or an object matching schema.
 //   });
 
 import { formatIDR } from '@/lib/currency';
@@ -16,14 +16,14 @@ import { formatIDR } from '@/lib/currency';
 let handler = defaultHandler;
 
 /**
- * Point InvokeLLM at a real LLM implementation.
- * @param {(args: {prompt?: string, response_json_schema?: object}) => (Promise<any>|any)} fn
+ * Point backend.ask() at a real LLM implementation.
+ * @param {(args: {prompt?: string, schema?: object}) => (Promise<any>|any)} fn
  */
 export function configureLLM(fn) {
   handler = typeof fn === 'function' ? fn : defaultHandler;
 }
 
-export async function invokeLLM(args = {}) {
+export async function askLLM(args = {}) {
   return handler(args);
 }
 
@@ -37,24 +37,24 @@ const money = (min, max) => Math.round(rand(min, max) / 50000) * 50000; // clean
 const pick = (arr, i) => arr[((i == null ? rand(0, arr.length - 1) : i) % arr.length + arr.length) % arr.length];
 const cap = (s) => (s || '').replace(/\b\w/g, (c) => c.toUpperCase());
 
-async function defaultHandler({ prompt = '', response_json_schema } = {}) {
+async function defaultHandler({ prompt = '', schema } = {}) {
   await wait(rand(500, 1100)); // simulate latency
 
   // No schema => free-form chat / markdown itinerary
-  if (!response_json_schema) return chatResponse(prompt);
+  if (!schema) return chatResponse(prompt);
 
   // AI report generator shape: { report: {...} }
-  if (response_json_schema?.properties?.report) {
+  if (schema?.properties?.report) {
     return { report: reportFor(prompt) };
   }
 
   // OTA search shape: { results: [...] }
-  if (response_json_schema?.properties?.results) {
+  if (schema?.properties?.results) {
     return { results: otaResults(prompt) };
   }
 
   // Everything else: synthesize an object from the JSON schema
-  return buildFromSchema(response_json_schema, makeCtx(prompt));
+  return buildFromSchema(schema, makeCtx(prompt));
 }
 
 /* ------------------------------ context ---------------------------- */

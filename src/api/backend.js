@@ -4,14 +4,14 @@
 // backed by localStorage:
 //
 //   backend.entities.<Name>.{ list, filter, get, create, update, delete }
-//   backend.auth.{ me, logout, redirectToLogin }
-//   backend.integrations.Core.InvokeLLM   (stubbed — see ./mockLLM.js)
+//   backend.auth.{ me, logout }
+//   backend.ask({ prompt, schema })       (stubbed — see ./mockLLM.js)
 //
 // All data lives on-device. Clear it by running `localStorage.clear()` in the
 // browser console (it will be re-seeded on next load).
 
 import { buildSeed } from './mockSeed';
-import { invokeLLM } from './mockLLM';
+import { askLLM } from './mockLLM';
 
 const PREFIX = 'ich_db_';
 const SEED_FLAG = `${PREFIX}_seeded_v4`;
@@ -129,11 +129,6 @@ function createEntity(name) {
       writeCollection(name, rows);
       logAudit('create', name, row.id, row);
       return clone(row);
-    },
-    async bulkCreate(items = []) {
-      const created = [];
-      for (const item of items) created.push(await this.create(item));
-      return created;
     },
     async update(id, data) {
       const rows = readCollection(name);
@@ -385,19 +380,10 @@ const auth = {
   async logout() {
     return { success: true };
   },
-  redirectToLogin() {
-    // No login provider in local mode.
-    console.info('[mock] redirectToLogin() is a no-op — running with a local demo user.');
-  },
 };
 
-/* -------------------------- integrations --------------------------- */
+/* ------------------------------- ai -------------------------------- */
+// Stubbed locally; point it at a real provider with configureLLM().
 
-const integrations = {
-  Core: {
-    InvokeLLM: (args) => invokeLLM(args),
-  },
-};
-
-export const backend = { entities, auth, integrations };
+export const backend = { entities, auth, ask: (args) => askLLM(args) };
 export default backend;

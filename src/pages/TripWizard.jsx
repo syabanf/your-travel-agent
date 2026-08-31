@@ -171,11 +171,11 @@ export default function TripWizard() {
   const handleGenerate = async () => {
     setBusy("ai");
     try {
-      const res = await backend.integrations.Core.InvokeLLM({
+      const res = await backend.ask({
         prompt: `Create a complete ${form.travel_style} travel itinerary for ${form.travelers} traveler(s) to ${form.destination}${
           form.start_date ? ` from ${form.start_date}` : ""
         }${form.end_date ? ` to ${form.end_date}` : " for 4 days"}. Pace: ${form.pace}. Trip type: ${form.trip_type}. Provide a catchy title, short notes, estimated total budget in IDR (Indonesian Rupiah), and a full list of activities per day.`,
-        response_json_schema: {
+        schema: {
           type: "object",
           properties: {
             title: { type: "string" },

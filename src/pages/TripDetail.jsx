@@ -115,12 +115,12 @@ export default function TripDetail() {
     if (!trip) return;
     setAiGenerating(true);
     try {
-      const res = await backend.integrations.Core.InvokeLLM({
+      const res = await backend.ask({
         prompt: `Generate a detailed ${trip.travel_style || 'luxury'} travel itinerary for ${trip.destination}${
         trip.start_date ? ` from ${trip.start_date} to ${trip.end_date || trip.start_date}` : ` for ${totalDays} days`
       }. Pace: ${trip.pace || 'moderate'}. Trip type: ${trip.trip_type || 'couple'}. Travelers: ${trip.travelers || 2}.
 IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for days 1 to ${totalDays}. Do NOT exceed day ${totalDays}. Spread activities evenly across all ${totalDays} day(s).`,
-        response_json_schema: {
+        schema: {
           type: "object",
           properties: {
             activities: {

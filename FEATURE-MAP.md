@@ -208,7 +208,7 @@ The dependency map — change one of these and these are the callers.
 |---|---|
 | `api/backend.js` | Entity CRUD over localStorage, audit trail, **`migrateLegacyPrefix()`**, `ensureSeeded()`, `runMigrations()` |
 | `api/mockSeed.js` | `buildSeed()` — every demo row |
-| `api/mockLLM.js` | Stubbed `InvokeLLM`, swappable via `configureLLM()` |
+| `api/mockLLM.js` | Stubbed `backend.ask()`, swappable via `configureLLM()` |
 
 Storage keys are prefixed `ich_` (`ich_db_<Entity>`). The `MIGRATION_FLAG` is
 `ich_db__migrated_v10`. **Bumping it?** The first dev reload often sets the flag
