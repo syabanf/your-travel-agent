@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Paket Tour 2026 — Icon Holiday Indonesia</title>
-<meta name="description" content="Daftar paket tour Icon Holiday untuk keberangkatan 2026 — Korea, Jepang, China, Eropa Barat dan New Zealand. Harga sudah termasuk tiket, hotel dan tour leader." />
+<title>2026 Tour Packages | Icon Holiday Indonesia</title>
+<meta name="description" content="Icon Holiday tour packages for 2026 departures: Korea, Japan, China, Western Europe and New Zealand. Prices include flights, hotels and a tour leader." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,39 +15,39 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Hero halaman ══ -->
+<!-- ══ Page hero ══ -->
 <section class="phero">
   <div class="phero__bg" aria-hidden="true" style="background-image:url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1600&amp;q=80')"></div>
   <div class="wrap phero__in">
-    <nav class="crumb" aria-label="Remah roti">
+    <nav class="crumb" aria-label="Breadcrumb">
       <a href="index.html">Home</a>
       <span aria-hidden="true">/</span>
       <span>Tour 2026</span>
     </nav>
     <p class="eyebrow eyebrow--light">Limited Seat Tour</p>
-    <h1>Paket Tour 2026</h1>
-    <p>Keberangkatan grup sepanjang tahun — sudah termasuk tiket pesawat, hotel, transportasi darat dan tour leader berbahasa Indonesia.</p>
+    <h1>2026 Tour Packages<span class="dot">.</span></h1>
+    <p>Group departures all year round, including flights, hotels, ground transport and an Indonesian-speaking tour leader.</p>
   </div>
 </section>
 
-<!-- ══ Daftar paket ══ -->
+<!-- ══ Package list ══ -->
 <section class="sect">
   <div class="wrap">
-    <div class="chips" id="tourChips" role="group" aria-label="Saring paket berdasarkan kawasan"></div>
+    <div class="chips" id="tourChips" role="group" aria-label="Filter packages by region"></div>
 
     <div id="tourResults">
       <div class="grid grid--3 reveal" id="tourGrid"></div>
-      <p class="note">Harga per orang, sudah termasuk tiket, hotel dan tour leader. Kursi terbatas — hubungi kami untuk ketersediaan terkini.</p>
+      <p class="note">Prices are per person and include flights, hotels and a tour leader. Seats are limited, so contact us for current availability.</p>
     </div>
 
     <div id="tourEmpty" hidden>
       <div class="empty">
-        <b>Belum ada paket di kawasan ini</b>
-        Coba pilih kawasan lain, atau hubungi kami untuk menyusun rute khusus sesuai tanggal Anda.
+        <b>No packages in this region yet</b>
+        Try another region, or contact us to plan a custom route for your dates.
       </div>
     </div>
   </div>
@@ -65,29 +65,29 @@
   const results = document.getElementById("tourResults");
   const empty = document.getElementById("tourEmpty");
 
-  /* Kawasan unik, urut sesuai kemunculan di data.js */
+  /* Unique regions, in the order they appear in data.js */
   const regions = [];
   TOURS.forEach((t) => { if (t.region && !regions.includes(t.region)) regions.push(t.region); });
 
-  chips.innerHTML = [`<button class="chip" type="button" data-region="" aria-pressed="true">Semua</button>`]
+  chips.innerHTML = [`<button class="chip" type="button" data-region="" aria-pressed="true">All</button>`]
     .concat(regions.map((r) =>
       `<button class="chip" type="button" data-region="${esc(r)}" aria-pressed="false">${esc(r)}</button>`))
     .join("");
 
-  /* Kartu paket — markup sama dengan grid tour di beranda, dibungkus tautan */
+  /* Package card: same markup as the home page tour grid, wrapped in a link */
   const card = (t) => `
     <a class="tour" href="tour-detail.html?id=${encodeURIComponent(t.id)}">
       <div class="tour__media">
         <img src="${esc(t.img)}" alt="${esc(t.country)}" loading="lazy" decoding="async" />
         <span class="tour__country">${esc(t.country)}</span>
-        <span class="tour__days">${esc(t.days)} hari</span>
+        <span class="tour__days">${esc(t.days)} days</span>
       </div>
       <div class="tour__body">
         <p class="tour__date">${esc((t.dates || []).join(" · "))}</p>
         <h3 class="tour__title">${esc(t.title)}</h3>
         <div class="tour__foot">
-          <p class="tour__price">${t.price ? esc(rp(t.price)) : "Hubungi kami"}<small>${t.price ? "per orang" : "untuk harga terbaru"}</small></p>
-          ${t.seats <= 6 ? `<span class="tour__seat">Sisa ${esc(t.seats)} kursi</span>` : ""}
+          <p class="tour__price">${t.price ? esc(rp(t.price)) : "Contact us"}<small>${t.price ? "per person" : "for the latest price"}</small></p>
+          ${t.seats <= 6 ? `<span class="tour__seat">${esc(t.seats)} seats left</span>` : ""}
         </div>
       </div>
     </a>`;

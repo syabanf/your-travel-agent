@@ -7,7 +7,7 @@ import {
   ShieldCheck, Wallet, Headphones, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-import PhoneFrame from "../components/PhoneFrame";
+import AppFrame from "../components/AppFrame";
 import BrandMark from "../components/BrandMark";
 import { submitRegistration, registrationStatus, accountProfile, REGISTRATION_MESSAGES } from "@/lib/registration";
 
@@ -121,7 +121,7 @@ export default function Login({ register = false }) {
     const pending = gate.kind === "pending";
     const Icon = pending ? Clock : ShieldX;
     return (
-      <PhoneFrame>
+      <AppFrame>
         <div className="relative z-10 flex flex-1 flex-col justify-center overflow-y-auto px-6 py-6 hide-scrollbar">
           <div className="animate-rise rounded-card bg-card p-6 text-center shadow-float">
             <div className={`mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl ${pending ? "bg-warning-soft text-warning" : "bg-accent-soft text-accent-strong"}`}>
@@ -150,7 +150,7 @@ export default function Login({ register = false }) {
             </button>
           </div>
         </div>
-      </PhoneFrame>
+      </AppFrame>
     );
   }
 
@@ -180,7 +180,7 @@ export default function Login({ register = false }) {
   };
 
   return (
-    <PhoneFrame>
+    <AppFrame>
       <div className="relative z-10 flex-1 overflow-y-auto hide-scrollbar">
         {/* Photo hero: the promise, the logo, and the proof. */}
         <div className="relative mx-4 mt-1 h-72 overflow-hidden rounded-hero">
@@ -311,6 +311,6 @@ export default function Login({ register = false }) {
           </ul>
         </div>
       </div>
-    </PhoneFrame>
+    </AppFrame>
   );
 }

@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import PhoneFrame from "./PhoneFrame";
+import AppFrame from "./AppFrame";
 import BottomNav from "./BottomNav";
 import AppHeader from "./AppHeader";
 import ErrorBoundary from "./ErrorBoundary";
@@ -76,7 +76,7 @@ export default function Layout() {
   };
 
   return (
-    <PhoneFrame>
+    <AppFrame>
       <a href="#main" className="skip-link">Skip to content</a>
       {/* Page content */}
       <main
@@ -110,6 +110,6 @@ export default function Layout() {
       {/* Sits above the bottom nav; self-gating, so it renders nothing when the
           app is already installed or the invitation was snoozed. */}
       <InstallPrompt offsetBottom={isTabRoot ? undefined : "0px"} />
-    </PhoneFrame>
+    </AppFrame>
   );
 }

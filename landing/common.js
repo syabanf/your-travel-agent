@@ -1,13 +1,13 @@
 /* ================================================================
-   Icon Holiday — kerangka bersama seluruh halaman landing
-   Menyuntikkan icon sprite, header dan footer, lalu menyalakan
-   interaksi umum. Muat SETELAH data.js:
+   Icon Holiday: shared shell for every landing page
+   Injects the icon sprite, header and footer, then wires up the
+   shared interactions. Load AFTER data.js:
 
      <script src="./data.js"></script>
      <script src="./common.js"></script>
    ================================================================ */
 
-/* ── Tautan ke aplikasi & CMS ────────────────────────────────── */
+/* ── Links to the app & CMS ──────────────────────────────────── */
 const APP_ORIGIN = (window.ICON_APP_ORIGIN || "").replace(/\/$/, "");
 const IS_FILE = location.protocol === "file:";
 // Landing owns "/", so the app is mounted at "/app/". "/admin" is a friendly
@@ -18,7 +18,7 @@ window.LINKS = {
 };
 
 /* ── Util ────────────────────────────────────────────────────── */
-window.rp = (n) => "IDR " + Number(n || 0).toLocaleString("id-ID");
+window.rp = (n) => "IDR " + Number(n || 0).toLocaleString("en-US");
 window.qs = (k) => new URLSearchParams(location.search).get(k);
 window.esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -48,43 +48,33 @@ const SPRITE = `
 <symbol id="i-fb" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.5V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></symbol>
 </svg>`;
 
-/* ── Navigasi ────────────────────────────────────────────────── */
+/* ── Navigation ──────────────────────────────────────────────── */
 const NAV = [
-  { href: "layanan.html", label: "Layanan" },
+  { href: "layanan.html", label: "Services" },
   { href: "tour.html", label: "Tour 2026" },
-  { href: "destinasi.html", label: "Destinasi" },
-  { href: "tentang.html", label: "Tentang" },
-  { href: "artikel.html", label: "Artikel" },
-  { href: "kontak.html", label: "Kontak" },
+  { href: "destinasi.html", label: "Destinations" },
+  { href: "tentang.html", label: "About" },
+  { href: "artikel.html", label: "Articles" },
+  { href: "kontak.html", label: "Contact" },
 ];
 
 const C = window.COMPANY;
 const here = location.pathname.split("/").pop() || "index.html";
 
 const HEADER = `
-<div class="topbar">
-  <div class="wrap topbar__in">
-    <span class="topbar__item"><svg class="i"><use href="#i-phone"/></svg> ${C.offices.map((o) => `${o.city} ${o.tel}`).join(" &nbsp;·&nbsp; ")}</span>
-    <span class="topbar__socials">
-      <a href="${C.social.ig}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
-      <a href="${C.social.fb}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
-    </span>
-  </div>
-</div>
-
 <header class="nav" id="nav">
-  <div class="wrap nav__in">
+  <div class="wrap"><div class="nav__in">
     <a class="brand" href="index.html">
       <img class="brand__logo" src="assets/icon-holiday-logo.webp" width="426" height="184" alt="Icon Holiday" draggable="false">
     </a>
-    <nav class="nav__links" id="navLinks" aria-label="Menu utama">
+    <nav class="nav__links" id="navLinks" aria-label="Main menu">
       ${NAV.map((n) => `<a href="${n.href}"${n.href === here ? ' aria-current="page" class="is-active"' : ""}>${n.label}</a>`).join("")}
-      <a class="btn btn--primary nav__cta" data-link="app" href="#"><svg class="i"><use href="#i-phone-app"/></svg> Buka Aplikasi</a>
+      <a class="btn btn--ink nav__cta" data-link="app" href="#"><svg class="i"><use href="#i-phone-app"/></svg> Open App</a>
     </nav>
-    <button class="nav__toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+    <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
-  </div>
+  </div></div>
 </header>`;
 
 const FOOTER = `
@@ -94,22 +84,22 @@ const FOOTER = `
       <a class="brand brand--light" href="index.html">
         <img class="brand__logo" src="assets/icon-holiday-logo.webp" width="426" height="184" alt="Icon Holiday" draggable="false">
       </a>
-      <p>Biro perjalanan wisata untuk tour, tiket, visa, hotel dan cruise — dengan kantor di Medan dan Jakarta.</p>
+      <p>Travel agency for tours, flights, visas, hotels and cruises, with offices in Medan and Jakarta.</p>
       <div class="foot__socials">
         <a href="${C.social.ig}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
         <a href="${C.social.fb}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
       </div>
     </div>
-    <div class="foot__col"><h4>Layanan</h4>
+    <div class="foot__col"><h4>Services</h4>
       ${window.SERVICES.map((s) => `<a href="layanan.html#${s.id}">${s.name}</a>`).join("")}
     </div>
-    <div class="foot__col"><h4>Perusahaan</h4>
-      <a href="tentang.html">Tentang Kami</a><a href="tour.html">Tour 2026</a><a href="destinasi.html">Destinasi</a>
-      <a href="galeri.html">Galeri</a><a href="artikel.html">Artikel</a><a href="kontak.html">Kontak</a>
+    <div class="foot__col"><h4>Company</h4>
+      <a href="tentang.html">About Us</a><a href="tour.html">Tour 2026</a><a href="destinasi.html">Destinations</a>
+      <a href="galeri.html">Gallery</a><a href="artikel.html">Articles</a><a href="kontak.html">Contact</a>
     </div>
-    <div class="foot__col"><h4>Aplikasi</h4>
-      <a data-link="app" href="#">Aplikasi Traveler</a>
-      <a data-link="cms" href="#">CMS / Portal Admin</a>
+    <div class="foot__col"><h4>App</h4>
+      <a data-link="app" href="#">Traveler App</a>
+      <a data-link="cms" href="#">CMS / Admin Portal</a>
     </div>
   </div>
   <div class="wrap foot__legal">
@@ -118,44 +108,44 @@ const FOOTER = `
   </div>
 </footer>
 
-<a class="wa" href="https://wa.me/${C.wa}" target="_blank" rel="noopener noreferrer" aria-label="Chat WhatsApp">
-  <svg class="i"><use href="#i-wa"/></svg><span>Chat kami</span>
+<a class="wa" href="https://wa.me/${C.wa}" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+  <svg class="i"><use href="#i-wa"/></svg><span>Chat with us</span>
 </a>`;
 
-/* ── Suntikkan kerangka ──────────────────────────────────────── */
+/* ── Inject the shell ────────────────────────────────────────── */
 document.body.insertAdjacentHTML("afterbegin", SPRITE + HEADER);
 document.body.insertAdjacentHTML("beforeend", FOOTER);
 
-/* ── Isi href aplikasi/CMS ─────────────────────────────────────
-   Halaman boleh menyuntikkan tautan [data-link] kapan saja (mis. setelah
-   render), jadi selain menyapu sekali di awal kita juga menangkap klik
-   lewat delegasi — dengan begitu tautan yang muncul belakangan tetap
-   bekerja tanpa perlu memanggil apa pun.                              */
+/* ── Fill in app/CMS hrefs ─────────────────────────────────────
+   Pages may inject [data-link] anchors at any time (e.g. after a
+   render), so besides one sweep at load we also catch clicks through
+   delegation. Links that appear later then work without any extra
+   call.                                                             */
 window.wireLinks = (root = document) => {
   root.querySelectorAll("[data-link]").forEach((a) => {
     const t = window.LINKS[a.dataset.link];
     if (!t) return;
     a.href = t;
     if (IS_FILE && a.dataset.link === "cms") {
-      a.title = "Buka lewat server untuk masuk langsung ke /admin";
+      a.title = "Open through the server to go straight to /admin";
     }
   });
 };
 window.wireLinks();
 
-// Jaring pengaman untuk tautan yang disuntikkan setelah sapuan di atas.
+// Safety net for links injected after the sweep above.
 document.addEventListener("click", (e) => {
   const a = e.target.closest?.("[data-link]");
   if (!a) return;
   const t = window.LINKS[a.dataset.link];
   if (!t) return;
   const href = a.getAttribute("href");
-  if (href && href !== "#") return; // sudah terisi — biarkan browser bekerja
+  if (href && href !== "#") return; // already filled in, let the browser handle it
   e.preventDefault();
   location.href = t;
 });
 
-/* ── Interaksi umum ──────────────────────────────────────────── */
+/* ── Shared interactions ─────────────────────────────────────── */
 const nav = document.getElementById("nav");
 const onScroll = () => nav.classList.toggle("is-stuck", window.scrollY > 8);
 onScroll();
@@ -166,7 +156,7 @@ const links = document.getElementById("navLinks");
 toggle.addEventListener("click", () => {
   const open = links.classList.toggle("is-open");
   toggle.setAttribute("aria-expanded", String(open));
-  toggle.setAttribute("aria-label", open ? "Tutup menu" : "Buka menu");
+  toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
 });
 links.addEventListener("click", (e) => {
   if (e.target.closest("a")) {

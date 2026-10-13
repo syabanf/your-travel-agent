@@ -1,252 +1,144 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Icon Holiday Indonesia — Tour, Tiket, Visa, Hotel &amp; Cruise</title>
-<meta name="description" content="Icon Holiday Indonesia — biro perjalanan wisata: paket tour dunia, tiket pesawat, pengurusan visa, hotel dan cruise. Kantor di Medan &amp; Jakarta." />
+<title>Icon Holiday Indonesia | Tours, Flights, Visas, Hotels &amp; Cruises</title>
+<meta name="description" content="Group tours from Jakarta and Medan to Korea, Japan, China, Europe and New Zealand, plus visas for more than 30 countries, flights, hotels and cruises. Icon Holiday, since 2010." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
-<main id="main">
+<main id="main" class="home">
+<div class="wrap">
 
-<!-- ══ Hero ══ -->
-<section class="hero" id="hero">
-  <div class="hero__bg" aria-hidden="true"></div>
-  <div class="wrap hero__in">
-    <p class="eyebrow eyebrow--light">Biro Perjalanan Wisata · Sejak 2010</p>
-    <h1 class="hero__title">Dunia menunggu.<br /><span class="grad">Kami yang urus semuanya.</span></h1>
-    <p class="hero__sub">
-      Paket tour ke lima benua, tiket pesawat, pengurusan visa, hotel dan cruise —
-      ditangani satu tim yang sudah mengantar ribuan perjalanan.
-    </p>
-
-    <form class="search" id="searchForm">
-      <div class="search__field">
-        <label for="s-dest">Destinasi</label>
-        <input id="s-dest" name="dest" type="text" placeholder="Korea, China, Eropa…" list="destList" autocomplete="off" />
-        <datalist id="destList">
-          <option value="Korea Selatan"></option><option value="China"></option>
-          <option value="Jepang"></option><option value="New Zealand"></option>
-          <option value="Eropa Barat"></option><option value="Turki"></option>
-        </datalist>
-      </div>
-      <div class="search__field">
-        <label for="s-date">Tanggal berangkat</label>
-        <input id="s-date" name="date" type="month" />
-      </div>
-      <button class="btn btn--primary search__btn" type="submit">
-        <svg class="i"><use href="#i-search"/></svg> Cari Paket
-      </button>
-    </form>
-    <p class="search__hint" id="searchHint" role="status"></p>
-
-    <ul class="hero__stats">
-      <li><b data-count="15">0</b><span>Tahun pengalaman</span></li>
-      <li><b data-count="12000">0</b><span>Tamu terlayani</span></li>
-      <li><b data-count="30">0</b><span>Negara tujuan</span></li>
-      <li><b data-count="2" data-suffix="">0</b><span>Kantor cabang</span></li>
-    </ul>
+<!-- ══ Hero: one big photo card, the next departure cut into its corner ══ -->
+<section class="hero2" aria-labelledby="home-title">
+  <img class="hero2__img" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&q=80" alt="" fetchpriority="high" />
+  <div class="hero2__body">
+    <p class="kicker kicker--on-photo">Medan &amp; Jakarta · since 2010</p>
+    <h1 id="home-title">Group tours and visas, handled for you<span class="dot">.</span></h1>
+    <p class="hero2__sub">Departures from Jakarta and Medan to Korea, Japan, China, Europe and New Zealand, with one consultant from the first quote to the flight home.</p>
+    <div class="hero2__cta">
+      <a class="btn btn--primary" href="tour.html">See 2026 departures</a>
+      <a class="round round--glass" href="#how" aria-label="How a trip with us works"><svg class="i"><use href="#i-arrow"/></svg></a>
+    </div>
   </div>
+  <a class="hero2__corner" id="heroNext" href="tour.html"></a>
 </section>
 
-<!-- ══ Layanan ══ -->
-<section class="sect" id="layanan">
-  <div class="wrap">
-    <p class="eyebrow">Layanan Kami</p>
-    <h2 class="sect__title">Satu pintu untuk seluruh perjalanan Anda</h2>
-    <p class="sect__lead">Dari merencanakan rute sampai visa di tangan — semua bisa diurus di satu tempat.</p>
+<!-- ══ Trust strip ══ -->
+<div class="trust">
+  <span class="trust__follow">Follow
+    <a href="https://instagram.com/iconholidaymedan" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
+    <a href="https://www.facebook.com/iconholiday" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
+  </span>
+  <span class="trust__item"><svg class="i"><use href="#i-pin"/></svg> Offices in Medan and Jakarta</span>
+  <span class="trust__item"><svg class="i"><use href="#i-doc"/></svg> Visa help for 30+ countries</span>
+  <span class="trust__item"><svg class="i"><use href="#i-users"/></svg> Indonesian-speaking tour leaders</span>
+</div>
 
-    <div class="grid grid--5 reveal">
-      <article class="svc"><span class="svc__ic svc__ic--1"><svg class="i"><use href="#i-map"/></svg></span>
-        <h3>Paket Tour</h3><p>Grup maupun privat ke Asia, Eropa, Australia hingga Amerika — sudah termasuk hotel, transportasi dan tour leader.</p></article>
-      <article class="svc"><span class="svc__ic svc__ic--2"><svg class="i"><use href="#i-plane"/></svg></span>
-        <h3>Tiket Pesawat</h3><p>Harga korporat untuk rute domestik dan internasional, dengan bantuan reschedule bila rencana berubah.</p></article>
-      <article class="svc"><span class="svc__ic svc__ic--3"><svg class="i"><use href="#i-doc"/></svg></span>
-        <h3>Pengurusan Visa</h3><p>Lebih dari 30 negara — Schengen, Amerika, Jepang, Korea, China. Dokumen dicek sebelum diajukan.</p></article>
-      <article class="svc"><span class="svc__ic svc__ic--4"><svg class="i"><use href="#i-bed"/></svg></span>
-        <h3>Hotel</h3><p>Jaringan hotel dan resort di seluruh dunia, dari bintang tiga sampai properti mewah.</p></article>
-      <article class="svc"><span class="svc__ic svc__ic--5"><svg class="i"><use href="#i-ship"/></svg></span>
-        <h3>Cruise</h3><p>Ocean cruise dan river cruise bersama operator internasional, lengkap dengan pengurusan dokumennya.</p></article>
+<!-- ══ Destinations carousel ══ -->
+<section class="block" id="destinasi" aria-labelledby="dest-title">
+  <div class="block__head">
+    <div>
+      <h2 id="dest-title">Popular destinations</h2>
+      <p class="block__sub">Where our groups go, and the best months to travel.</p>
+    </div>
+    <div class="arrows">
+      <button class="round" type="button" id="destPrev" aria-label="Previous destinations"><svg class="i flip"><use href="#i-arrow"/></svg></button>
+      <button class="round round--ink" type="button" id="destNext" aria-label="Next destinations"><svg class="i"><use href="#i-arrow"/></svg></button>
+    </div>
+  </div>
+  <div class="slider" id="destGrid" tabindex="0" aria-label="Destinations, scroll sideways"></div>
+</section>
+
+<!-- ══ How it works ══ -->
+<section class="block block--center" id="how" aria-labelledby="how-title">
+  <h2 id="how-title">From first chat to the flight home</h2>
+  <p class="block__sub">Three steps, and the same consultant answers you at each one.</p>
+  <ol class="steps">
+    <li class="card step">
+      <span class="tile"><svg class="i"><use href="#i-map"/></svg></span>
+      <h3>Pick a departure</h3>
+      <p>Choose a group date or ask for a private trip on your own dates.</p>
+    </li>
+    <li class="card step step--on">
+      <img class="step__img" src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="" loading="lazy" />
+      <span class="tile tile--on"><svg class="i"><use href="#i-doc"/></svg></span>
+      <h3>We prepare the papers</h3>
+      <p>Pay the deposit and we check your passport, apply for the visa and book the flights.</p>
+      <a class="step__link" href="visa.html">Visa requirements <svg class="i"><use href="#i-arrow"/></svg></a>
+    </li>
+    <li class="card step">
+      <span class="tile"><svg class="i"><use href="#i-plane"/></svg></span>
+      <h3>Fly with your leader</h3>
+      <p>Meet your tour leader at the airport; they stay with the group until you land home.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ══ Promo: the next departure with a reduced price ══ -->
+<section class="promo" id="promo" aria-label="Featured offer"></section>
+
+<!-- ══ About + numbers ══ -->
+<section class="block about2" aria-labelledby="about-title">
+  <p class="pill-label">About us</p>
+  <div>
+    <h2 id="about-title">A travel agency from Medan that grew into two offices and thousands of group trips.</h2>
+    <div class="about2__cols">
+      <p>PT. Inter Continent Indonesia opened in Medan in 2010 and PT. Icon Holiday Indonesia followed in Jakarta. We plan group tours, issue flight tickets and prepare visas from both offices.</p>
+      <p>Our tour leaders speak Indonesian and travel with every group. Hotels sit close to where the day's plan happens, so evenings are free rather than spent in traffic.</p>
     </div>
   </div>
 </section>
+<div class="nums">
+  <div class="num"><b>15<small>+</small></b><span>Years running tours</span></div>
+  <div class="num"><b>12K</b><span>Travellers served</span></div>
+  <div class="num"><b>30<small>+</small></b><span>Visa countries</span></div>
+</div>
 
-<!-- ══ Tour ══ -->
-<section class="sect sect--tint" id="tour">
-  <div class="wrap">
-    <div class="sect__head">
-      <div>
-        <p class="eyebrow">Limited Seat Tour</p>
-        <h2 class="sect__title">Keberangkatan 2026</h2>
-      </div>
-      <a class="btn btn--ghost" href="tour.html">Lihat semua paket <svg class="i"><use href="#i-arrow"/></svg></a>
+<!-- ══ Departures ══ -->
+<section class="block" id="tour" aria-labelledby="dep-title">
+  <div class="block__head">
+    <div>
+      <h2 id="dep-title">2026 departures</h2>
+      <p class="block__sub">Flights, hotels and a tour leader included. Seats are held when the deposit is paid.</p>
     </div>
-
-    <div class="grid grid--4 reveal" id="tourGrid"></div>
-    <p class="note">Harga per orang, sudah termasuk tiket, hotel dan tour leader. Kursi terbatas — hubungi kami untuk ketersediaan terkini.</p>
+    <a class="btn btn--ghost" href="tour.html">All packages <svg class="i"><use href="#i-arrow"/></svg></a>
   </div>
+  <div class="trips" id="tourGrid"></div>
 </section>
 
-<!-- ══ Kenapa kami ══ -->
-<section class="sect" id="kenapa">
-  <div class="wrap">
-    <p class="eyebrow">Mengapa Icon Holiday</p>
-    <h2 class="sect__title">Perjalanan yang terasa ringan</h2>
-
-    <div class="grid grid--3 reveal">
-      <article class="why"><span class="why__n">01</span>
-        <h3>Pilihan perjalanan terbaik</h3>
-        <p>Setiap rute kami rancang dengan perhatian pada detail — tempo yang masuk akal, hotel yang benar-benar nyaman, dan waktu luang yang cukup.</p></article>
-      <article class="why"><span class="why__n">02</span>
-        <h3>Tim profesional &amp; berpengalaman</h3>
-        <p>Konsultan kami sudah bertahun-tahun di industri ini dan tahu apa yang berubah — aturan visa, musim terbaik, sampai jalur transit yang efisien.</p></article>
-      <article class="why"><span class="why__n">03</span>
-        <h3>Liburan tanpa repot</h3>
-        <p>Tiket, hotel, dokumen, asuransi — semua kami urus. Anda cukup menyiapkan koper dan menikmati perjalanannya.</p></article>
-    </div>
-  </div>
+<!-- ══ Reviews ══ -->
+<section class="block block--center" id="testimoni" aria-labelledby="rev-title">
+  <h2 id="rev-title">What travellers say after the trip</h2>
+  <div class="voices3" id="revGrid"></div>
 </section>
 
-<!-- ══ Destinasi ══ -->
-<section class="sect sect--tint" id="destinasi">
-  <div class="wrap">
-    <p class="eyebrow">Destinasi Populer</p>
-    <h2 class="sect__title">Ke mana tahun ini?</h2>
-    <div class="dests reveal" id="destGrid"></div>
+<!-- ══ Closing call ══ -->
+<section class="closer" id="kontak" aria-labelledby="close-title">
+  <img class="closer__photo" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80" alt="" loading="lazy" />
+  <div class="closer__text">
+    <h2 id="close-title">Tell us the plan<span class="dot">.</span></h2>
+    <p>Where, roughly when and how many people. A consultant replies the same day on WhatsApp.</p>
   </div>
+  <div class="closer__cta">
+    <a class="btn btn--primary" id="closerWa" href="kontak.html" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#i-wa"/></svg> Chat on WhatsApp</a>
+    <a class="btn btn--ghost" href="kontak.html">Send a message</a>
+  </div>
+  <img class="closer__photo" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&q=80" alt="" loading="lazy" />
 </section>
 
-<!-- ══ Testimoni ══ -->
-<section class="sect" id="testimoni">
-  <div class="wrap">
-    <p class="eyebrow">Kata Pelanggan</p>
-    <h2 class="sect__title">Cerita dari perjalanan mereka</h2>
-    <div class="grid grid--3 reveal" id="revGrid"></div>
-  </div>
-</section>
-
-<!-- ══ Artikel ══ -->
-<section class="sect sect--tint" id="artikel">
-  <div class="wrap">
-    <div class="sect__head">
-      <div><p class="eyebrow">Info Perjalanan</p><h2 class="sect__title">Artikel terbaru</h2></div>
-    </div>
-    <div class="grid grid--3 reveal" id="newsGrid"></div>
-  </div>
-</section>
-
-<!-- ══ Tentang ══ -->
-<section class="sect" id="tentang">
-  <div class="wrap about">
-    <div class="about__media" aria-hidden="true">
-      <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=900&amp;q=80" alt="" loading="lazy" decoding="async" />
-      <div class="about__badge"><b>2</b><span>Kantor<br />Medan &amp; Jakarta</span></div>
-    </div>
-    <div class="about__text">
-      <p class="eyebrow">Tentang Kami</p>
-      <h2 class="sect__title">Icon Holiday Indonesia</h2>
-      <p>Kami adalah biro perjalanan wisata yang melayani tour grup dan privat, tiket pesawat, pengurusan visa, reservasi hotel, serta paket cruise — dari kantor kami di Medan dan Jakarta.</p>
-      <p>Yang kami jaga sederhana: rencana yang rapi, harga yang jelas sejak awal, dan tim yang bisa dihubungi ketika Anda benar-benar membutuhkannya — termasuk saat sedang di perjalanan.</p>
-      <ul class="ticks">
-        <li>Tour leader berpengalaman di setiap keberangkatan grup</li>
-        <li>Konsultasi visa sebelum dokumen diajukan</li>
-        <li>Harga transparan, tanpa biaya tersembunyi</li>
-        <li>Pendampingan penuh selama perjalanan</li>
-      </ul>
-      <a class="btn btn--primary" href="kontak.html">Konsultasi gratis <svg class="i"><use href="#i-arrow"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<!-- ══ CTA aplikasi ══ -->
-<section class="appcta">
-  <div class="wrap appcta__in">
-    <div class="appcta__intro">
-      <p class="eyebrow eyebrow--light">Masuk ke Sistem</p>
-      <h2>Pilih tujuan Anda</h2>
-      <p class="appcta__sub">Traveler memesan lewat aplikasi. Tim internal mengelola paket, booking dan pelanggan lewat CMS.</p>
-    </div>
-
-    <div class="portals">
-      <a class="portal" data-link="app" href="/">
-        <span class="portal__ic portal__ic--app"><svg class="i"><use href="#i-phone-app"/></svg></span>
-        <h3>Aplikasi Traveler <svg class="i portal__go"><use href="#i-arrow"/></svg></h3>
-        <p>Jelajahi paket liburan, susun itinerary, pesan tiket &amp; hotel, lalu pantau semuanya di satu tempat.</p>
-        <ul>
-          <li><svg class="i"><use href="#i-check"/></svg> Paket liburan siap pesan</li>
-          <li><svg class="i"><use href="#i-check"/></svg> Itinerary harian &amp; budget</li>
-          <li><svg class="i"><use href="#i-check"/></svg> Konsultan pribadi &amp; asisten AI</li>
-        </ul>
-        <span class="portal__cta">Buka Aplikasi</span>
-      </a>
-
-      <a class="portal" data-link="cms" href="/dashboard">
-        <span class="portal__ic portal__ic--cms"><svg class="i"><use href="#i-grid"/></svg></span>
-        <h3>CMS / Portal Admin <svg class="i portal__go"><use href="#i-arrow"/></svg></h3>
-        <p>Kelola paket liburan, destinasi, promo, booking dan pelanggan — lengkap dengan laporan penjualan.</p>
-        <ul>
-          <li><svg class="i"><use href="#i-check"/></svg> CRUD paket, destinasi &amp; promo</li>
-          <li><svg class="i"><use href="#i-check"/></svg> Booking, pelanggan &amp; leads</li>
-          <li><svg class="i"><use href="#i-check"/></svg> Laporan &amp; analitik penjualan</li>
-        </ul>
-        <span class="portal__cta portal__cta--alt">Buka CMS</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ══ Kontak ══ -->
-<section class="sect" id="kontak">
-  <div class="wrap">
-    <p class="eyebrow">Hubungi Kami</p>
-    <h2 class="sect__title">Mari rencanakan perjalanan Anda</h2>
-
-    <div class="contact">
-      <form class="form" id="contactForm" novalidate>
-        <div class="form__row">
-          <div class="form__field"><label for="c-name">Nama</label><input id="c-name" name="name" type="text" required placeholder="Nama lengkap" /></div>
-          <div class="form__field"><label for="c-phone">No. WhatsApp</label><input id="c-phone" name="phone" type="tel" required placeholder="08xx xxxx xxxx" /></div>
-        </div>
-        <div class="form__field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" placeholder="nama@email.com" /></div>
-        <div class="form__field"><label for="c-msg">Rencana perjalanan</label><textarea id="c-msg" name="message" rows="4" placeholder="Tujuan, perkiraan tanggal, jumlah peserta…"></textarea></div>
-        <button class="btn btn--primary" type="submit">Kirim pesan</button>
-        <p class="form__status" id="formStatus" role="status"></p>
-      </form>
-
-      <div class="offices">
-        <article class="office">
-          <h3><svg class="i"><use href="#i-pin"/></svg> Office Medan</h3>
-          <p class="office__co">PT. Inter Continent Indonesia</p>
-          <p>Jl. Brigjend Katamso, Komp. Istana Bisnis Centre No. 43, Medan</p>
-          <p class="office__tel"><a href="tel:+62614520888">(061) 4520 888</a></p>
-        </article>
-        <article class="office">
-          <h3><svg class="i"><use href="#i-pin"/></svg> Office Jakarta</h3>
-          <p class="office__co">PT. Icon Holiday Indonesia</p>
-          <p>Jl. Muara Karang Raya No. 185, Jakarta Utara, Jakarta</p>
-          <p class="office__tel"><a href="tel:+62216660888">(021) 6660 8888</a></p>
-        </article>
-        <article class="office office--hours">
-          <h3><svg class="i"><use href="#i-clock"/></svg> Jam Operasional</h3>
-          <p>Senin – Jumat &nbsp;09.00 – 17.00</p>
-          <p>Sabtu &nbsp;09.00 – 14.00</p>
-          <p>Minggu &amp; hari libur — tutup</p>
-        </article>
-      </div>
-    </div>
-  </div>
-</section>
-
+</div>
 </main>
 
 <script src="./data.js"></script>

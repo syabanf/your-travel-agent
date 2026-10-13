@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, CalendarSearch, MessageCircle, Wallet, ArrowRight } from "lucide-react";
-import PhoneFrame from "../components/PhoneFrame";
+import AppFrame from "../components/AppFrame";
 import BrandMark from "../components/BrandMark";
 import { BRAND } from "@/lib/brand";
 
@@ -28,7 +28,7 @@ export default function Onboarding() {
   const Icon = s.icon;
 
   return (
-    <PhoneFrame>
+    <AppFrame>
       <div className="relative z-10 flex-1 flex flex-col px-6 pb-10 pt-3 overflow-hidden">
         {/* Ambient accent glows (tinted per slide) */}
         <div className="pointer-events-none absolute -top-12 -right-16 w-56 h-56 rounded-full blur-3xl opacity-40 transition-colors duration-500" style={{ background: `radial-gradient(circle, ${s.color[0]}66, transparent 70%)` }} />
@@ -84,6 +84,6 @@ export default function Onboarding() {
           {last ? "Get Started" : "Next"} <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </PhoneFrame>
+    </AppFrame>
   );
 }

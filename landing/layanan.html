@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Layanan Kami — Icon Holiday Indonesia</title>
-<meta name="description" content="Layanan Icon Holiday: paket tour grup &amp; privat, tiket pesawat harga korporat, pengurusan visa 30+ negara, reservasi hotel, serta ocean dan river cruise." />
+<title>Our Services | Icon Holiday Indonesia</title>
+<meta name="description" content="Icon Holiday services: group &amp; private tour packages, flight tickets at corporate fares, visa services for 30+ countries, hotel bookings, and ocean and river cruises." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,26 +15,26 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Hero halaman ══ -->
+<!-- ══ Page hero ══ -->
 <section class="phero">
   <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1800&amp;q=80" aria-hidden="true"></div>
   <div class="wrap phero__in">
     <nav class="crumb" aria-label="Breadcrumb">
-      <a href="index.html">Home</a><span>/</span>Layanan
+      <a href="index.html">Home</a><span>/</span>Services
     </nav>
-    <h1>Layanan Kami</h1>
+    <h1>Our Services<span class="dot">.</span></h1>
     <p>
-      Lima layanan yang saling terhubung — supaya satu perjalanan tidak perlu
-      diurus di lima tempat berbeda.
+      Five connected services, so one trip doesn't have to be arranged in five
+      different places.
     </p>
   </div>
 </section>
 
-<!-- ══ Baris layanan ══ -->
+<!-- ══ Service rows ══ -->
 <section class="sect">
   <div class="wrap">
     <div id="svcRows"></div>
@@ -44,13 +44,13 @@
 <!-- ══ CTA ══ -->
 <section class="sect sect--tint">
   <div class="wrap">
-    <p class="eyebrow">Mulai dari sini</p>
-    <h2 class="sect__title">Belum yakin butuh yang mana?</h2>
+    <p class="eyebrow">Start here</p>
+    <h2 class="sect__title">Not sure which one you need?</h2>
     <p class="sect__lead">
-      Ceritakan rencana Anda — tujuan, perkiraan tanggal, dan jumlah peserta.
-      Kami bantu susun kombinasi layanan yang paling masuk akal, tanpa biaya konsultasi.
+      Tell us your plans: destination, rough dates and number of travelers.
+      We will put together the combination of services that makes sense, with no consultation fee.
     </p>
-    <a class="btn btn--primary" href="kontak.html">Konsultasi gratis <svg class="i"><use href="#i-arrow"/></svg></a>
+    <a class="btn btn--primary" href="kontak.html">Free consultation <svg class="i"><use href="#i-arrow"/></svg></a>
   </div>
 </section>
 
@@ -62,12 +62,12 @@
 (function () {
   const esc = window.esc;
 
-  /* Latar hero halaman — gambar disuntik lewat data-bg supaya tidak perlu CSS baru. */
+  /* Page hero background: the image comes in through data-bg so no new CSS is needed. */
   document.querySelectorAll("[data-bg]").forEach((n) => {
     n.style.backgroundImage = `url("${n.dataset.bg}")`;
   });
 
-  /* Foto pendamping tiap layanan (id Unsplash yang sudah dipakai di data.js). */
+  /* Photo for each service (Unsplash ids already used in data.js). */
   const PHOTO = {
     tour:   "photo-1469854523086-cc02fe5d8800",
     tiket:  "photo-1436491865332-7a61a109cc05",
@@ -80,20 +80,20 @@
   document.getElementById("svcRows").innerHTML = window.SERVICES.map((s) => `
     <div class="svcrow">
       <div class="svcrow__media">
-        <img src="${img(PHOTO[s.id] || PHOTO.tour)}" alt="${esc(s.name)} — Icon Holiday" loading="lazy" decoding="async" />
+        <img src="${img(PHOTO[s.id] || PHOTO.tour)}" alt="${esc(s.name)} at Icon Holiday" loading="lazy" decoding="async" />
       </div>
       <div>
-        <span class="svc__ic svc__ic--${esc(s.tone)}"><svg class="i"><use href="#${esc(s.icon)}"/></svg></span>
+        <span class="svc__ic"><svg class="i"><use href="#${esc(s.icon)}"/></svg></span>
         <h2 id="${esc(s.id)}">${esc(s.name)}</h2>
         <p>${esc(s.long)}</p>
         <ul class="ticks">${s.points.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
         ${s.id === "visa"
-          ? `<a class="btn btn--ghost" href="visa.html">Lihat daftar negara <svg class="i"><use href="#i-arrow"/></svg></a>`
+          ? `<a class="btn btn--ghost" href="visa.html">See the country list <svg class="i"><use href="#i-arrow"/></svg></a>`
           : ""}
       </div>
     </div>`).join("");
 
-  /* Buka anchor dari footer (layanan.html#visa) setelah baris dirender. */
+  /* Jump to the footer anchor (layanan.html#visa) once the rows are rendered. */
   if (location.hash) {
     const target = document.getElementById(location.hash.slice(1));
     if (target) target.scrollIntoView({ behavior: window.REDUCED ? "auto" : "smooth" });

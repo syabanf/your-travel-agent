@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Artikel — Icon Holiday Indonesia</title>
-<meta name="description" content="Artikel dan info perjalanan dari Icon Holiday Indonesia — visa, penerbangan, cruise dan tips praktis sebelum berangkat." />
+<title>Articles | Icon Holiday Indonesia</title>
+<meta name="description" content="Articles and travel info from Icon Holiday Indonesia: visas, flights, cruises and practical tips before you go." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,15 +15,15 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Artikel ══ -->
+<!-- ══ Article ══ -->
 <section class="sect">
   <div class="wrap">
     <nav class="crumb crumb--dark" aria-label="Breadcrumb" id="crumb">
-      <a href="index.html">Home</a><span>/</span><a href="artikel.html">Artikel</a>
+      <a href="index.html">Home</a><span>/</span><a href="artikel.html">Articles</a>
     </nav>
 
     <div class="detail" id="detail">
@@ -33,11 +33,11 @@
   </div>
 </section>
 
-<!-- ══ Artikel lainnya ══ -->
+<!-- ══ More articles ══ -->
 <section class="sect sect--tint">
   <div class="wrap">
-    <p class="eyebrow">Baca juga</p>
-    <h2 class="sect__title">Artikel lainnya</h2>
+    <p class="eyebrow">Read next</p>
+    <h2 class="sect__title">More articles</h2>
     <div class="grid grid--3 reveal" id="moreGrid"></div>
   </div>
 </section>
@@ -71,26 +71,26 @@
     </a>`;
 
   if (!item) {
-    document.title = "Artikel tidak ditemukan — Icon Holiday Indonesia";
+    document.title = "Article not found | Icon Holiday Indonesia";
     detail.className = "";
     detail.innerHTML = `
       <div class="empty">
-        <b>Artikel tidak ditemukan</b>
-        Tautannya mungkin sudah berubah atau artikelnya sudah tidak tayang.
-        <p class="note"><a class="btn btn--ghost" href="artikel.html"><svg class="i"><use href="#i-back"/></svg> Kembali ke daftar artikel</a></p>
+        <h1 class="empty__title">Article not found</h1>
+        <p>The link may have changed, or the article is no longer published.</p>
+        <p class="note"><a class="btn btn--ghost" href="artikel.html"><svg class="i"><use href="#i-back"/></svg> Back to the article list</a></p>
       </div>`;
     more.innerHTML = NEWS.slice(0, 3).map(card).join("");
     window.initReveal();
     return;
   }
 
-  /* ── Judul dokumen & breadcrumb ──────────────────────────── */
-  document.title = `${item.title} — Icon Holiday Indonesia`;
+  /* ── Document title & breadcrumb ─────────────────────────── */
+  document.title = `${item.title} | Icon Holiday Indonesia`;
   const desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute("content", item.sum);
   crumb.insertAdjacentHTML("beforeend", `<span>/</span>${esc(item.tag)}`);
 
-  /* ── Isi artikel ─────────────────────────────────────────── */
+  /* ── Article body ────────────────────────────────────────── */
   article.innerHTML = `
     <div class="article__hero">
       <img src="${esc(item.img)}" alt="${esc(item.title)}" loading="lazy" decoding="async" />
@@ -106,18 +106,18 @@
   const others = NEWS.filter((n) => n.id !== item.id);
   side.innerHTML = `
     <div class="panel">
-      <h2><svg class="i"><use href="#i-phone"/></svg> Ada yang ingin ditanyakan?</h2>
-      <p>Ketentuan perjalanan berubah lebih sering daripada artikel diperbarui. Konfirmasikan dulu ke tim kami sebelum menyiapkan dokumen.</p>
-      <p class="note"><a class="btn btn--primary" href="kontak.html">Hubungi kami <svg class="i"><use href="#i-arrow"/></svg></a></p>
+      <h2><svg class="i"><use href="#i-phone"/></svg> Have a question?</h2>
+      <p>Travel rules change more often than articles get updated. Check with our team before you prepare your documents.</p>
+      <p class="note"><a class="btn btn--primary" href="kontak.html">Contact us <svg class="i"><use href="#i-arrow"/></svg></a></p>
     </div>
     <div class="panel">
-      <h2><svg class="i"><use href="#i-doc"/></svg> Topik lainnya</h2>
+      <h2><svg class="i"><use href="#i-doc"/></svg> Other topics</h2>
       ${others.slice(0, 4).map((n) => `
         <p class="office__tel"><a href="artikel-detail.html?id=${esc(encodeURIComponent(n.id))}">${esc(n.title)}</a></p>`).join("")}
-      <p class="note"><a class="btn btn--ghost" href="artikel.html"><svg class="i"><use href="#i-back"/></svg> Semua artikel</a></p>
+      <p class="note"><a class="btn btn--ghost" href="artikel.html"><svg class="i"><use href="#i-back"/></svg> All articles</a></p>
     </div>`;
 
-  /* ── Artikel lainnya ─────────────────────────────────────── */
+  /* ── More articles ───────────────────────────────────────── */
   more.innerHTML = others.slice(0, 3).map(card).join("");
   window.initReveal();
 })();

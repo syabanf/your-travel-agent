@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hubungi Kami — Icon Holiday Indonesia</title>
-<meta name="description" content="Hubungi Icon Holiday Indonesia — kantor Medan (061) 4520 888 dan Jakarta (021) 6660 8888. Konsultasi tour, tiket, visa, hotel dan cruise tanpa biaya." />
+<title>Contact Us | Icon Holiday Indonesia</title>
+<meta name="description" content="Contact Icon Holiday Indonesia: Medan office (061) 4520 888 and Jakarta office (021) 6660 8888. Free consultations on tours, flights, visas, hotels and cruises." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,33 +15,33 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Hero halaman ══ -->
+<!-- ══ Page hero ══ -->
 <section class="phero">
   <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1800&amp;q=80" aria-hidden="true"></div>
   <div class="wrap phero__in">
     <nav class="crumb" aria-label="Breadcrumb">
-      <a href="index.html">Home</a><span>/</span>Kontak
+      <a href="index.html">Home</a><span>/</span>Contact
     </nav>
-    <h1>Hubungi Kami</h1>
+    <h1>Contact Us<span class="dot">.</span></h1>
     <p>
-      Ceritakan rencana Anda — tujuan, perkiraan tanggal, dan jumlah peserta.
-      Konsultasi tidak dipungut biaya.
+      Tell us your plans: destination, rough dates and number of travelers.
+      Consultations are free.
     </p>
   </div>
 </section>
 
-<!-- ══ Kontak ══ -->
+<!-- ══ Contact ══ -->
 <section class="sect">
   <div class="wrap">
-    <p class="eyebrow">Hubungi Kami</p>
-    <h2 class="sect__title">Mari rencanakan perjalanan Anda</h2>
+    <p class="eyebrow">Contact Us</p>
+    <h2 class="sect__title">Let's plan your trip</h2>
     <p class="sect__lead">
-      Isi formulir di bawah, atau hubungi kantor terdekat lewat telepon dan WhatsApp.
-      Kami balas pada jam operasional.
+      Fill in the form below, or call or WhatsApp your nearest office.
+      We reply during opening hours.
     </p>
 
     <p class="note" id="prefillNote" hidden></p>
@@ -49,12 +49,12 @@
     <div class="contact">
       <form class="form" id="contactForm" novalidate>
         <div class="form__row">
-          <div class="form__field"><label for="c-name">Nama</label><input id="c-name" name="name" type="text" required placeholder="Nama lengkap" /></div>
-          <div class="form__field"><label for="c-phone">No. WhatsApp</label><input id="c-phone" name="phone" type="tel" required placeholder="08xx xxxx xxxx" /></div>
+          <div class="form__field"><label for="c-name">Name</label><input id="c-name" name="name" type="text" required placeholder="Full name" /></div>
+          <div class="form__field"><label for="c-phone">WhatsApp number</label><input id="c-phone" name="phone" type="tel" required placeholder="08xx xxxx xxxx" /></div>
         </div>
-        <div class="form__field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" placeholder="nama@email.com" /></div>
-        <div class="form__field"><label for="c-msg">Rencana perjalanan</label><textarea id="c-msg" name="message" rows="4" placeholder="Tujuan, perkiraan tanggal, jumlah peserta…"></textarea></div>
-        <button class="btn btn--primary" type="submit">Kirim pesan</button>
+        <div class="form__field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" placeholder="name@email.com" /></div>
+        <div class="form__field"><label for="c-msg">Travel plans</label><textarea id="c-msg" name="message" rows="4" placeholder="Destination, rough dates, number of travelers…"></textarea></div>
+        <button class="btn btn--primary" type="submit">Send message</button>
         <p class="form__status" id="formStatus" role="status"></p>
       </form>
 
@@ -77,26 +77,26 @@
     n.style.backgroundImage = `url("${n.dataset.bg}")`;
   });
 
-  /* ── Kantor + jam operasional ────────────────────────────── */
+  /* ── Offices + opening hours ─────────────────────────────── */
   el("offices").innerHTML =
     CO.offices.map((o) => `
       <article class="office">
-        <h3><svg class="i"><use href="#i-pin"/></svg> Office ${esc(o.city)}</h3>
+        <h3><svg class="i"><use href="#i-pin"/></svg> ${esc(o.city)} Office</h3>
         <p class="office__co">${esc(o.legal)}</p>
         <p>${esc(o.addr)}</p>
         <p class="office__tel"><a href="tel:${esc(o.telHref)}">${esc(o.tel)}</a></p>
       </article>`).join("") + `
       <article class="office office--hours">
-        <h3><svg class="i"><use href="#i-clock"/></svg> Jam Operasional</h3>
+        <h3><svg class="i"><use href="#i-clock"/></svg> Opening Hours</h3>
         ${CO.hours.map((h) => `<p>${esc(h)}</p>`).join("")}
       </article>
       <article class="office">
         <h3><svg class="i"><use href="#i-wa"/></svg> WhatsApp</h3>
-        <p>Cara tercepat untuk pertanyaan singkat soal ketersediaan kursi atau dokumen visa.</p>
-        <p class="office__tel"><a href="https://wa.me/${esc(CO.wa)}" target="_blank" rel="noopener noreferrer">Chat sekarang</a></p>
+        <p>The fastest way to ask a quick question about seat availability or visa documents.</p>
+        <p class="office__tel"><a href="https://wa.me/${esc(CO.wa)}" target="_blank" rel="noopener noreferrer">Chat now</a></p>
       </article>`;
 
-  /* ── Prefill dari ?tour= / ?dest= ────────────────────────── */
+  /* ── Prefill from ?tour= / ?dest= ────────────────────────── */
   const msg  = el("c-msg");
   const note = el("prefillNote");
 
@@ -106,16 +106,16 @@
   const dest = destId ? (window.DESTS || []).find((d) => d.id === destId) : null;
 
   if (tour) {
-    msg.value = `Saya tertarik dengan paket "${tour.title}". Mohon informasi lebih lanjut.`;
-    note.textContent = `Anda sedang menanyakan paket: ${tour.title} (${tour.days} hari). Silakan lengkapi data di bawah — pesannya sudah kami isikan.`;
+    msg.value = `I'm interested in the "${tour.title}" package. Please send me more information.`;
+    note.textContent = `You are asking about the package: ${tour.title} (${tour.days} days). Please fill in your details below. We have already written the message for you.`;
     note.hidden = false;
   } else if (dest) {
-    msg.value = `Saya tertarik dengan perjalanan ke ${dest.name}. Mohon informasi lebih lanjut.`;
-    note.textContent = `Anda sedang menanyakan destinasi: ${dest.name} (${dest.region}). Silakan lengkapi data di bawah — pesannya sudah kami isikan.`;
+    msg.value = `I'm interested in a trip to ${dest.name}. Please send me more information.`;
+    note.textContent = `You are asking about the destination: ${dest.name} (${dest.region}). Please fill in your details below. We have already written the message for you.`;
     note.hidden = false;
   }
 
-  /* ── Form (demo — belum ada backend) ─────────────────────── */
+  /* ── Form (demo, no backend yet) ─────────────────────────── */
   el("contactForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const f = e.target;
@@ -125,11 +125,11 @@
 
     if (!name || !phone) {
       status.className = "form__status err";
-      status.textContent = "Mohon isi nama dan nomor WhatsApp Anda.";
+      status.textContent = "Please enter your name and WhatsApp number.";
       return;
     }
     status.className = "form__status ok";
-    status.textContent = `Terima kasih, ${name.split(" ")[0]}! Tim kami akan menghubungi Anda di ${phone}.`;
+    status.textContent = `Thank you, ${name.split(" ")[0]}! Our team will contact you at ${phone}.`;
     f.reset();
   });
 })();

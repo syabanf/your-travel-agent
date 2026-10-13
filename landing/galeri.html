@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Galeri — Icon Holiday Indonesia</title>
-<meta name="description" content="Foto-foto perjalanan grup Icon Holiday: Korea, China, Jepang, Eropa Barat, New Zealand, Turki dan Dubai. Klik foto untuk melihat versi besarnya." />
+<title>Gallery | Icon Holiday Indonesia</title>
+<meta name="description" content="Photos from Icon Holiday group trips: Korea, China, Japan, Western Europe, New Zealand, Turkey and Dubai. Click a photo to see it full size." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,49 +15,49 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Hero halaman ══ -->
+<!-- ══ Page hero ══ -->
 <section class="phero">
   <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=1800&amp;q=80" aria-hidden="true"></div>
   <div class="wrap phero__in">
     <nav class="crumb" aria-label="Breadcrumb">
-      <a href="index.html">Home</a><span>/</span>Galeri
+      <a href="index.html">Home</a><span>/</span>Gallery
     </nav>
-    <h1>Galeri</h1>
+    <h1>Gallery<span class="dot">.</span></h1>
     <p>
-      Beberapa momen dari keberangkatan grup kami — dari Nami Island sampai
-      Cappadocia. Klik foto untuk melihat versi besarnya.
+      Moments from our group departures, from Nami Island to Cappadocia.
+      Click a photo to see it full size.
     </p>
   </div>
 </section>
 
-<!-- ══ Grid galeri ══ -->
+<!-- ══ Gallery grid ══ -->
 <section class="sect">
   <div class="wrap">
-    <p class="eyebrow">Dokumentasi</p>
-    <h2 class="sect__title">Perjalanan yang sudah berangkat</h2>
+    <p class="eyebrow">Photos</p>
+    <h2 class="sect__title">Trips we have run</h2>
     <p class="sect__lead">
-      Foto diambil oleh tour leader dan peserta di berbagai keberangkatan grup.
+      Photos taken by tour leaders and travelers on our group departures.
     </p>
 
     <div class="gal" id="galGrid"></div>
-    <p class="note">Ingin foto perjalanan Anda tampil di sini? Kirimkan ke tim kami lewat WhatsApp.</p>
+    <p class="note">Want your trip photos featured here? Send them to our team on WhatsApp.</p>
   </div>
 </section>
 
 <!-- ══ CTA ══ -->
 <section class="sect sect--tint">
   <div class="wrap">
-    <p class="eyebrow">Giliran Anda</p>
-    <h2 class="sect__title">Perjalanan berikutnya bisa jadi milik Anda</h2>
+    <p class="eyebrow">Your Turn</p>
+    <h2 class="sect__title">The next trip could be yours</h2>
     <p class="sect__lead">
-      Ceritakan tujuan dan perkiraan tanggalnya — kami bantu susun rencananya,
-      dari tiket sampai dokumen.
+      Tell us your destination and rough dates, and we will help you plan it,
+      from tickets to documents.
     </p>
-    <a class="btn btn--primary" href="kontak.html">Rencanakan perjalanan <svg class="i"><use href="#i-arrow"/></svg></a>
+    <a class="btn btn--primary" href="kontak.html">Plan a trip <svg class="i"><use href="#i-arrow"/></svg></a>
   </div>
 </section>
 
@@ -77,14 +77,14 @@
   const grid  = document.getElementById("galGrid");
 
   grid.innerHTML = ITEMS.map((g, i) => `
-    <figure role="button" tabindex="0" data-i="${i}" aria-label="Perbesar foto: ${esc(g.cap)}">
+    <figure role="button" tabindex="0" data-i="${i}" aria-label="Enlarge photo: ${esc(g.cap)}">
       <img src="${esc(g.img)}" alt="${esc(g.cap)}" loading="lazy" decoding="async" />
       <figcaption>${esc(g.cap)}</figcaption>
     </figure>`).join("");
 
   /* ── Lightbox ────────────────────────────────────────────────
-     Tidak ada kelas untuk overlay di styles.css, jadi elemennya
-     dibuat lewat JS dengan style inline seperlunya.             */
+     styles.css has no overlay class, so the elements are built
+     in JS with only the inline styles they need.                */
   let overlay = null;
   let lastFocus = null;
 
@@ -98,7 +98,7 @@
 
   function onKey(e) {
     if (e.key === "Escape") { e.preventDefault(); close(); return; }
-    if (e.key === "Tab" && overlay) {           // fokus tetap di dalam overlay
+    if (e.key === "Tab" && overlay) {           // keep focus inside the overlay
       e.preventDefault();
       overlay.querySelector("button").focus();
     }
@@ -134,7 +134,7 @@
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "btn btn--light";
-    btn.textContent = "Tutup";
+    btn.textContent = "Close";
     btn.addEventListener("click", close);
 
     overlay.append(img, cap, btn);

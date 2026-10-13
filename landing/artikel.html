@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Artikel &amp; Info Perjalanan — Icon Holiday Indonesia</title>
-<meta name="description" content="Info visa, aturan penerbangan terbaru, tips koper dan panduan cruise — catatan praktis dari tim Icon Holiday untuk perjalanan Anda berikutnya." />
+<title>Articles &amp; Travel Info | Icon Holiday Indonesia</title>
+<meta name="description" content="Visa info, the latest flight rules, luggage tips and cruise guides: practical notes from the Icon Holiday team for your next trip." />
 <meta name="theme-color" content="#0A6E4C" />
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
@@ -15,39 +15,39 @@
 </head>
 <body>
 
-<a href="#main" class="skip-link">Lompat ke konten</a>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main">
 
-<!-- ══ Hero halaman ══ -->
+<!-- ══ Page hero ══ -->
 <section class="phero">
   <div class="phero__bg" data-bg="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&amp;q=80" aria-hidden="true"></div>
   <div class="wrap phero__in">
     <nav class="crumb" aria-label="Breadcrumb">
-      <a href="index.html">Home</a><span>/</span>Artikel
+      <a href="index.html">Home</a><span>/</span>Articles
     </nav>
-    <h1>Artikel &amp; Info Perjalanan</h1>
+    <h1>Articles &amp; Travel Info<span class="dot">.</span></h1>
     <p>
-      Aturan visa, ketentuan maskapai dan hal-hal kecil yang sering terlewat —
-      kami tulis ulang dengan bahasa yang mudah dipakai.
+      Visa rules, airline policies and the small things people often miss,
+      rewritten in plain language you can use.
     </p>
   </div>
 </section>
 
-<!-- ══ Daftar artikel ══ -->
+<!-- ══ Article list ══ -->
 <section class="sect">
   <div class="wrap">
-    <p class="eyebrow">Info Perjalanan</p>
-    <h2 class="sect__title">Semua artikel</h2>
-    <p class="sect__lead">Pilih topik untuk menyaring daftar di bawah.</p>
+    <p class="eyebrow">Travel Info</p>
+    <h2 class="sect__title">All articles</h2>
+    <p class="sect__lead">Pick a topic to filter the list below.</p>
 
-    <div class="chips" id="chips" role="group" aria-label="Saring artikel berdasarkan topik"></div>
+    <div class="chips" id="chips" role="group" aria-label="Filter articles by topic"></div>
 
     <div class="grid grid--3 reveal" id="newsGrid"></div>
 
     <div class="empty" id="newsEmpty" hidden>
-      <b>Belum ada artikel untuk topik ini</b>
-      Coba pilih topik lain, atau lihat seluruh artikel yang tersedia.
+      <b>No articles on this topic yet</b>
+      Try another topic, or browse all available articles.
     </div>
   </div>
 </section>
@@ -55,13 +55,13 @@
 <!-- ══ CTA ══ -->
 <section class="sect sect--tint">
   <div class="wrap">
-    <p class="eyebrow">Masih ada yang mengganjal?</p>
-    <h2 class="sect__title">Tanyakan langsung ke tim kami</h2>
+    <p class="eyebrow">Still have questions?</p>
+    <h2 class="sect__title">Ask our team directly</h2>
     <p class="sect__lead">
-      Aturan perjalanan berubah cepat. Kalau ada yang belum jelas — soal visa,
-      bagasi, atau dokumen — tanyakan saja, tidak perlu menunggu artikelnya terbit.
+      Travel rules change fast. If anything is unclear about visas, baggage or
+      documents, ask us. There is no need to wait for an article.
     </p>
-    <a class="btn btn--primary" href="kontak.html">Hubungi kami <svg class="i"><use href="#i-arrow"/></svg></a>
+    <a class="btn btn--primary" href="kontak.html">Contact us <svg class="i"><use href="#i-arrow"/></svg></a>
   </div>
 </section>
 
@@ -82,7 +82,7 @@
   const grid  = document.getElementById("newsGrid");
   const empty = document.getElementById("newsEmpty");
 
-  const ALL  = "Semua";
+  const ALL  = "All";
   const TAGS = [ALL, ...Array.from(new Set(NEWS.map((n) => n.tag)))];
   let active = ALL;
 

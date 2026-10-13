@@ -46,7 +46,15 @@ function landingSite() {
           res.setHeader('Location', '/app/admin')
           return res.end()
         }
-        if (!url.startsWith('/landing')) return next()
+        // '/landing' without the slash would load the page with every relative
+        // link (styles.css, data.js, tour.html) resolved against '/'.
+        if (url === '/landing') {
+          const query = (req.url || '').slice(url.length)
+          res.statusCode = 301
+          res.setHeader('Location', `/landing/${query}`)
+          return res.end()
+        }
+        if (!url.startsWith('/landing/')) return next()
 
         let rel = url.slice('/landing'.length) || '/'
         if (rel.endsWith('/')) rel += 'index.html'

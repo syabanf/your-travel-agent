@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import BrandMark from "../components/BrandMark";
-import PhoneFrame from "../components/PhoneFrame";
+import AppFrame from "../components/AppFrame";
 
 const read = (k) => { try { return localStorage.getItem(k) === "1"; } catch { return false; } };
 
@@ -19,7 +19,7 @@ export default function Splash() {
   }, [navigate]);
 
   return (
-    <PhoneFrame>
+    <AppFrame>
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center overflow-hidden">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -42,6 +42,6 @@ export default function Splash() {
           <span className="text-xs text-muted">Preparing your journey…</span>
         </motion.div>
       </div>
-    </PhoneFrame>
+    </AppFrame>
   );
 }
