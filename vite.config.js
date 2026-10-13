@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
-import { cp, readFile, rm, stat } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { cp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -78,6 +79,25 @@ function landingSite() {
       const out = fileURLToPath(new URL('./dist/landing', import.meta.url))
       await rm(out, { recursive: true, force: true })
       await cp(LANDING_DIR, out, { recursive: true })
+
+      // The CDN caches styles.css and the scripts for hours, so a fresh page
+      // would load last deploy's CSS and JS. Tag each link with a hash of the
+      // file's content: a changed file gets a new URL, an unchanged one keeps
+      // its cache.
+      const version = {}
+      const names = await readdir(out)
+      for (const name of names.filter((n) => /\.(css|js)$/.test(n))) {
+        const body = await readFile(path.join(out, name))
+        version[name] = createHash('sha1').update(body).digest('hex').slice(0, 8)
+      }
+      for (const name of names.filter((n) => n.endsWith('.html'))) {
+        const file = path.join(out, name)
+        const html = await readFile(file, 'utf8')
+        await writeFile(file, html.replace(
+          /(href|src)="\.\/([\w-]+\.(?:css|js))"/g,
+          (match, attr, asset) => (version[asset] ? `${attr}="./${asset}?v=${version[asset]}"` : match),
+        ))
+      }
     },
   }
 }
