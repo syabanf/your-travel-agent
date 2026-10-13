@@ -313,7 +313,7 @@ export default function DashboardDestinations() {
               ) },
               { key: "country", label: "Country", render: (d) => d.country || "—" },
               { key: "vibes", label: "Vibes", render: (d) => (Array.isArray(d.vibes) ? d.vibes.slice(0, 3).join(", ") : "") || "—" },
-              { key: "status", label: "Status", render: (d) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${d.active !== false ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{d.active !== false ? "active" : "inactive"}</span> },
+              { key: "status", label: "Status", render: (d) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${d.active !== false ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{d.active !== false ? "active" : "inactive"}</span> },
               { key: "fromPrice", label: "From", align: "right", className: "text-right font-semibold text-accent-strong", render: (d) => d.fromPrice > 0 ? formatIDR(d.fromPrice) : "—" },
             ]}
             rows={pg.pageItems}

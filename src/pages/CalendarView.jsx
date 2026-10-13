@@ -124,7 +124,7 @@ export default function CalendarView() {
                     </p>
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${
-                    trip.status === "active" ? "bg-emerald-500/15 text-emerald-600" :
+                    trip.status === "active" ? "bg-success-soft text-success" :
                     trip.status === "planned" ? "bg-accent/10 text-accent-strong" :
                     "bg-surface-2 text-muted"
                   }`}>{trip.status}</span>

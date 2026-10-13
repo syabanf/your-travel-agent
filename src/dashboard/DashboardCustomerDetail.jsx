@@ -17,10 +17,10 @@ import SearchableSelect from "@/dashboard/SearchableSelect";
 import { confirmDialog } from "@/components/ConfirmDialog";
 
 const TIER_BADGE = {
-  platinum: "bg-indigo-100 text-indigo-700",
-  gold: "bg-accent/15 text-accent-strong",
+  platinum: "bg-info-soft text-info",
+  gold: "bg-accent-soft text-accent-strong",
   silver: "bg-slate-200 text-slate-700",
-  bronze: "bg-orange-100 text-orange-700",
+  bronze: "bg-warning-soft text-warning",
 };
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
@@ -114,12 +114,12 @@ export default function DashboardCustomerDetail() {
           <p className="text-sm text-muted mt-0.5">{[c.city, c.country].filter(Boolean).join(" · ") || "No location"}</p>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[tier] || TIER_BADGE.bronze}`}>{tier}</span>
-            <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{status}</span>
+            <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{status}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {c.phone && (
-            <button onClick={() => openWhatsApp(c.phone, `Hi ${c.name}, this is Icon Holiday Travel — how can we help with your next trip?`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
+            <button onClick={() => openWhatsApp(c.phone, `Hi ${c.name}, this is Icon Holiday Travel — how can we help with your next trip?`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-success bg-success-soft hover:bg-success-soft">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </button>
           )}
@@ -162,7 +162,7 @@ export default function DashboardCustomerDetail() {
             <DetailRow icon={Home} label="Address" value={c.address} />
             <DetailRow icon={GitBranch} label="Source" value={c.source ? cap(c.source) : null} />
             <DetailRow icon={Megaphone} label="Marketing opt-in" value={
-              <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.marketing_opt_in ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.marketing_opt_in ? "Yes" : "No"}</span>
+              <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.marketing_opt_in ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{c.marketing_opt_in ? "Yes" : "No"}</span>
             } />
             {c.notes && <DetailRow icon={StickyNote} label="Notes" value={c.notes} />}
           </div>

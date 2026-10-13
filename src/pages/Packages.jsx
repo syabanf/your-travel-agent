@@ -92,7 +92,7 @@ export default function Packages() {
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className="chip-glass">Featured</span>
                     {packageDiscount(featured) != null && (
-                      <span className="chip-glass !bg-accent/90 !border-white/30">{packageDiscount(featured)}% off</span>
+                      <span className="chip-glass !bg-accent-strong !border-white/30">{packageDiscount(featured)}% off</span>
                     )}
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">

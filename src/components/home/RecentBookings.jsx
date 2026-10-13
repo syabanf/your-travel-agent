@@ -40,7 +40,7 @@ export default function RecentBookings({ bookings = [] }) {
                 </div>
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize flex-shrink-0 ${
                   booking.status === "confirmed"
-                    ? "bg-emerald-500/15 text-emerald-600 border border-emerald-500/20"
+                    ? "bg-success-soft text-success border border-emerald-500/20"
                     : "bg-accent/10 text-accent-strong border border-accent/20"
                 }`}>
                   {booking.status}

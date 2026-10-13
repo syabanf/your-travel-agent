@@ -178,14 +178,14 @@ export default function ChecklistView() {
                     <div key={item.id} className="flex items-center gap-3 group">
                       <button onClick={() => toggle(cat.id, item.id)} aria-label="Toggle item" className="flex-shrink-0">
                         {item.checked
-                          ? <CheckSquare className="w-4 h-4 text-emerald-400" />
+                          ? <CheckSquare className="w-4 h-4 text-success" />
                           : <Square className="w-4 h-4 text-muted" />}
                       </button>
                       <span className={`flex-1 text-sm transition-all ${item.checked ? "text-muted line-through" : "text-foreground"}`}>
                         {item.label}
                       </span>
                       <button onClick={() => deleteItem(cat.id, item.id)} aria-label="Delete item"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400/60 hover:text-red-400">
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-accent-strong/60 hover:text-accent-strong">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>

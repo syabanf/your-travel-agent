@@ -21,7 +21,7 @@ import SearchableSelect from "@/dashboard/SearchableSelect";
 const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
 const statusPill = {
-  active: "bg-emerald-500/15 text-emerald-600",
+  active: "bg-success-soft text-success",
   invited: "bg-accent/10 text-accent-strong",
   disabled: "bg-surface text-muted",
 };
@@ -171,7 +171,7 @@ export default function DashboardTeam() {
       <ReadOnlyBanner resource="team" />
 
       {!canManage && (
-        <div className="mb-5 flex items-center gap-2.5 rounded-2xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-5 flex items-center gap-2.5 rounded-2xl border border-amber-300/60 bg-warning-soft px-4 py-3 text-sm text-amber-800">
           <Lock className="w-4 h-4 shrink-0" />
           You have read-only access to team management.
         </div>

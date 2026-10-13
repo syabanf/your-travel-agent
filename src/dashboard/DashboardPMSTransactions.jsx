@@ -15,9 +15,9 @@ import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 import { BRAND } from "@/lib/brand";
 
-const RES_BADGE = { confirmed: "bg-blue-100 text-blue-700", checked_in: "bg-emerald-100 text-emerald-700", checked_out: "bg-slate-100 text-slate-500", cancelled: "bg-accent-soft text-accent-strong" };
+const RES_BADGE = { confirmed: "bg-info-soft text-info", checked_in: "bg-success-soft text-success", checked_out: "bg-surface text-muted", cancelled: "bg-accent-soft text-accent-strong" };
 const RES_DOT = { confirmed: "bg-blue-500", checked_in: "bg-emerald-500", checked_out: "bg-slate-400", cancelled: "bg-accent-strong" };
-const PAY_BADGE = { paid: "bg-emerald-100 text-emerald-700", deposit: "bg-accent/15 text-accent-strong", unpaid: "bg-accent-soft text-accent-strong" };
+const PAY_BADGE = { paid: "bg-success-soft text-success", deposit: "bg-accent-soft text-accent-strong", unpaid: "bg-accent-soft text-accent-strong" };
 const label = (s) => (s || "").replace("_", " ");
 
 export default function DashboardPMSTransactions() {
@@ -76,7 +76,7 @@ export default function DashboardPMSTransactions() {
         <div>
           <p className="text-[11px] uppercase tracking-widest text-accent-strong font-semibold mb-1 flex items-center gap-2">
             <ClipboardList className="w-3.5 h-3.5" /> Operations
-            <span className="inline-flex items-center gap-1 text-emerald-600 normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
+            <span className="inline-flex items-center gap-1 text-success normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
           </p>
           <h1 className="text-2xl font-display font-bold text-foreground">PMS Transactions</h1>
           <p className="text-sm text-muted mt-0.5">Real-time monitoring of reservations, stays and folio.</p>

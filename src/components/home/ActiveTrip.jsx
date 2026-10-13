@@ -33,7 +33,7 @@ export default function ActiveTrip({ trip }) {
             <div className="absolute top-3 right-3 chip-glass">In {daysUntil} days</div>
           )}
           {isActive && (
-            <div className="absolute top-3 right-3 chip-glass !bg-emerald-400/20 !border-emerald-300/40 text-emerald-50">
+            <div className="absolute top-3 right-3 chip-glass !bg-success !border-white/25 text-white">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" /> Active now
             </div>
           )}

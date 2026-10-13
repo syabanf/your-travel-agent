@@ -11,7 +11,7 @@ import {
 import { confirmDialog } from "@/components/ConfirmDialog";
 
 const statusPill = {
-  active: "bg-emerald-500/15 text-emerald-600",
+  active: "bg-success-soft text-success",
   invited: "bg-accent/10 text-accent-strong",
   disabled: "bg-surface text-muted",
 };
@@ -94,7 +94,7 @@ export default function DashboardTeamDetail() {
           <h1 className="text-2xl font-display font-bold text-foreground truncate">{m.name || "Unnamed member"}</h1>
           {m.email && <p className="text-sm text-muted mt-0.5 truncate">{m.email}</p>}
           <div className="flex items-center gap-2 mt-3 flex-wrap">
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600">{roleLabel(roleKey)}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-info-soft text-info">{roleLabel(roleKey)}</span>
             <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${statusPill[status] || statusPill.disabled}`}>{status}</span>
           </div>
         </div>

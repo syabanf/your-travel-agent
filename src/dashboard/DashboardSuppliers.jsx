@@ -30,10 +30,10 @@ const EMPTY = {
 
 const TYPES = ["flight", "hotel", "activity", "transport", "dmc"];
 const TYPE_BADGE = {
-  flight: "bg-blue-100 text-blue-700",
-  hotel: "bg-emerald-100 text-emerald-700",
+  flight: "bg-info-soft text-info",
+  hotel: "bg-success-soft text-success",
   activity: "bg-accent/10 text-accent-strong",
-  transport: "bg-indigo-100 text-indigo-700",
+  transport: "bg-info-soft text-info",
   dmc: "bg-slate-200 text-slate-700",
 };
 
@@ -315,7 +315,7 @@ export default function DashboardSuppliers() {
                 </span>
               ) },
               { key: "type", label: "Type", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.dmc}`}>{s.type || "dmc"}</span> },
-              { key: "status", label: "Status", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.status || "active"}</span> },
+              { key: "status", label: "Status", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{s.status || "active"}</span> },
               { key: "contact", label: "Contact", render: (s) => s.contact_email || s.contact_phone || "—" },
               { key: "commission", label: "Commission", align: "right", className: "text-right font-semibold text-accent-strong", render: (s) => `${Number(s.commission_rate || 0)}%` },
             ]}
@@ -332,7 +332,7 @@ export default function DashboardSuppliers() {
                   <h3 className="font-display font-semibold text-foreground truncate">{s.name}</h3>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.dmc}`}>{s.type || "dmc"}</span>
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.status || "active"}</span>
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{s.status || "active"}</span>
                   </div>
                 </div>
                 {(can(role, "suppliers", "edit") || can(role, "suppliers", "delete")) && (
@@ -361,7 +361,7 @@ export default function DashboardSuppliers() {
               {s.contact_phone && (
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(s.contact_phone, `Hi ${s.name}, this is Icon Holiday Travel…`); }}
-                  className="mt-3 w-full rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold py-2 flex items-center justify-center gap-1.5 transition-colors"
+                  className="mt-3 w-full rounded-xl bg-success-soft text-success hover:bg-success-soft text-xs font-semibold py-2 flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
                 </button>

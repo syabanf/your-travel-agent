@@ -18,13 +18,13 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const statusPill = {
-  confirmed: "bg-emerald-500/15 text-emerald-600",
+  confirmed: "bg-success-soft text-success",
   pending: "bg-accent/10 text-accent-strong",
   cancelled: "bg-accent-soft text-accent-strong",
-  completed: "bg-blue-500/15 text-blue-600",
+  completed: "bg-info-soft text-info",
 };
 const paymentPill = {
-  paid: "bg-emerald-500/15 text-emerald-600",
+  paid: "bg-success-soft text-success",
   deposit: "bg-accent/10 text-accent-strong",
   unpaid: "bg-accent-soft text-accent-strong",
 };
@@ -149,7 +149,7 @@ export default function DashboardBookingDetail() {
       </header>
 
       {b.status === "cancelled" && (
-        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-4 mb-6 text-sm">
+        <div className="bg-accent-soft border border-red-500/20 rounded-2xl p-4 mb-6 text-sm">
           <p className="font-medium text-accent-strong">Cancelled{b.cancelled_date ? ` on ${moment(b.cancelled_date).format("MMM D, YYYY")}` : ""}</p>
           {b.refunded_amount ? <p className="text-muted mt-0.5">Refunded {formatIDR(b.refunded_amount)}</p> : null}
           {b.cancellation_reason ? <p className="text-muted mt-0.5">Reason: {b.cancellation_reason}</p> : null}
@@ -175,7 +175,7 @@ export default function DashboardBookingDetail() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-muted">Sell price</div><div className="stat-value text-base lg:text-lg font-display font-bold text-accent-strong">{formatIDR(price)}</div></div>
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-muted">Cost</div><div className="stat-value text-base lg:text-lg font-display font-bold text-foreground">{formatIDR(costPrice)}</div></div>
-          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-muted flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-emerald-600">{formatIDR(margin)} <span className="text-xs font-normal text-muted">({marginPct}%)</span></div></div>
+          <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-muted flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Margin</div><div className="stat-value text-base lg:text-lg font-display font-bold text-success">{formatIDR(margin)} <span className="text-xs font-normal text-muted">({marginPct}%)</span></div></div>
           <div className="min-w-0"><div className="text-[11px] uppercase tracking-wider text-muted flex items-center gap-1"><Percent className="w-3 h-3" /> Commission</div><div className="stat-value text-base lg:text-lg font-display font-bold text-foreground">{b.commission ? formatIDR(b.commission) : (commission != null ? formatIDR(commission) : "—")}</div></div>
         </div>
         <div className="mt-4 pt-4 border-t border-border flex items-center gap-2">
@@ -194,7 +194,7 @@ export default function DashboardBookingDetail() {
           <button onClick={printVoucher} className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground bg-surface hover:bg-surface px-3.5 py-2 rounded-xl transition-colors"><Printer className="w-4 h-4" /> Print voucher (PDF)</button>
           <button onClick={printReceipt} className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground bg-surface hover:bg-surface px-3.5 py-2 rounded-xl transition-colors"><ReceiptText className="w-4 h-4" /> Export receipt</button>
           <button onClick={printQuotation} className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground bg-surface hover:bg-surface px-3.5 py-2 rounded-xl transition-colors"><FileText className="w-4 h-4" /> Export quotation</button>
-          <button onClick={sendWhatsApp} className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15 px-3.5 py-2 rounded-xl transition-colors"><MessageCircle className="w-4 h-4" /> Send confirmation via WhatsApp</button>
+          <button onClick={sendWhatsApp} className="inline-flex items-center gap-1.5 text-sm font-medium text-success bg-success-soft hover:bg-success-soft px-3.5 py-2 rounded-xl transition-colors"><MessageCircle className="w-4 h-4" /> Send confirmation via WhatsApp</button>
         </div>
       </div>
 

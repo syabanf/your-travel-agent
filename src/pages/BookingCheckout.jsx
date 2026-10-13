@@ -363,16 +363,16 @@ export default function BookingCheckout() {
               <div key={s.id} className="flex items-center flex-1">
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                    done ? "bg-emerald-500/20 border border-emerald-500/40" :
+                    done ? "bg-success-soft border border-emerald-500/40" :
                     active ? "bg-accent-soft border border-accent/40" :
                     "bg-card shadow-card border border-border"
                   }`}>
-                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-accent-strong" : "text-muted"}`} />
+                    <Icon className={`w-3.5 h-3.5 ${done ? "text-success" : active ? "text-accent-strong" : "text-muted"}`} />
                   </div>
-                  <span className={`text-[9px] mt-1 ${active ? "text-accent-strong" : done ? "text-emerald-600" : "text-muted"}`}>{s.label}</span>
+                  <span className={`text-[9px] mt-1 ${active ? "text-accent-strong" : done ? "text-success" : "text-muted"}`}>{s.label}</span>
                 </div>
                 {i < steps.length - 1 && (
-                  <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-emerald-500/30" : "bg-surface"}`} />
+                  <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-success-soft" : "bg-surface"}`} />
                 )}
               </div>
             );
@@ -409,7 +409,7 @@ export default function BookingCheckout() {
                 <div className="mt-2 pt-2 border-t border-border space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-muted">Already paid</span>
-                    <span className="text-xs text-emerald-600">{formatIDR(alreadyPaid)}</span>
+                    <span className="text-xs text-success">{formatIDR(alreadyPaid)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-muted">Balance to settle</span>
@@ -613,7 +613,7 @@ export default function BookingCheckout() {
               {alreadyPaid > 0 && (
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs text-muted shrink-0">Already paid</span>
-                  <span className="text-xs text-emerald-600 text-right">−{formatIDR(alreadyPaid)}</span>
+                  <span className="text-xs text-success text-right">−{formatIDR(alreadyPaid)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between gap-3">
@@ -644,8 +644,8 @@ export default function BookingCheckout() {
         {/* Step 4: Confirmation */}
         {step === 4 && (
           <div className="text-center py-6">
-            <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-              <CheckCircle className="w-10 h-10 text-emerald-600" />
+            <div className="w-20 h-20 rounded-full bg-success-soft flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+              <CheckCircle className="w-10 h-10 text-success" />
             </div>
             <h2 className="text-xl font-display font-bold text-foreground mb-2">Booking Confirmed!</h2>
             <p className="text-sm text-muted mb-6">
@@ -666,7 +666,7 @@ export default function BookingCheckout() {
                 <div className="mt-3 pt-3 border-t border-border space-y-1">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-muted">Paid today</span>
-                    <span className="text-xs text-emerald-600 font-medium">{formatIDR(amountDue)}</span>
+                    <span className="text-xs text-success font-medium">{formatIDR(amountDue)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-xs text-muted">Balance due</span>

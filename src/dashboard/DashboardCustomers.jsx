@@ -36,10 +36,10 @@ const SOURCES = ["referral", "website", "instagram", "ota", "walk-in"];
 
 const TIERS = ["bronze", "silver", "gold", "platinum"];
 const TIER_BADGE = {
-  bronze: "bg-amber-100 text-amber-700",
+  bronze: "bg-warning-soft text-warning",
   silver: "bg-slate-200 text-slate-700",
-  gold: "bg-accent/15 text-accent-strong",
-  platinum: "bg-indigo-100 text-indigo-700",
+  gold: "bg-accent-soft text-accent-strong",
+  platinum: "bg-info-soft text-info",
 };
 
 export default function DashboardCustomers() {
@@ -407,7 +407,7 @@ export default function DashboardCustomers() {
                   </span>
                 ) },
                 { key: "tier", label: "Tier", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span> },
-                { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span> },
+                { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{c.status || "active"}</span> },
                 { key: "location", label: "Location", render: (c) => [c.city, c.country].filter(Boolean).join(", ") || "—" },
                 { key: "spend", label: "Lifetime", align: "right", className: "text-right font-semibold text-accent-strong", render: (c) => formatIDR(Number(c.lifetime_spend) || 0) },
               ]}
@@ -426,7 +426,7 @@ export default function DashboardCustomers() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-display font-semibold text-foreground truncate">{c.name}</h3>
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{c.status || "active"}</span>
                 </div>
                 <p className="text-xs text-muted mt-0.5 flex items-center gap-1.5 truncate">
                   <Mail className="w-3 h-3 shrink-0" /> {c.email}

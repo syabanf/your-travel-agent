@@ -13,15 +13,15 @@ import {
 import { confirmDialog } from "@/components/ConfirmDialog";
 
 const CHANNEL_META = {
-  email: { label: "Email", icon: Mail, badge: "bg-blue-500/15 text-blue-600" },
-  whatsapp: { label: "WhatsApp", icon: MessageCircle, badge: "bg-emerald-500/15 text-emerald-600" },
-  push: { label: "Push", icon: Bell, badge: "bg-indigo-500/15 text-indigo-600" },
+  email: { label: "Email", icon: Mail, badge: "bg-info-soft text-info" },
+  whatsapp: { label: "WhatsApp", icon: MessageCircle, badge: "bg-success-soft text-success" },
+  push: { label: "Push", icon: Bell, badge: "bg-info-soft text-info" },
 };
 
 const STATUS_BADGE = {
   draft: "bg-surface text-muted",
   scheduled: "bg-accent/10 text-accent-strong",
-  sent: "bg-emerald-100 text-emerald-700",
+  sent: "bg-success-soft text-success",
 };
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");

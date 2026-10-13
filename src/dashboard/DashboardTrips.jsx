@@ -29,14 +29,14 @@ const ITINERARY_CATEGORIES = ["transport", "accommodation", "dining", "attractio
 const ITINERARY_BOOKING_STATUSES = ["not_booked", "pending", "confirmed"];
 
 const statusPill = {
-  active: "bg-emerald-500/15 text-emerald-600",
-  planned: "bg-blue-500/15 text-blue-600",
-  completed: "bg-blue-500/15 text-blue-600",
+  active: "bg-success-soft text-success",
+  planned: "bg-info-soft text-info",
+  completed: "bg-info-soft text-info",
   draft: "bg-surface text-muted",
   cancelled: "bg-accent-soft text-accent-strong",
 };
 const itinStatusPill = {
-  confirmed: "bg-emerald-500/15 text-emerald-600",
+  confirmed: "bg-success-soft text-success",
   pending: "bg-accent/10 text-accent-strong",
   not_booked: "bg-surface text-muted",
 };
@@ -648,7 +648,7 @@ const LockCell = ({ trip, bookings }) => {
     return <span className="inline-flex items-center gap-1.5 text-xs text-accent-strong"><Lock className="w-3.5 h-3.5" /> Gated · no booking</span>;
   }
   if (!access.locked) {
-    return <span className="inline-flex items-center gap-1.5 text-xs text-emerald-600"><Unlock className="w-3.5 h-3.5" /> Paid · unlocked</span>;
+    return <span className="inline-flex items-center gap-1.5 text-xs text-success"><Unlock className="w-3.5 h-3.5" /> Paid · unlocked</span>;
   }
   return (
     <span className="inline-flex flex-col">

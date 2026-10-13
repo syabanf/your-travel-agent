@@ -163,7 +163,7 @@ export default function PackageDetail() {
         <div className="absolute top-0 left-0 right-0"><PageHeader showBack title="" /></div>
         <div className="absolute top-3 right-4 flex gap-2">
           {pkg.featured && <span className="chip-glass">Featured</span>}
-          {off != null && <span className="chip-glass !bg-accent/90 !border-white/30">{off}% off</span>}
+          {off != null && <span className="chip-glass !bg-accent-strong !border-white/30">{off}% off</span>}
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span className="chip-glass mb-2">{categoryLabel(pkg.category)}</span>
@@ -190,7 +190,7 @@ export default function PackageDetail() {
               </MemberPrice>
             </div>
             {pkg.slots_left > 0 && (
-              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${pkg.slots_left <= 5 ? "bg-accent-soft text-accent-strong" : "bg-emerald-500/10 text-emerald-700"}`}>
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${pkg.slots_left <= 5 ? "bg-accent-soft text-accent-strong" : "bg-success-soft text-success"}`}>
                 {pkg.slots_left} seat{pkg.slots_left > 1 ? "s" : ""} left
               </span>
             )}
@@ -315,7 +315,7 @@ export default function PackageDetail() {
             <ul className="space-y-2">
               {(pkg.includes || []).map((x, i) => (
                 <li key={`i${i}`} className="flex items-start gap-2.5 text-sm text-muted">
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />{x}
+                  <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />{x}
                 </li>
               ))}
               {(pkg.excludes || []).map((x, i) => (

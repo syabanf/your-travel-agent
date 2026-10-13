@@ -21,15 +21,15 @@ const SEED = [
 ];
 
 const STATUS = {
-  connected: "bg-emerald-100 text-emerald-700",
-  syncing: "bg-accent/15 text-accent-strong",
-  disconnected: "bg-slate-100 text-slate-500",
+  connected: "bg-success-soft text-success",
+  syncing: "bg-accent-soft text-accent-strong",
+  disconnected: "bg-surface text-muted",
 };
 
 // Deterministic mock booking transactions for a channel's detail drawer.
 const GUESTS = ["Putri W.", "Andi P.", "Maria S.", "Kenji S.", "Sarah L.", "Budi H.", "Dewi A.", "Rio M."];
 const LISTINGS = ["Ocean Suite · Azure Bay", "Pool Villa · Azure Bay", "Garden Villa · Ubud", "Studio Loft · Seminyak", "Spa Suite · Ubud"];
-const TX_STATUS = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-accent/15 text-accent-strong", refunded: "bg-slate-100 text-slate-500" };
+const TX_STATUS = { paid: "bg-success-soft text-success", pending: "bg-accent-soft text-accent-strong", refunded: "bg-surface text-muted" };
 function txnsFor(ch) {
   if (!ch || !ch.bookings) return [];
   const n = Math.min(8, Math.max(3, Math.round(ch.bookings / 10)));

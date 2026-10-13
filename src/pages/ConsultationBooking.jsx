@@ -78,8 +78,8 @@ export default function ConsultationBooking() {
       <div className="animate-fade-in">
         <PageHeader title="Booking Confirmed" showBack />
         <div className="px-6 text-center py-6">
-          <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-            <Check className="w-10 h-10 text-emerald-600" />
+          <div className="w-20 h-20 rounded-full bg-success-soft flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+            <Check className="w-10 h-10 text-success" />
           </div>
           <h2 className="text-xl font-display font-bold text-foreground mb-1">You're booked!</h2>
           <p className="text-sm text-muted mb-6">A consultation with {assistant.name} is confirmed.</p>

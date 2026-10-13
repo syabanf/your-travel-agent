@@ -143,7 +143,7 @@ export default function DayTimeline({ dayNumber, date, items: initialItems, trip
                     className="flex-shrink-0 mt-1 w-11 h-11 flex items-center justify-center -mr-2"
                   >
                     {item.is_completed ? (
-                      <CheckCircle className="w-4.5 h-4.5 text-emerald-600" />
+                      <CheckCircle className="w-4.5 h-4.5 text-success" />
                     ) : (
                       <Circle className="w-4.5 h-4.5 text-muted" />
                     )}

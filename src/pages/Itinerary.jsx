@@ -125,9 +125,9 @@ export default function Itinerary() {
                  <p className="text-[10px] text-muted mt-1">{trip.destination}</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
-                      trip.status === "active" ? "bg-emerald-500/20 text-emerald-600" :
-                      trip.status === "planned" ? "bg-blue-500/20 text-blue-400" :
-                      trip.status === "completed" ? "bg-slate-500/20 text-slate-400" :
+                      trip.status === "active" ? "bg-success-soft text-success" :
+                      trip.status === "planned" ? "bg-info-soft text-info" :
+                      trip.status === "completed" ? "bg-slate-500/20 text-muted" :
                       "bg-accent/20 text-accent-strong"
                     }`}>{trip.status}</span>
                   </div>

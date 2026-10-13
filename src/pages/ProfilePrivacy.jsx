@@ -108,7 +108,7 @@ export default function ProfilePrivacy() {
           </button>
           <button
             onClick={handleDelete}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-red-400/80 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 hover:bg-accent-soft transition-all"
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-accent-strong/80 hover:text-accent-strong border border-red-500/20 hover:border-red-500/40 hover:bg-accent-soft transition-all"
           >
             <Trash2 className="w-4 h-4" /> Delete all my data
           </button>

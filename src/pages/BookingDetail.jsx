@@ -14,9 +14,9 @@ import moment from "moment";
 
 const statusColors = {
   pending: "bg-accent/10 text-accent-strong border-accent/20",
-  confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  cancelled: "bg-accent-soft text-red-400 border-red-500/20",
-  completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  confirmed: "bg-success-soft text-success border-emerald-500/20",
+  cancelled: "bg-accent-soft text-accent-strong border-red-500/20",
+  completed: "bg-info-soft text-info border-blue-500/20",
 };
 
 export default function BookingDetail() {
@@ -184,7 +184,7 @@ export default function BookingDetail() {
 
         <button
           onClick={handleDelete}
-          className="w-full py-3.5 bg-card shadow-card rounded-xl text-sm font-medium text-red-600/80 hover:text-accent-strong flex items-center justify-center gap-2 transition-all lift"
+          className="w-full py-3.5 bg-card shadow-card rounded-xl text-sm font-medium text-accent-strong/80 hover:text-accent-strong flex items-center justify-center gap-2 transition-all lift"
         >
           <Trash2 className="w-4 h-4" /> Delete Booking
         </button>

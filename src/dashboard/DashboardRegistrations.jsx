@@ -22,8 +22,8 @@ const TABS = [
 ];
 
 const STATUS_BADGE = {
-  pending: "bg-accent/15 text-accent-strong",
-  approved: "bg-emerald-100 text-emerald-700",
+  pending: "bg-accent-soft text-accent-strong",
+  approved: "bg-success-soft text-success",
   rejected: "bg-accent-soft text-accent-strong",
 };
 
@@ -116,7 +116,7 @@ export default function DashboardRegistrations() {
               onClick={() => decide(r, "approved")}
               disabled={!!busyId}
               aria-label={`Approve ${r.full_name || r.email}`}
-              className="h-9 px-3 rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 inline-flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 press"
+              className="h-9 px-3 rounded-lg border border-emerald-200 text-success hover:bg-success-soft inline-flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 press"
             >
               <Check className="w-3.5 h-3.5" /> Approve
             </button>

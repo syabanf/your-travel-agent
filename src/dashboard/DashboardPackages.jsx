@@ -40,7 +40,7 @@ const CURRENCIES = [
 ];
 
 const STATUS_META = {
-  active: { label: "Active", pill: "bg-emerald-500/15 text-emerald-600" },
+  active: { label: "Active", pill: "bg-success-soft text-success" },
   draft: { label: "Draft", pill: "bg-slate-500/15 text-slate-600" },
 };
 

@@ -11,9 +11,9 @@ const typeIcons = { flight: Plane, hotel: Hotel, train: Train, car_rental: Car, 
 
 const statusColors = {
   pending: "bg-accent/10 text-accent-strong",
-  confirmed: "bg-emerald-500/15 text-emerald-400",
-  cancelled: "bg-accent-soft text-red-400",
-  completed: "bg-blue-500/15 text-blue-400",
+  confirmed: "bg-success-soft text-success",
+  cancelled: "bg-accent-soft text-accent-strong",
+  completed: "bg-info-soft text-info",
 };
 
 export default function BookingSearch() {

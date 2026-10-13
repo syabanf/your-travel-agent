@@ -14,10 +14,10 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const statusPill = {
-  active: "bg-emerald-500/15 text-emerald-600",
-  confirmed: "bg-emerald-500/15 text-emerald-600",
-  planned: "bg-blue-500/15 text-blue-600",
-  completed: "bg-blue-500/15 text-blue-600",
+  active: "bg-success-soft text-success",
+  confirmed: "bg-success-soft text-success",
+  planned: "bg-info-soft text-info",
+  completed: "bg-info-soft text-info",
   draft: "bg-surface text-muted",
   cancelled: "bg-accent-soft text-accent-strong",
 };
@@ -25,8 +25,8 @@ const statusPill = {
 const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
 const MEMBER_ROLES = ["organizer", "traveler", "guest"];
 const MEMBER_STATUSES = ["confirmed", "invited", "declined"];
-const roleBadge = { organizer: "bg-accent/15 text-accent-strong", traveler: "bg-surface text-foreground", guest: "bg-slate-400/20 text-slate-600" };
-const memberStatusBadge = { confirmed: "bg-emerald-500/15 text-emerald-600", invited: "bg-accent/10 text-accent-strong", declined: "bg-accent-soft text-accent-strong" };
+const roleBadge = { organizer: "bg-accent-soft text-accent-strong", traveler: "bg-surface text-foreground", guest: "bg-slate-400/20 text-slate-600" };
+const memberStatusBadge = { confirmed: "bg-success-soft text-success", invited: "bg-accent/10 text-accent-strong", declined: "bg-accent-soft text-accent-strong" };
 const EMPTY_MEMBER = { name: "", email: "", phone: "", role: "traveler", status: "invited" };
 
 const Pill = ({ s }) => (
@@ -325,7 +325,7 @@ export default function DashboardTripDetail() {
                     <li key={item.id} className="flex items-start gap-3 rounded-xl bg-surface-2 px-3 py-2.5">
                       <span className="shrink-0 mt-0.5">
                         {item.is_completed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-success" />
                         ) : (
                           <Circle className="w-4 h-4 text-muted" />
                         )}

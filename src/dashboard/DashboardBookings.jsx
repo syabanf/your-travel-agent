@@ -22,12 +22,12 @@ import SearchableSelect from "@/dashboard/SearchableSelect";
 import { BRAND } from "@/lib/brand";
 
 const statusPill = {
-  confirmed: "bg-emerald-500/15 text-emerald-600",
+  confirmed: "bg-success-soft text-success",
   pending: "bg-accent/10 text-accent-strong",
   cancelled: "bg-accent-soft text-accent-strong",
-  completed: "bg-blue-500/15 text-blue-600",
-  active: "bg-emerald-500/15 text-emerald-600",
-  planned: "bg-blue-500/15 text-blue-600",
+  completed: "bg-info-soft text-info",
+  active: "bg-success-soft text-success",
+  planned: "bg-info-soft text-info",
   draft: "bg-surface text-muted",
 };
 const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];

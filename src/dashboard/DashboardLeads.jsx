@@ -39,10 +39,10 @@ const STATUS_DOT = {
 };
 
 const STATUS_BADGE = {
-  new: "bg-blue-100 text-blue-700",
-  contacted: "bg-amber-100 text-amber-700",
-  quoted: "bg-indigo-100 text-indigo-700",
-  won: "bg-emerald-100 text-emerald-700",
+  new: "bg-info-soft text-info",
+  contacted: "bg-warning-soft text-warning",
+  quoted: "bg-info-soft text-info",
+  won: "bg-success-soft text-success",
   lost: "bg-accent-soft text-accent-strong",
 };
 
@@ -379,7 +379,7 @@ export default function DashboardLeads() {
                           )}
                           <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); openWhatsApp(l.phone, `Hi ${l.name}, this is Icon Holiday Travel following up on your ${l.destination} enquiry…`); }}
-                            className="w-9 h-9 rounded-lg hover:bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0"
+                            className="w-9 h-9 rounded-lg hover:bg-success-soft flex items-center justify-center text-success shrink-0"
                             aria-label="WhatsApp"
                             title="WhatsApp"
                           >

@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import moment from "moment";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
 import { BRAND } from "@/lib/brand";
+
+// Legend labels in readable text colour; the swatch already shows the series colour.
+const legendLabel = (v) => <span style={{ color: BRAND.foreground }}>{v}</span>;
 import { downloadCSV } from "@/lib/csv";
 import { Link } from "react-router-dom";
 import { DEFAULT_ACCOUNTS, allEntries, balanceSheet, cashFlow, incomeStatement, ledger, receivablesAging } from "@/lib/accounting";
@@ -16,7 +19,7 @@ const AXIS = { fontSize: 11, stroke: BRAND.muted };
 const TOOLTIP_STYLE = { background: "#fff", border: "1px solid rgba(15, 26, 21,0.12)", borderRadius: 12, color: BRAND.ink, fontSize: 12 };
 
 function Kpi({ icon: Icon, label, value, sub, tone = "primary" }) {
-  const toneClass = tone === "good" ? "text-emerald-600" : tone === "bad" ? "text-accent-strong" : "text-foreground";
+  const toneClass = tone === "good" ? "text-success" : tone === "bad" ? "text-accent-strong" : "text-foreground";
   return (
     <div className="bg-card rounded-card p-4 min-w-0 shadow-card">
       <div className="flex items-center gap-1.5 text-muted text-[11px] uppercase tracking-wider"><Icon className="w-4 h-4 text-accent-strong shrink-0" />{label}</div>
@@ -187,7 +190,7 @@ export default function DashboardERP() {
                       <XAxis dataKey="month" tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} />
                       <YAxis tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} width={70} tickFormatter={(v) => formatIDR(v, { symbol: false })} />
                       <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v, n) => [formatIDR(v), n]} />
-                      <Legend wrapperStyle={{ fontSize: 12 }} />
+                      <Legend wrapperStyle={{ fontSize: 12 }} formatter={legendLabel} />
                       <Bar dataKey="revenue" name="Revenue" fill={BRAND.ink} radius={[4, 4, 0, 0]} />
                       <Bar dataKey="cost" name="Cost" fill={BRAND.warning} radius={[4, 4, 0, 0]} />
                       <Bar dataKey="profit" name="Profit" fill={BRAND.accent} radius={[4, 4, 0, 0]} />

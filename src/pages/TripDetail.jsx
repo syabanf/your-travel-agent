@@ -250,7 +250,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
                   >
                     <Share2 className="w-4 h-4 mr-2" /> Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDelete} className="text-accent-strong focus:text-red-300 focus:bg-accent-soft">
+                  <DropdownMenuItem onClick={handleDelete} className="text-accent-strong focus:text-accent-strong focus:bg-accent-soft">
                     <Trash2 className="w-4 h-4 mr-2" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -262,12 +262,12 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         {/* Trip Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 min-w-0">
           {plan ? (
-            <span className="text-[10px] px-2.5 py-1 rounded-full border mb-2 inline-flex items-center gap-1 bg-accent/15 text-accent-strong border-accent/20">
+            <span className="text-[10px] px-2.5 py-1 rounded-full border mb-2 inline-flex items-center gap-1 bg-accent-soft text-accent-strong border-accent/20">
               <Sparkles className="w-3 h-3" /> Trip plan
             </span>
           ) : (
             <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
-              trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-accent/15 text-accent-strong border-accent/20"
+              trip.status === "active" ? "bg-success-soft text-success border-emerald-500/20" : "bg-accent-soft text-accent-strong border-accent/20"
             }`}>
               {trip.status}
             </span>

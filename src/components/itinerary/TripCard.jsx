@@ -7,8 +7,8 @@ import { isPlan } from "@/data/tripKinds";
 const statusColors = {
   draft: "bg-muted/15 text-muted border-muted/20",
   planned: "bg-accent/10 text-accent-strong border-accent/20",
-  active: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
-  completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  active: "bg-success-soft text-success border-emerald-500/20",
+  completed: "bg-info-soft text-info border-blue-500/20",
   cancelled: "bg-accent-soft text-accent-strong border-red-500/20",
 };
 
@@ -31,7 +31,7 @@ export default function TripCard({ trip }) {
             </h3>
             {isPlan(trip) ? (
               // A proposal, not a booked trip — label it as one.
-              <span className="text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 inline-flex items-center gap-1 bg-accent/15 text-accent-strong border-accent/25">
+              <span className="text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 inline-flex items-center gap-1 bg-accent-soft text-accent-strong border-accent/25">
                 <Sparkles className="w-2.5 h-2.5" /> Plan
               </span>
             ) : (

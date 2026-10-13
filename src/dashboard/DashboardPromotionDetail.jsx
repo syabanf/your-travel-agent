@@ -16,15 +16,15 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 const AUDIENCE_META = {
   all: { label: "All users", pill: "bg-surface text-foreground" },
   platinum: { label: "Platinum", pill: "bg-slate-500/15 text-slate-600" },
-  gold: { label: "Gold", pill: "bg-accent/15 text-accent-strong" },
-  new: { label: "New users", pill: "bg-emerald-500/15 text-emerald-600" },
-  inactive: { label: "Inactive", pill: "bg-blue-500/15 text-blue-600" },
+  gold: { label: "Gold", pill: "bg-accent-soft text-accent-strong" },
+  new: { label: "New users", pill: "bg-success-soft text-success" },
+  inactive: { label: "Inactive", pill: "bg-info-soft text-info" },
 };
 
 const TYPE_META = {
   promo: { label: "Promotion", pill: "bg-accent/10 text-accent-strong", icon: Megaphone },
-  event: { label: "Event", pill: "bg-blue-500/15 text-blue-600", icon: CalendarDays },
-  news: { label: "News", pill: "bg-emerald-500/15 text-emerald-600", icon: Newspaper },
+  event: { label: "Event", pill: "bg-info-soft text-info", icon: CalendarDays },
+  news: { label: "News", pill: "bg-success-soft text-success", icon: Newspaper },
 };
 
 export default function DashboardPromotionDetail() {

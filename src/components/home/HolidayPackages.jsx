@@ -44,7 +44,7 @@ export default function HolidayPackages() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                   {off != null && (
-                    <span className="absolute top-2 left-2 chip-glass !bg-accent/90 !border-white/30">{off}% off</span>
+                    <span className="absolute top-2 left-2 chip-glass !bg-accent-strong !border-white/30">{off}% off</span>
                   )}
                   {p.rating > 0 && (
                     <span className="absolute bottom-2 right-2 chip-glass">

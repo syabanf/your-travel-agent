@@ -10,6 +10,9 @@ import { change, monthlyReport } from "@/lib/monthlyReport";
 import { monthlyReportHTML, printDocument } from "@/lib/voucher";
 import { BRAND } from "@/lib/brand";
 
+// Legend labels in readable text colour; the swatch already shows the series colour.
+const legendLabel = (v) => <span style={{ color: BRAND.foreground }}>{v}</span>;
+
 const MODES = [
   { value: "both", label: "vs last month and last year" },
   { value: "prev", label: "vs previous month" },
@@ -161,7 +164,7 @@ export default function MonthlyReport({ entries, accounts, bookings }) {
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: BRAND.muted }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 11, fill: BRAND.muted }} tickLine={false} axisLine={false} width={64} tickFormatter={(v) => formatIDRCompact(v).replace("Rp ", "")} />
               <Tooltip formatter={(v, n) => [formatIDR(v), n]} contentStyle={{ borderRadius: 12, fontSize: 12 }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 12 }} formatter={legendLabel} />
               <Bar dataKey="revenue" name="Revenue" fill={BRAND.ink} radius={[4, 4, 0, 0]} />
               <Bar dataKey="expense" name="Operating expenses" fill={BRAND.chartMuted} radius={[4, 4, 0, 0]} />
               <Line dataKey="net" name="Net profit" stroke={BRAND.accent} strokeWidth={2} dot={{ r: 3 }} />

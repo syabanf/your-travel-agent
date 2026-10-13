@@ -14,16 +14,16 @@ import moment from "moment";
 import { BRAND } from "@/lib/brand";
 
 const statusPill = {
-  confirmed: "bg-emerald-500/15 text-emerald-600",
+  confirmed: "bg-success-soft text-success",
   pending: "bg-accent/10 text-accent-strong",
   cancelled: "bg-accent-soft text-accent-strong",
-  completed: "bg-blue-500/15 text-blue-600",
+  completed: "bg-info-soft text-info",
 };
 const tierPill = {
-  platinum: "bg-indigo-500/15 text-indigo-600",
-  gold: "bg-amber-500/15 text-amber-600",
+  platinum: "bg-info-soft text-info",
+  gold: "bg-warning-soft text-warning",
   silver: "bg-slate-400/20 text-slate-600",
-  bronze: "bg-orange-500/15 text-orange-600",
+  bronze: "bg-warning-soft text-warning",
 };
 
 export default function DashboardOverview() {

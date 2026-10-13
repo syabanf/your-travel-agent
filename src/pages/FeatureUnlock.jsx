@@ -80,7 +80,7 @@ export default function FeatureUnlock() {
           <ul className="space-y-2.5">
             {meta.perks.map((perk) => (
               <li key={perk} className="flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
                 <span className="text-sm text-muted leading-snug">{perk}</span>
               </li>
             ))}

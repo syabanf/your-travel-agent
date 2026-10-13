@@ -20,15 +20,15 @@ const SEED = [
 ];
 
 const STATUS = {
-  open: "bg-emerald-100 text-emerald-700",
-  soldout: "bg-accent/15 text-accent-strong",
-  maintenance: "bg-slate-100 text-slate-500",
+  open: "bg-success-soft text-success",
+  soldout: "bg-accent-soft text-accent-strong",
+  maintenance: "bg-surface text-muted",
 };
 const occ = (r) => (r.total ? Math.round(((r.total - r.available) / r.total) * 100) : 0);
 
 // Channel-sync status for a room's detail drawer (sync only — no guest/booking data).
 const SYNC_CHANNELS = ["Booking.com", "Agoda", "Traveloka", "Expedia", "Tiket.com"];
-const SYNC_BADGE = { in_sync: "bg-emerald-100 text-emerald-700", pending: "bg-accent/15 text-accent-strong", paused: "bg-slate-100 text-slate-500", error: "bg-accent-soft text-accent-strong" };
+const SYNC_BADGE = { in_sync: "bg-success-soft text-success", pending: "bg-accent-soft text-accent-strong", paused: "bg-surface text-muted", error: "bg-accent-soft text-accent-strong" };
 const SYNC_LABEL = { in_sync: "in sync", pending: "syncing", paused: "paused", error: "error" };
 function syncFor(room) {
   if (!room) return [];
@@ -189,8 +189,8 @@ export default function DashboardPMS() {
             <DataTable
               columns={[
                 { key: "channel", label: "Channel", className: "font-medium text-foreground" },
-                { key: "availability", label: "Availability", render: (s) => s.availability ? <Check className="w-4 h-4 text-emerald-600" /> : <Minus className="w-4 h-4 text-muted" /> },
-                { key: "rate", label: "Rate", render: (s) => s.rate ? <Check className="w-4 h-4 text-emerald-600" /> : <Minus className="w-4 h-4 text-muted" /> },
+                { key: "availability", label: "Availability", render: (s) => s.availability ? <Check className="w-4 h-4 text-success" /> : <Minus className="w-4 h-4 text-muted" /> },
+                { key: "rate", label: "Rate", render: (s) => s.rate ? <Check className="w-4 h-4 text-success" /> : <Minus className="w-4 h-4 text-muted" /> },
                 { key: "lastSync", label: "Last sync" },
                 { key: "status", label: "Status", render: (s) => <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${SYNC_BADGE[s.status]}`}>{SYNC_LABEL[s.status]}</span> },
               ]}

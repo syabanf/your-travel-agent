@@ -100,7 +100,7 @@ export default function BudgetView() {
                 </div>
                 <div className="text-center min-w-0">
                   <p className="text-[10px] text-muted mb-1">Remaining</p>
-                  <p className={`stat-value text-[15px] font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-accent-strong"}`}>
+                  <p className={`stat-value text-[15px] font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-success" : "text-accent-strong"}`}>
                     {formatIDR(focusTrip.budget_total - spent)}
                   </p>
                 </div>

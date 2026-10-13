@@ -145,7 +145,7 @@ export default function ProfileTravelers() {
                 <button
                   onClick={() => handleDelete(t.id)}
                   aria-label={`Remove ${t.name}`}
-                  className="w-9 h-9 bg-card shadow-card rounded-lg flex items-center justify-center text-red-600/70 hover:text-accent-strong transition-colors flex-shrink-0 press"
+                  className="w-9 h-9 bg-card shadow-card rounded-lg flex items-center justify-center text-accent-strong/70 hover:text-accent-strong transition-colors flex-shrink-0 press"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

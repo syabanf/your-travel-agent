@@ -114,7 +114,7 @@ export default function ProfileSecurity() {
                     <p className="text-sm text-foreground">{s.device}</p>
                     <p className="text-xs text-muted">{s.location} · {s.time}</p>
                   </div>
-                  {s.current && <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">This device</span>}
+                  {s.current && <span className="text-[9px] px-2 py-0.5 rounded-full bg-success-soft text-success">This device</span>}
                 </div>
               ))}
             </div>

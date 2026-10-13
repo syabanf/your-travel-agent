@@ -16,14 +16,14 @@ import SearchableSelect from "@/dashboard/SearchableSelect";
 import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS_BADGE = {
-  new: "bg-blue-100 text-blue-700",
+  new: "bg-info-soft text-info",
   contacted: "bg-accent/10 text-accent-strong",
-  quoted: "bg-indigo-100 text-indigo-700",
-  won: "bg-emerald-100 text-emerald-700",
+  quoted: "bg-info-soft text-info",
+  won: "bg-success-soft text-success",
   lost: "bg-accent-soft text-accent-strong",
 };
 
-const PRIORITY_BADGE = { low: "bg-slate-100 text-slate-500", medium: "bg-accent/15 text-accent-strong", high: "bg-accent-soft text-accent-strong" };
+const PRIORITY_BADGE = { low: "bg-surface text-muted", medium: "bg-accent-soft text-accent-strong", high: "bg-accent-soft text-accent-strong" };
 
 const STATUSES = ["new", "contacted", "quoted", "won", "lost"];
 
@@ -123,7 +123,7 @@ export default function DashboardLeadDetail() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {lead.phone && (
-            <button onClick={() => openWhatsApp(lead.phone, `Hi ${lead.name}, this is Icon Holiday Travel following up on your ${lead.destination} enquiry…`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-emerald-700 bg-emerald-500/10 hover:bg-emerald-500/15">
+            <button onClick={() => openWhatsApp(lead.phone, `Hi ${lead.name}, this is Icon Holiday Travel following up on your ${lead.destination} enquiry…`)} className="rounded-xl px-3.5 py-2.5 text-sm font-medium flex items-center gap-2 text-success bg-success-soft hover:bg-success-soft">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </button>
           )}
@@ -152,7 +152,7 @@ export default function DashboardLeadDetail() {
           <DetailRow icon={Compass} label="Destination" value={lead.destination} />
           <DetailRow icon={CalendarDays} label="Expected travel date" value={lead.expected_travel_date ? moment(lead.expected_travel_date).format("D MMM YYYY") : null} />
           <DetailRow icon={Users} label="Party size" value={lead.party_size ? `${lead.party_size} ${Number(lead.party_size) > 1 ? "travellers" : "traveller"}` : null} />
-          <DetailRow icon={Flag} label="Priority" value={lead.priority ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${PRIORITY_BADGE[lead.priority] || "bg-slate-100 text-slate-500"}`}>{lead.priority}</span> : null} />
+          <DetailRow icon={Flag} label="Priority" value={lead.priority ? <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${PRIORITY_BADGE[lead.priority] || "bg-surface text-muted"}`}>{lead.priority}</span> : null} />
           <DetailRow icon={CalendarDays} label="Created" value={lead.created_at ? moment(lead.created_at).format("D MMM YYYY") : null} />
           {lead.notes && <DetailRow icon={StickyNote} label="Notes" value={lead.notes} />}
         </div>

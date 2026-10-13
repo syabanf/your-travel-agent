@@ -25,8 +25,8 @@ import { BRAND } from "@/lib/brand";
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false, terms: "", promo_code: "", max_redemptions: "", audience: "all" };
 const TYPE_META = {
   promo: { label: "Promotion", icon: Megaphone, pill: "bg-accent/10 text-accent-strong" },
-  event: { label: "Event", icon: CalendarDays, pill: "bg-blue-500/15 text-blue-600" },
-  news: { label: "News", icon: Newspaper, pill: "bg-emerald-500/15 text-emerald-600" },
+  event: { label: "Event", icon: CalendarDays, pill: "bg-info-soft text-info" },
+  news: { label: "News", icon: Newspaper, pill: "bg-success-soft text-success" },
 };
 
 export default function DashboardPromotions() {
@@ -269,7 +269,7 @@ export default function DashboardPromotions() {
                 { key: "type", label: "Type", render: (p) => { const meta = TYPE_META[p.type] || TYPE_META.promo; return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.pill}`}>{p.type || "promo"}</span>; } },
                 { key: "value", label: "Discount / Price", align: "right", className: "text-right font-semibold text-accent-strong", render: (p) => p.discount ? `${p.discount}% off` : (p.price ? formatIDR(p.price) : "—") },
                 { key: "date", label: "Date", render: (p) => p.valid_until ? `Until ${moment(p.valid_until).format("MMM D")}` : (p.date ? moment(p.date).format("MMM D, YYYY") : "—") },
-                { key: "featured", label: "Featured", render: (p) => p.featured ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent/15 text-accent-strong"><Star className="w-3 h-3 fill-accent" /> Featured</span> : <span className="text-muted">—</span> },
+                { key: "featured", label: "Featured", render: (p) => p.featured ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent-soft text-accent-strong"><Star className="w-3 h-3 fill-accent" /> Featured</span> : <span className="text-muted">—</span> },
               ]}
               rows={pg.pageItems}
               onRowClick={(p) => navigate(`/dashboard/promotions/${p.id}`)}

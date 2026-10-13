@@ -15,8 +15,8 @@ import { inRange } from "@/dashboard/dateRange";
 import { BRAND } from "@/lib/brand";
 
 const ACTION_BADGE = {
-  create: "bg-emerald-500/15 text-emerald-600",
-  update: "bg-blue-500/15 text-blue-600",
+  create: "bg-success-soft text-success",
+  update: "bg-info-soft text-info",
   delete: "bg-accent-soft text-accent-strong",
 };
 

@@ -13,9 +13,9 @@ import moment from "moment";
 
 const statusColors = {
   pending: "bg-accent/10 text-accent-strong border-accent/20",
-  confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  cancelled: "bg-accent-soft text-red-400 border-red-500/20",
-  completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  confirmed: "bg-success-soft text-success border-emerald-500/20",
+  cancelled: "bg-accent-soft text-accent-strong border-red-500/20",
+  completed: "bg-info-soft text-info border-blue-500/20",
 };
 
 const typeIcons = { package: Package, flight: Plane, hotel: Building2, train: Train, bus: Bus, ship: Ship, car_rental: Car, attraction: Ticket, villa: Building2, consultation: MessageCircle };

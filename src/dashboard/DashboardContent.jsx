@@ -24,13 +24,13 @@ const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "",
 
 const TYPE_META = {
   page: { label: "Page", pill: "bg-surface text-muted" },
-  faq: { label: "FAQ", pill: "bg-blue-500/15 text-blue-600" },
+  faq: { label: "FAQ", pill: "bg-info-soft text-info" },
   announcement: { label: "Announcement", pill: "bg-accent/10 text-accent-strong" },
-  hero: { label: "Hero", pill: "bg-indigo-500/15 text-indigo-600" },
+  hero: { label: "Hero", pill: "bg-info-soft text-info" },
 };
 
 const STATUS_META = {
-  published: { label: "Published", pill: "bg-emerald-500/15 text-emerald-600" },
+  published: { label: "Published", pill: "bg-success-soft text-success" },
   draft: { label: "Draft", pill: "bg-surface text-muted" },
 };
 

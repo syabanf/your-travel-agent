@@ -53,7 +53,7 @@ export default function AssistantProfile() {
                 </span>
               )}
               {assistant.is_available && (
-                <span className="flex items-center gap-1 text-xs text-emerald-600">
+                <span className="flex items-center gap-1 text-xs text-success">
                   <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full" /> Available
                 </span>
               )}

@@ -78,19 +78,19 @@ export default function ProfileSettings() {
         <div className="mt-4 mb-8">
           {!showDeleteConfirm ? (
             <button onClick={() => setShowDeleteConfirm(true)}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-red-400/70 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 transition-all">
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-accent-strong/70 hover:text-accent-strong border border-red-500/20 hover:border-red-500/40 transition-all">
               <Trash2 className="w-4 h-4" /> Delete Account
             </button>
           ) : (
             <GlassCard className="p-5 border border-red-500/20">
               <div className="flex items-center gap-3 mb-4">
-                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-accent-strong flex-shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-foreground">Delete Account</p>
                   <p className="text-xs text-muted mt-0.5">This action is permanent and cannot be undone.</p>
                 </div>
               </div>
-              <p className="text-xs text-muted mb-3">Type <span className="text-red-400 font-mono font-semibold">DELETE</span> to confirm:</p>
+              <p className="text-xs text-muted mb-3">Type <span className="text-accent-strong font-mono font-semibold">DELETE</span> to confirm:</p>
               <input value={deleteInput} onChange={e => setDeleteInput(e.target.value)}
                 placeholder="Type DELETE"
                 aria-label="Type to confirm"
@@ -101,7 +101,7 @@ export default function ProfileSettings() {
                   Cancel
                 </button>
                 <button onClick={handleDeleteAccount} disabled={deleteInput !== "DELETE"}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-red-400 border border-red-500/30 hover:bg-accent-soft transition-all disabled:opacity-40">
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-accent-strong border border-red-500/30 hover:bg-accent-soft transition-all disabled:opacity-40">
                   Delete
                 </button>
               </div>

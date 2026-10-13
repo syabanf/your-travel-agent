@@ -16,7 +16,7 @@ export function Delta({ pct, label, higherIsBetter = true, className = "" }) {
   const good = higherIsBetter ? up : !up;
   const Icon = up ? ArrowUp : ArrowDown;
   return (
-    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${good ? "text-emerald-600" : "text-accent-strong"} ${className}`}>
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${good ? "text-success" : "text-accent-strong"} ${className}`}>
       <Icon className="w-3 h-3" />{Math.abs(pct)}%{label && <span className="font-medium opacity-70"> {label}</span>}
     </span>
   );
@@ -64,6 +64,12 @@ export function CategoryBars({ data, money = true, height = 220 }) {
   );
 }
 
+// Slice counts in text colour: a light slice colour (silver tier, inactive)
+// would otherwise draw its number almost invisibly on white.
+const sliceLabel = ({ x, y, value, textAnchor }) => (
+  <text x={x} y={y} textAnchor={textAnchor} dominantBaseline="central" fill={BRAND.foreground} fontSize={12} fontWeight={600}>{value}</text>
+);
+
 // Time-series area. data: [{ label, value }]
 export function TrendArea({ data, money = true, height = 220, color = BRAND.accent }) {
   if (!data?.length) return <Empty h={height} />;
@@ -87,7 +93,7 @@ export function MixDonut({ data, height = 220 }) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <PieChart>
-        <Pie data={data.filter((d) => d.value)} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={46} outerRadius={82} paddingAngle={2} label={(d) => d.value} labelLine={false}>
+        <Pie data={data.filter((d) => d.value)} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={46} outerRadius={82} paddingAngle={2} label={sliceLabel} labelLine={false}>
           {data.filter((d) => d.value).map((d, i) => <Cell key={i} fill={d.color || PALETTE[i % PALETTE.length]} />)}
         </Pie>
         <Tooltip {...TT} />

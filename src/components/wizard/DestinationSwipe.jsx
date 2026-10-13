@@ -151,10 +151,10 @@ export default function DestinationSwipe({ onLikedChange }) {
               onAnimationComplete={() => { if (gone) advance(gone); }}
             >
               <CardFace dest={current} />
-              <motion.div animate={{ opacity: activeHint === "right" ? 1 : 0 }} className="absolute top-8 left-6 rotate-[-12deg] border-4 border-emerald-400 text-emerald-400 text-2xl font-extrabold px-3 py-1 rounded-xl tracking-wider pointer-events-none">
+              <motion.div animate={{ opacity: activeHint === "right" ? 1 : 0 }} className="absolute top-8 left-6 rotate-[-12deg] border-4 border-success bg-white/90 text-success text-2xl font-extrabold px-3 py-1 rounded-xl tracking-wider pointer-events-none">
                 LIKE
               </motion.div>
-              <motion.div animate={{ opacity: activeHint === "left" ? 1 : 0 }} className="absolute top-8 right-6 rotate-[12deg] border-4 border-red-400 text-red-400 text-2xl font-extrabold px-3 py-1 rounded-xl tracking-wider pointer-events-none">
+              <motion.div animate={{ opacity: activeHint === "left" ? 1 : 0 }} className="absolute top-8 right-6 rotate-[12deg] border-4 border-accent-strong bg-white/90 text-accent-strong text-2xl font-extrabold px-3 py-1 rounded-xl tracking-wider pointer-events-none">
                 NOPE
               </motion.div>
             </motion.div>
@@ -164,7 +164,7 @@ export default function DestinationSwipe({ onLikedChange }) {
 
       {!done && (
         <div className="flex items-center justify-center gap-5 mt-6">
-          <button onClick={() => decide("left")} className="w-14 h-14 rounded-full bg-card shadow-card flex items-center justify-center text-red-400 hover:scale-105 active:scale-95 transition-transform" aria-label="Skip">
+          <button onClick={() => decide("left")} className="w-14 h-14 rounded-full bg-card shadow-card flex items-center justify-center text-accent-strong hover:scale-105 active:scale-95 transition-transform" aria-label="Skip">
             <X className="w-6 h-6" strokeWidth={2.5} />
           </button>
           <button onClick={undo} disabled={!history.length} className="w-11 h-11 rounded-full bg-card shadow-card flex items-center justify-center text-muted hover:scale-105 active:scale-95 transition-transform disabled:opacity-30" aria-label="Undo">

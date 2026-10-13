@@ -82,7 +82,7 @@ export default function DashboardOTACategories() {
     { key: "behavior", label: "Search flow", render: (r) => <span className="text-muted capitalize">{(r.behavior || "").replace("_", " ")}</span> },
     { key: "order", label: "Order", align: "right", render: (r) => r.order },
     { key: "active", label: "Status", render: (r) => (
-      <button onClick={(e) => { e.stopPropagation(); toggleActive(r); }} disabled={!canEdit} className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${r.active ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"} ${canEdit ? "hover:opacity-80" : ""}`}>
+      <button onClick={(e) => { e.stopPropagation(); toggleActive(r); }} disabled={!canEdit} className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${r.active ? "bg-success-soft text-success" : "bg-surface text-muted"} ${canEdit ? "hover:opacity-80" : ""}`}>
         {r.active ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}{r.active ? "Visible" : "Hidden"}
       </button>
     ) },

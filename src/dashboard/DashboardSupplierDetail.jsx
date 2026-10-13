@@ -16,18 +16,18 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : "");
 
 const TYPE_BADGE = {
-  flight: "bg-blue-100 text-blue-700",
-  hotel: "bg-emerald-100 text-emerald-700",
+  flight: "bg-info-soft text-info",
+  hotel: "bg-success-soft text-success",
   activity: "bg-accent/10 text-accent-strong",
-  transport: "bg-indigo-100 text-indigo-700",
+  transport: "bg-info-soft text-info",
   dmc: "bg-slate-200 text-slate-700",
 };
 
 const STATUS_BADGE = {
-  confirmed: "bg-emerald-100 text-emerald-700",
-  pending: "bg-amber-100 text-amber-700",
+  confirmed: "bg-success-soft text-success",
+  pending: "bg-warning-soft text-warning",
   cancelled: "bg-accent-soft text-accent-strong",
-  completed: "bg-blue-100 text-blue-700",
+  completed: "bg-info-soft text-info",
 };
 
 export default function DashboardSupplierDetail() {
@@ -123,7 +123,7 @@ export default function DashboardSupplierDetail() {
             <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent/10 text-accent-strong flex items-center gap-1">
               <Star className="w-3 h-3 fill-accent" /> {Number(s.rating || 0).toFixed(1)}
             </span>
-            <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{status}</span>
+            <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status === "active" ? "bg-success-soft text-success" : "bg-surface text-muted"}`}>{status}</span>
           </div>
         </div>
         {can(role, "suppliers", "delete") && (
@@ -149,7 +149,7 @@ export default function DashboardSupplierDetail() {
           {s.contact_phone && (
             <button
               onClick={() => openWhatsApp(s.contact_phone, `Hi ${s.name}, this is Icon Holiday Travel…`)}
-              className="ml-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold px-2.5 py-1 flex items-center gap-1.5 transition-colors"
+              className="ml-1 rounded-lg bg-success-soft text-success hover:bg-success-soft text-xs font-semibold px-2.5 py-1 flex items-center gap-1.5 transition-colors"
             >
               <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
             </button>
@@ -220,7 +220,7 @@ export default function DashboardSupplierDetail() {
                       </Link>
                     </td>
                     <td className="py-2.5 px-2">
-                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[b.status] || "bg-slate-100 text-slate-500"}`}>{b.status || "—"}</span>
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[b.status] || "bg-surface text-muted"}`}>{b.status || "—"}</span>
                     </td>
                     <td className="py-2.5 px-2 text-right font-semibold text-accent-strong whitespace-nowrap">{formatIDR(b.price)}</td>
                   </tr>

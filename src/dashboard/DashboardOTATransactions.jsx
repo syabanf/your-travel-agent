@@ -15,7 +15,7 @@ import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 import { BRAND } from "@/lib/brand";
 
-const TX_BADGE = { paid: "bg-emerald-100 text-emerald-700", pending: "bg-accent/15 text-accent-strong", refunded: "bg-slate-100 text-slate-500" };
+const TX_BADGE = { paid: "bg-success-soft text-success", pending: "bg-accent-soft text-accent-strong", refunded: "bg-surface text-muted" };
 const DOT = { paid: "bg-emerald-500", pending: "bg-accent-strong", refunded: "bg-slate-400" };
 
 export default function DashboardOTATransactions() {
@@ -74,7 +74,7 @@ export default function DashboardOTATransactions() {
         <div>
           <p className="text-[11px] uppercase tracking-widest text-accent-strong font-semibold mb-1 flex items-center gap-2">
             <Receipt className="w-3.5 h-3.5" /> Distribution
-            <span className="inline-flex items-center gap-1 text-emerald-600 normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
+            <span className="inline-flex items-center gap-1 text-success normal-case tracking-normal"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live</span>
           </p>
           <h1 className="text-2xl font-display font-bold text-foreground">OTA Transactions</h1>
           <p className="text-sm text-muted mt-0.5">Real-time monitoring of every booking across your channels.</p>

@@ -14,7 +14,7 @@ import {
 import { confirmDialog } from "@/components/ConfirmDialog";
 
 const STATUS_META = {
-  active: { label: "Active", pill: "bg-emerald-500/15 text-emerald-600" },
+  active: { label: "Active", pill: "bg-success-soft text-success" },
   draft: { label: "Draft", pill: "bg-slate-500/15 text-slate-600" },
 };
 
@@ -181,7 +181,7 @@ export default function DashboardPackageDetail() {
               <ul className="space-y-2">
                 {includes.map((v, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
-                    <Check className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" /> <span className="min-w-0">{v}</span>
+                    <Check className="w-4 h-4 text-success mt-0.5 shrink-0" /> <span className="min-w-0">{v}</span>
                   </li>
                 ))}
               </ul>
