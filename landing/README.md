@@ -69,18 +69,15 @@ of the WIT tokens, so existing selectors keep working.
 
 | Section | What it shows |
 |---|---|
-| Hero | One rounded photo card; the next departure (from `TOURS`) sits in its cut-out corner |
-| Trust strip | Social links and three facts about the company |
-| Popular destinations | A carousel of `DESTS` with the best months to travel, with arrow buttons |
-| How it works | Three steps; the middle one on the green ink card |
-| Promo | The soonest departure with a reduced price (`priceBefore`), and its seats left |
-| About | Short profile, then three big numbers |
-| 2026 departures | The next three departures as cards with price and seats left |
-| Reviews | Three `REVIEWS`; the middle one on ink |
-| Closing call | WhatsApp and the contact page |
+| Hero | Full-width photo, the headline, and a departure board: the next six dates from `TOURS` with seats left |
+| One route in full | The next departure's day-by-day itinerary, price, what's included and not |
+| Destinations | A mosaic of `DESTS`, each with a 12-month strip of its best months (parsed from `best`) |
+| Visas | What we do for a visa, beside the full `VISA_COUNTRIES` list by region |
+| Reviews | One review quoted large, four more as a list |
+| Offices | The Medan and Jakarta numbers and addresses, hours and WhatsApp, on the green band |
 
-Departures and the promo pick themselves from the dates in `TOURS`: a date in
-the past drops out, so the home page never advertises a trip that has left.
+The board and the featured route pick themselves from the dates in `TOURS`: a
+date in the past drops out, so the home page never advertises a trip that has left.
 
 ## Changing content
 

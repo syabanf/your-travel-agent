@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -18,127 +18,75 @@
 <a href="#main" class="skip-link">Skip to content</a>
 
 <main id="main" class="home">
+
+<!-- ══ Hero: photo, headline, and the departure board ══ -->
+<section class="stage" aria-labelledby="home-title">
+  <img class="stage__img" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=2400&q=80" alt="" fetchpriority="high" />
+  <div class="wrap stage__in">
+    <div class="stage__copy">
+      <h1 id="home-title">Group tours and visas from Medan and Jakarta<span class="dot">.</span></h1>
+      <p>Since 2010 we have planned the route, booked the seats and filed the visas, with a tour leader who travels with the group.</p>
+      <div class="stage__cta">
+        <a class="btn btn--primary" href="tour.html">See all departures</a>
+        <a class="btn btn--glass" href="#kontak">Talk to a consultant</a>
+      </div>
+    </div>
+    <div class="board" aria-labelledby="board-title">
+      <div class="board__head">
+        <h2 id="board-title">Departures</h2>
+        <span class="board__live"><span aria-hidden="true"></span> Seats as of today</span>
+      </div>
+      <ol class="board__rows" id="boardRows"></ol>
+      <a class="board__all" href="tour.html">All packages and dates <svg class="i"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
 <div class="wrap">
 
-<!-- ══ Hero: one big photo card, the next departure cut into its corner ══ -->
-<section class="hero2" aria-labelledby="home-title">
-  <img class="hero2__img" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1800&q=80" alt="" fetchpriority="high" />
-  <div class="hero2__body">
-    <p class="kicker kicker--on-photo">Medan &amp; Jakarta · since 2010</p>
-    <h1 id="home-title">Group tours and visas, handled for you<span class="dot">.</span></h1>
-    <p class="hero2__sub">Departures from Jakarta and Medan to Korea, Japan, China, Europe and New Zealand, with one consultant from the first quote to the flight home.</p>
-    <div class="hero2__cta">
-      <a class="btn btn--primary" href="tour.html">See 2026 departures</a>
-      <a class="round round--glass" href="#how" aria-label="How a trip with us works"><svg class="i"><use href="#i-arrow"/></svg></a>
-    </div>
+<!-- ══ One route in full ══ -->
+<section class="route" id="tour" aria-labelledby="route-title"></section>
+
+<!-- ══ Destinations, with the months to go ══ -->
+<section class="sect2" id="destinasi" aria-labelledby="dest-title">
+  <div class="sect2__head">
+    <h2 id="dest-title">Where we go, and when it's best</h2>
+    <a class="link-arrow" href="destinasi.html">All destinations <svg class="i"><use href="#i-arrow"/></svg></a>
   </div>
-  <a class="hero2__corner" id="heroNext" href="tour.html"></a>
+  <div class="mosaic" id="destGrid"></div>
 </section>
 
-<!-- ══ Trust strip ══ -->
-<div class="trust">
-  <span class="trust__follow">Follow
-    <a href="https://instagram.com/iconholidaymedan" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
-    <a href="https://www.facebook.com/iconholiday" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
-  </span>
-  <span class="trust__item"><svg class="i"><use href="#i-pin"/></svg> Offices in Medan and Jakarta</span>
-  <span class="trust__item"><svg class="i"><use href="#i-doc"/></svg> Visa help for 30+ countries</span>
-  <span class="trust__item"><svg class="i"><use href="#i-users"/></svg> Indonesian-speaking tour leaders</span>
-</div>
-
-<!-- ══ Destinations carousel ══ -->
-<section class="block" id="destinasi" aria-labelledby="dest-title">
-  <div class="block__head">
-    <div>
-      <h2 id="dest-title">Popular destinations</h2>
-      <p class="block__sub">Where our groups go, and the best months to travel.</p>
-    </div>
-    <div class="arrows">
-      <button class="round" type="button" id="destPrev" aria-label="Previous destinations"><svg class="i flip"><use href="#i-arrow"/></svg></button>
-      <button class="round round--ink" type="button" id="destNext" aria-label="Next destinations"><svg class="i"><use href="#i-arrow"/></svg></button>
-    </div>
+<!-- ══ Visas ══ -->
+<section class="sect2 visa2" id="visa" aria-labelledby="visa-title">
+  <div class="visa2__intro">
+    <h2 id="visa-title">Visas for 30+ countries, checked before they're filed</h2>
+    <p>We read your documents against the embassy's list first, book the biometric appointment and fill in the forms with you. Japan's e-passport waiver and Korea's group visa included.</p>
+    <a class="btn btn--ink" href="visa.html">Check a country's requirements</a>
   </div>
-  <div class="slider" id="destGrid" tabindex="0" aria-label="Destinations, scroll sideways"></div>
-</section>
-
-<!-- ══ How it works ══ -->
-<section class="block block--center" id="how" aria-labelledby="how-title">
-  <h2 id="how-title">From first chat to the flight home</h2>
-  <p class="block__sub">Three steps, and the same consultant answers you at each one.</p>
-  <ol class="steps">
-    <li class="card step">
-      <span class="tile"><svg class="i"><use href="#i-map"/></svg></span>
-      <h3>Pick a departure</h3>
-      <p>Choose a group date or ask for a private trip on your own dates.</p>
-    </li>
-    <li class="card step step--on">
-      <img class="step__img" src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="" loading="lazy" />
-      <span class="tile tile--on"><svg class="i"><use href="#i-doc"/></svg></span>
-      <h3>We prepare the papers</h3>
-      <p>Pay the deposit and we check your passport, apply for the visa and book the flights.</p>
-      <a class="step__link" href="visa.html">Visa requirements <svg class="i"><use href="#i-arrow"/></svg></a>
-    </li>
-    <li class="card step">
-      <span class="tile"><svg class="i"><use href="#i-plane"/></svg></span>
-      <h3>Fly with your leader</h3>
-      <p>Meet your tour leader at the airport; they stay with the group until you land home.</p>
-    </li>
-  </ol>
-</section>
-
-<!-- ══ Promo: the next departure with a reduced price ══ -->
-<section class="promo" id="promo" aria-label="Featured offer"></section>
-
-<!-- ══ About + numbers ══ -->
-<section class="block about2" aria-labelledby="about-title">
-  <p class="pill-label">About us</p>
-  <div>
-    <h2 id="about-title">A travel agency from Medan that grew into two offices and thousands of group trips.</h2>
-    <div class="about2__cols">
-      <p>PT. Inter Continent Indonesia opened in Medan in 2010 and PT. Icon Holiday Indonesia followed in Jakarta. We plan group tours, issue flight tickets and prepare visas from both offices.</p>
-      <p>Our tour leaders speak Indonesian and travel with every group. Hotels sit close to where the day's plan happens, so evenings are free rather than spent in traffic.</p>
-    </div>
-  </div>
-</section>
-<div class="nums">
-  <div class="num"><b>15<small>+</small></b><span>Years running tours</span></div>
-  <div class="num"><b>12K</b><span>Travellers served</span></div>
-  <div class="num"><b>30<small>+</small></b><span>Visa countries</span></div>
-</div>
-
-<!-- ══ Departures ══ -->
-<section class="block" id="tour" aria-labelledby="dep-title">
-  <div class="block__head">
-    <div>
-      <h2 id="dep-title">2026 departures</h2>
-      <p class="block__sub">Flights, hotels and a tour leader included. Seats are held when the deposit is paid.</p>
-    </div>
-    <a class="btn btn--ghost" href="tour.html">All packages <svg class="i"><use href="#i-arrow"/></svg></a>
-  </div>
-  <div class="trips" id="tourGrid"></div>
+  <div class="visa2__list" id="visaList"></div>
 </section>
 
 <!-- ══ Reviews ══ -->
-<section class="block block--center" id="testimoni" aria-labelledby="rev-title">
-  <h2 id="rev-title">What travellers say after the trip</h2>
-  <div class="voices3" id="revGrid"></div>
-</section>
-
-<!-- ══ Closing call ══ -->
-<section class="closer" id="kontak" aria-labelledby="close-title">
-  <img class="closer__photo" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80" alt="" loading="lazy" />
-  <div class="closer__text">
-    <h2 id="close-title">Tell us the plan<span class="dot">.</span></h2>
-    <p>Where, roughly when and how many people. A consultant replies the same day on WhatsApp.</p>
-  </div>
-  <div class="closer__cta">
-    <a class="btn btn--primary" id="closerWa" href="kontak.html" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#i-wa"/></svg> Chat on WhatsApp</a>
-    <a class="btn btn--ghost" href="kontak.html">Send a message</a>
-  </div>
-  <img class="closer__photo" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&q=80" alt="" loading="lazy" />
+<section class="sect2 talk" id="testimoni" aria-labelledby="rev-title">
+  <h2 id="rev-title" class="sr-only">Reviews</h2>
+  <figure class="talk__lead" id="revLead"></figure>
+  <ul class="talk__more" id="revMore"></ul>
 </section>
 
 </div>
+
+<!-- ══ Offices ══ -->
+<section class="offices2" id="kontak" aria-labelledby="contact-title">
+  <div class="wrap offices2__in">
+    <div class="offices2__intro">
+      <h2 id="contact-title">Call us, or come by the office</h2>
+      <p>Tell us where, roughly when and how many people. A consultant replies the same day.</p>
+      <a class="btn btn--primary" id="waLink" href="kontak.html" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#i-wa"/></svg> Chat on WhatsApp</a>
+    </div>
+    <div class="offices2__list" id="officeList"></div>
+  </div>
+</section>
+
 </main>
 
 <script src="./data.js"></script>

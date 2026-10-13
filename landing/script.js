@@ -16,95 +16,108 @@ const parseDate = (s) => {
   return mi < 0 ? null : new Date(Number(y), mi, Number(d));
 };
 const today = new Date(new Date().toDateString());
-const fmt = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+const fmt = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]}`;
 const detail = (t) => `tour-detail.html?id=${encodeURIComponent(t.id)}`;
 
-// Each tour with its first departure still ahead, soonest first.
-const upcoming = window.TOURS
-  .map((t) => ({ ...t, next: t.dates.map(parseDate).filter((d) => d && d >= today).sort((a, b) => a - b)[0] }))
-  .filter((t) => t.next)
-  .sort((a, b) => a.next - b.next);
+// Every future departure, one per date, soonest first.
+const departures = window.TOURS
+  .flatMap((t) => t.dates.map(parseDate).filter((d) => d && d >= today).map((date) => ({ t, date })))
+  .sort((a, b) => a.date - b.date);
 
-/* ── Hero corner: the next departure ───────────────────────── */
-const first = upcoming[0];
-if (first) {
-  const corner = el("heroNext");
-  corner.href = detail(first);
-  corner.innerHTML = `<span class="hero2__card">
-    <span class="hero2__thumbs">${upcoming.slice(0, 3).map((t) => `<img src="${IMG(t.img, 120)}" alt="" />`).join("")}</span>
-    <span class="hero2__next">
-      <b>Next departure</b>
-      <span>${esc(first.country)} · ${fmt(first.next)} · ${first.seats} seats left</span>
-    </span>
-    <span class="round round--ink" aria-hidden="true">${arrow}</span></span>`;
-  corner.setAttribute("aria-label", `Next departure: ${first.title}, ${fmt(first.next)}, ${first.seats} seats left`);
-} else {
-  el("heroNext").remove();
-}
+/* ── Departure board ───────────────────────────────────────── */
+el("boardRows").innerHTML = departures.slice(0, 6).map(({ t, date }) => `
+  <li>
+    <a class="board__row" href="${detail(t)}">
+      <span class="board__date">${fmt(date)}</span>
+      <span class="board__dest"><b>${esc(t.country)}</b><span>${t.days} days</span></span>
+      <span class="board__seats${t.seats <= 6 ? " is-low" : ""}">${t.seats <= 6 ? `${t.seats} left` : "Open"}</span>
+    </a>
+  </li>`).join("") || `<li class="board__empty">No group dates right now. Ask us about a private trip.</li>`;
 
-/* ── Destinations carousel ─────────────────────────────────── */
-const slider = el("destGrid");
-slider.innerHTML = window.DESTS.map((d) => `
-  <a class="place2" href="destinasi-detail.html?id=${encodeURIComponent(d.id)}">
-    <img src="${IMG(d.img, 560)}" alt="${esc(d.name)}" loading="lazy" decoding="async" />
-    <span class="place2__row">
-      <b>${esc(d.name)}</b>
-      <span class="place2__tag">${esc(d.region)}</span>
-    </span>
-    <span class="place2__meta"><svg class="i"><use href="#i-cal"/></svg> ${esc(d.best)}</span>
-  </a>`).join("");
-const step = () => (slider.firstElementChild?.getBoundingClientRect().width || 300) + 16;
-const slide = (dir) => slider.scrollBy({ left: dir * step(), behavior: window.REDUCED ? "auto" : "smooth" });
-el("destPrev").addEventListener("click", () => slide(-1));
-el("destNext").addEventListener("click", () => slide(1));
-
-/* ── Promo: the soonest departure with a reduced price ─────── */
-const deal = upcoming.find((t) => t.price && t.priceBefore > t.price);
-if (deal) {
-  const off = Math.round((1 - deal.price / deal.priceBefore) * 100);
-  el("promo").innerHTML = `
-    <img class="promo__img" src="${IMG(deal.gallery?.[1] || deal.img, 900)}" alt="${esc(deal.country)}" loading="lazy" />
-    <div class="promo__text">
-      <p class="kicker">Limited seats · ${esc(deal.country)}</p>
-      <h2>${esc(deal.title)}</h2>
-      <p>${esc(deal.summary)}</p>
+/* ── One route in full: the next departure's itinerary ─────── */
+const lead = departures[0]?.t;
+if (lead) {
+  const off = lead.priceBefore > lead.price ? Math.round((1 - lead.price / lead.priceBefore) * 100) : 0;
+  const dates = departures.filter((x) => x.t === lead).map((x) => fmt(x.date));
+  el("tour").innerHTML = `
+    <div class="route__media">
+      <img src="${IMG(lead.gallery?.[1] || lead.img, 1400)}" alt="${esc(lead.country)}" loading="lazy" />
+      ${off ? `<span class="route__off">${off}% off until the seats go</span>` : ""}
     </div>
-    <a class="promo__bar" href="${detail(deal)}">
-      <span class="promo__off">${off}% off</span>
-      <span class="promo__price"><b>${rp(deal.price)}</b><s>${rp(deal.priceBefore)}</s></span>
-      <span class="promo__when">Departs ${fmt(deal.next)} · ${deal.seats} seats left</span>
-      <span class="promo__go">Reserve a seat ${arrow}</span>
-    </a>`;
+    <div class="route__body">
+      <p class="route__eyebrow">${esc(lead.country)} · ${lead.days} days · leaves ${dates.join(", ")}</p>
+      <h2 id="route-title">${esc(lead.title)}</h2>
+      <ol class="route__days">
+        ${lead.itinerary.map((d) => `<li><span class="route__d">Day ${d.d}</span><b>${esc(d.t)}</b><span>${esc(d.x)}</span></li>`).join("")}
+      </ol>
+      <div class="route__foot">
+        <div class="route__price">
+          <b>${lead.price ? rp(lead.price) : "Price on request"}</b>
+          <span>${off ? `<s>${rp(lead.priceBefore)}</s> · ` : ""}per person, ${lead.seats} seats left</span>
+        </div>
+        <div class="route__incl">
+          <p><b>Included</b> ${lead.includes.slice(0, 3).map(esc).join(", ")}</p>
+          <p><b>Not included</b> ${lead.excludes.slice(0, 2).map(esc).join(", ")}</p>
+        </div>
+        <a class="btn btn--primary" href="${detail(lead)}">Full itinerary and booking</a>
+      </div>
+    </div>`;
 } else {
-  el("promo").remove();
+  el("tour").remove();
 }
 
-/* ── Departure cards ───────────────────────────────────────── */
-el("tourGrid").innerHTML = upcoming.slice(0, 3).map((t) => `
-  <a class="card trip" href="${detail(t)}">
-    <span class="trip__media">
-      <img src="${IMG(t.img, 640)}" alt="${esc(t.country)}" loading="lazy" decoding="async" />
-      <span class="trip__days">${t.days} days</span>
+/* ── Destinations with a 12-month strip ────────────────────── */
+// "Mar–May (cherry blossom) & Oct–Nov" -> the months it covers, wrapping past December.
+const bestMonths = (s) => {
+  const on = new Set();
+  for (const [, a, b] of String(s).matchAll(/([A-Z][a-z]{2})(?:–([A-Z][a-z]{2}))?/g)) {
+    const from = MONTHS.indexOf(a);
+    if (from < 0) continue;
+    const to = b ? MONTHS.indexOf(b) : from;
+    for (let m = from; ; m = (m + 1) % 12) { on.add(m); if (m === to) break; }
+  }
+  return on;
+};
+el("destGrid").innerHTML = window.DESTS.slice(0, 7).map((d, i) => {
+  const on = bestMonths(d.best);
+  return `
+  <a class="tile2${i === 0 ? " tile2--big" : ""}" href="destinasi-detail.html?id=${encodeURIComponent(d.id)}">
+    <img src="${IMG(d.img, i === 0 ? 1200 : 640)}" alt="" loading="lazy" decoding="async" />
+    <span class="tile2__info">
+      <b>${esc(d.name)}</b>
+      <span class="months" role="img" aria-label="Best months: ${esc(d.best)}">
+        ${MONTHS.map((m, k) => `<span class="${on.has(k) ? "is-on" : ""}">${m[0]}</span>`).join("")}
+      </span>
     </span>
-    <span class="trip__country">${esc(t.country)} · ${fmt(t.next)}</span>
-    <b class="trip__title">${esc(t.title)}</b>
-    <span class="trip__sum">${esc(t.summary)}</span>
-    <span class="trip__foot">
-      <span class="trip__seats${t.seats <= 6 ? " is-low" : ""}">${t.seats} seats left</span>
-      <span class="trip__price">${t.price ? rp(t.price) : "On request"}</span>
-    </span>
-  </a>`).join("") || `<p class="block__sub">No departures are scheduled right now. <a href="kontak.html">Ask about a private trip.</a></p>`;
+  </a>`;
+}).join("");
 
-/* ── Reviews: the middle one on ink ────────────────────────── */
-el("revGrid").innerHTML = window.REVIEWS.slice(0, 3).map((r, i) => `
-  <figure class="card voice3${i === 1 ? " voice3--on" : ""}">
-    <span class="voice3__stars" role="img" aria-label="5 out of 5">★★★★★</span>
-    <blockquote>${esc(r.text)}</blockquote>
-    <figcaption>
-      <span class="voice3__av" aria-hidden="true">${esc(r.who.charAt(0))}</span>
-      <span><b>${esc(r.who)}</b><span>${esc(r.trip)}</span></span>
-    </figcaption>
-  </figure>`).join("");
+/* ── Visa countries by region ──────────────────────────────── */
+el("visaList").innerHTML = window.VISA_COUNTRIES.map((g) => `
+  <div class="visa2__group">
+    <h3>${esc(g.g)}</h3>
+    <p>${g.c.map(esc).join(" · ")}</p>
+  </div>`).join("");
 
-/* ── Closing call: WhatsApp ────────────────────────────────── */
-el("closerWa").href = `https://wa.me/${window.COMPANY.wa}`;
+/* ── Reviews: one quoted large, the rest as a list ─────────── */
+const [first, ...rest] = window.REVIEWS;
+el("revLead").innerHTML = `
+  <blockquote>${esc(first.text)}</blockquote>
+  <figcaption>${esc(first.who)}, ${esc(first.trip)}</figcaption>`;
+el("revMore").innerHTML = rest.slice(0, 4).map((r) => `
+  <li><p>${esc(r.text)}</p><span>${esc(r.who)}, ${esc(r.trip)}</span></li>`).join("");
+
+/* ── Offices ───────────────────────────────────────────────── */
+const company = window.COMPANY;
+el("waLink").href = `https://wa.me/${company.wa}`;
+el("officeList").innerHTML = company.offices.map((o) => `
+  <div class="office2">
+    <h3>${esc(o.city)}</h3>
+    <a class="office2__tel" href="tel:${esc(o.telHref)}">${esc(o.tel)}</a>
+    <p>${esc(o.addr)}</p>
+    <p class="office2__legal">${esc(o.legal)}</p>
+  </div>`).join("") + `
+  <div class="office2">
+    <h3>Hours</h3>
+    ${company.hours.map((h) => `<p>${esc(h)}</p>`).join("")}
+  </div>`;
