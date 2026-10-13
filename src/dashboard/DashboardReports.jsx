@@ -34,18 +34,19 @@ import {
 import { toast } from "sonner";
 import moment from "moment";
 import Skeleton, { SkeletonStat } from "@/components/Skeletons";
+import { BRAND } from "@/lib/brand";
 
-const PALETTE = ["#AD1F23", "#0B1B3B", "#C99A3F", "#5A6B85", "#0EA5E9", "#10B981"];
+const PALETTE = [BRAND.accent, BRAND.ink, BRAND.warning, BRAND.muted, BRAND.info, BRAND.success];
 
 const TOOLTIP_STYLE = {
   background: "#fff",
-  border: "1px solid rgba(11,27,59,0.12)",
+  border: "1px solid rgba(15, 26, 21,0.12)",
   borderRadius: 12,
-  color: "#0B1B3B",
+  color: BRAND.ink,
   fontSize: 12,
 };
 
-const AXIS = { fontSize: 11, stroke: "#5A6B85" };
+const AXIS = { fontSize: 11, stroke: BRAND.muted };
 
 const MONTH_ORDER = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -60,32 +61,32 @@ function KpiCard({ icon: Icon, value, label, to, delta, deltaLabel, higherIsBett
   const inner = (
     <>
       <div className="flex items-center justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center">
-          <Icon className="w-5 h-5 text-gold" />
+        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+          <Icon className="w-5 h-5 text-accent-strong" />
         </div>
         {delta !== undefined && <Delta pct={delta} label={deltaLabel} higherIsBetter={higherIsBetter} />}
       </div>
-      <p className="stat-value text-lg lg:text-xl font-display font-bold text-ich-primary">{value}</p>
-      <p className="text-xs text-ich-neutral mt-1 flex items-center gap-1">{label}{to && <span className="text-ich-neutral/40">→</span>}</p>
+      <p className="stat-value text-lg lg:text-xl font-display font-bold text-foreground">{value}</p>
+      <p className="text-xs text-muted mt-1 flex items-center gap-1">{label}{to && <span className="text-muted">→</span>}</p>
     </>
   );
-  const base = "bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0 block";
+  const base = "min-w-0 block rounded-card bg-card p-5 shadow-card";
   return to
-    ? <Link to={to} className={`${base} hover:shadow-md hover:border-ich-gold/30 transition-all press`}>{inner}</Link>
+    ? <Link to={to} className={`${base} hover:shadow-md hover:border-accent/30 transition-all press`}>{inner}</Link>
     : <div className={base}>{inner}</div>;
 }
 
 function ChartCard({ title, subtitle, hasData, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
+    <div className="bg-card rounded-card p-5 shadow-card">
       <div className="mb-4">
-        <h2 className="font-display font-semibold text-ich-primary">{title}</h2>
-        {subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}
+        <h2 className="font-display font-semibold text-foreground">{title}</h2>
+        {subtitle && <p className="text-xs text-muted mt-0.5">{subtitle}</p>}
       </div>
       {hasData ? (
         children
       ) : (
-        <div className="h-[240px] flex items-center justify-center text-sm text-ich-neutral/60">
+        <div className="h-[240px] flex items-center justify-center text-sm text-muted">
           No data yet
         </div>
       )}
@@ -100,15 +101,15 @@ const cap = (s) => {
 
 function ReportTable({ title, subtitle, columns, rows, onExport }) {
   return (
-    <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
+    <div className="bg-card rounded-card overflow-hidden shadow-card">
       <div className="flex items-start justify-between gap-4 px-5 py-4">
         <div>
-          <h2 className="font-display font-semibold text-ich-primary">{title}</h2>
-          {subtitle && <p className="text-xs text-ich-neutral mt-0.5">{subtitle}</p>}
+          <h2 className="font-display font-semibold text-foreground">{title}</h2>
+          {subtitle && <p className="text-xs text-muted mt-0.5">{subtitle}</p>}
         </div>
         <button
           onClick={onExport}
-          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-gold"
+          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-medium text-accent-strong"
         >
           <Download className="w-3.5 h-3.5" />
           Export CSV
@@ -117,7 +118,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -133,7 +134,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
               rows.map((row, i) => (
                 <tr
                   key={i}
-                  className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]"
+                  className="border-b border-border last:border-0 hover:bg-surface"
                 >
                   {columns.map((col) => (
                     <td
@@ -149,7 +150,7 @@ function ReportTable({ title, subtitle, columns, rows, onExport }) {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-5 py-8 text-center text-sm text-ich-neutral/60"
+                  className="px-5 py-8 text-center text-sm text-muted"
                 >
                   No data yet.
                 </td>
@@ -422,15 +423,15 @@ export default function DashboardReports() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Reports</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">
+          <h1 className="text-2xl font-display font-bold text-foreground">Reports</h1>
+          <p className="text-sm text-muted mt-0.5">
             Revenue, bookings and customer analytics across the Icon Holiday platform.
           </p>
         </div>
         <button
           onClick={exportBookings}
           disabled={!data}
-          className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium btn-primary text-white disabled:opacity-50"
+          className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-white disabled:opacity-50 sheen"
         >
           <Download className="w-4 h-4" />
           Export CSV
@@ -453,7 +454,7 @@ export default function DashboardReports() {
           {/* Period + comparison controls */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
             <PeriodControls period={period} onPeriod={setPeriod} comparison={comparison} onComparison={setComparison} />
-            <p className="text-xs text-ich-neutral">
+            <p className="text-xs text-muted">
               {cmp
                 ? <>Comparing against the {comparison === "year" ? "same period last year" : "previous period"}.</>
                 : period === "all"
@@ -479,10 +480,10 @@ export default function DashboardReports() {
           {/* Key ratios */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {ratios.map((r) => (
-              <div key={r.label} className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
-                <p className="text-xs text-ich-neutral uppercase tracking-wider">{r.label}</p>
-                <p className="stat-value text-xl font-display font-bold text-ich-primary mt-1">{r.value}</p>
-                <p className="text-[11px] text-ich-neutral/60 mt-0.5 truncate">{r.hint}</p>
+              <div key={r.label} className="bg-card rounded-card p-5 min-w-0 shadow-card">
+                <p className="text-xs text-muted uppercase tracking-wider">{r.label}</p>
+                <p className="stat-value text-xl font-display font-bold text-foreground mt-1">{r.value}</p>
+                <p className="text-[11px] text-muted mt-0.5 truncate">{r.hint}</p>
               </div>
             ))}
           </div>
@@ -498,8 +499,8 @@ export default function DashboardReports() {
                 onClick={() => setTab(t.key)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   tab === t.key
-                    ? "bg-ich-gold/10 text-gold"
-                    : "text-ich-neutral hover:bg-ich-primary/5"
+                    ? "bg-accent/10 text-accent-strong"
+                    : "text-muted hover:bg-surface"
                 }`}
               >
                 {t.label}
@@ -510,10 +511,10 @@ export default function DashboardReports() {
           {tab === "analytics" && (
           <>
           {/* Revenue by month */}
-          <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 mb-4">
+          <div className="bg-card rounded-card p-5 mb-4 shadow-card">
             <div className="mb-4">
-              <h2 className="font-display font-semibold text-ich-primary">Revenue by month</h2>
-              <p className="text-xs text-ich-neutral mt-0.5">
+              <h2 className="font-display font-semibold text-foreground">Revenue by month</h2>
+              <p className="text-xs text-muted mt-0.5">
                 Confirmed booking revenue grouped by month.
               </p>
             </div>
@@ -522,11 +523,11 @@ export default function DashboardReports() {
                 <AreaChart data={revenueByMonth} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
                   <defs>
                     <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#AD1F23" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="#AD1F23" stopOpacity={0.02} />
+                      <stop offset="0%" stopColor={BRAND.accent} stopOpacity={0.35} />
+                      <stop offset="100%" stopColor={BRAND.accent} stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,27,59,0.06)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15, 26, 21,0.06)" vertical={false} />
                   <XAxis dataKey="month" tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} />
                   <YAxis
                     tick={AXIS}
@@ -543,14 +544,14 @@ export default function DashboardReports() {
                   <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#AD1F23"
+                    stroke={BRAND.accent}
                     strokeWidth={2}
                     fill="url(#revFill)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[240px] flex items-center justify-center text-sm text-ich-neutral/60">
+              <div className="h-[240px] flex items-center justify-center text-sm text-muted">
                 No data yet
               </div>
             )}
@@ -564,10 +565,10 @@ export default function DashboardReports() {
             <ChartCard title="Top customers by value" subtitle="Lifetime spend." hasData={topCustomers.length > 0}>
               <CategoryBars data={topCustomers} />
             </ChartCard>
-            <div className="bg-white rounded-2xl border border-ich-primary/10 p-5">
-              <div className="mb-3"><h2 className="font-display font-semibold text-ich-primary">Insights</h2><p className="text-xs text-ich-neutral mt-0.5">Auto-generated observations.</p></div>
+            <div className="bg-card rounded-card p-5 shadow-card">
+              <div className="mb-3"><h2 className="font-display font-semibold text-foreground">Insights</h2><p className="text-xs text-muted mt-0.5">Auto-generated observations.</p></div>
               <ul className="space-y-2.5">
-                {insights.map((t, i) => <li key={i} className="flex gap-2.5 text-sm text-ich-primary"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" /><span>{t}</span></li>)}
+                {insights.map((t, i) => <li key={i} className="flex gap-2.5 text-sm text-foreground"><span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-strong shrink-0" /><span>{t}</span></li>)}
               </ul>
             </div>
           </div>
@@ -613,10 +614,10 @@ export default function DashboardReports() {
             >
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={tripsByStatus} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,27,59,0.06)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15, 26, 21,0.06)" vertical={false} />
                   <XAxis dataKey="status" tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} />
                   <YAxis tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} allowDecimals={false} width={32} />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(11,27,59,0.04)" }} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(15, 26, 21,0.04)" }} />
                   <Bar dataKey="count" radius={[6, 6, 0, 0]} className="cursor-pointer" onClick={(d) => { const st = d?.status ?? d?.payload?.status; if (st) drill(`/dashboard/bookings?tab=trips&status=${encodeURIComponent(st)}`); }}>
                     {tripsByStatus.map((entry, i) => (
                       <Cell key={entry.status} fill={PALETTE[i % PALETTE.length]} />
@@ -668,7 +669,7 @@ export default function DashboardReports() {
                   layout="vertical"
                   margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,27,59,0.06)" horizontal={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15, 26, 21,0.06)" horizontal={false} />
                   <XAxis type="number" tick={AXIS} stroke={AXIS.stroke} tickLine={false} axisLine={false} allowDecimals={false} />
                   <YAxis
                     type="category"
@@ -679,7 +680,7 @@ export default function DashboardReports() {
                     axisLine={false}
                     width={120}
                   />
-                  <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(11,27,59,0.04)" }} />
+                  <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(15, 26, 21,0.04)" }} />
                   <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                     {topDestinations.map((entry, i) => (
                       <Cell key={entry.name} fill={PALETTE[i % PALETTE.length]} />

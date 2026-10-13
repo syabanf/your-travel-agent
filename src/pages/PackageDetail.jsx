@@ -9,17 +9,19 @@ import { formatIDR } from "@/lib/currency";
 import { categoryLabel, packageDiscount, packageTotal } from "@/data/packageCategories";
 import { toast } from "sonner";
 import moment from "moment";
+import MemberPrice from "@/components/MemberPrice";
+import { useAuth } from "@/lib/AuthContext";
 import {
   MapPin, CalendarDays, Star, Check, X, Users, Minus, Plus,
-  Package as PackageIcon, Sparkles, ArrowRight,
+  Package as PackageIcon, Sparkles, ArrowRight, ChevronRight, FileCheck, Image as ImageIcon
 } from "lucide-react";
 
 const Img = (props) => <img {...props} onError={(e) => { e.currentTarget.style.display = "none"; }} />;
 
 const Section = ({ title, icon: Icon, children }) => (
   <GlassCard className="p-5">
-    <h2 className="text-sm font-semibold text-ich-primary mb-3 flex items-center gap-2">
-      {Icon && <Icon className="w-4 h-4 text-gold" />} {title}
+    <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+      {Icon && <Icon className="w-4 h-4 text-accent-strong" />} {title}
     </h2>
     {children}
   </GlassCard>
@@ -28,6 +30,7 @@ const Section = ({ title, icon: Icon, children }) => (
 export default function PackageDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isGuest } = useAuth();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pkg, setPkg] = useState(undefined); // undefined = loading, null = not found
@@ -63,7 +66,7 @@ export default function PackageDetail() {
       <div className="animate-fade-in">
         <PageHeader title="" showBack />
         <div className="flex justify-center py-24">
-          <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -105,6 +108,12 @@ export default function PackageDetail() {
 
   const book = async () => {
     if (booking) return;
+    // Booking is member-only; a guest signs in first.
+    if (isGuest) {
+      toast("Sign in to book this package");
+      navigate("/login");
+      return;
+    }
     setBooking(true);
     try {
       const details = {
@@ -148,22 +157,22 @@ export default function PackageDetail() {
   return (
     <div className="animate-fade-in" style={{ paddingBottom: 24 }}>
       {/* Hero */}
-      <div className="relative h-60 bg-ich-primary">
+      <div className="relative h-60 bg-surface">
         <Img src={pkg.image} alt={pkg.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
         <div className="absolute top-0 left-0 right-0"><PageHeader showBack title="" /></div>
         <div className="absolute top-3 right-4 flex gap-2">
           {pkg.featured && <span className="chip-glass">Featured</span>}
-          {off != null && <span className="chip-glass !bg-ich-gold/90 !border-white/30">{off}% off</span>}
+          {off != null && <span className="chip-glass !bg-accent/90 !border-white/30">{off}% off</span>}
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span className="chip-glass mb-2">{categoryLabel(pkg.category)}</span>
           <h1 className="text-2xl font-display font-bold text-white text-shadow-soft">{pkg.title}</h1>
           <p className="text-xs text-white/85 flex items-center gap-3 mt-1.5 flex-wrap">
-            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-gold" />{pkg.destination}</span>
-            <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3 text-gold" />{pkg.duration_days}D / {pkg.duration_nights}N</span>
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-accent-strong" />{pkg.destination}</span>
+            <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3 text-accent-strong" />{pkg.duration_days}D / {pkg.duration_nights}N</span>
             {pkg.rating > 0 && (
-              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-gold fill-gold" />{Number(pkg.rating).toFixed(1)} ({pkg.reviews_count})</span>
+              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-accent-strong fill-accent" />{Number(pkg.rating).toFixed(1)} ({pkg.reviews_count})</span>
             )}
           </p>
         </div>
@@ -174,43 +183,45 @@ export default function PackageDetail() {
         <GlassCard className="p-5">
           <div className="flex items-end justify-between gap-3">
             <div>
-              {off != null && <p className="text-xs text-ich-neutral/50 line-through leading-none">{formatIDR(pkg.price_before)}</p>}
-              <p className="stat-value text-2xl font-display font-bold text-gold">{formatIDR(pkg.price)}</p>
-              <p className="text-[11px] text-ich-neutral/70">per person</p>
+              <MemberPrice>
+                {off != null && <p className="text-xs text-muted line-through leading-none">{formatIDR(pkg.price_before)}</p>}
+                <p className="stat-value text-2xl font-display font-bold text-accent-strong">{formatIDR(pkg.price)}</p>
+                <p className="text-[11px] text-muted">per person</p>
+              </MemberPrice>
             </div>
             {pkg.slots_left > 0 && (
-              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${pkg.slots_left <= 5 ? "bg-red-500/10 text-red-600" : "bg-emerald-500/10 text-emerald-700"}`}>
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${pkg.slots_left <= 5 ? "bg-accent-soft text-accent-strong" : "bg-emerald-500/10 text-emerald-700"}`}>
                 {pkg.slots_left} seat{pkg.slots_left > 1 ? "s" : ""} left
               </span>
             )}
           </div>
 
           {/* Travellers */}
-          <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-ich-primary/10">
-            <div className="flex items-center gap-2 text-sm text-ich-primary">
-              <Users className="w-4 h-4 text-gold" /> Travellers
+          <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-2 text-sm text-foreground">
+              <Users className="w-4 h-4 text-accent-strong" /> Travellers
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => changePax(pax - 1)}
                 disabled={pax <= minPax}
                 aria-label="Fewer travellers"
-                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-ich-primary disabled:opacity-40 press-spring"
+                className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center text-foreground disabled:opacity-40 press-spring"
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="stat-value w-6 text-center text-base font-display font-bold text-ich-primary">{pax}</span>
+              <span className="stat-value w-6 text-center text-base font-display font-bold text-foreground">{pax}</span>
               <button
                 onClick={() => changePax(pax + 1)}
                 disabled={pax >= maxPax}
                 aria-label="More travellers"
-                className="w-10 h-10 rounded-full glass-light flex items-center justify-center text-ich-primary disabled:opacity-40 press-spring"
+                className="w-10 h-10 rounded-full bg-card shadow-card flex items-center justify-center text-foreground disabled:opacity-40 press-spring"
               >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>
-          <p className="text-[11px] text-ich-neutral/60 mt-2">
+          <p className="text-[11px] text-muted mt-2">
             This package takes {minPax}–{maxPax} travellers.
           </p>
         </GlassCard>
@@ -224,7 +235,7 @@ export default function PackageDetail() {
                   key={d}
                   onClick={() => changeDeparture(d)}
                   className={`px-4 min-h-[44px] rounded-2xl text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                    departure === d ? "btn-primary text-white" : "glass-light text-ich-neutral"
+                    departure === d ? "bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-white" : "bg-card shadow-card text-muted"
                   }`}
                 >
                   {moment(d).format("D MMM YYYY")}
@@ -237,7 +248,51 @@ export default function PackageDetail() {
         {/* About */}
         {(pkg.summary || pkg.description) && (
           <Section title="About this package" icon={Sparkles}>
-            <p className="text-sm text-ich-neutral leading-relaxed">{pkg.description || pkg.summary}</p>
+            <p className="text-sm text-muted leading-relaxed">{pkg.description || pkg.summary}</p>
+          </Section>
+        )}
+
+        {/* Route: countries and cities the tour visits (3.4) */}
+        {pkg.cities?.length > 0 && (
+          <Section title="Destinations" icon={MapPin}>
+            <p className="mb-2 text-xs text-muted">{(pkg.countries || []).join(" · ")}</p>
+            <ol className="flex flex-wrap items-center gap-1.5">
+              {pkg.cities.map((c, i) => (
+                <li key={c} className="flex items-center gap-1.5">
+                  <span className="rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-body">{c}</span>
+                  {i < pkg.cities.length - 1 && <ChevronRight className="size-3.5 text-silver" aria-hidden="true" />}
+                </li>
+              ))}
+            </ol>
+          </Section>
+        )}
+
+        {/* Requirements to join (3.7) */}
+        {pkg.requirements?.length > 0 && (
+          <Section title="Travel requirements" icon={FileCheck}>
+            <ul className="space-y-2">
+              {pkg.requirements.map((r) => (
+                <li key={r} className="flex items-start gap-2.5 text-sm text-body">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />{r}
+                </li>
+              ))}
+            </ul>
+            <button type="button" onClick={() => navigate("/visa")} className="mt-3 text-xs font-semibold text-accent-strong hover:underline">
+              Check visa information
+            </button>
+          </Section>
+        )}
+
+        {/* Promotional gallery (3.8) */}
+        {pkg.images?.length > 1 && (
+          <Section title="Gallery" icon={ImageIcon}>
+            <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 hide-scrollbar">
+              {pkg.images.map((src, i) => (
+                <div key={src} className="group relative h-36 w-56 shrink-0 snap-start overflow-hidden rounded-2xl bg-surface">
+                  <img src={src} alt={`${pkg.title}, photo ${i + 1}`} loading="lazy" className="size-full object-cover img-zoom" />
+                </div>
+              ))}
+            </div>
           </Section>
         )}
 
@@ -246,8 +301,8 @@ export default function PackageDetail() {
           <Section title="Highlights" icon={Star}>
             <ul className="space-y-2">
               {pkg.highlights.map((h, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-ich-neutral">
-                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold shrink-0" />{h}
+                <li key={i} className="flex items-start gap-2.5 text-sm text-muted">
+                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-strong shrink-0" />{h}
                 </li>
               ))}
             </ul>
@@ -259,13 +314,13 @@ export default function PackageDetail() {
           <Section title="What's included" icon={Check}>
             <ul className="space-y-2">
               {(pkg.includes || []).map((x, i) => (
-                <li key={`i${i}`} className="flex items-start gap-2.5 text-sm text-ich-neutral">
+                <li key={`i${i}`} className="flex items-start gap-2.5 text-sm text-muted">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />{x}
                 </li>
               ))}
               {(pkg.excludes || []).map((x, i) => (
-                <li key={`e${i}`} className="flex items-start gap-2.5 text-sm text-ich-neutral/60">
-                  <X className="w-4 h-4 text-ich-neutral/40 shrink-0 mt-0.5" />{x}
+                <li key={`e${i}`} className="flex items-start gap-2.5 text-sm text-muted">
+                  <X className="w-4 h-4 text-muted shrink-0 mt-0.5" />{x}
                 </li>
               ))}
             </ul>
@@ -278,12 +333,12 @@ export default function PackageDetail() {
             <ol className="space-y-3.5">
               {pkg.itinerary.map((d, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-bold shrink-0">
+                  <span className="w-8 h-8 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center text-xs font-display font-bold shrink-0">
                     {d.day ?? i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ich-primary">{d.title}</p>
-                    {d.detail && <p className="text-xs text-ich-neutral/70 leading-relaxed mt-0.5">{d.detail}</p>}
+                    <p className="text-sm font-semibold text-foreground">{d.title}</p>
+                    {d.detail && <p className="text-xs text-muted leading-relaxed mt-0.5">{d.detail}</p>}
                   </div>
                 </li>
               ))}
@@ -292,17 +347,19 @@ export default function PackageDetail() {
         )}
       </div>
 
-      {/* Sticky booking bar — sits just above the tab dock */}
-      <div className="sticky bottom-[92px] z-20 px-6 mt-5">
-        <div className="glass-nav shadow-float rounded-2xl p-3 flex items-center gap-3">
+      {/* Sticky booking bar, pinned to the bottom of the screen */}
+      <div className="sticky bottom-4 z-20 px-6 mt-5">
+        <div className="bg-card shadow-up shadow-float rounded-2xl p-3 flex items-center gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] text-ich-neutral/60 uppercase tracking-wider leading-none">Total · {pax} traveller{pax > 1 ? "s" : ""}</p>
-            <p className="stat-value text-lg font-display font-bold text-gold leading-tight">{formatIDR(total)}</p>
+            <p className="text-[10px] text-muted uppercase tracking-wider leading-none">Total · {pax} traveller{pax > 1 ? "s" : ""}</p>
+            <MemberPrice compact>
+              <p className="stat-value text-lg font-display font-bold text-accent-strong leading-tight">{formatIDR(total)}</p>
+            </MemberPrice>
           </div>
           <button
             onClick={book}
             disabled={booking}
-            className="flex-1 min-h-[48px] btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60 press-spring"
+            className="flex-1 min-h-[48px] bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60 press-spring"
           >
             {booking ? "Starting…" : "Book this package"} <ArrowRight className="w-4 h-4" />
           </button>

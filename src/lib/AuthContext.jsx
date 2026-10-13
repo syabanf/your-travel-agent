@@ -4,6 +4,11 @@ import { backend } from '@/api/backend';
 const AuthContext = createContext();
 const SESSION_KEY = 'ich_session';
 
+const GUEST_KEY = 'ich_guest';
+const readGuest = () => {
+  try { return localStorage.getItem(GUEST_KEY) === '1'; } catch { return false; }
+};
+
 const readSession = () => {
   try { return localStorage.getItem(SESSION_KEY) === '1'; } catch { return false; }
 };
@@ -13,6 +18,8 @@ const readSession = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(readSession());
+  // A guest browses the catalog without member content: no prices, no trips.
+  const [isGuest, setIsGuest] = useState(readGuest());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -27,13 +34,20 @@ export const AuthProvider = ({ children }) => {
     })();
   }, []);
 
-  const login = (profile = {}) => {
+  // `profile` may carry the account's details (phone, city, ...); they are
+  // kept so forms can prefill them.
+  const login = ({ name, email, ...details } = {}) => {
+    const guest = name === 'Guest';
     try {
       localStorage.setItem(SESSION_KEY, '1');
-      if (profile.name) localStorage.setItem('ich_user_name', profile.name);
-      if (profile.email) localStorage.setItem('ich_user_email', profile.email);
+      if (guest) localStorage.setItem(GUEST_KEY, '1'); else localStorage.removeItem(GUEST_KEY);
+      if (name) localStorage.setItem('ich_user_name', name);
+      if (email) localStorage.setItem('ich_user_email', email);
+      localStorage.setItem('ich_user_profile', JSON.stringify(guest ? {} : details));
     } catch { /* ignore */ }
     setIsAuthenticated(true);
+    setIsGuest(guest);
+    backend.auth.me().then(setUser).catch(() => {});
   };
 
   const logout = () => {
@@ -42,13 +56,17 @@ export const AuthProvider = ({ children }) => {
       // Don't leave the previous person's name greeting the next one.
       localStorage.removeItem('ich_user_name');
       localStorage.removeItem('ich_user_email');
+      localStorage.removeItem('ich_user_profile');
+      localStorage.removeItem(GUEST_KEY);
     } catch { /* ignore */ }
     setIsAuthenticated(false);
+    setIsGuest(false);
   };
 
   const value = {
     user,
     isAuthenticated,
+    isGuest,
     login,
     logout,
     isLoading,

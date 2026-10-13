@@ -10,9 +10,9 @@ import moment from "moment";
 const typeIcons = { flight: Plane, hotel: Hotel, train: Train, car_rental: Car, ship: Ship, attraction: Ticket, villa: Home, bus: Train };
 
 const statusColors = {
-  pending: "bg-ich-gold/10 text-gold",
+  pending: "bg-accent/10 text-accent-strong",
   confirmed: "bg-emerald-500/15 text-emerald-400",
-  cancelled: "bg-red-500/15 text-red-400",
+  cancelled: "bg-accent-soft text-red-400",
   completed: "bg-blue-500/15 text-blue-400",
 };
 
@@ -48,24 +48,24 @@ export default function BookingSearch() {
 
       <div className="px-6 mb-5">
         <GlassCard className="p-4 flex items-center gap-3">
-          <Search className="w-5 h-5 text-ich-neutral/40 flex-shrink-0" />
+          <Search className="w-5 h-5 text-muted flex-shrink-0" />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search bookings..."
-            className="flex-1 bg-transparent text-sm text-ich-white placeholder:text-ich-neutral/40 outline-none"
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted outline-none"
           />
         </GlassCard>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-10">
-          <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="px-6">
           <GlassCard className="p-8 text-center">
-            <p className="text-sm text-ich-neutral/50">No bookings found</p>
+            <p className="text-sm text-muted">No bookings found</p>
           </GlassCard>
         </div>
       ) : (
@@ -74,20 +74,20 @@ export default function BookingSearch() {
             const Icon = typeIcons[booking.type] || Ticket;
             return (
               <Link key={booking.id} to={`/booking/${booking.id}`} className="block">
-                <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
+                <GlassCard className="p-4 flex items-center gap-4 hover:bg-surface transition-all lift">
                   {booking.image_url ? (
                     <img src={booking.image_url} alt={booking.title}
                       className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                   ) : (
-                    <div className="w-14 h-14 rounded-xl glass-light flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-6 h-6 text-gold" />
+                    <div className="w-14 h-14 rounded-xl bg-card shadow-card flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-6 h-6 text-accent-strong" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-ich-white truncate">{booking.title}</h3>
-                    {booking.provider && <p className="text-xs text-ich-neutral/50 mt-0.5">{booking.provider}</p>}
+                    <h3 className="text-sm font-semibold text-foreground truncate">{booking.title}</h3>
+                    {booking.provider && <p className="text-xs text-muted mt-0.5">{booking.provider}</p>}
                     {booking.check_in && (
-                      <p className="text-[10px] text-gold mt-1">{moment(booking.check_in).format("MMM D, YYYY")}</p>
+                      <p className="text-[10px] text-accent-strong mt-1">{moment(booking.check_in).format("MMM D, YYYY")}</p>
                     )}
                   </div>
                   <div className="text-right flex-shrink-0">
@@ -97,7 +97,7 @@ export default function BookingSearch() {
                       </span>
                     )}
                     {booking.price > 0 && (
-                      <p className="text-xs font-display text-gold mt-1">{formatIDR(booking.price)}</p>
+                      <p className="text-xs font-display text-accent-strong mt-1">{formatIDR(booking.price)}</p>
                     )}
                   </div>
                 </GlassCard>

@@ -65,31 +65,31 @@ export default function FeatureUnlock() {
 
       <div className="px-6 pb-28 space-y-4">
         <GlassCard className="p-6 text-center">
-          <div className="w-16 h-16 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
-            <Icon className="w-8 h-8 text-gold" strokeWidth={1.5} />
+          <div className="w-16 h-16 rounded-2xl bg-accent-soft flex items-center justify-center mx-auto mb-4">
+            <Icon className="w-8 h-8 text-accent-strong" strokeWidth={1.5} />
           </div>
-          <h2 className="text-lg font-display font-bold text-ich-primary mb-1.5">{meta.name}</h2>
-          <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">{meta.tagline}</p>
+          <h2 className="text-lg font-display font-bold text-foreground mb-1.5">{meta.name}</h2>
+          <p className="text-sm text-muted leading-relaxed max-w-[280px] mx-auto">{meta.tagline}</p>
 
-          <p className="mt-5 text-2xl font-display font-bold text-gold">{formatIDR(meta.price)}</p>
-          <p className="text-[11px] text-ich-neutral/60 mt-0.5">{meta.unit}</p>
+          <p className="mt-5 text-2xl font-display font-bold text-accent-strong">{formatIDR(meta.price)}</p>
+          <p className="text-[11px] text-muted mt-0.5">{meta.unit}</p>
         </GlassCard>
 
         <GlassCard className="p-5">
-          <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-3">What you get</h3>
+          <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-3">What you get</h3>
           <ul className="space-y-2.5">
             {meta.perks.map((perk) => (
               <li key={perk} className="flex items-start gap-2.5">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="text-sm text-ich-neutral leading-snug">{perk}</span>
+                <span className="text-sm text-muted leading-snug">{perk}</span>
               </li>
             ))}
           </ul>
         </GlassCard>
 
         <div className="flex items-center gap-2 px-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-ich-neutral/50 shrink-0" />
-          <p className="text-[11px] text-ich-neutral/50 leading-relaxed">
+          <ShieldCheck className="w-3.5 h-3.5 text-muted shrink-0" />
+          <p className="text-[11px] text-muted leading-relaxed">
             One-off payment. Payment is simulated in this demo.
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function FeatureUnlock() {
         {unlocked ? (
           <button
             onClick={() => navigate(feature === "virtual_guiding" ? "/virtual-guiding" : "/assistant/ai")}
-            className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2"
           >
             <Check className="w-4 h-4" /> Already unlocked — open it
           </button>
@@ -105,7 +105,7 @@ export default function FeatureUnlock() {
           <button
             onClick={buy}
             disabled={starting || loading}
-            className="w-full py-4 btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-4 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 sheen"
           >
             {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Unlock for {formatIDR(meta.price)}

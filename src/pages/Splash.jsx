@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Plane } from "lucide-react";
+import BrandMark from "../components/BrandMark";
 import PhoneFrame from "../components/PhoneFrame";
 
 const read = (k) => { try { return localStorage.getItem(k) === "1"; } catch { return false; } };
@@ -27,11 +27,9 @@ export default function Splash() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex flex-col items-center"
         >
-          <div className="w-20 h-20 rounded-3xl btn-primary flex items-center justify-center mb-5 shadow-[0_16px_40px_rgba(173,31,35,0.35)]">
-            <Plane className="w-10 h-10 text-white" strokeWidth={1.5} />
-          </div>
-          <h1 className="text-5xl font-display font-bold text-ich-primary tracking-tight">Icon Holiday</h1>
-          <p className="text-xs text-ich-neutral mt-2 tracking-[0.25em] uppercase">Your Travel Agent</p>
+          <h1 className="sr-only">Icon Holiday</h1>
+          <BrandMark className="[&_img]:w-56" />
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-muted">Your travel agent</p>
         </motion.div>
 
         <motion.div
@@ -40,8 +38,8 @@ export default function Splash() {
           transition={{ delay: 0.6 }}
           className="absolute bottom-16 flex items-center gap-2"
         >
-          <div className="w-4 h-4 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
-          <span className="text-xs text-ich-neutral/60">Preparing your journey…</span>
+          <div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+          <span className="text-xs text-muted">Preparing your journey…</span>
         </motion.div>
       </div>
     </PhoneFrame>

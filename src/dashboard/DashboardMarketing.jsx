@@ -19,6 +19,7 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 const EMPTY = { name: "", channel: "email", segment: "all", promo_code: "", discount: "", status: "draft", scheduled_date: "" };
 
@@ -32,8 +33,8 @@ const CHANNEL_META = {
 const SEGMENTS = ["all", "platinum", "gold", "silver", "bronze", "active", "inactive"];
 
 const STATUS_BADGE = {
-  draft: "bg-ich-primary/10 text-ich-neutral",
-  scheduled: "bg-ich-gold/10 text-gold",
+  draft: "bg-surface text-muted",
+  scheduled: "bg-accent/10 text-accent-strong",
   sent: "bg-emerald-100 text-emerald-700",
 };
 
@@ -153,7 +154,7 @@ export default function DashboardMarketing() {
   });
   const byChannel = CHANNELS.map((ch) => ({ name: CHANNEL_META[ch].label, value: channelCount[ch] || 0 })).filter((d) => d.value);
   const sentByChannel = CHANNELS.map((ch) => ({ name: CHANNEL_META[ch].label, value: channelSent[ch] || 0 })).filter((d) => d.value);
-  const STATUS_COLOR = { draft: "#94A3B8", scheduled: "#C99A3F", sent: "#10B981" };
+  const STATUS_COLOR = { draft: BRAND.chartMuted, scheduled: BRAND.warning, sent: BRAND.success };
   const byStatus = Object.entries(statusCount).map(([k, value]) => ({ name: cap(k), value, color: STATUS_COLOR[k] }));
 
   return (
@@ -161,14 +162,14 @@ export default function DashboardMarketing() {
       <ReadOnlyBanner resource="marketing" />
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Marketing Campaigns</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Marketing Campaigns</h1>
+          <p className="text-sm text-muted mt-0.5">Plan and send email, WhatsApp & push campaigns to traveler segments.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="marketing" data={items} />
             {can(role, "marketing", "create") && (
-              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+              <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen">
                 <Plus className="w-4 h-4" /> New campaign
               </button>
             )}
@@ -199,10 +200,10 @@ export default function DashboardMarketing() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 max-w-2xl">
+        <div className="bg-card rounded-card p-6 max-w-2xl shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit campaign" : "New campaign"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-foreground">{editing.id ? "Edit campaign" : "New campaign"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Name"><input value={editing.name} onChange={(e) => upd("name", e.target.value)} className="dash-input" placeholder="Platinum Bali Flash Sale" /></Fld>
@@ -244,20 +245,20 @@ export default function DashboardMarketing() {
               <Fld label="Scheduled date"><input type="date" value={editing.scheduled_date} onChange={(e) => upd("scheduled_date", e.target.value)} className="dash-input" /></Fld>
             </div>
             <div className="flex gap-2 pt-3">
-              <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
             </div>
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-4 shadow-card"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative">
-              <Search className="w-4 h-4 text-ich-neutral absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search campaigns…" />
             </div>
             <SearchableSelect
@@ -297,7 +298,7 @@ export default function DashboardMarketing() {
               className="max-w-[160px]"
             />
             {(query || channelF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setChannelF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -306,14 +307,14 @@ export default function DashboardMarketing() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "name", label: "Name", className: "font-medium text-ich-primary", render: (c) => c.name },
+                { key: "name", label: "Name", className: "font-medium text-foreground", render: (c) => c.name },
                 { key: "channel", label: "Channel", render: (c) => {
                   const meta = CHANNEL_META[c.channel] || CHANNEL_META.email;
                   return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>;
                 } },
                 { key: "segment", label: "Segment", render: (c) => cap(c.segment || "all") },
-                { key: "promo_code", label: "Promo code", render: (c) => c.promo_code ? <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-ich-primary/5 text-ich-primary">{c.promo_code}</span> : "—" },
-                { key: "discount", label: "Discount", align: "right", className: "text-right font-semibold text-gold", render: (c) => `${Number(c.discount) || 0}%` },
+                { key: "promo_code", label: "Promo code", render: (c) => c.promo_code ? <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-surface text-foreground">{c.promo_code}</span> : "—" },
+                { key: "discount", label: "Discount", align: "right", className: "text-right font-semibold text-accent-strong", render: (c) => `${Number(c.discount) || 0}%` },
                 { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || "draft"}</span> },
                 { key: "sent_count", label: "Sent", align: "right", className: "text-right", render: (c) => Number(c.sent_count) || 0 },
               ]}
@@ -328,41 +329,41 @@ export default function DashboardMarketing() {
             const ChIcon = meta.icon;
             const recipients = segmentCount(c.segment);
             return (
-              <Link key={c.id} to={`/dashboard/marketing/${c.id}`} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
-                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><ChIcon className="w-5 h-5" /></div>
+              <Link key={c.id} to={`/dashboard/marketing/${c.id}`} className="bg-card rounded-card p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press shadow-card lift">
+                <div className="w-11 h-11 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0"><ChIcon className="w-5 h-5" /></div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-display font-semibold text-ich-primary truncate">{c.name}</h3>
+                    <h3 className="font-display font-semibold text-foreground truncate">{c.name}</h3>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.badge}`}>{meta.label}</span>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${STATUS_BADGE[c.status] || STATUS_BADGE.draft}`}>{c.status || "draft"}</span>
                   </div>
-                  <p className="text-xs text-ich-neutral mt-0.5">
-                    {cap(c.segment || "all")} <span className="text-ich-neutral/70">({recipients} recipients)</span>
+                  <p className="text-xs text-muted mt-0.5">
+                    {cap(c.segment || "all")} <span className="text-muted">({recipients} recipients)</span>
                     {c.scheduled_date ? ` · ${moment(c.scheduled_date).format("MMM D, YYYY")}` : ""}
                     {c.status === "sent" ? ` · ${Number(c.sent_count) || 0} sent` : ""}
                   </p>
                   {c.promo_code ? (
                     <div className="mt-1.5 flex items-center gap-2">
-                      <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-ich-primary/5 text-ich-primary">{c.promo_code}</span>
-                      {c.discount ? <span className="text-[11px] font-semibold text-gold">{c.discount}% off</span> : null}
+                      <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-surface text-foreground">{c.promo_code}</span>
+                      {c.discount ? <span className="text-[11px] font-semibold text-accent-strong">{c.discount}% off</span> : null}
                     </div>
                   ) : c.discount ? (
-                    <p className="text-[11px] font-semibold text-gold mt-1.5">{c.discount}% off</p>
+                    <p className="text-[11px] font-semibold text-accent-strong mt-1.5">{c.discount}% off</p>
                   ) : null}
                 </div>
                 {(can(role, "marketing", "edit") || can(role, "marketing", "delete")) && (
                   <div className="flex items-center gap-1.5 shrink-0">
                     {c.status !== "sent" && can(role, "marketing", "edit") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendNow(c); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-ich-gold/10 text-gold hover:bg-ich-gold/20 flex items-center gap-1.5">
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); sendNow(c); }} className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-accent/10 text-accent-strong hover:bg-accent/20 flex items-center gap-1.5">
                         <Send className="w-3.5 h-3.5" /> Send now
                       </button>
                     )}
                     <div className="flex gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       {can(role, "marketing", "edit") && (
-                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-foreground hover:text-accent-strong press"><Pencil className="w-4 h-4" /></button>
                       )}
                       {can(role, "marketing", "delete") && (
-                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-accent-soft flex items-center justify-center text-accent-strong press"><Trash2 className="w-4 h-4" /></button>
                       )}
                     </div>
                   </div>
@@ -379,7 +380,7 @@ export default function DashboardMarketing() {
               title="No campaigns yet"
               hint="Plan and send email, WhatsApp & push campaigns to traveler segments."
               action={can(role, "marketing", "create") ? (
-                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 sheen">
                   <Plus className="w-4 h-4" /> New campaign
                 </button>
               ) : null}
@@ -395,18 +396,18 @@ export default function DashboardMarketing() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4">
-    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-card rounded-card p-5 flex items-center gap-4 shadow-card">
+    <div className="w-11 h-11 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
-      <div className="text-xl font-display font-bold text-ich-primary truncate">{value}</div>
+      <div className="text-xs text-muted uppercase tracking-wider">{label}</div>
+      <div className="text-xl font-display font-bold text-foreground truncate">{value}</div>
     </div>
   </div>
 );
 
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

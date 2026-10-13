@@ -11,22 +11,22 @@ export default function ActiveTrip({ trip }) {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="eyebrow text-sm font-semibold text-ich-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-foreground tracking-wide uppercase">
           {isActive ? "Active Trip" : "Upcoming Trip"}
         </h2>
-        <Link to="/itinerary" className="text-xs text-gold flex items-center gap-1 press-spring">
+        <Link to="/itinerary" className="text-xs text-accent-strong flex items-center gap-1 press-spring">
           View All <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
 
       <Link to={`/itinerary/${trip.id}`} className="block press-spring group">
-        <div className="relative h-44 rounded-3xl overflow-hidden shadow-lift">
+        <div className="relative h-44 rounded-3xl overflow-hidden shadow-float">
           <img
             src={trip.cover_image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80"}
             alt={trip.title}
             className="w-full h-full object-cover img-zoom"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ich-primary via-ich-primary/35 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/35 to-transparent" />
           <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
 
           {daysUntil > 0 && !isActive && (
@@ -44,18 +44,18 @@ export default function ActiveTrip({ trip }) {
               </h3>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5 text-white">
-                  <MapPin className="w-3.5 h-3.5 text-gold" />
+                  <MapPin className="w-3.5 h-3.5 text-accent-strong" />
                   <span className="text-xs">{trip.destination}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white">
-                  <Calendar className="w-3.5 h-3.5 text-gold" />
+                  <Calendar className="w-3.5 h-3.5 text-accent-strong" />
                   <span className="text-xs">
                     {moment(trip.start_date).format("MMM D")} - {moment(trip.end_date).format("MMM D")}
                   </span>
                 </div>
                 {trip.travelers > 1 && (
                   <div className="flex items-center gap-1.5 text-white">
-                    <Users className="w-3.5 h-3.5 text-gold" />
+                    <Users className="w-3.5 h-3.5 text-accent-strong" />
                     <span className="text-xs">{trip.travelers}</span>
                   </div>
                 )}

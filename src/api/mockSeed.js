@@ -7,6 +7,10 @@
 
 import { DESTINATIONS } from '@/data/destinations';
 import { DEFAULT_OTA_CATEGORIES } from '@/data/otaCategories';
+import { PLACES, placeKey } from '@/data/places';
+import { VISA_INFO } from '@/data/membership';
+import { DEFAULT_ACCOUNTS } from '@/lib/accounting';
+import { DEFAULT_DOCUMENT_TYPES, DEFAULT_PAYMENT_METHODS, DEFAULT_TOUR_LEADERS, DEFAULT_MEETING_POINTS } from '@/data/masterData';
 
 const DAY = 86400000;
 
@@ -443,7 +447,7 @@ export function buildSeed() {
     pkg('pkg_maldives_signature', {
       title: 'Maldives Signature Overwater', destination: 'Maldives', category: 'signature',
       summary: 'Seven nights in an overwater villa, seaplane transfers, and a private sandbank dinner.',
-      description: 'Our flagship escape. A private overwater villa with a glass floor and a direct lagoon ladder, seaplane transfers over the atolls, a reserved sandbank for one candlelit dinner, and a dedicated host for the week.',
+      description: 'Our flagship escape. A private overwater villa with a bg-card shadow-card floor and a direct lagoon ladder, seaplane transfers over the atolls, a reserved sandbank for one candlelit dinner, and a dedicated host for the week.',
       image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1200&q=80',
       images: [
         'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1200&q=80',
@@ -451,7 +455,7 @@ export function buildSeed() {
       ],
       duration_days: 8, duration_nights: 7, price: 64500000, price_before: 72000000,
       min_dp_percent: 50,
-      highlights: ['Overwater villa with glass floor', 'Seaplane transfers', 'Private sandbank dinner', 'Dedicated host'],
+      highlights: ['Overwater villa with bg-card shadow-card floor', 'Seaplane transfers', 'Private sandbank dinner', 'Dedicated host'],
       includes: ['7 nights overwater villa', 'All meals', 'Return seaplane transfers', 'Sandbank dinner', 'Snorkelling excursions'],
       excludes: ['International flights', 'Travel insurance', 'Premium spirits'],
       itinerary: [
@@ -510,6 +514,31 @@ export function buildSeed() {
   const OtaCategory = DEFAULT_OTA_CATEGORIES.map((c, i) => ({
     id: `otacat_${c.key}`, created_at: iso(-60 + i), updated_at: iso(-60 + i), created_by: by, ...c,
   }));
+
+  // Master data the back office manages (Dashboard > Master data).
+  const master = (prefix, rows, key = (r) => r.key) => rows.map((r, i) => ({
+    id: `${prefix}_${key(r)}`, created_at: iso(-90 + i / 10), created_by: by, active: true, ...r, key: key(r),
+  }));
+  const Place = master('place', PLACES, placeKey);
+  const DocumentType = master('doctype', DEFAULT_DOCUMENT_TYPES);
+  const VisaInfo = master('visa', VISA_INFO, (v) => v.code);
+  const PaymentMethod = master('paymethod', DEFAULT_PAYMENT_METHODS);
+  const TourLeader = master('leader', DEFAULT_TOUR_LEADERS);
+  const MeetingPoint = master('meetpt', DEFAULT_MEETING_POINTS);
+  const Account = master('acct', DEFAULT_ACCOUNTS, (a) => a.code);
+
+  // Manual journal: the owner's capital, equipment and a year of overheads,
+  // sized to the demo's booking volume. Bookings post their own entries.
+  const journal = (id, days, ref, memo, lines) => ({ id, created_at: iso(days), created_by: by, date: date(days), ref, memo, lines });
+  const overheads = [['6102', 'Co-working desk', 500000], ['6103', 'Instagram and Google ads', 400000], ['6105', 'Internet and phone', 250000], ['6104', 'Bank and payment gateway fees', 100000]];
+  const JournalEntry = [
+    journal('je_capital', -400, 'CAP-001', "Owner's opening capital", [{ account: '1102', debit: 25000000 }, { account: '3101', credit: 25000000 }]),
+    journal('je_equipment', -395, 'PUR-001', 'Laptops and printer', [{ account: '1501', debit: 6000000 }, { account: '1102', credit: 6000000 }]),
+    ...Array.from({ length: 12 }, (_, i) => journal(`je_opex_${i + 1}`, -365 + i * 30 + 28, `EXP-${String(i + 1).padStart(3, '0')}`, 'Monthly overheads', [
+      ...overheads.map(([account, note, debit]) => ({ account, debit, note })),
+      { account: '1102', credit: overheads.reduce((t, o) => t + o[2], 0) },
+    ])),
+  ];
 
   // Single app-wide settings record (brand, support, social, feature flags).
   const Setting = [
@@ -627,5 +656,108 @@ export function buildSeed() {
   // Virtual Guiding and AI itinerary building are bought, not given.
   const FeatureAccess = [];
 
-  return { Registration, FeatureAccess, Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage };
+  /* ---------------- Icon Membership v2: what the member app shows per trip --------------- */
+  const maps = (q) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+
+  // Route and requirements for every package (catalog features 3.4 and 3.7).
+  const ROUTES = {
+    pkg_bali_honeymoon: { countries: ['Indonesia'], cities: ['Seminyak', 'Ubud', 'Tanah Lot', 'Jimbaran'] },
+    pkg_kyoto_culture: { countries: ['Japan'], cities: ['Osaka', 'Kyoto', 'Nara'] },
+    pkg_labuan_bajo: { countries: ['Indonesia'], cities: ['Labuan Bajo', 'Komodo', 'Padar'] },
+    pkg_raja_ampat: { countries: ['Indonesia'], cities: ['Sorong', 'Waisai', 'Misool'] },
+    pkg_yogya_family: { countries: ['Indonesia'], cities: ['Yogyakarta', 'Borobudur', 'Prambanan'] },
+    pkg_santorini: { countries: ['Greece'], cities: ['Athens', 'Fira', 'Oia'] },
+    pkg_singapore_city: { countries: ['Singapore'], cities: ['Marina Bay', 'Sentosa', 'Chinatown'] },
+    pkg_maldives_signature: { countries: ['Maldives'], cities: ['Malé', 'North Malé Atoll'] },
+    pkg_bromo_cost_saver: { countries: ['Indonesia'], cities: ['Surabaya', 'Cemoro Lawang', 'Madakaripura'] },
+    pkg_lombok_draft: { countries: ['Indonesia'], cities: ['Mataram', 'Gili Trawangan'] },
+  };
+  const abroad = (p) => !(ROUTES[p.id]?.countries || ['Indonesia']).includes('Indonesia');
+  for (const p of TourPackage) {
+    Object.assign(p, ROUTES[p.id] || {});
+    p.requirements = abroad(p)
+      ? ['Passport valid at least 6 months from departure', 'Visa where required (see Info Visa)', 'Travel insurance', 'Minimum deposit paid to hold seats']
+      : ['ID card (KTP) or passport', 'Minimum deposit paid to hold seats', 'Children travel with a parent or guardian'];
+  }
+
+  // Departure information per trip: the staged member content (modules 7, 8, 10).
+  const DEPARTURE = {
+    trip_bali: {
+      countries: ['Indonesia'], cities: ['Seminyak', 'Ubud', 'Kintamani', 'Jimbaran'],
+      meeting_at: `${date(-2)}T05:30:00`, meeting_location: 'Soekarno-Hatta Airport, Terminal 3, Gate 5', meeting_map_url: maps('Soekarno-Hatta Terminal 3'),
+      tour_leader: { key: 'bagas', name: 'Bagas Wiratama', phone: '+62 812 1100 2200' }, meeting_point_key: 'cgk_t3_g5',
+      whatsapp_group_url: 'https://chat.whatsapp.com/IconHolidayBali',
+      hotels: [
+        { name: 'Azure Bay Resort', address: 'Jl. Kayu Aya 88, Seminyak, Bali', map_url: maps('Seminyak Bali resort'), nights: '3 nights' },
+        { name: 'Ubud Hanging Gardens', address: 'Desa Buahan, Payangan, Ubud, Bali', map_url: maps('Ubud Hanging Gardens'), nights: '4 nights' },
+      ],
+      important_locations: [
+        { label: 'Icon Holiday Bali desk', address: 'Ngurah Rai Airport, Arrival Hall', map_url: maps('Ngurah Rai Airport') },
+        { label: 'BIMC Hospital Kuta', address: 'Jl. Bypass Ngurah Rai 100X, Kuta', map_url: maps('BIMC Hospital Kuta') },
+      ],
+      required_documents: ['ID card (KTP) or passport', 'E-ticket (sent by email)', 'Booking voucher'],
+      packing_list: ['Light clothing and a sarong for temples', 'Swimwear', 'Sunscreen and insect repellent', 'Comfortable walking shoes', 'Jacket for the 04:00 Batur trek', 'Power bank'],
+      benefits: ['Return flights', '7 nights in 4–5★ hotels', 'Daily breakfast', 'Private transfers', 'Tour Leader throughout', 'Entrance tickets'],
+      itinerary_updated_at: iso(-1),
+    },
+    trip_kyoto: {
+      countries: ['Japan'], cities: ['Osaka', 'Kyoto', 'Nara', 'Arashiyama'],
+      meeting_at: `${date(34)}T19:00:00`, meeting_location: 'Soekarno-Hatta Airport, Terminal 3, Gate 7', meeting_map_url: maps('Soekarno-Hatta Terminal 3'),
+      tour_leader: { key: 'rina', name: 'Rina Kartika', phone: '+62 813 2200 3300' }, meeting_point_key: 'cgk_t3_g7',
+      whatsapp_group_url: 'https://chat.whatsapp.com/IconHolidayKyoto',
+      hotels: [{ name: 'Hotel Granvia Kyoto', address: 'Karasuma-dori, Shimogyo-ku, Kyoto', map_url: maps('Hotel Granvia Kyoto'), nights: '5 nights' }],
+      important_locations: [{ label: 'Kyoto Station tourist office', address: 'Kyoto Station 2F', map_url: maps('Kyoto Station tourist information') }],
+      required_documents: ['Passport valid at least 6 months', 'Visa waiver registration or visa', 'E-ticket', 'Travel insurance certificate'],
+      packing_list: ['Autumn layers and a light coat', 'Socks without holes (temples and tatami)', 'Coin purse for yen', 'Universal adapter (type A)', 'Comfortable walking shoes'],
+      benefits: ['Return flights', '6 nights hotel', 'JR Kyoto–Nara transfers', 'Tea ceremony', 'Tour Leader throughout'],
+      itinerary_updated_at: iso(-3),
+    },
+    trip_maldives: {
+      countries: ['Maldives'], cities: ['Malé', 'North Malé Atoll'],
+      meeting_at: `${date(30)}T09:00:00`, meeting_location: 'Soekarno-Hatta Airport, Terminal 3, Gate 3', meeting_map_url: maps('Soekarno-Hatta Terminal 3'),
+      tour_leader: { key: 'dewi', name: 'Dewi Lestari', phone: '+62 811 4400 5500' }, meeting_point_key: 'cgk_t3_g3',
+      whatsapp_group_url: 'https://chat.whatsapp.com/IconHolidayMaldives',
+      hotels: [{ name: 'Overwater Villa Resort', address: 'North Malé Atoll, Maldives', map_url: maps('North Male Atoll resort'), nights: '7 nights' }],
+      important_locations: [{ label: 'Velana International Airport', address: 'Hulhulé Island, Malé', map_url: maps('Velana International Airport') }],
+      required_documents: ['Passport valid at least 6 months', 'Return ticket', 'Hotel confirmation', 'IMUGA traveller declaration'],
+      packing_list: ['Swimwear and rash guard', 'Reef-safe sunscreen', 'Light evening wear', 'Waterproof phone pouch'],
+      benefits: ['Seaplane transfers', '7 nights overwater villa', 'All meals', 'Sandbank dinner', 'Snorkelling excursions'],
+      itinerary_updated_at: iso(-3),
+    },
+  };
+  for (const t of Trip) Object.assign(t, DEPARTURE[t.id] || {});
+
+  // Activity detail inside the operational itinerary (module 9).
+  const ACTIVITY = {
+    it_1: { meeting_point: 'Hotel lobby, 09:45', place_info: 'Seminyak grew from a fishing village into Bali’s design quarter in the 1990s; the beach faces west, so afternoons are hot and sunsets long.' },
+    it_2: { meeting_point: 'Coach park, 18:00', place_info: 'Pura Tanah Lot is one of seven sea temples guarding Bali’s coast, said to be founded by the priest Dang Hyang Nirartha in the 16th century. At high tide the rock becomes an island.' },
+    it_3: { meeting_point: 'Hotel lobby, 08:30', place_info: 'The Tegallalang terraces use subak, a Balinese irrigation system shared between farmers through water temples. UNESCO listed it in 2012.', changed: true, change_note: 'Moved from 10:00 to 09:00 to beat the midday heat.' },
+    it_4: { meeting_point: 'Spa reception, 13:50', place_info: 'Balinese massage combines long strokes with acupressure; the flower bath that follows uses frangipani and marigold.' },
+    it_5: { meeting_point: 'Hotel lobby, 02:30 sharp', place_info: 'Mount Batur is an active volcano; its last eruption was in 2000. The summit sits at 1,717 m above the caldera lake.' },
+    it_6: { meeting_point: 'Jimbaran beach entrance, 19:15', place_info: 'Jimbaran Bay’s fish market supplies the beachfront grills each evening; tables sit on the sand.' },
+  };
+  for (const it of ItineraryItem) Object.assign(it, ACTIVITY[it.id] || {});
+
+  // Document status Icon Holiday reports to the member (module 5).
+  const me = 'traveler@iconholiday.app';
+  const TravelDocument = [
+    { id: 'doc_bali_ktp', created_at: iso(-12), created_by: by, member_email: me, trip_id: 'trip_bali', type: 'id_card', status: 'approved', note: '' , updated_at: iso(-10) },
+    { id: 'doc_kyoto_pass', created_at: iso(-8), created_by: by, member_email: me, trip_id: 'trip_kyoto', type: 'passport', status: 'approved', note: 'Valid until March 2031.', updated_at: iso(-7) },
+    { id: 'doc_kyoto_visa', created_at: iso(-8), created_by: by, member_email: me, trip_id: 'trip_kyoto', type: 'visa', status: 'in_review', note: 'Visa waiver registration submitted to the embassy.', updated_at: iso(-2) },
+    { id: 'doc_kyoto_ins', created_at: iso(-8), created_by: by, member_email: me, trip_id: 'trip_kyoto', type: 'insurance', status: 'needs_action', note: 'Please send the beneficiary name for the policy.', updated_at: iso(-1) },
+    { id: 'doc_mv_pass', created_at: iso(-3), created_by: by, member_email: me, trip_id: 'trip_maldives', type: 'passport', status: 'approved', note: '', updated_at: iso(-3) },
+    { id: 'doc_mv_ins', created_at: iso(-3), created_by: by, member_email: me, trip_id: 'trip_maldives', type: 'insurance', status: 'requested', note: 'Travel insurance is required for seaplane transfers.', updated_at: iso(-3) },
+  ];
+
+  // Notification categories (module 11) plus the membership messages the spec names.
+  for (const n of Notification) n.category = n.category || (n.type === 'assistant' ? 'personal' : 'trip');
+  Notification.push(
+    { id: 'nt_doc_kyoto', created_at: iso(-1), created_by: by, title: 'Document needed for Kyoto', message: 'Your travel insurance needs a beneficiary name. Reply to your consultant or send it via WhatsApp.', type: 'document', category: 'personal', audience: 'targeted', is_read: false, related_trip_id: 'trip_kyoto' },
+    { id: 'nt_prep_bali', created_at: iso(-2.2), created_by: by, title: 'Your Bali trip leaves in 2 days', message: 'Pre-departure info is open: meeting point, Tour Leader and packing list.', type: 'trip_prep', category: 'trip', audience: 'targeted', is_read: true, related_trip_id: 'trip_bali' },
+    { id: 'nt_promo_japan', created_at: iso(-0.6), created_by: by, title: 'Members only: Japan autumn 15% off', message: 'Book a Japan package before the 30th and members save 15%.', type: 'promo', category: 'promo', audience: 'all', is_read: false },
+    { id: 'nt_broadcast_office', created_at: iso(-4), created_by: by, title: 'New Icon Holiday office in Medan', message: 'Visit us at Jl. Imam Bonjol 6, Medan. Open daily 09:00–18:00.', type: 'announcement', category: 'promo', audience: 'all', is_read: true },
+    { id: 'nt_itin_change', created_at: iso(-1.1), created_by: by, title: 'Itinerary updated: Ubud day', message: 'The rice terrace visit moved to 09:00. Check day 2 in your itinerary.', type: 'itinerary_change', category: 'trip', audience: 'targeted', is_read: false, related_trip_id: 'trip_bali' },
+  );
+
+  return { Registration, FeatureAccess, TravelDocument, Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage, Place, DocumentType, VisaInfo, PaymentMethod, TourLeader, MeetingPoint, Account, JournalEntry };
 }

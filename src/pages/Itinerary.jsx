@@ -12,12 +12,12 @@ import { isPlan } from "@/data/tripKinds";
 
 const tabs = [
   { id: "upcoming", label: "Upcoming" },
-  { id: "active", label: "Active" },
+  { id: "active", label: "Ongoing" },
   // Proposals live in their own tab — they aren't booked trips and shouldn't
   // sit in the same list as ones that are.
   { id: "plans", label: "Plans" },
   { id: "draft", label: "Drafts" },
-  { id: "past", label: "Past" },
+  { id: "past", label: "History" },
 ];
 
 const quickLinks = [
@@ -85,16 +85,16 @@ export default function Itinerary() {
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       )}
       <PageHeader
-        title="My Itineraries"
+        title="My trips"
         subtitle="Plan & manage your journeys"
         rightAction={
           <Link 
             to="/itinerary/wizard"
-            className="w-10 h-10 glass-gold rounded-xl flex items-center justify-center text-gold hover:glow-gold transition-all"
+            className="w-10 h-10 bg-accent-soft rounded-xl flex items-center justify-center text-accent-strong hover:shadow-glow transition-all"
           >
             <Plus className="w-5 h-5" />
           </Link>
@@ -106,8 +106,8 @@ export default function Itinerary() {
         {quickLinks.map(({ icon: Icon, label, path }) => (
           <Link key={path} to={path}>
             <GlassCard className="flex items-center gap-2.5 px-4 py-3 whitespace-nowrap">
-              <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
-              <span className="text-xs text-ich-primary font-medium">{label}</span>
+              <Icon className="w-4 h-4 text-accent-strong" strokeWidth={1.5} />
+              <span className="text-xs text-foreground font-medium">{label}</span>
             </GlassCard>
           </Link>
         ))}
@@ -116,19 +116,19 @@ export default function Itinerary() {
       {/* My Itineraries Section */}
       {!loading && trips.length > 0 && (
         <div className="px-6 mb-6">
-          <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">My Itineraries</h2>
+          <h2 className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">My Itineraries</h2>
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
             {trips.filter((t) => !isPlan(t)).slice(0, 5).map((trip) => (
               <Link key={trip.id} to={`/itinerary/${trip.id}`} className="press block">
-                <div className="flex-shrink-0 glass-light rounded-xl p-3 min-w-[140px] hover:bg-ich-primary/5 transition-all">
-                 <p className="text-xs font-semibold text-ich-primary truncate">{trip.title}</p>
-                 <p className="text-[10px] text-ich-neutral mt-1">{trip.destination}</p>
+                <div className="flex-shrink-0 bg-card shadow-card rounded-xl p-3 min-w-[140px] hover:bg-surface transition-all lift">
+                 <p className="text-xs font-semibold text-foreground truncate">{trip.title}</p>
+                 <p className="text-[10px] text-muted mt-1">{trip.destination}</p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <span className={`text-[9px] px-2 py-0.5 rounded-full capitalize ${
                       trip.status === "active" ? "bg-emerald-500/20 text-emerald-600" :
                       trip.status === "planned" ? "bg-blue-500/20 text-blue-400" :
                       trip.status === "completed" ? "bg-slate-500/20 text-slate-400" :
-                      "bg-ich-gold/20 text-gold"
+                      "bg-accent/20 text-accent-strong"
                     }`}>{trip.status}</span>
                   </div>
                 </div>
@@ -146,7 +146,7 @@ export default function Itinerary() {
             onClick={() => setActiveTab(tab.id)}
             aria-pressed={activeTab === tab.id}
             className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-              activeTab === tab.id ? "btn-primary text-white" : "glass-light text-ich-neutral"
+              activeTab === tab.id ? "bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-white" : "bg-card shadow-card text-muted"
             }`}
           >
             {tab.label}
@@ -179,7 +179,7 @@ export default function Itinerary() {
           action={
             <Link
               to="/itinerary/wizard"
-              className="press inline-flex items-center gap-2 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
+              className="press inline-flex items-center gap-2 px-5 py-2.5 bg-accent-soft rounded-xl text-xs text-accent-strong font-medium hover:shadow-glow transition-all"
             >
               <Plus className="w-4 h-4" /> New Itinerary
             </Link>

@@ -31,26 +31,26 @@ export default class ErrorBoundary extends Component {
       const { inline } = this.props;
       return (
         <div className={inline ? "flex items-center justify-center p-6" : "min-h-screen flex items-center justify-center p-6 bg-[#F3F6FB] font-body"}>
-          <div className="bg-white rounded-2xl border border-ich-primary/10 shadow-sm p-8 max-w-md text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
+          <div className="bg-card rounded-card shadow-sm p-8 max-w-md text-center">
+            <div className="w-12 h-12 rounded-2xl bg-accent-soft flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-6 h-6 text-accent-strong" />
             </div>
-            <h1 className="text-xl font-display font-bold text-ich-primary">Something went wrong</h1>
-            <p className="text-sm text-ich-neutral mt-1.5">
+            <h1 className="text-xl font-display font-bold text-foreground">Something went wrong</h1>
+            <p className="text-sm text-muted mt-1.5">
               {inline ? "This screen hit an unexpected error. Try again, or use the menu to go elsewhere." : "An unexpected error occurred. You can reload the page to continue."}
             </p>
             <div className="flex items-center justify-center gap-2 mt-5">
               {inline && (
                 <button
                   onClick={() => this.setState({ error: null })}
-                  className="rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 border border-foreground/15 text-foreground hover:bg-surface press"
                 >
                   <RotateCcw className="w-4 h-4" /> Try again
                 </button>
               )}
               <button
                 onClick={() => window.location.reload()}
-                className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"
+                className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"
               >
                 <RotateCcw className="w-4 h-4" /> Reload
               </button>

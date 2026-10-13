@@ -11,25 +11,20 @@ export default function PhoneFrame({ children }) {
   const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center p-0 md:p-6">
+    <div className="min-h-screen bg-foreground flex items-center justify-center p-0 md:p-6">
       {/* Device frame — rounded border only on desktop */}
-      <div className="w-full md:w-[393px] h-screen md:h-[852px] relative md:rounded-[48px] md:overflow-hidden md:shadow-[0_0_0_10px_#1a1a1a,0_0_0_12px_#333,0_40px_80px_rgba(0,0,0,0.8)] flex flex-col">
-        {/* Background — soft aurora */}
-        <div className="absolute inset-0 z-0 md:rounded-[48px] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-[#FBFAF5] to-[#F3F6FB]" />
-          <div className="absolute -top-12 -right-8 w-96 h-96 bg-[#AD1F23]/[0.10] rounded-full blur-3xl" />
-          <div className="absolute top-1/3 -left-16 w-80 h-80 bg-[#C99A3F]/[0.08] rounded-full blur-3xl" />
-          <div className="absolute bottom-16 -right-12 w-80 h-80 bg-[#0B1B3B]/[0.07] rounded-full blur-3xl" />
-        </div>
+      <div className="w-full md:w-[393px] h-screen md:h-[852px] relative md:rounded-[48px] md:overflow-hidden md:ring-[10px] md:ring-ink-3 md:shadow-float flex flex-col">
+        {/* The grey canvas every screen sits on. */}
+        <div className="absolute inset-0 z-0 bg-surface md:rounded-[48px]" />
 
         {/* Status Bar */}
         <div className="relative z-20 flex items-center justify-between px-7 pb-1 flex-shrink-0" style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}>
-          <span className="text-[13px] font-semibold text-ich-white">{timeStr}</span>
-          <div className="md:block hidden absolute left-1/2 -translate-x-1/2 top-2 w-28 h-7 bg-[#0d0d0d] rounded-full" />
+          <span className="text-[13px] font-semibold text-foreground">{timeStr}</span>
+          <div className="md:block hidden absolute left-1/2 -translate-x-1/2 top-2 w-28 h-7 bg-foreground rounded-full" />
           <div className="flex items-center gap-1.5">
-            <Signal className="w-3.5 h-3.5 text-ich-white" />
-            <Wifi className="w-3.5 h-3.5 text-ich-white" />
-            <Battery className="w-4 h-4 text-ich-white" />
+            <Signal className="w-3.5 h-3.5 text-foreground" />
+            <Wifi className="w-3.5 h-3.5 text-foreground" />
+            <Battery className="w-4 h-4 text-foreground" />
           </div>
         </div>
 

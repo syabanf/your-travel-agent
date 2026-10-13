@@ -92,23 +92,23 @@ export default function ProfilePrivacy() {
         {/* Your data */}
         <GlassCard className="p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-              <ShieldCheck className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <ShieldCheck className="w-5 h-5 text-accent-strong/70" strokeWidth={1.5} />
             </div>
             <div>
-              <p className="text-sm font-medium text-ich-primary">Your data</p>
-              <p className="text-xs text-ich-neutral/50 mt-0.5">Export or erase everything stored locally</p>
+              <p className="text-sm font-medium text-foreground">Your data</p>
+              <p className="text-xs text-muted mt-0.5">Export or erase everything stored locally</p>
             </div>
           </div>
           <button
             onClick={handleExport}
-            className="btn-primary w-full flex items-center justify-center gap-2 mb-3"
+            className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 w-full flex items-center justify-center gap-2 mb-3 sheen"
           >
             <Download className="w-4 h-4" /> Export my data
           </button>
           <button
             onClick={handleDelete}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-red-400/80 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 hover:bg-red-500/10 transition-all"
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-medium text-red-400/80 hover:text-red-400 border border-red-500/20 hover:border-red-500/40 hover:bg-accent-soft transition-all"
           >
             <Trash2 className="w-4 h-4" /> Delete all my data
           </button>
@@ -117,30 +117,30 @@ export default function ProfilePrivacy() {
         {/* Consent */}
         <GlassCard className="p-5 space-y-4">
           <div>
-            <p className="text-sm font-medium text-ich-primary">Consent</p>
-            <p className="text-xs text-ich-neutral/50 mt-0.5">Choose how we communicate with you</p>
+            <p className="text-sm font-medium text-foreground">Consent</p>
+            <p className="text-xs text-muted mt-0.5">Choose how we communicate with you</p>
           </div>
           {consentRows.map((row, i) => (
             <div key={row.label}>
-              {i > 0 && <div className="h-px bg-white/5 mb-4" />}
+              {i > 0 && <div className="h-px bg-surface-2 mb-4" />}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-ich-white">{row.label}</p>
-                  <p className="text-xs text-ich-neutral/50 mt-0.5">{row.desc}</p>
+                  <p className="text-sm font-medium text-foreground">{row.label}</p>
+                  <p className="text-xs text-muted mt-0.5">{row.desc}</p>
                 </div>
                 <button
                   onClick={row.onToggle}
                   role="switch"
                   aria-checked={row.value}
                   aria-label={row.label}
-                  className={`w-11 h-6 rounded-full transition-all flex-shrink-0 ${row.value ? "bg-ich-gold" : "bg-white/10"}`}
+                  className={`w-11 h-6 rounded-full transition-all flex-shrink-0 ${row.value ? "bg-accent-strong" : "bg-surface"}`}
                 >
                   <div className={`w-4 h-4 rounded-full bg-white mx-1 transition-transform ${row.value ? "translate-x-5" : ""}`} />
                 </button>
               </div>
             </div>
           ))}
-          <p className="text-xs text-ich-neutral/40 leading-relaxed">
+          <p className="text-xs text-muted leading-relaxed">
             You can change these preferences at any time. They are saved on this device.
           </p>
         </GlassCard>
@@ -149,29 +149,29 @@ export default function ProfilePrivacy() {
         <GlassCard className="overflow-hidden">
           <Link
             to="/privacy"
-            className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all border-b border-white/5"
+            className="w-full p-4 flex items-center gap-4 hover:bg-surface transition-all border-b border-border"
           >
-            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-              <ShieldCheck className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <ShieldCheck className="w-5 h-5 text-accent-strong/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-ich-white">Privacy Policy</p>
-              <p className="text-xs text-ich-neutral/50 mt-0.5">How we handle your data</p>
+              <p className="text-sm font-medium text-foreground">Privacy Policy</p>
+              <p className="text-xs text-muted mt-0.5">How we handle your data</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-ich-neutral/30" />
+            <ChevronRight className="w-4 h-4 text-muted" />
           </Link>
           <Link
             to="/terms"
-            className="w-full p-4 flex items-center gap-4 hover:bg-white/10 transition-all"
+            className="w-full p-4 flex items-center gap-4 hover:bg-surface transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-5 h-5 text-gold/70" strokeWidth={1.5} />
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <FileText className="w-5 h-5 text-accent-strong/70" strokeWidth={1.5} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-ich-white">Terms of Service</p>
-              <p className="text-xs text-ich-neutral/50 mt-0.5">The rules of using Icon Holiday</p>
+              <p className="text-sm font-medium text-foreground">Terms of Service</p>
+              <p className="text-xs text-muted mt-0.5">The rules of using Icon Holiday</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-ich-neutral/30" />
+            <ChevronRight className="w-4 h-4 text-muted" />
           </Link>
         </GlassCard>
 

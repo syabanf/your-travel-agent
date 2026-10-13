@@ -10,15 +10,16 @@ import Point from "ol/geom/Point";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { Style, Icon, Circle as CircleStyle, Fill, Stroke } from "ol/style";
+import { BRAND } from "@/lib/brand";
 
 const PIN = "data:image/svg+xml;utf8," + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="36" viewBox="0 0 24 34"><path fill="#AD1F23" stroke="#ffffff" stroke-width="1.5" d="M12 1C6.5 1 2 5.4 2 10.9 2 18 12 33 12 33s10-15 10-22.1C22 5.4 17.5 1 12 1z"/><circle cx="12" cy="11" r="3.6" fill="#ffffff"/></svg>`
+  `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="36" viewBox="0 0 24 34"><path fill={BRAND.accent} stroke="#ffffff" stroke-width="1.5" d="M12 1C6.5 1 2 5.4 2 10.9 2 18 12 33 12 33s10-15 10-22.1C22 5.4 17.5 1 12 1z"/><circle cx="12" cy="11" r="3.6" fill="#ffffff"/></svg>`
 );
 const pinStyle = new Style({ image: new Icon({ src: PIN, anchor: [0.5, 1] }) });
 // Activity markers: smaller amber dots, so they read as secondary to the
 // crimson destination pin while staying clearly tappable.
 const activityStyle = new Style({
-  image: new CircleStyle({ radius: 6.5, fill: new Fill({ color: "#C99A3F" }), stroke: new Stroke({ color: "#ffffff", width: 2 }) }),
+  image: new CircleStyle({ radius: 6.5, fill: new Fill({ color: BRAND.warning }), stroke: new Stroke({ color: "#ffffff", width: 2 }) }),
 });
 const styleForFeature = (feature) => (feature.get("kind") === "activity" ? activityStyle : pinStyle);
 

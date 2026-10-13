@@ -144,35 +144,35 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
           className={`fixed inset-x-0 z-[90] px-3 pointer-events-none ${className}`}
           style={{ bottom: offsetBottom }}
         >
-          <div className="pointer-events-auto mx-auto w-full max-w-[369px] glass-card rounded-[1.75rem] shadow-float p-4">
+          <div className="pointer-events-auto mx-auto w-full max-w-[369px] bg-card shadow-card rounded-[1.75rem] shadow-float p-4">
             {installed ? (
               <div className="flex items-center gap-3 py-1">
-                <div className="w-10 h-10 rounded-2xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0">
                   <Check className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-display font-bold text-ich-primary text-[15px]">Added to your home screen</p>
-                  <p className="text-[13px] text-ich-neutral leading-snug">Open Icon Holiday any time, even offline.</p>
+                  <p className="font-display font-bold text-foreground text-[15px]">Added to your home screen</p>
+                  <p className="text-[13px] text-muted leading-snug">Open Icon Holiday any time, even offline.</p>
                 </div>
               </div>
             ) : (
               <>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-2xl btn-primary flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 flex items-center justify-center shrink-0">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display font-bold text-ich-primary text-[15px] leading-tight">
+                    <p className="font-display font-bold text-foreground text-[15px] leading-tight">
                       Install Icon Holiday
                     </p>
-                    <p className="text-[13px] text-ich-neutral leading-snug mt-0.5">
+                    <p className="text-[13px] text-muted leading-snug mt-0.5">
                       Full screen, instant launch, and your trips available offline.
                     </p>
                   </div>
                   <button
                     onClick={dismiss}
                     aria-label="Dismiss install prompt"
-                    className="w-10 h-10 -mt-1 -mr-1 rounded-full flex items-center justify-center text-ich-neutral hover:bg-white/10 shrink-0 press-spring"
+                    className="w-10 h-10 -mt-1 -mr-1 rounded-full flex items-center justify-center text-muted hover:bg-surface shrink-0 press-spring"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -181,16 +181,16 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
                 {platform === "ios" ? (
                   <ol className="mt-3.5 space-y-2">
                     <IosStep n="1" icon={Share}>
-                      Tap <span className="font-semibold text-ich-primary">Share</span> in the Safari toolbar
+                      Tap <span className="font-semibold text-foreground">Share</span> in the Safari toolbar
                     </IosStep>
                     <IosStep n="2" icon={Plus}>
-                      Choose <span className="font-semibold text-ich-primary">Add to Home Screen</span>
+                      Choose <span className="font-semibold text-foreground">Add to Home Screen</span>
                     </IosStep>
                   </ol>
                 ) : (
                   <button
                     onClick={install}
-                    className="mt-3.5 w-full min-h-[44px] rounded-xl btn-primary text-sm font-semibold text-white flex items-center justify-center gap-2 press-spring"
+                    className="mt-3.5 w-full min-h-[44px] rounded-xl bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-sm font-semibold text-white flex items-center justify-center gap-2 press-spring sheen"
                   >
                     <Download className="w-4 h-4" />
                     Install app
@@ -208,11 +208,11 @@ export default function InstallPrompt({ delay = 2500, offsetBottom = NAV_CLEARAN
 function IosStep({ n, icon: Icon, children }) {
   return (
     <li className="flex items-center gap-2.5">
-      <span className="w-6 h-6 rounded-lg bg-ich-gold/10 text-gold text-[11px] font-bold flex items-center justify-center shrink-0">
+      <span className="w-6 h-6 rounded-lg bg-accent/10 text-accent-strong text-[11px] font-bold flex items-center justify-center shrink-0">
         {n}
       </span>
-      <Icon className="w-4 h-4 text-gold shrink-0" strokeWidth={2} />
-      <span className="text-[13px] text-ich-neutral leading-snug">{children}</span>
+      <Icon className="w-4 h-4 text-accent-strong shrink-0" strokeWidth={2} />
+      <span className="text-[13px] text-muted leading-snug">{children}</span>
     </li>
   );
 }

@@ -16,7 +16,9 @@ export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const reduce = useReducedMotion();
-  const showHeader = TAB_ROOTS.includes(location.pathname);
+  // Tab roots carry the app bar and the tab bar; detail screens hide both and
+  // rely on their own back button, so the bottom of the screen is theirs.
+  const isTabRoot = TAB_ROOTS.includes(location.pathname);
   // Going back to a list returns you to where you were, not the top.
   const mainRef = useRef(null);
   useScrollRestoration(mainRef);
@@ -81,11 +83,11 @@ export default function Layout() {
         id="main"
         ref={mainRef}
         className="relative z-10 flex-1 overflow-y-auto hide-scrollbar"
-        style={{ paddingBottom: 88 }}
+        style={{ paddingBottom: isTabRoot ? 88 : 24 }}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {showHeader && <AppHeader />}
+        {isTabRoot && <AppHeader />}
         <AnimatePresence mode="wait" initial={false} custom={dir}>
           <motion.div
             key={location.pathname}
@@ -104,10 +106,10 @@ export default function Layout() {
         </AnimatePresence>
       </main>
 
-      <BottomNav />
+      {isTabRoot && <BottomNav />}
       {/* Sits above the bottom nav; self-gating, so it renders nothing when the
           app is already installed or the invitation was snoozed. */}
-      <InstallPrompt />
+      <InstallPrompt offsetBottom={isTabRoot ? undefined : "0px"} />
     </PhoneFrame>
   );
 }

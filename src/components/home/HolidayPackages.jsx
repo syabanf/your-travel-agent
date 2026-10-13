@@ -4,6 +4,7 @@ import { ChevronRight, CalendarDays, Star } from "lucide-react";
 import { backend } from "@/api/backend";
 import { formatIDR } from "@/lib/currency";
 import { packageDiscount } from "@/data/packageCategories";
+import MemberPrice from "@/components/MemberPrice";
 
 // Ready-made holiday packages the traveller can buy — curated on the dashboard.
 export default function HolidayPackages() {
@@ -20,10 +21,10 @@ export default function HolidayPackages() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="eyebrow text-sm font-semibold text-ich-primary tracking-wide uppercase">
+        <h2 className="eyebrow text-sm font-semibold text-foreground tracking-wide uppercase">
           Holiday Packages
         </h2>
-        <Link to="/packages" className="text-xs text-gold flex items-center gap-1 press-spring">
+        <Link to="/packages" className="text-xs text-accent-strong flex items-center gap-1 press-spring">
           See all <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
@@ -33,7 +34,7 @@ export default function HolidayPackages() {
           const off = packageDiscount(p);
           return (
             <Link key={p.id} to={`/packages/${p.id}`} className="block press-spring group flex-shrink-0">
-              <div className="w-[210px] card-modern rounded-3xl overflow-hidden shadow-soft hover:shadow-lift transition-shadow">
+              <div className="w-[210px] bg-card shadow-card rounded-3xl overflow-hidden shadow-card hover:shadow-float transition-shadow lift">
                 <div className="relative h-28">
                   <img
                     src={p.image}
@@ -41,9 +42,9 @@ export default function HolidayPackages() {
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
                     className="w-full h-full object-cover img-zoom"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ich-primary/60 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                   {off != null && (
-                    <span className="absolute top-2 left-2 chip-glass !bg-ich-gold/90 !border-white/30">{off}% off</span>
+                    <span className="absolute top-2 left-2 chip-glass !bg-accent/90 !border-white/30">{off}% off</span>
                   )}
                   {p.rating > 0 && (
                     <span className="absolute bottom-2 right-2 chip-glass">
@@ -52,13 +53,15 @@ export default function HolidayPackages() {
                   )}
                 </div>
                 <div className="p-3">
-                  <h3 className="text-sm font-semibold text-ich-primary line-clamp-1">{p.title}</h3>
-                  <p className="text-[11px] text-ich-neutral/60 truncate mt-0.5 flex items-center gap-1">
+                  <h3 className="text-sm font-semibold text-foreground line-clamp-1">{p.title}</h3>
+                  <p className="text-[11px] text-muted truncate mt-0.5 flex items-center gap-1">
                     <CalendarDays className="w-3 h-3" />{p.duration_days}D/{p.duration_nights}N · {p.destination}
                   </p>
                   <p className="mt-1.5">
-                    <span className="stat-value text-sm font-display font-bold text-gold">{formatIDR(p.price)}</span>
-                    <span className="text-[10px] text-ich-neutral/60"> /person</span>
+                    <MemberPrice compact inLink>
+                      <span className="stat-value text-sm font-display font-bold text-accent-strong">{formatIDR(p.price)}</span>
+                      <span className="text-[10px] text-muted"> /person</span>
+                    </MemberPrice>
                   </p>
                 </div>
               </div>

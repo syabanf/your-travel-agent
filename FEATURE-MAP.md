@@ -12,6 +12,7 @@ Generated against `main` @ `b86d80e`.
 - [How the app is laid out](#how-the-app-is-laid-out)
 - [URL map](#url-map)
 - [Traveller app](#traveller-app)
+- [Icon Membership v2](#icon-membership-v2)
 - [Admin console](#admin-console)
 - [Landing site](#landing-site)
 - [Shared logic modules](#shared-logic-modules)
@@ -85,7 +86,7 @@ tab bar in [`BottomNav.jsx`](src/components/BottomNav.jsx).
 
 | Feature | Route | File | Logic | Entity |
 |---|---|---|---|---|
-| Booking hub / OTA search | `/booking`, `/ota`, `/booking/search` | `pages/Booking.jsx`, `OTA.jsx`, `BookingSearch.jsx` | `data/otaCategories.js` | `Booking`, `OtaCategory` |
+| Booking hub / OTA search | `/booking`, `/ota`, `/booking/search` | `pages/Booking.jsx`, `OTA.jsx`, `BookingSearch.jsx`; searchable origin/destination in `booking/LocationPicker.jsx`, calendar and date range in `DateTimePicker.jsx` | `data/otaCategories.js`, `data/places.js` | `Booking`, `OtaCategory`, `Place` |
 | Booking detail + **balance** | `/booking/:bookingId` | `pages/BookingDetail.jsx` | **`lib/payments.js`**, `lib/voucher.js` | `Booking` |
 | **Checkout + DP ladder** | `/booking/:bookingId/checkout` | **`pages/BookingCheckout.jsx`** | **`lib/payments.js`**, `data/packageCategories.js` → `dpOptions()` | `Booking`, `Trip`, `FeatureAccess` |
 | **Export receipt** | `/booking/:bookingId` | `pages/BookingDetail.jsx` | **`lib/voucher.js` → `receiptHTML()`** | `Booking` |
@@ -125,7 +126,93 @@ tab bar in [`BottomNav.jsx`](src/components/BottomNav.jsx).
 | Destinations | `/destination/:id`, `/search` | `pages/DestinationDetail.jsx`, `Search.jsx` | `Destination` |
 | Promotions | `/promotions`, `/promotions/:id` | `pages/Promotions.jsx`, `PromotionDetail.jsx` | `Promotion` |
 | Notifications | `/notifications` | `pages/Notifications.jsx` | `Notification` |
+| **Logo** | all | **`components/BrandMark.jsx`** (`plate` on ink) | — |
 | **PWA install prompt** | all | **`components/InstallPrompt.jsx`** (mounted in `Layout.jsx`) | — |
+
+---
+
+## Icon Membership v2
+
+The 67 features from *Icon Membership Apps v2.0* and where each one lives.
+Status: **Done** works end to end on the mock backend; **Partial** works with
+the gap named in the row. The staging rules, member number, points and
+notification audience live in **`src/data/membership.js`** (tested in
+`membership.test.js`). Guest state is `isGuest` in `lib/AuthContext.jsx`.
+
+| # | Feature | Status | Where |
+|---|---|---|---|
+| 1.1 | Home dashboard | Done | `pages/Home.jsx` |
+| 1.2 | Quick menu | Done | `components/home/QuickActions.jsx`: Tour packages, Visa info, Promo, My trips, plus 4 app shortcuts (8 tiles) |
+| 1.3 | Guest view | Done | `Home.jsx` guest banner; trip and booking cards hidden |
+| 1.4 | Member view | Done | prices and trips shown once signed in |
+| 2.1 | Member login | Done | `pages/Login.jsx` (sign in, register, demo fill, guest) |
+| 2.2 | Member content access | Done | `components/MemberPrice.jsx`; `PackageDetail.jsx` sends guests to /login to book |
+| 3.1 | Package listing | Done | `pages/Packages.jsx` |
+| 3.2 | Package image | Done | `Packages.jsx`, `PackageDetail.jsx` hero |
+| 3.3 | Package overview | Done | `PackageDetail.jsx` |
+| 3.4 | Destination information | Done | `PackageDetail.jsx` "Destinations" (countries, cities from seed) |
+| 3.5 | Travel schedule | Done | `PackageDetail.jsx` dates and duration |
+| 3.6 | Package pricing (members only) | Done | `MemberPrice` in `Packages.jsx`, `HolidayPackages.jsx`, `PackageDetail.jsx` |
+| 3.7 | Travel requirements | Done | `PackageDetail.jsx` "Travel requirements", links to /visa |
+| 3.8 | Promotional gallery | Done | `PackageDetail.jsx` "Gallery" |
+| 3.9 | Package detail | Done | `pages/PackageDetail.jsx` |
+| 4.1 | Promotion listing | Done | `pages/Promotions.jsx` (/promotions) |
+| 4.2 | Promotion information | Done | `Promotions.jsx` |
+| 4.3 | Member promotion | Partial | sent as a Promo notification, broadcast or targeted, from `dashboard/DashboardNotifications.jsx`; no promo page per member |
+| 5.1 | Visa information | Done | `pages/VisaInfo.jsx` (/visa), content in Master data > Visa info (`VisaInfo`) |
+| 5.2 | Document status and upload | Done | `pages/MyDocuments.jsx` checklist per trip with photo/PDF upload; staff review, send back or upload issued documents in `dashboard/DashboardDocuments.jsx`; files in IndexedDB (`api/files.js`) |
+| 5.3 | Document requirements | Done | Master data > Document types decides each trip's checklist (`needsDocument`, `docChecklist` in `data/membership.js`) |
+| 6.1 | Upcoming trip | Done | `pages/Itinerary.jsx` tab Upcoming |
+| 6.2 | Ongoing trip | Done | `Itinerary.jsx` tab Ongoing |
+| 6.3 | Trip history | Done | `Itinerary.jsx` tab History |
+| 6.4 | Joined trip detail | Done | `pages/TripDetail.jsx` |
+| 7.1 | Trip overview | Done | `components/itinerary/TripMemberInfo.jsx` tab Overview |
+| 7.2 | Trip date | Done | `TripDetail.jsx` hero |
+| 7.3 | Destination overview | Done | `TripMemberInfo.jsx` route chips |
+| 7.4 | Trip benefits | Done | `TripMemberInfo.jsx` "Included" |
+| 7.5 | Itinerary overview | Done | `TripDetail.jsx` day-by-day overview before H |
+| 7.6 | Daily overview | Done | same, one row per day |
+| 8.1 | Departure preparation (H-2) | Done | `TripMemberInfo.jsx` tab Pre-departure, gated by `isPrepOpen` |
+| 8.2 | Meeting schedule | Done | Pre-departure "Meeting time" |
+| 8.3 | Meeting location | Done | Pre-departure "Meeting point" with map link |
+| 8.4 | Tour Leader information | Done | `TourLeader` in `TripMemberInfo.jsx` |
+| 8.5 | Required documents | Done | Pre-departure "Bring these documents" |
+| 8.6 | Packing information | Done | Pre-departure "What to pack" |
+| 9.1 | Detailed itinerary (H) | Done | `TripDetail.jsx` shows `DayTimeline` once `isItineraryOpen` |
+| 9.2 | Daily itinerary | Done | `components/itinerary/DayTimeline.jsx` |
+| 9.3 | Meeting point | Done | `DayTimeline.jsx` "Meet:" line |
+| 9.4 | Activity schedule | Done | `DayTimeline.jsx` |
+| 9.5 | Destination detail | Done | `DayTimeline.jsx` "About this place" |
+| 9.6 | Destination history | Done | same, `place_info` |
+| 9.7 | Itinerary changes | Partial | "Updated" badge and `change_note` per activity, plus an itinerary_change notification; no change log |
+| 10.1 | Hotel information | Done | `TripMemberInfo.jsx` tab Travel info |
+| 10.2 | Hotel location | Done | Google Maps button per hotel |
+| 10.3 | Tour Leader contact | Done | Call and WhatsApp (`lib/whatsapp.js`) |
+| 10.4 | WhatsApp group access | Done | "Join the WhatsApp group" |
+| 10.5 | Important location | Done | "Important place" rows with directions |
+| 11.1 | Push notification | Partial | in-app list and per-category delivery switches; no device push without a backend |
+| 11.2 | Broadcast notification | Done | `dashboard/DashboardNotifications.jsx` (/dashboard/notifications) |
+| 11.3 | Targeted notification | Done | same; `isForMember` filters the member list |
+| 11.4 | Trip notification | Done | category My trips |
+| 11.5 | Personal notification | Done | category Personal |
+| 11.6 | Document reminder | Done | `DashboardDocuments.jsx` notifies the member on Needed or Action needed |
+| 11.7 | Promotion notification | Done | category Promo |
+| 11.8 | Notification list | Done | `pages/Notifications.jsx` |
+| 11.9 | Notification category | Done | All, My trips, Personal, Promo tabs plus Unread |
+| 12.1 | Member profile | Done | `pages/Profile.jsx` |
+| 12.2 | Membership number | Done | `memberNumber(email)`, format ICM-2024-XXXXXX |
+| 12.3 | Digital member card | Done | `Profile.jsx` card with barcode |
+| 12.4 | Member documents | Done | Profile menu "My documents" |
+| 12.5 | Member trip list | Done | Profile menu "My trips" |
+| 12.6 | Membership overview | Done | Profile stats: Trips, Upcoming, Points (`memberPoints`) |
+| 13.1 | Account settings | Done | `pages/ProfileSettings.jsx` |
+| 13.2 | Notification settings | Done | settings sheet in `Notifications.jsx`, stored in `ich_notif_prefs` |
+| 14.1 | Help menu | Done | `pages/Help.jsx` from Profile |
+
+Departure data (meeting, Tour Leader, hotels, WhatsApp group, packing) and the
+per-activity `meeting_point`, `place_info` and `change_note` are seeded in
+`api/mockSeed.js` for trip_bali, trip_kyoto and trip_maldives. The admin has no
+form to edit them yet. `TravelDocument` is a new entity, seeded by migration v11.
 
 ---
 
@@ -141,12 +228,17 @@ its controls with `can(role, resource, action)`.
 | Reports hub | `/dashboard/reports` | `DashboardReportsHub.jsx` | `reports` | many |
 | ├ Analytics | `/reports` | `DashboardReports.jsx` | `reports` | — |
 | ├ Business | `/reports/business` | `DashboardBusiness.jsx` | `reports` | — |
-| ├ Finance | `/reports/finance` | `DashboardERP.jsx` | `erp` | — |
+| ├ Finance | `/reports/finance` | `DashboardERP.jsx`, figures from the ledger in `lib/accounting.js` | `erp` | `Booking`, `JournalEntry`, `Account` |
+| **Accounting** | `/dashboard/accounting?tab=…` (monthly report: `&month=YYYY-MM&vs=both\|prev\|yoy`) | `DashboardAccounting.jsx`, `MonthlyReport.jsx`, `lib/accounting.js`, `lib/monthlyReport.js`, print in `lib/voucher.js` | `accounting` | `Booking` (auto postings), `JournalEntry`, `Account` |
 | └ AI reports | `/reports/ai` | `DashboardAIReports.jsx` | `reports` | — |
 | Leads / **inquiries** | `/dashboard/leads` | `DashboardLeads.jsx`, `DashboardLeadDetail.jsx` | `leads` | `Lead` |
 | Customers | `/dashboard/customers` | `DashboardCustomers.jsx`, `…Detail.jsx` | `customers` | `Customer` |
 | **Trips (CRUD)** | `/dashboard/trips` | **`DashboardTrips.jsx`** | `trips` | `Trip`, `ItineraryItem`, `Booking` |
 | Trip detail | `/dashboard/trips/:id` | `DashboardTripDetail.jsx` | `trips` | `Trip` |
+| **Travel documents** | `/dashboard/documents` | `DashboardDocuments.jsx` | `bookings` | `TravelDocument`, `Notification` |
+| **Member notifications** | `/dashboard/notifications` | `DashboardNotifications.jsx` | `marketing` | `Notification` |
+| **Staff sign-in** | `/dashboard/login` (`?next=` returns to the page asked for) | `pages/AdminLogin.jsx`, `lib/staffAuth.js`, `RequireStaff` in `App.jsx` | none | `StaffMember`, `AuditLog` |
+| **Master data** | `/dashboard/master?tab=…` | `DashboardMasterData.jsx`, tabs in `dashboard/masterData.js` | `master` | `Place`, `DocumentType`, `VisaInfo`, `PaymentMethod`, `TourLeader`, `MeetingPoint`, `Account` (chart of accounts) |
 | Bookings ledger | `/dashboard/bookings` | `DashboardBookings.jsx` | `bookings` | `Booking` |
 | **Booking detail + exports** | `/dashboard/bookings/:id` | `DashboardBookingDetail.jsx` | `bookings` | `Booking` |
 | **Registrations queue** | `/dashboard/registrations` | **`DashboardRegistrations.jsx`** | `registrations` | `Registration` |
@@ -198,6 +290,7 @@ The dependency map — change one of these and these are the callers.
 | **`lib/voucher.js`** | `printDocument`, `bookingVoucherHTML`, `tripItineraryHTML`, **`receiptHTML`**, **`quotationHTML`** | `DashboardBookingDetail`, `DashboardTripDetail`, `DashboardAIReports`, `BookingDetail` |
 | **`data/tripKinds.js`** | `plan` vs `trip`; defaults to `trip` | `Itinerary`, `TripDetail`, `TripCard` |
 | **`data/packageCategories.js`** | Categories (incl. Signature/Cost Saver), `packageTotal`, `minDpPercent`, `dpOptions` | `Packages`, `PackageDetail`, `HolidayPackages`, `BookingCheckout`, `DashboardPackages`, `DashboardPackageDetail` |
+| `lib/brand.js` | `BRAND` hex mirror of the theme tokens, `SERIES` chart order, `TOOLTIP_STYLE` | charts, maps, inline SVG |
 | `lib/currency.js` | `formatIDR` (note: **non-breaking space** after `Rp`) | app-wide |
 | `lib/AuthContext.jsx` | Session, `login`/`logout`, current user | app-wide |
 | `lib/csv.js`, `lib/whatsapp.js`, `lib/favorites.js` | Export, deep-links, saved items | various |
@@ -234,7 +327,16 @@ without seeding — clear it and reload before assuming the migration is broken.
 | `Destination`, `Promotion`, `OtaCategory` | dashboard CRUD | mobile discovery + booking tabs |
 | `Page`, `MediaAsset`, `Setting` | CMS | CMS, `useAppSettings` |
 | `TripMember` | `TripDetail` | `TripDetail`, `DashboardTripDetail` |
-| `Notification`, `PersonalAssistant`, `ChatMessage` | seed | assistant + notifications |
+| `Notification` | seed, `DashboardNotifications`, `DashboardDocuments` | `Notifications` (filtered by `isForMember`), `AppHeader` badge |
+| `PersonalAssistant`, `ChatMessage` | seed | assistant |
+| `TravelDocument` | `DashboardDocuments`, `MyDocuments` (uploads), migration v11 seed | `MyDocuments`, `DashboardDocuments` |
+| `Place` | Master data, migration v12 seed from `data/places.js` | Book search `LocationPicker` |
+| `DocumentType` | Master data, seed from `data/masterData.js` | Document checklists |
+| `VisaInfo` | Master data, seed from `VISA_INFO` | `VisaInfo` page |
+| `PaymentMethod` | Master data | `PaymentMethodPicker` (checkout) |
+| `TourLeader`, `MeetingPoint` | Master data | Trip editor departure info, copied onto the `Trip` |
+| `Account` | Master data > Chart of accounts, migration v13 seed | Accounting, Financial report |
+| `JournalEntry` | Accounting (manual entries), migration v13 seed | Accounting, Financial report |
 | `AuditLog` | automatic | `DashboardAudit` |
 
 ---

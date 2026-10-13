@@ -198,14 +198,14 @@ export default function NewTrip() {
         <button
           onClick={handleAISuggestion}
           disabled={!form.destination || aiLoading}
-          className="w-full glass-gold rounded-2xl p-4 flex items-center gap-3 hover:glow-gold transition-all disabled:opacity-40"
+          className="w-full bg-accent-strong rounded-2xl p-4 flex items-center gap-3 shadow-glow hover:bg-accent-dark transition-all disabled:opacity-40"
         >
-          <div className="w-10 h-10 rounded-xl bg-ich-gold/20 flex items-center justify-center flex-shrink-0">
-            {aiLoading ? <Loader2 className="w-5 h-5 text-gold animate-spin" /> : <Sparkles className="w-5 h-5 text-gold" />}
+          <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+            {aiLoading ? <Loader2 className="w-5 h-5 text-accent-strong animate-spin" /> : <Sparkles className="w-5 h-5 text-accent-strong" />}
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold text-gold">{aiLoading ? "Generating suggestions..." : "AI Suggestion"}</p>
-            <p className="text-[11px] text-ich-neutral/60">Enter destination first, then auto-fill your trip details</p>
+            <p className="text-sm font-semibold text-accent-strong">{aiLoading ? "Generating suggestions..." : "AI Suggestion"}</p>
+            <p className="text-[11px] text-muted">Enter destination first, then auto-fill your trip details</p>
           </div>
         </button>
         )}
@@ -213,23 +213,23 @@ export default function NewTrip() {
         {/* Title & Destination */}
         <GlassCard className="p-4 space-y-3">
           <div>
-            <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Trip Title</label>
+            <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Trip Title</label>
             <Input 
               value={form.title}
               onChange={e => update("title", e.target.value)}
               placeholder="e.g., Bali Paradise Getaway"
-              className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11"
+              className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11"
             />
           </div>
           <div>
-            <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Destination</label>
+            <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Destination</label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-strong/50" />
               <Input 
                 value={form.destination}
                 onChange={e => update("destination", e.target.value)}
                 placeholder="City, country, or island"
-                className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 pl-10"
+                className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11 pl-10"
               />
             </div>
           </div>
@@ -237,10 +237,10 @@ export default function NewTrip() {
 
         {/* Dates */}
         <GlassCard className="p-4">
-         <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Dates</label>
+         <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Travel Dates</label>
          <div className="grid grid-cols-2 gap-3">
            <div>
-             <p className="text-[10px] text-ich-neutral/50 mb-1">From</p>
+             <p className="text-[10px] text-muted mb-1">From</p>
              <DateTimePicker 
                type="date"
                value={form.start_date}
@@ -249,11 +249,12 @@ export default function NewTrip() {
              />
            </div>
            <div>
-             <p className="text-[10px] text-ich-neutral/50 mb-1">To</p>
+             <p className="text-[10px] text-muted mb-1">To</p>
              <DateTimePicker 
                type="date"
                value={form.end_date}
                onChange={v => update("end_date", v)}
+               min={form.start_date}
                label="Return Date"
              />
            </div>
@@ -264,28 +265,28 @@ export default function NewTrip() {
         <GlassCard className="p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Travelers</label>
+              <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Travelers</label>
               <div className="relative">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-strong/50" />
                 <Input 
                   type="number"
                   min={1}
                   value={form.travelers}
                   onChange={e => update("travelers", parseInt(e.target.value))}
-                  className="bg-white/5 border-white/10 text-ich-white rounded-xl h-11 pl-10"
+                  className="bg-surface-2 border-border text-foreground rounded-xl h-11 pl-10"
                 />
               </div>
             </div>
             <div>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Budget</label>
+              <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Budget</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gold/70">Rp</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-accent-strong/70">Rp</span>
                 <Input
                   type="number"
                   value={form.budget_total}
                   onChange={e => update("budget_total", e.target.value)}
                   placeholder="Total"
-                  className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 pl-10"
+                  className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11 pl-10"
                 />
               </div>
             </div>
@@ -294,7 +295,7 @@ export default function NewTrip() {
 
         {/* Travel Style */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Style</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Travel Style</label>
           <div className="flex flex-wrap gap-2">
             {travelStyles.map(style => (
               <button
@@ -302,8 +303,8 @@ export default function NewTrip() {
                 onClick={() => update("travel_style", style)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.travel_style === style
-                    ? "glass-gold text-gold"
-                    : "glass-light text-ich-neutral/60 hover:text-ich-neutral"
+                    ? "bg-accent-soft text-accent-strong"
+                    : "bg-card shadow-card text-muted hover:text-muted"
                 }`}
               >
                 {style}
@@ -314,7 +315,7 @@ export default function NewTrip() {
 
         {/* Pace */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Trip Pace</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Trip Pace</label>
           <div className="grid grid-cols-3 gap-2">
             {paceOptions.map(pace => (
               <button
@@ -322,8 +323,8 @@ export default function NewTrip() {
                 onClick={() => update("pace", pace)}
                 className={`py-2.5 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.pace === pace
-                    ? "glass-gold text-gold"
-                    : "glass-light text-ich-neutral/60"
+                    ? "bg-accent-soft text-accent-strong"
+                    : "bg-card shadow-card text-muted"
                 }`}
               >
                 {pace}
@@ -334,7 +335,7 @@ export default function NewTrip() {
 
         {/* Trip Type */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Trip Type</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Trip Type</label>
           <div className="flex flex-wrap gap-2">
             {tripTypes.map(type => (
               <button
@@ -342,8 +343,8 @@ export default function NewTrip() {
                 onClick={() => update("trip_type", type)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${
                   form.trip_type === type
-                    ? "glass-gold text-gold"
-                    : "glass-light text-ich-neutral/60"
+                    ? "bg-accent-soft text-accent-strong"
+                    : "bg-card shadow-card text-muted"
                 }`}
               >
                 {type}
@@ -357,7 +358,7 @@ export default function NewTrip() {
         <button
           onClick={handleGenerateFullTrip}
           disabled={!form.destination || aiGenerating}
-          className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 glass-gold border border-gold text-gold hover:glow-gold"
+          className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40 bg-accent-strong border border-accent text-white shadow-glow hover:bg-accent-dark sheen"
         >
           {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
           {aiGenerating ? "Generating your trip..." : "✨ Generate Full Trip with AI"}
@@ -369,14 +370,14 @@ export default function NewTrip() {
           <button
             onClick={() => handleSave("draft")}
             disabled={saving || !form.title || !form.destination}
-            className="flex-1 py-3.5 glass-light rounded-xl text-sm font-medium text-ich-neutral/80 hover:text-ich-white transition-all disabled:opacity-40"
+            className="flex-1 py-3.5 bg-card shadow-card rounded-xl text-sm font-medium text-muted hover:text-foreground transition-all disabled:opacity-40"
           >
             Save as Draft
           </button>
           <button
             onClick={() => handleSave("planned")}
             disabled={saving || !form.title || !form.destination}
-            className="flex-1 py-3.5 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all disabled:opacity-40"
+            className="flex-1 py-3.5 bg-accent-soft rounded-xl text-sm font-medium text-accent-strong hover:shadow-glow transition-all disabled:opacity-40"
           >
             {saving ? "Saving..." : isEdit ? "Save Changes" : "Create Trip"}
           </button>

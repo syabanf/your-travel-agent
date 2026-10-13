@@ -9,7 +9,7 @@ import { formatIDR } from "@/lib/currency";
 function CardFace({ dest }) {
   const [imgError, setImgError] = useState(false);
   return (
-    <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(11,27,59,0.18)] select-none bg-ich-primary">
+    <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-float select-none bg-ink">
       {!imgError ? (
         <img
           src={dest.image}
@@ -25,21 +25,21 @@ function CardFace({ dest }) {
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10 pointer-events-none" />
 
-      <div className="absolute top-4 left-4 glass-light px-3 py-1.5 rounded-full flex items-center gap-1.5">
-        <Plane className="w-3 h-3 text-gold" />
-        <span className="text-[11px] font-semibold text-ich-primary">from {formatIDR(dest.fromPrice)}</span>
+      <div className="absolute top-4 left-4 bg-card shadow-card px-3 py-1.5 rounded-full flex items-center gap-1.5">
+        <Plane className="w-3 h-3 text-accent-strong" />
+        <span className="text-[11px] font-semibold text-foreground">from {formatIDR(dest.fromPrice)}</span>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
         <p className="text-[11px] text-[#F0B7B9] tracking-widest uppercase mb-1">{dest.tagline}</p>
         <h3 className="text-3xl font-display font-bold text-white text-shadow-soft leading-tight">{dest.name}</h3>
         <div className="flex items-center gap-1.5 mt-1 mb-3">
-          <MapPin className="w-3.5 h-3.5 text-gold" />
+          <MapPin className="w-3.5 h-3.5 text-accent-strong" />
           <span className="text-sm text-white/85">{dest.country}</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {dest.vibes.map((v) => (
-            <span key={v} className="text-[10px] font-medium text-white/90 bg-white/15 backdrop-blur-md border border-white/20 px-2.5 py-1 rounded-full">{v}</span>
+            <span key={v} className="text-[10px] font-medium text-white/90 bg-white/15 backdrop-blur-md border border-white/25 px-2.5 py-1 rounded-full">{v}</span>
           ))}
         </div>
       </div>
@@ -105,17 +105,17 @@ export default function DestinationSwipe({ onLikedChange }) {
     <div className="flex flex-col items-center">
       <div className="relative w-full" style={{ height: 420 }}>
         {done ? (
-          <div className="absolute inset-0 rounded-3xl glass-card flex flex-col items-center justify-center text-center px-8">
-            <div className="w-16 h-16 rounded-2xl glass-gold flex items-center justify-center mb-4">
-              <Check className="w-8 h-8 text-gold" />
+          <div className="absolute inset-0 rounded-3xl bg-card shadow-card flex flex-col items-center justify-center text-center px-8">
+            <div className="w-16 h-16 rounded-2xl bg-accent-soft flex items-center justify-center mb-4">
+              <Check className="w-8 h-8 text-accent-strong" />
             </div>
-            <h3 className="text-xl font-display font-semibold text-ich-primary mb-1">That's everyone!</h3>
-            <p className="text-sm text-ich-neutral mb-4">
+            <h3 className="text-xl font-display font-semibold text-foreground mb-1">That's everyone!</h3>
+            <p className="text-sm text-muted mb-4">
               {liked.length > 0
                 ? `You saved ${liked.length} destination${liked.length > 1 ? "s" : ""} as references.`
                 : "No favorites yet — tap Continue to plan anyway."}
             </p>
-            <button onClick={() => { setIndex(0); setHistory([]); }} className="text-xs text-gold flex items-center gap-1.5">
+            <button onClick={() => { setIndex(0); setHistory([]); }} className="text-xs text-accent-strong flex items-center gap-1.5">
               <RotateCcw className="w-3.5 h-3.5" /> Start over
             </button>
           </div>
@@ -164,21 +164,21 @@ export default function DestinationSwipe({ onLikedChange }) {
 
       {!done && (
         <div className="flex items-center justify-center gap-5 mt-6">
-          <button onClick={() => decide("left")} className="w-14 h-14 rounded-full glass-card flex items-center justify-center text-red-400 hover:scale-105 active:scale-95 transition-transform" aria-label="Skip">
+          <button onClick={() => decide("left")} className="w-14 h-14 rounded-full bg-card shadow-card flex items-center justify-center text-red-400 hover:scale-105 active:scale-95 transition-transform" aria-label="Skip">
             <X className="w-6 h-6" strokeWidth={2.5} />
           </button>
-          <button onClick={undo} disabled={!history.length} className="w-11 h-11 rounded-full glass-light flex items-center justify-center text-ich-neutral hover:scale-105 active:scale-95 transition-transform disabled:opacity-30" aria-label="Undo">
+          <button onClick={undo} disabled={!history.length} className="w-11 h-11 rounded-full bg-card shadow-card flex items-center justify-center text-muted hover:scale-105 active:scale-95 transition-transform disabled:opacity-30" aria-label="Undo">
             <RotateCcw className="w-4.5 h-4.5" />
           </button>
-          <button onClick={() => decide("right")} className="w-14 h-14 rounded-full flex items-center justify-center text-white btn-primary hover:scale-105 active:scale-95 transition-transform" aria-label="Favorite">
+          <button onClick={() => decide("right")} className="w-14 h-14 rounded-full flex items-center justify-center text-white bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 hover:scale-105 active:scale-95 transition-transform" aria-label="Favorite">
             <Heart className="w-6 h-6" fill="currentColor" />
           </button>
         </div>
       )}
 
-      <p className="text-[11px] text-ich-neutral/60 mt-4">
+      <p className="text-[11px] text-muted mt-4">
         {done ? "" : `${index + 1} / ${deck.length} · `}
-        <span className="text-gold font-medium">{liked.length} saved</span>
+        <span className="text-accent-strong font-medium">{liked.length} saved</span>
       </p>
     </div>
   );

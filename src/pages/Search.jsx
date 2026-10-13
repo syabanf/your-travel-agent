@@ -72,14 +72,14 @@ export default function SearchPage() {
 
       <div className="px-6">
         <div className="relative">
-          <Search className="w-4 h-4 text-ich-neutral/60 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-muted absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search destinations, deals & experts"
             aria-label="Search"
-            className="w-full glass-light rounded-xl pl-11 pr-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+            className="w-full bg-card shadow-card rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
           />
         </div>
       </div>
@@ -109,23 +109,23 @@ export default function SearchPage() {
           <div className="space-y-8">
             {results.destinations.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">Destinations</h2>
+                <h2 className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Destinations</h2>
                 <div className="space-y-3 stagger">
                   {results.destinations.map((d) => {
                     const cover = destCover(d);
                     return (
                       <Link key={d.id} to={`/destination/${d.id}`} className="block press">
-                        <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-                          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-ich-gold/10 flex items-center justify-center">
+                        <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-surface transition-all lift">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-accent/10 flex items-center justify-center">
                             {cover ? (
                               <img src={cover} alt={d.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                             ) : (
-                              <MapPin className="w-5 h-5 text-gold" strokeWidth={1.5} />
+                              <MapPin className="w-5 h-5 text-accent-strong" strokeWidth={1.5} />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-medium text-ich-primary truncate">{d.name}</h3>
-                            <p className="text-xs text-ich-neutral mt-0.5 truncate">{d.country || d.tagline}</p>
+                            <h3 className="text-sm font-medium text-foreground truncate">{d.name}</h3>
+                            <p className="text-xs text-muted mt-0.5 truncate">{d.country || d.tagline}</p>
                           </div>
                         </GlassCard>
                       </Link>
@@ -137,21 +137,21 @@ export default function SearchPage() {
 
             {results.promotions.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">Promotions</h2>
+                <h2 className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Promotions</h2>
                 <div className="space-y-3 stagger">
                   {results.promotions.map((p) => (
                     <Link key={p.id} to={`/promotions/${p.id}`} className="block press">
-                      <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-ich-gold/10 flex items-center justify-center">
+                      <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-surface transition-all lift">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-accent/10 flex items-center justify-center">
                           {p.image ? (
                             <img src={p.image} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                           ) : (
-                            <Tag className="w-5 h-5 text-gold" strokeWidth={1.5} />
+                            <Tag className="w-5 h-5 text-accent-strong" strokeWidth={1.5} />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-ich-primary truncate">{p.title}</h3>
-                          {p.location && <p className="text-xs text-ich-neutral mt-0.5 truncate">{p.location}</p>}
+                          <h3 className="text-sm font-medium text-foreground truncate">{p.title}</h3>
+                          {p.location && <p className="text-xs text-muted mt-0.5 truncate">{p.location}</p>}
                         </div>
                       </GlassCard>
                     </Link>
@@ -162,29 +162,29 @@ export default function SearchPage() {
 
             {results.experts.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold text-ich-primary uppercase tracking-widest mb-3">Experts</h2>
+                <h2 className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Experts</h2>
                 <div className="space-y-3 stagger">
                   {results.experts.map((e) => (
                     <Link key={e.id} to={`/assistant/profile/${e.id}`} className="block press">
-                      <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-white/10 transition-all">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gold/15 flex items-center justify-center">
+                      <GlassCard className="p-4 flex items-center gap-3.5 hover:bg-surface transition-all lift">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-accent/15 flex items-center justify-center">
                           {e.photo_url ? (
                             <img src={e.photo_url} alt={e.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-lg font-display text-gold">{e.name?.[0]}</span>
+                            <span className="text-lg font-display text-accent-strong">{e.name?.[0]}</span>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-ich-primary truncate">{e.name}</h3>
-                          <p className="text-xs text-ich-neutral mt-0.5 truncate">{e.specialization}</p>
+                          <h3 className="text-sm font-medium text-foreground truncate">{e.name}</h3>
+                          <p className="text-xs text-muted mt-0.5 truncate">{e.specialization}</p>
                           <div className="flex items-center gap-2 mt-1">
                             {e.rating && (
-                              <span className="flex items-center gap-0.5 text-xs text-gold">
+                              <span className="flex items-center gap-0.5 text-xs text-accent-strong">
                                 <Star className="w-3 h-3 fill-current" /> {e.rating}
                               </span>
                             )}
                             {e.languages?.length > 0 && (
-                              <span className="flex items-center gap-0.5 text-[10px] text-ich-neutral truncate">
+                              <span className="flex items-center gap-0.5 text-[10px] text-muted truncate">
                                 <Globe className="w-3 h-3 flex-shrink-0" /> {e.languages.join(", ")}
                               </span>
                             )}

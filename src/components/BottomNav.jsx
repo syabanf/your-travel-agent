@@ -40,43 +40,42 @@ export default function BottomNav() {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50">
-      <div className="px-3 pt-1" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
-        <nav className="glass-nav rounded-[1.75rem] px-2 py-2 shadow-float">
-          <div className="flex items-center justify-around">
-            {navItems.map(({ path, icon: Icon, label }) => {
-              const isActive = path === "/"
-                ? location.pathname === "/"
-                : location.pathname.startsWith(path);
-
-              return (
-                <button
-                  key={path}
-                  onClick={() => handleTabPress(path)}
-                  aria-label={label}
-                  aria-current={isActive ? "page" : undefined}
-                  className="relative flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl min-w-[52px] min-h-[48px] justify-center active:scale-90 transition-transform"
+    <nav aria-label="Main" className="absolute inset-x-0 bottom-0 z-50">
+      <div aria-hidden="true" className="pointer-events-none h-8 bg-gradient-to-t from-surface to-transparent" />
+      <div className="safe-b rounded-t-[28px] bg-card shadow-up">
+        <div className="flex items-stretch px-3 pb-2 pt-2">
+          {navItems.map(({ path, icon: Icon, label }) => {
+            const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+            return (
+              <button
+                key={path}
+                type="button"
+                onClick={() => handleTabPress(path)}
+                aria-current={isActive ? "page" : undefined}
+                className="group flex min-h-14 flex-1 flex-col items-center justify-center gap-1 py-1.5 focus-visible:outline-none"
+              >
+                <span
+                  className={`relative flex h-9 w-14 items-center justify-center rounded-full transition-colors group-focus-visible:ring-2 group-focus-visible:ring-accent/40 ${
+                    isActive ? "text-white" : "text-muted group-hover:bg-surface group-hover:text-foreground group-active:bg-border"
+                  }`}
                 >
+                  {/* One pill that slides to whichever tab is current. */}
                   {isActive && (
                     <motion.span
-                      layoutId="navActivePill"
-                      className="absolute inset-0 rounded-2xl bg-ich-gold/[0.12]"
-                      transition={{ type: "spring", stiffness: 520, damping: 38 }}
+                      layoutId="tab-active"
+                      aria-hidden="true"
+                      className="absolute inset-0 rounded-full bg-accent-strong shadow-glow"
+                      transition={{ type: "spring", stiffness: 520, damping: 36 }}
                     />
                   )}
-                  <Icon
-                    className={`relative w-5 h-5 transition-colors ${isActive ? "text-gold" : "text-ich-neutral/60"}`}
-                    strokeWidth={isActive ? 2.4 : 1.7}
-                  />
-                  <span className={`relative text-[11px] font-medium tracking-wide transition-colors ${isActive ? "text-gold" : "text-ich-neutral/60"}`}>
-                    {label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
+                  <Icon aria-hidden="true" className="relative size-[22px]" strokeWidth={isActive ? 2.4 : 2} />
+                </span>
+                <span className={`text-[11px] font-semibold transition-colors ${isActive ? "text-accent-strong" : "text-muted group-hover:text-foreground"}`}>{label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </nav>
   );
 }

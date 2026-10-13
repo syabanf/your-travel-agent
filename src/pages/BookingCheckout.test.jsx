@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { backend } from "@/api/backend";
 import BookingCheckout from "./BookingCheckout";
 import PackageDetail from "./PackageDetail";
+import { AuthProvider } from "@/lib/AuthContext";
 
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn(), info: vi.fn() } }));
 
@@ -41,15 +42,17 @@ describe("BookingCheckout", () => {
     const name = await screen.findByPlaceholderText("As on ID/passport");
     await waitFor(() => expect(name).toHaveValue("Alex Rivera"));
     expect(screen.getByPlaceholderText("your@email.com")).toHaveValue("traveler@iconholiday.app");
+    expect(screen.getByPlaceholderText("+62 812 xxxx xxxx")).toHaveValue("+62 811 2233 4455");
 
     // blank the required fields, then try to proceed
     await user.clear(name);
     await user.clear(screen.getByPlaceholderText("your@email.com"));
+    await user.clear(screen.getByPlaceholderText("+62 812 xxxx xxxx"));
     await user.click(screen.getByRole("button", { name: /Proceed to Payment/i }));
 
     expect(toast.error).toHaveBeenCalledWith(expect.stringMatching(/full name.*email.*phone number/));
     expect(name).toHaveAttribute("aria-invalid", "true");
-    expect(name.className).toMatch(/border-red-500/);
+    expect(name.className).toMatch(/border-accent-strong/);
     expect(document.activeElement).toBe(name);
     // still on step 2
     expect(screen.getByRole("button", { name: /Proceed to Payment/i })).toBeInTheDocument();
@@ -63,7 +66,10 @@ describe("BookingCheckout", () => {
     await screen.findAllByText("Bali Escape");
     await user.click(screen.getByRole("button", { name: /Continue/i }));
     await screen.findByPlaceholderText("As on ID/passport");
-    await user.type(screen.getByPlaceholderText("+62 812 xxxx xxxx"), "0811");
+    const phone = screen.getByPlaceholderText("+62 812 xxxx xxxx");
+    await waitFor(() => expect(phone).toHaveValue("+62 811 2233 4455"));
+    await user.clear(phone);
+    await user.type(phone, "0811");
     await user.click(screen.getByRole("button", { name: /Proceed to Payment/i }));
 
     const pay = await screen.findByRole("button", { name: /Confirm & Pay/i });
@@ -111,12 +117,14 @@ describe("PackageDetail", () => {
     const qc = new QueryClient();
     return render(
       <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={[`/packages/${pkgId}${search}`]}>
-          <Routes>
-            <Route path="/packages/:id" element={<PackageDetail />} />
-            <Route path="/booking/:bookingId/checkout" element={<div>CHECKOUT</div>} />
-          </Routes>
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter initialEntries={[`/packages/${pkgId}${search}`]}>
+            <Routes>
+              <Route path="/packages/:id" element={<PackageDetail />} />
+              <Route path="/booking/:bookingId/checkout" element={<div>CHECKOUT</div>} />
+            </Routes>
+          </MemoryRouter>
+        </AuthProvider>
       </QueryClientProvider>
     );
   };

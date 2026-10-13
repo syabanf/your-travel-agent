@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
 import { backend } from "@/api/backend";
-import { User, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, LayoutDashboard, Database } from "lucide-react";
+import { User, UserRound, MapPin, Heart, CreditCard, Calendar, Sparkles, Settings, ChevronRight, LogOut, Bell, Shield, LayoutDashboard, Database, FolderOpen, Stamp, LifeBuoy, Luggage } from "lucide-react";
+import BrandMark from "../components/BrandMark";
+import { memberNumber, memberPoints, tripPhase } from "@/data/membership";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import PageHeader from "../components/PageHeader";
 import GlassCard from "../components/GlassCard";
+import CountUp from "@/components/CountUp";
 
 const menuItems = [
+  { icon: User, label: "Personal details", desc: "Name and phone used in bookings", path: "/profile/details" },
+  { icon: Luggage, label: "My trips", desc: "Upcoming, ongoing and past", path: "/itinerary" },
+  { icon: FolderOpen, label: "My documents", desc: "Passport, visa and insurance status", path: "/profile/documents" },
+  { icon: Stamp, label: "Visa info", desc: "Requirements by destination", path: "/visa" },
   { icon: Heart, label: "Travel Preferences", desc: "Style, pace & interests", path: "/profile/preferences" },
-  { icon: User, label: "Saved Travelers", desc: "Companions & family", path: "/profile/travelers" },
+  { icon: UserRound, label: "Saved Travelers", desc: "Companions & family", path: "/profile/travelers" },
   { icon: CreditCard, label: "Payment Methods", desc: "Cards & wallets", path: "/profile/payments" },
   { icon: Calendar, label: "Booking History", desc: "All past reservations", path: "/booking" },
   { icon: MapPin, label: "Saved Itineraries", desc: "Your trip collection", path: "/itinerary" },
@@ -17,6 +24,7 @@ const menuItems = [
   { icon: Shield, label: "Privacy & Security", desc: "Account protection", path: "/profile/security" },
   { icon: Database, label: "Privacy & Data", desc: "Export or delete your data", path: "/profile/privacy" },
   { icon: Settings, label: "Settings", desc: "App preferences", path: "/profile/settings" },
+  { icon: LifeBuoy, label: "Help", desc: "FAQ and contact Icon Holiday", path: "/help" },
   { icon: LayoutDashboard, label: "Admin Dashboard", desc: "Manage app content (CMS)", path: "/dashboard" },
 ];
 
@@ -25,7 +33,8 @@ export default function Profile() {
   const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [tripCount, setTripCount] = useState(0);
-  const [bookingCount, setBookingCount] = useState(0);
+  const [upcoming, setUpcoming] = useState(0);
+  const [points, setPoints] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -34,9 +43,10 @@ export default function Profile() {
       
       const trips = await backend.entities.Trip.list("-created_at", 100);
       setTripCount(trips.length);
-      
-      const bookings = await backend.entities.Booking.list("-created_at", 100);
-      setBookingCount(bookings.length);
+      setUpcoming(trips.filter((t) => ["upcoming", "prep"].includes(tripPhase(t))).length);
+
+      const bookings = await backend.entities.Booking.list("-created_at", 200);
+      setPoints(memberPoints(bookings));
     };
     load();
   }, []);
@@ -50,59 +60,53 @@ export default function Profile() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Profile" />
 
-      {/* Profile Card */}
-      <div className="px-6 mb-6">
-        <GlassCard className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/10 flex items-center justify-center border border-gold/20">
-              <span className="text-2xl font-display font-bold text-gold">
-                {user?.full_name?.[0] || "M"}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-display font-semibold text-ich-primary truncate">
-                {user?.full_name || "Traveler"}
-              </h2>
-              <p className="text-xs text-ich-neutral mt-0.5">{user?.email}</p>
-              <div className="flex items-center gap-1 mt-1.5">
-                <div className="px-2.5 py-0.5 bg-amber-soft border border-amber-soft rounded-full">
-                  <span className="text-[9px] text-amber-accent font-semibold tracking-wider uppercase">Premium Member</span>
-                </div>
-              </div>
-            </div>
+      {/* Digital member card (12.1–12.3) and membership overview (12.6). */}
+      <div className="px-6 mb-6 space-y-3">
+        <div className="animate-rise relative overflow-hidden rounded-hero bg-card p-5 shadow-float">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-accent/10 blur-2xl" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 flex h-1.5">
+            <span className="flex-1 bg-accent" /><span className="flex-1 bg-highlight" />
           </div>
+          <div className="relative flex items-start justify-between gap-3">
+            <BrandMark className="[&_img]:w-24" />
+            <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent-strong">Icon Member</span>
+          </div>
+          <div className="relative mt-5 flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Member</p>
+              <h2 className="truncate text-xl font-bold text-foreground">{user?.full_name || "Traveler"}</h2>
+              <p className="mt-0.5 font-mono text-sm font-semibold tracking-wider text-body">{memberNumber(user?.email)}</p>
+            </div>
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-ink text-xl font-bold text-white" aria-hidden="true">
+              {user?.full_name?.[0] || "M"}
+            </span>
+          </div>
+          <Barcode value={memberNumber(user?.email)} />
+        </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-ich-primary/10">
-            <div className="text-center min-w-0">
-              <p className="stat-value text-lg font-display font-bold text-ich-primary">{tripCount}</p>
-              <p className="text-[10px] text-ich-neutral uppercase tracking-wider">Trips</p>
+        <div className="stagger grid grid-cols-3 gap-3">
+          {[["Trips", tripCount], ["Upcoming", upcoming], ["Points", points]].map(([label, value]) => (
+            <div key={label} className="min-w-0 rounded-2xl bg-card p-3 text-center shadow-card">
+              <p className="stat-value text-xl font-bold text-foreground"><CountUp value={value} /></p>
+              <p className="text-[11px] font-semibold text-muted">{label}</p>
             </div>
-            <div className="text-center min-w-0">
-              <p className="stat-value text-lg font-display font-bold text-ich-primary">{bookingCount}</p>
-              <p className="text-[10px] text-ich-neutral uppercase tracking-wider">Bookings</p>
-            </div>
-            <div className="text-center min-w-0">
-              <p className="stat-value text-lg font-display font-bold text-gold">4.9</p>
-              <p className="text-[10px] text-ich-neutral/70 uppercase tracking-wider">Rating</p>
-            </div>
-          </div>
-        </GlassCard>
+          ))}
+        </div>
       </div>
 
       {/* Menu Items */}
       <div className="px-6 space-y-3 stagger">
         {menuItems.map(({ icon: Icon, label, desc, path }) => (
           <Link key={label} to={path} className="block press">
-            <GlassCard className="p-4 flex items-center gap-4 hover:bg-white/10 transition-all">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(173, 31, 35, 0.08)' }}>
-                <Icon className="w-4 h-4 text-gold" strokeWidth={1.5} />
+            <GlassCard className="p-4 flex items-center gap-4 hover:bg-surface transition-all lift">
+              <div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center flex-shrink-0">
+                <Icon className="w-4 h-4 text-accent-strong" strokeWidth={1.5} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-ich-primary">{label}</h3>
-                <p className="text-[10px] text-ich-neutral">{desc}</p>
+                <h3 className="text-sm font-medium text-foreground">{label}</h3>
+                <p className="text-[10px] text-muted">{desc}</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-ich-neutral flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-muted flex-shrink-0" />
             </GlassCard>
           </Link>
         ))}
@@ -112,11 +116,32 @@ export default function Profile() {
       <div className="px-6 mt-8">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 py-3.5 glass-light rounded-2xl text-sm font-medium text-red-600 hover:text-red-700 transition-all"
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-card shadow-card rounded-2xl text-sm font-medium text-accent-strong hover:text-accent-strong transition-all lift"
         >
           <LogOut className="w-4 h-4" /> Sign Out
         </button>
       </div>
     </div>
+  );
+}
+/**
+ * The member card's barcode. Bars are derived from the member number so each
+ * card is distinct; the spec does not define scanning, so it is a visual ID.
+ */
+function Barcode({ value = "" }) {
+  const bars = [];
+  let x = 0;
+  for (const ch of `*${value}*`) {
+    const code = ch.charCodeAt(0);
+    for (let i = 0; i < 4; i++) {
+      const w = ((code >> i) & 1) + 1;
+      if (i % 2 === 0) bars.push(<rect key={x} x={x} y="0" width={w} height="34" />);
+      x += w + 1;
+    }
+  }
+  return (
+    <svg role="img" aria-label={`Member barcode ${value}`} viewBox={`0 0 ${x} 34`} preserveAspectRatio="none" className="relative mt-4 h-10 w-full fill-foreground">
+      {bars}
+    </svg>
   );
 }

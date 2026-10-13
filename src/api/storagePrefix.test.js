@@ -26,7 +26,7 @@ describe("legacy prefix migration", () => {
     // The seed and migration flags must travel too, or the app would treat a
     // long-standing user as a fresh install.
     window.localStorage.setItem("mora_db__seeded_v4", "2026-01-01T00:00:00.000Z");
-    window.localStorage.setItem("mora_db__migrated_v10", "2026-01-01T00:00:00.000Z");
+    window.localStorage.setItem("mora_db__migrated_v13", "2026-01-01T00:00:00.000Z");
 
     const { backend } = await importClient();
 

@@ -29,21 +29,21 @@ export default function MobileSelect({ value, onChange, options = [], placeholde
         onClick={() => setOpen(true)}
         className={cn(
           "w-full flex items-center justify-between gap-2",
-          "bg-white/5 border border-white/10 rounded-xl h-10 px-3",
+          "bg-surface-2 border border-border rounded-xl h-10 px-3",
           "text-sm text-left outline-none transition-colors",
-          selected ? "text-ich-white" : "text-ich-neutral/40",
+          selected ? "text-foreground" : "text-muted",
           className
         )}
       >
         <span className="truncate">{selected?.label || placeholder}</span>
-        <ChevronDown className="w-4 h-4 text-ich-neutral/40 flex-shrink-0" />
+        <ChevronDown className="w-4 h-4 text-muted flex-shrink-0" />
       </button>
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="glass-nav border-t border-white/10">
+        <DrawerContent className="bg-card shadow-up border-t border-border">
           {label && (
             <DrawerHeader className="pb-2">
-              <DrawerTitle className="text-sm font-semibold text-ich-white text-center">{label}</DrawerTitle>
+              <DrawerTitle className="text-sm font-semibold text-foreground text-center">{label}</DrawerTitle>
             </DrawerHeader>
           )}
           <div className="px-4 pb-8 space-y-1 max-h-[60vh] overflow-y-auto">
@@ -55,12 +55,12 @@ export default function MobileSelect({ value, onChange, options = [], placeholde
                 className={cn(
                   "w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm transition-all",
                   opt.value === value
-                    ? "glass-gold text-gold"
-                    : "text-ich-white/80 hover:bg-white/5"
+                    ? "bg-accent-soft text-accent-strong"
+                    : "text-body hover:bg-surface-2"
                 )}
               >
                 <span>{opt.label}</span>
-                {opt.value === value && <Check className="w-4 h-4 text-gold" />}
+                {opt.value === value && <Check className="w-4 h-4 text-accent-strong" />}
               </button>
             ))}
           </div>

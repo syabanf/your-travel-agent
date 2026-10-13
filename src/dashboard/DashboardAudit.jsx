@@ -12,11 +12,12 @@ import { ChartCard, CategoryBars, TrendArea, MixDonut } from "@/dashboard/charts
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import SearchableSelect from "@/dashboard/SearchableSelect";
 import { inRange } from "@/dashboard/dateRange";
+import { BRAND } from "@/lib/brand";
 
 const ACTION_BADGE = {
   create: "bg-emerald-500/15 text-emerald-600",
   update: "bg-blue-500/15 text-blue-600",
-  delete: "bg-red-500/15 text-red-600",
+  delete: "bg-accent-soft text-accent-strong",
 };
 
 export default function DashboardAudit() {
@@ -67,9 +68,9 @@ export default function DashboardAudit() {
     dayAgg[k].value += 1;
   });
   const actionMix = [
-    { name: "Create", value: actionCount.create || 0, color: "#10B981" },
-    { name: "Update", value: actionCount.update || 0, color: "#3B82F6" },
-    { name: "Delete", value: actionCount.delete || 0, color: "#EF4444" },
+    { name: "Create", value: actionCount.create || 0, color: BRAND.success },
+    { name: "Update", value: actionCount.update || 0, color: BRAND.info },
+    { name: "Delete", value: actionCount.delete || 0, color: BRAND.accent },
   ];
   const byEntity = Object.entries(entityCount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   const trend = Object.values(dayAgg).sort((a, b) => a.ts - b.ts).map(({ label, value }) => ({ label, value }));
@@ -78,10 +79,10 @@ export default function DashboardAudit() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-gold" /> Audit Log
+          <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
+            <ShieldCheck className="w-6 h-6 text-accent-strong" /> Audit Log
           </h1>
-          <p className="text-sm text-ich-neutral mt-0.5">
+          <p className="text-sm text-muted mt-0.5">
             Every change made in the admin console is recorded here.
           </p>
         </div>
@@ -91,7 +92,7 @@ export default function DashboardAudit() {
       </header>
 
       <div className="flex items-center gap-3 mb-4">
-        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-ich-neutral/70">
+        <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted">
           <Filter className="w-3.5 h-3.5" /> Filter
         </span>
         <SearchableSelect
@@ -120,7 +121,7 @@ export default function DashboardAudit() {
         />
         <DateRangeSelect value={range} onChange={setRange} />
         {(action !== "all" || entity !== "all" || range !== "all") && (
-          <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+          <button onClick={() => { setAction("all"); setEntity("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
             <X className="w-3.5 h-3.5" /> Clear
           </button>
         )}
@@ -135,15 +136,15 @@ export default function DashboardAudit() {
       )}
 
       {logs == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={8} /></div>
+        <div className="bg-card rounded-card p-5 shadow-card"><SkeletonRows rows={8} /></div>
       ) : (
         <>
-          <p className="text-xs text-ich-neutral/70 mb-3">{filtered.length} events</p>
-          <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
+          <p className="text-xs text-muted mb-3">{filtered.length} events</p>
+          <div className="bg-card rounded-card overflow-hidden shadow-card">
             <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
                   <th className="px-5 py-3 font-medium">When</th>
                   <th className="px-5 py-3 font-medium">Actor</th>
                   <th className="px-5 py-3 font-medium">Action</th>
@@ -153,19 +154,19 @@ export default function DashboardAudit() {
               </thead>
               <tbody className="stagger">
                 {pg.pageItems.map((l) => (
-                  <tr key={l.id} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]">
+                  <tr key={l.id} className="border-b border-border last:border-0 hover:bg-surface">
                     <td className="px-5 py-3 whitespace-nowrap">
-                      <div className="text-ich-primary">{moment(l.created_at).format("MMM D, HH:mm")}</div>
-                      <div className="text-[11px] text-ich-neutral/60">{moment(l.created_at).fromNow()}</div>
+                      <div className="text-foreground">{moment(l.created_at).format("MMM D, HH:mm")}</div>
+                      <div className="text-[11px] text-muted">{moment(l.created_at).fromNow()}</div>
                     </td>
-                    <td className="px-5 py-3 text-ich-neutral">{l.actor || "—"}</td>
+                    <td className="px-5 py-3 text-muted">{l.actor || "—"}</td>
                     <td className="px-5 py-3">
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${ACTION_BADGE[l.action] || "bg-ich-primary/10 text-ich-neutral"}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${ACTION_BADGE[l.action] || "bg-surface text-muted"}`}>
                         {l.action}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-ich-neutral">{l.entity || "—"}</td>
-                    <td className="px-5 py-3 text-ich-neutral max-w-[320px] truncate" title={l.summary}>{l.summary || "—"}</td>
+                    <td className="px-5 py-3 text-muted">{l.entity || "—"}</td>
+                    <td className="px-5 py-3 text-muted max-w-[320px] truncate" title={l.summary}>{l.summary || "—"}</td>
                   </tr>
                 ))}
                 {filtered.length === 0 && (

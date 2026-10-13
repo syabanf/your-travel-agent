@@ -22,8 +22,8 @@ const STATUS_ORDER = { active: 0, invited: 1, disabled: 2 };
 
 const statusPill = {
   active: "bg-emerald-500/15 text-emerald-600",
-  invited: "bg-ich-gold/10 text-gold",
-  disabled: "bg-ich-primary/10 text-ich-neutral",
+  invited: "bg-accent/10 text-accent-strong",
+  disabled: "bg-surface text-muted",
 };
 
 const ACTIONS = [
@@ -98,7 +98,7 @@ export default function DashboardTeam() {
       <button
         type="button"
         onClick={() => toggleSort(sk)}
-        className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-ich-primary transition-colors"
+        className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-foreground transition-colors"
       >
         {label}
         {sortKey === sk && (sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
@@ -160,8 +160,8 @@ export default function DashboardTeam() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Team &amp; Roles</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Manage who can access what.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Team &amp; Roles</h1>
+          <p className="text-sm text-muted mt-0.5">Manage who can access what.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DashboardAiStub resource="team" data={members} />
@@ -184,36 +184,36 @@ export default function DashboardTeam() {
       )}
 
       {/* ---- Card 1: Team members ---- */}
-      <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden mb-6">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-ich-primary/5">
+      <div className="bg-card rounded-card overflow-hidden mb-6 shadow-card">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div>
-            <h2 className="font-display font-semibold text-ich-primary">Team members</h2>
-            <p className="text-xs text-ich-neutral mt-0.5">{members ? `${members.length} member${members.length === 1 ? "" : "s"}` : "Loading…"}</p>
+            <h2 className="font-display font-semibold text-foreground">Team members</h2>
+            <p className="text-xs text-muted mt-0.5">{members ? `${members.length} member${members.length === 1 ? "" : "s"}` : "Loading…"}</p>
           </div>
           {canCreate && !inviting && (
-            <button onClick={() => setInviting(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+            <button onClick={() => setInviting(true)} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
               <UserPlus className="w-4 h-4" /> Invite member
             </button>
           )}
         </div>
 
         {canCreate && inviting && (
-          <div className="px-5 py-4 border-b border-ich-primary/5 bg-ich-primary/[0.02]">
+          <div className="px-5 py-4 border-b border-border bg-surface-2">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-ich-primary">Invite a new member</h3>
-              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+              <h3 className="text-sm font-semibold text-foreground">Invite a new member</h3>
+              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Name</label>
+                <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">Name</label>
                 <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} className="dash-input" placeholder="Jane Doe" />
               </div>
               <div>
-                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Email</label>
+                <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">Email</label>
                 <input type="email" value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} className="dash-input" placeholder="jane@iconholiday.travel" />
               </div>
               <div>
-                <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">Role</label>
+                <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">Role</label>
                 <SearchableSelect
                   value={invite.role}
                   onChange={(v) => setInvite((p) => ({ ...p, role: v }))}
@@ -223,10 +223,10 @@ export default function DashboardTeam() {
               </div>
             </div>
             <div className="flex gap-2 mt-4">
-              <button onClick={submitInvite} disabled={saving} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={submitInvite} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />} Send invite
               </button>
-              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+              <button onClick={() => { setInviting(false); setInvite({ ...EMPTY_INVITE }); }} className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
             </div>
           </div>
         )}
@@ -238,7 +238,7 @@ export default function DashboardTeam() {
           <div className="px-5 pt-4">
             <div className="flex flex-wrap gap-2 mb-4">
               <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -255,14 +255,14 @@ export default function DashboardTeam() {
               />
               <DateRangeSelect value={range} onChange={setRange} />
               {(query || roleF !== "all" || range !== "all" || sortKey !== "name" || sortDir !== "asc") && (
-                <button onClick={() => { setQuery(""); setRoleF("all"); setRange("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+                <button onClick={() => { setQuery(""); setRoleF("all"); setRange("all"); setSortKey("name"); setSortDir("asc"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                   <X className="w-3.5 h-3.5" /> Clear
                 </button>
               )}
             </div>
           </div>
           <table className="w-full text-sm">
-            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
               <SortHeader label="Name" sk="name" />
               <SortHeader label="Role" sk="role" />
               <SortHeader label="Status" sk="status" />
@@ -271,15 +271,15 @@ export default function DashboardTeam() {
             </tr></thead>
             <tbody className="stagger">
               {pg.pageItems.map((m) => (
-                <tr key={m.id} onClick={() => navigate(`/dashboard/team/${m.id}`)} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02] cursor-pointer press">
+                <tr key={m.id} onClick={() => navigate(`/dashboard/team/${m.id}`)} className="border-b border-border last:border-0 hover:bg-surface cursor-pointer press">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center font-semibold text-sm shrink-0 uppercase">
+                      <div className="w-9 h-9 rounded-full bg-accent/10 text-accent-strong flex items-center justify-center font-semibold text-sm shrink-0 uppercase">
                         {(m.name || m.email || "?").trim().charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <div className="font-medium text-ich-primary truncate">{m.name || "—"}</div>
-                        <div className="text-xs text-ich-neutral truncate">{m.email}</div>
+                        <div className="font-medium text-foreground truncate">{m.name || "—"}</div>
+                        <div className="text-xs text-muted truncate">{m.email}</div>
                       </div>
                     </div>
                   </td>
@@ -296,10 +296,10 @@ export default function DashboardTeam() {
                     </span>
                   </td>
                   <td className="px-5 py-3"><Pill s={m.status} /></td>
-                  <td className="px-5 py-3 text-ich-neutral">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>
+                  <td className="px-5 py-3 text-muted">{m.last_active ? moment(m.last_active).fromNow() : "—"}</td>
                   <td className="px-5 py-3 text-right">
                     {canDelete && (
-                      <button onClick={(e) => { e.stopPropagation(); remove(m); }} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(m); }} aria-label="Delete" className="text-accent-strong hover:bg-accent-soft w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </td>
                 </tr>
@@ -311,7 +311,7 @@ export default function DashboardTeam() {
                     title="No team members yet"
                     hint="Invite teammates and assign them roles to control access."
                     action={canCreate ? (
-                      <button onClick={() => setInviting(true)} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                      <button onClick={() => setInviting(true)} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
                         <UserPlus className="w-4 h-4" /> Invite member
                       </button>
                     ) : null}
@@ -333,19 +333,19 @@ export default function DashboardTeam() {
       </div>
 
       {/* ---- Card 2: Roles & permissions ---- */}
-      <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
-        <div className="px-5 py-4 border-b border-ich-primary/5 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-gold" />
+      <div className="bg-card rounded-card overflow-hidden shadow-card">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-accent-strong" />
           <div>
-            <h2 className="font-display font-semibold text-ich-primary">Roles &amp; permissions</h2>
-            <p className="text-xs text-ich-neutral mt-0.5">
-              What each role can do per section. <span className="text-gold font-semibold">V</span> view · <span className="text-gold font-semibold">C</span> create · <span className="text-gold font-semibold">E</span> edit · <span className="text-gold font-semibold">D</span> delete.
+            <h2 className="font-display font-semibold text-foreground">Roles &amp; permissions</h2>
+            <p className="text-xs text-muted mt-0.5">
+              What each role can do per section. <span className="text-accent-strong font-semibold">V</span> view · <span className="text-accent-strong font-semibold">C</span> create · <span className="text-accent-strong font-semibold">E</span> edit · <span className="text-accent-strong font-semibold">D</span> delete.
             </p>
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+            <thead><tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
               <th className="px-5 py-3 font-medium sticky left-0 bg-white">Role</th>
               {RESOURCES.map((res) => (
                 <th key={res} className="px-3 py-3 font-medium text-center capitalize whitespace-nowrap">{res}</th>
@@ -353,10 +353,10 @@ export default function DashboardTeam() {
             </tr></thead>
             <tbody>
               {ROLES.map((r) => (
-                <tr key={r.key} className="border-b border-ich-primary/5 last:border-0 align-top">
+                <tr key={r.key} className="border-b border-border last:border-0 align-top">
                   <td className="px-5 py-3 sticky left-0 bg-white">
-                    <div className="font-medium text-ich-primary whitespace-nowrap">{r.label}</div>
-                    <div className="text-xs text-ich-neutral max-w-[180px]">{r.desc}</div>
+                    <div className="font-medium text-foreground whitespace-nowrap">{r.label}</div>
+                    <div className="text-xs text-muted max-w-[180px]">{r.desc}</div>
                   </td>
                   {RESOURCES.map((res) => (
                     <td key={res} className="px-3 py-3 text-center whitespace-nowrap">
@@ -367,7 +367,7 @@ export default function DashboardTeam() {
                             <span
                               key={a.key}
                               title={`${a.key} ${res}: ${allowed ? "allowed" : "denied"}`}
-                              className={allowed ? "text-gold font-semibold" : "text-ich-neutral/25 line-through"}
+                              className={allowed ? "text-accent-strong font-semibold" : "text-muted line-through"}
                             >
                               {a.letter}
                             </span>

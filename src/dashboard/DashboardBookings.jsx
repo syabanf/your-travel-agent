@@ -19,15 +19,16 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
-  pending: "bg-ich-gold/10 text-gold",
-  cancelled: "bg-red-500/15 text-red-600",
+  pending: "bg-accent/10 text-accent-strong",
+  cancelled: "bg-accent-soft text-accent-strong",
   completed: "bg-blue-500/15 text-blue-600",
   active: "bg-emerald-500/15 text-emerald-600",
   planned: "bg-blue-500/15 text-blue-600",
-  draft: "bg-ich-primary/10 text-ich-neutral",
+  draft: "bg-surface text-muted",
 };
 const BOOKING_STATUSES = ["pending", "confirmed", "completed", "cancelled"];
 const TRIP_STATUSES = ["draft", "planned", "active", "completed", "cancelled"];
@@ -201,7 +202,7 @@ export default function DashboardBookings() {
   const toggleSort = (set) => (key) => set((p) => p.key === key ? { key, dir: p.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" });
   const SortHead = ({ label, field, active, dir, onSort, className = "" }) => (
     <th className={`px-5 py-3 font-medium ${className}`}>
-      <button onClick={() => onSort(field)} className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-ich-primary transition-colors">
+      <button onClick={() => onSort(field)} className="inline-flex items-center gap-1 uppercase tracking-wider hover:text-foreground transition-colors">
         {label}
         {active === field && (dir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
       </button>
@@ -237,28 +238,28 @@ export default function DashboardBookings() {
   scopedTrips.forEach((t) => { const st = t.status || "draft"; tripStatusCount[st] = (tripStatusCount[st] || 0) + 1; });
   const byType = BOOKING_TYPES.map((t) => ({ name: cap1(t), value: typeCount[t] || 0 })).filter((d) => d.value);
   const revenueByStatus = BOOKING_STATUSES.map((st) => ({ name: cap1(st), value: statusRevenue[st] || 0 })).filter((d) => d.value);
-  const TRIP_STATUS_COLOR = { draft: "#94A3B8", planned: "#3B82F6", active: "#10B981", completed: "#0EA5E9", cancelled: "#EF4444" };
+  const TRIP_STATUS_COLOR = { draft: BRAND.chartMuted, planned: BRAND.info, active: BRAND.success, completed: BRAND.info, cancelled: BRAND.accent };
   const tripsByStatus = TRIP_STATUSES.map((st) => ({ name: cap1(st), value: tripStatusCount[st] || 0, color: TRIP_STATUS_COLOR[st] })).filter((d) => d.value);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Trips & Bookings</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Create, review and manage every trip and booking.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Trips & Bookings</h1>
+          <p className="text-sm text-muted mt-0.5">Create, review and manage every trip and booking.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="bookings" data={bookings} />
-            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-foreground/15 text-foreground hover:bg-surface press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
             {tab === "bookings"
               ? can(role, "bookings", "create") && (
-                <button onClick={startAddBooking} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New booking</button>
+                <button onClick={startAddBooking} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen"><Plus className="w-4 h-4" /> New booking</button>
               )
               : can(role, "trips", "create") && (
-                <button onClick={startAddTrip} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2"><Plus className="w-4 h-4" /> New trip</button>
+                <button onClick={startAddTrip} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen"><Plus className="w-4 h-4" /> New trip</button>
               )}
           </div>
         )}
@@ -273,12 +274,12 @@ export default function DashboardBookings() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 max-w-2xl">
+        <div className="bg-card rounded-card p-6 max-w-2xl shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">
+            <h2 className="font-display font-semibold text-lg text-foreground">
               {d.id ? "Edit" : "New"} {editing.kind === "booking" ? "booking" : "trip"}
             </h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
 
           {editing.kind === "booking" ? (
@@ -376,10 +377,10 @@ export default function DashboardBookings() {
           )}
 
           <div className="flex gap-2 pt-5">
-            <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+            <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
             </button>
-            <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+            <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
           </div>
         </div>
       ) : (
@@ -388,7 +389,7 @@ export default function DashboardBookings() {
           <div className="flex gap-2 mb-4">
             {["bookings", "trips"].map((t) => (
               <button key={t} onClick={() => setTab(t)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors ${tab === t ? "bg-ich-gold/10 text-gold" : "text-ich-neutral hover:bg-ich-primary/5"}`}>
+                className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors ${tab === t ? "bg-accent/10 text-accent-strong" : "text-muted hover:bg-surface"}`}>
                 {t} {t === "bookings" && bookings ? `(${bookings.length})` : t === "trips" && trips ? `(${trips.length})` : ""}
               </button>
             ))}
@@ -396,7 +397,7 @@ export default function DashboardBookings() {
 
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative flex-1 min-w-[220px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${tab}…`} className="dash-input pl-9" />
             </div>
             <SearchableSelect
@@ -412,13 +413,13 @@ export default function DashboardBookings() {
             )}
             <DateRangeSelect value={range} onChange={setRange} />
             {(query || statusF !== "all" || typeF !== "all" || range !== "all") && (
-              <button onClick={() => { setQuery(""); setStatusF("all"); setTypeF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setStatusF("all"); setTypeF("all"); setRange("all"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
           </div>
 
-          <div className="bg-white rounded-2xl border border-ich-primary/10 overflow-hidden">
+          <div className="bg-card rounded-card overflow-hidden shadow-card">
             {(tab === "bookings" ? bookings : trips) == null ? (
               <div className="p-5"><SkeletonRows rows={6} /></div>
             ) : tab === "bookings" ? (
@@ -428,13 +429,13 @@ export default function DashboardBookings() {
                   title="No bookings yet"
                   hint="Add flights, hotels and activities to start building this trip board."
                   action={can(role, "bookings", "create") && (
-                    <button onClick={startAddBooking} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> New booking</button>
+                    <button onClick={startAddBooking} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press sheen"><Plus className="w-4 h-4" /> New booking</button>
                   )}
                 />
               ) : (<>
               <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[720px]">
-                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
                   <SortHead label="Title" field="title" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
                   <SortHead label="Type" field="type" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
                   <SortHead label="Date" field="check_in" active={bSort.key} dir={bSort.dir} onSort={toggleSort(setBSort)} />
@@ -444,23 +445,23 @@ export default function DashboardBookings() {
                 </tr></thead>
                 <tbody className="stagger">
                   {bookingPg.pageItems.map((b) => (
-                    <tr key={b.id} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]">
-                      <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-ich-primary hover:text-gold transition-colors truncate block">{b.title}</Link></td>
-                      <td className="px-5 py-3 text-ich-neutral capitalize">{b.type}</td>
-                      <td className="px-5 py-3 text-ich-neutral">{b.check_in ? moment(b.check_in).format("MMM D, YYYY") : "—"}</td>
+                    <tr key={b.id} className="border-b border-border last:border-0 hover:bg-surface">
+                      <td className="px-5 py-3 max-w-[240px]"><Link to={`/dashboard/bookings/${b.id}`} className="font-medium text-foreground hover:text-accent-strong transition-colors truncate block">{b.title}</Link></td>
+                      <td className="px-5 py-3 text-muted capitalize">{b.type}</td>
+                      <td className="px-5 py-3 text-muted">{b.check_in ? moment(b.check_in).format("MMM D, YYYY") : "—"}</td>
                       <td className="px-5 py-3"><StatusCell value={b.status} options={BOOKING_STATUSES} editable={canEditBookings} onChange={(s) => setBookingStatus(b.id, s)} /></td>
-                      <td className="px-5 py-3 text-right font-semibold text-gold">{b.price ? formatIDR(b.price) : "—"}</td>
+                      <td className="px-5 py-3 text-right font-semibold text-accent-strong">{b.price ? formatIDR(b.price) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditBookings && <button onClick={() => startEditBooking(b)} aria-label="Edit" className="text-ich-primary hover:text-gold hover:bg-ich-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
-                        {canDelBookings && <button onClick={() => delBooking(b.id)} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditBookings && <button onClick={() => startEditBooking(b)} aria-label="Edit" className="text-foreground hover:text-accent-strong hover:bg-surface w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelBookings && <button onClick={() => delBooking(b.id)} aria-label="Delete" className="text-accent-strong hover:bg-accent-soft w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}
-                  {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-ich-neutral/60">No bookings match your filters.</td></tr>}
+                  {fBookings.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-muted">No bookings match your filters.</td></tr>}
                 </tbody>
               </table>
               </div>
-              <div className="px-5 py-4 border-t border-ich-primary/5">
+              <div className="px-5 py-4 border-t border-border">
                 <Pagination page={bookingPg.page} pageCount={bookingPg.pageCount} total={bookingPg.total} pageSize={bookingPg.pageSize} onPage={bookingPg.setPage} noun="bookings" />
               </div>
               </>)
@@ -471,13 +472,13 @@ export default function DashboardBookings() {
                   title="No trips yet"
                   hint="Create a trip to group bookings, travelers and budgets in one place."
                   action={can(role, "trips", "create") && (
-                    <button onClick={startAddTrip} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> New trip</button>
+                    <button onClick={startAddTrip} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press sheen"><Plus className="w-4 h-4" /> New trip</button>
                   )}
                 />
               ) : (<>
               <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[720px]">
-                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral/70 border-b border-ich-primary/5">
+                <thead><tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
                   <SortHead label="Trip" field="title" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
                   <SortHead label="Destination" field="destination" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
                   <SortHead label="Dates" field="start_date" active={tSort.key} dir={tSort.dir} onSort={toggleSort(setTSort)} />
@@ -487,23 +488,23 @@ export default function DashboardBookings() {
                 </tr></thead>
                 <tbody className="stagger">
                   {tripPg.pageItems.map((t) => (
-                    <tr key={t.id} className="border-b border-ich-primary/5 last:border-0 hover:bg-ich-primary/[0.02]">
-                      <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-ich-primary hover:text-gold transition-colors truncate block">{t.title}</Link></td>
-                      <td className="px-5 py-3 text-ich-neutral">{t.destination}</td>
-                      <td className="px-5 py-3 text-ich-neutral">{t.start_date ? moment(t.start_date).format("MMM D") : "—"}{t.end_date ? ` – ${moment(t.end_date).format("MMM D")}` : ""}</td>
+                    <tr key={t.id} className="border-b border-border last:border-0 hover:bg-surface">
+                      <td className="px-5 py-3 max-w-[220px]"><Link to={`/dashboard/trips/${t.id}`} className="font-medium text-foreground hover:text-accent-strong transition-colors truncate block">{t.title}</Link></td>
+                      <td className="px-5 py-3 text-muted">{t.destination}</td>
+                      <td className="px-5 py-3 text-muted">{t.start_date ? moment(t.start_date).format("MMM D") : "—"}{t.end_date ? ` – ${moment(t.end_date).format("MMM D")}` : ""}</td>
                       <td className="px-5 py-3"><StatusCell value={t.status} options={TRIP_STATUSES} editable={canEditTrips} onChange={(s) => setTripStatus(t.id, s)} /></td>
-                      <td className="px-5 py-3 text-right font-semibold text-gold">{t.budget_total ? formatIDR(t.budget_total) : "—"}</td>
+                      <td className="px-5 py-3 text-right font-semibold text-accent-strong">{t.budget_total ? formatIDR(t.budget_total) : "—"}</td>
                       <td className="px-5 py-3 text-right whitespace-nowrap">
-                        {canEditTrips && <button onClick={() => startEditTrip(t)} aria-label="Edit" className="text-ich-primary hover:text-gold hover:bg-ich-primary/5 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
-                        {canDelTrips && <button onClick={() => delTrip(t.id)} aria-label="Delete" className="text-red-600 hover:bg-red-50 w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
+                        {canEditTrips && <button onClick={() => startEditTrip(t)} aria-label="Edit" className="text-foreground hover:text-accent-strong hover:bg-surface w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Pencil className="w-4 h-4" /></button>}
+                        {canDelTrips && <button onClick={() => delTrip(t.id)} aria-label="Delete" className="text-accent-strong hover:bg-accent-soft w-9 h-9 rounded-lg inline-flex items-center justify-center press"><Trash2 className="w-4 h-4" /></button>}
                       </td>
                     </tr>
                   ))}
-                  {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-ich-neutral/60">No trips match your filters.</td></tr>}
+                  {fTrips.length === 0 && <tr><td colSpan={6} className="px-5 py-10 text-center text-muted">No trips match your filters.</td></tr>}
                 </tbody>
               </table>
               </div>
-              <div className="px-5 py-4 border-t border-ich-primary/5">
+              <div className="px-5 py-4 border-t border-border">
                 <Pagination page={tripPg.page} pageCount={tripPg.pageCount} total={tripPg.total} pageSize={tripPg.pageSize} onPage={tripPg.setPage} noun="trips" />
               </div>
               </>)
@@ -518,7 +519,7 @@ export default function DashboardBookings() {
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

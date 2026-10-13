@@ -22,6 +22,7 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 const EMPTY = {
   name: "", email: "", phone: "", city: "", country: "",
@@ -37,7 +38,7 @@ const TIERS = ["bronze", "silver", "gold", "platinum"];
 const TIER_BADGE = {
   bronze: "bg-amber-100 text-amber-700",
   silver: "bg-slate-200 text-slate-700",
-  gold: "bg-ich-gold/15 text-gold",
+  gold: "bg-accent/15 text-accent-strong",
   platinum: "bg-indigo-100 text-indigo-700",
 };
 
@@ -168,32 +169,32 @@ export default function DashboardCustomers() {
   const ltv = scoped.reduce((s, c) => s + (Number(c.lifetime_spend) || 0), 0);
 
   // Insight aggregations (date-scoped)
-  const TIER_COLOR = { bronze: "#C99A3F", silver: "#94A3B8", gold: "#AD1F23", platinum: "#6366F1" };
+  const TIER_COLOR = { bronze: BRAND.warning, silver: BRAND.chartMuted, gold: BRAND.accent, platinum: BRAND.info };
   const tierCount = {}, tierLtv = {};
   scoped.forEach((c) => { const t = c.tier || "bronze"; tierCount[t] = (tierCount[t] || 0) + 1; tierLtv[t] = (tierLtv[t] || 0) + (Number(c.lifetime_spend) || 0); });
   const cap1 = (s) => s[0].toUpperCase() + s.slice(1);
   const byTier = TIERS.map((t) => ({ name: cap1(t), value: tierCount[t] || 0, color: TIER_COLOR[t] }));
   const ltvByTier = TIERS.map((t) => ({ name: cap1(t), value: tierLtv[t] || 0, color: TIER_COLOR[t] })).filter((d) => d.value);
   const statusMix = [
-    { name: "Active", value: scoped.filter((c) => c.status === "active").length, color: "#10B981" },
-    { name: "Inactive", value: scoped.filter((c) => c.status !== "active").length, color: "#94A3B8" },
+    { name: "Active", value: scoped.filter((c) => c.status === "active").length, color: BRAND.success },
+    { name: "Inactive", value: scoped.filter((c) => c.status !== "active").length, color: BRAND.chartMuted },
   ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Customers</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Customers</h1>
+          <p className="text-sm text-muted mt-0.5">Manage travelers, their tiers, spend & home locations.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="customers" data={items} />
-            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-foreground/15 text-foreground hover:bg-surface press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
             {can(role, "customers", "create") && (
-              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+              <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen">
                 <Plus className="w-4 h-4" /> Add customer
               </button>
             )}
@@ -221,10 +222,10 @@ export default function DashboardCustomers() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+        <div className="bg-card rounded-card p-6 shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit customer" : "New customer"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-foreground">{editing.id ? "Edit customer" : "New customer"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
@@ -288,20 +289,20 @@ export default function DashboardCustomers() {
                   ariaLabel="Source"
                 />
               </FieldD>
-              <label className="flex items-center gap-2 text-sm text-ich-primary cursor-pointer pt-1">
-                <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-ich-primary/30 text-gold focus:ring-gold" />
+              <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer pt-1">
+                <input type="checkbox" checked={editing.marketing_opt_in} onChange={(e) => upd("marketing_opt_in", e.target.checked)} className="rounded border-foreground/30 text-accent-strong focus:ring-accent" />
                 Marketing opt-in
               </label>
               <FieldD label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input" rows={3} placeholder="Preferences, VIP notes…" /></FieldD>
-              <div className="flex items-center gap-2 text-sm text-ich-neutral pt-1">
-                <MapPin className="w-4 h-4 text-gold" />
-                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-ich-neutral/60">Click the map or search to set location</span>}
+              <div className="flex items-center gap-2 text-sm text-muted pt-1">
+                <MapPin className="w-4 h-4 text-accent-strong" />
+                {editing.lat != null ? <span>{editing.lat.toFixed(4)}, {editing.lng.toFixed(4)}</span> : <span className="text-muted">Click the map or search to set location</span>}
               </div>
               <div className="flex gap-2 pt-3">
-                <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+                <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
                 </button>
-                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+                <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
               </div>
             </div>
 
@@ -309,9 +310,9 @@ export default function DashboardCustomers() {
             <div>
               <div className="flex gap-2 mb-2">
                 <input ref={searchRef} value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && geocode()} placeholder="Search a place…" className="dash-input flex-1" />
-                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
+                <button onClick={geocode} aria-label="Search location" className="w-11 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0"><Search className="w-4 h-4" /></button>
               </div>
-              <div className="rounded-xl overflow-hidden border border-ich-primary/10" style={{ height: 300 }}>
+              <div className="rounded-xl overflow-hidden border border-border" style={{ height: 300 }}>
                 <OLMap
                   center={editing.lat != null ? [editing.lng, editing.lat] : [110, -2]}
                   zoom={editing.lat != null ? 6 : 4}
@@ -323,13 +324,13 @@ export default function DashboardCustomers() {
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-5 shadow-card"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <ReadOnlyBanner resource="customers" />
           <div className="flex flex-wrap gap-2">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
               <input
                 className="dash-input pl-9"
                 placeholder="Search customers…"
@@ -390,7 +391,7 @@ export default function DashboardCustomers() {
               className="max-w-[160px]"
             />
             {(listQuery || tierF !== "all" || statusF !== "all" || countryF !== "all" || range !== "all" || sort !== "newest") && (
-              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setListQuery(""); setTierF("all"); setStatusF("all"); setCountryF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -399,16 +400,16 @@ export default function DashboardCustomers() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "name", label: "Customer", className: "font-medium text-ich-primary", render: (c) => (
+                { key: "name", label: "Customer", className: "font-medium text-foreground", render: (c) => (
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-8 h-8 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(c.name || "?").trim().charAt(0)}</span>
-                    <span className="min-w-0"><span className="block truncate">{c.name}</span><span className="block text-[11px] text-ich-neutral/60 truncate">{c.email}</span></span>
+                    <span className="w-8 h-8 rounded-full bg-accent/10 text-accent-strong flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(c.name || "?").trim().charAt(0)}</span>
+                    <span className="min-w-0"><span className="block truncate">{c.name}</span><span className="block text-[11px] text-muted truncate">{c.email}</span></span>
                   </span>
                 ) },
                 { key: "tier", label: "Tier", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span> },
                 { key: "status", label: "Status", render: (c) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span> },
                 { key: "location", label: "Location", render: (c) => [c.city, c.country].filter(Boolean).join(", ") || "—" },
-                { key: "spend", label: "Lifetime", align: "right", className: "text-right font-semibold text-gold", render: (c) => formatIDR(Number(c.lifetime_spend) || 0) },
+                { key: "spend", label: "Lifetime", align: "right", className: "text-right font-semibold text-accent-strong", render: (c) => formatIDR(Number(c.lifetime_spend) || 0) },
               ]}
               rows={pg.pageItems}
               onRowClick={(c) => navigate(`/dashboard/customers/${c.id}`)}
@@ -417,38 +418,38 @@ export default function DashboardCustomers() {
           ) : (
           <div className="space-y-3 stagger">
           {pg.pageItems.map((c) => (
-            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press">
-              <div className="w-11 h-11 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">
+            <Link key={c.id} to={`/dashboard/customers/${c.id}`} className="bg-card rounded-card p-4 flex items-center gap-3 sm:gap-4 group hover:shadow-md transition-shadow press shadow-card lift">
+              <div className="w-11 h-11 rounded-full bg-accent/10 text-accent-strong flex items-center justify-center font-display font-semibold shrink-0 uppercase">
                 {(c.name || "?").trim().charAt(0)}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-display font-semibold text-ich-primary truncate">{c.name}</h3>
+                  <h3 className="font-display font-semibold text-foreground truncate">{c.name}</h3>
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TIER_BADGE[c.tier] || TIER_BADGE.bronze}`}>{c.tier || "bronze"}</span>
                   <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${c.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{c.status || "active"}</span>
                 </div>
-                <p className="text-xs text-ich-neutral mt-0.5 flex items-center gap-1.5 truncate">
+                <p className="text-xs text-muted mt-0.5 flex items-center gap-1.5 truncate">
                   <Mail className="w-3 h-3 shrink-0" /> {c.email}
                 </p>
-                <p className="text-xs text-ich-neutral/70 mt-0.5">
+                <p className="text-xs text-muted mt-0.5">
                   {[c.city, c.country].filter(Boolean).join(" · ") || "No location"}
                   {c.joined_date ? ` · joined ${moment(c.joined_date).format("MMM YYYY")}` : ""}
                 </p>
-                <p className="text-sm font-semibold text-gold mt-1 sm:hidden">
-                  {formatIDR(Number(c.lifetime_spend) || 0)} <span className="text-[10px] text-ich-neutral/60 uppercase tracking-wider font-normal">lifetime</span>
+                <p className="text-sm font-semibold text-accent-strong mt-1 sm:hidden">
+                  {formatIDR(Number(c.lifetime_spend) || 0)} <span className="text-[10px] text-muted uppercase tracking-wider font-normal">lifetime</span>
                 </p>
               </div>
               <div className="text-right shrink-0 hidden sm:block">
-                <div className="text-sm font-semibold text-gold">{formatIDR(Number(c.lifetime_spend) || 0)}</div>
-                <div className="text-[10px] text-ich-neutral/60 uppercase tracking-wider">lifetime</div>
+                <div className="text-sm font-semibold text-accent-strong">{formatIDR(Number(c.lifetime_spend) || 0)}</div>
+                <div className="text-[10px] text-muted uppercase tracking-wider">lifetime</div>
               </div>
               {(can(role, "customers", "edit") || can(role, "customers", "delete")) && (
                 <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   {can(role, "customers", "edit") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(c); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-foreground hover:text-accent-strong press"><Pencil className="w-4 h-4" /></button>
                   )}
                   {can(role, "customers", "delete") && (
-                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(c); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-accent-soft flex items-center justify-center text-accent-strong press"><Trash2 className="w-4 h-4" /></button>
                   )}
                 </div>
               )}
@@ -463,11 +464,11 @@ export default function DashboardCustomers() {
               title="No customers yet"
               hint="Add your first traveler to track tiers, spend and home locations."
               action={can(role, "customers", "create") && (
-                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add customer</button>
+                <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press sheen"><Plus className="w-4 h-4" /> Add customer</button>
               )}
             />
           )}
-          {items.length > 0 && sorted.length === 0 && <p className="text-ich-neutral/60 text-center py-10">No customers match your filters.</p>}
+          {items.length > 0 && sorted.length === 0 && <p className="text-muted text-center py-10">No customers match your filters.</p>}
         </div>
       )}
     </div>
@@ -475,11 +476,11 @@ export default function DashboardCustomers() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4 min-w-0">
-    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-card rounded-card p-5 flex items-center gap-4 min-w-0 shadow-card">
+    <div className="w-11 h-11 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
-      <div className="stat-value text-xl font-display font-bold text-ich-primary">{value}</div>
+      <div className="text-xs text-muted uppercase tracking-wider">{label}</div>
+      <div className="stat-value text-xl font-display font-bold text-foreground">{value}</div>
     </div>
   </div>
 );
@@ -487,7 +488,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

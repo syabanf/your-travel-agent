@@ -22,9 +22,9 @@ const TABS = [
 ];
 
 const STATUS_BADGE = {
-  pending: "bg-ich-gold/15 text-gold",
+  pending: "bg-accent/15 text-accent-strong",
   approved: "bg-emerald-100 text-emerald-700",
-  rejected: "bg-red-100 text-red-700",
+  rejected: "bg-accent-soft text-accent-strong",
 };
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
@@ -73,14 +73,14 @@ export default function DashboardRegistrations() {
   const pg = usePagination(filtered, 10, `${tab}|${query}`);
 
   const columns = [
-    { key: "full_name", label: "Traveller", className: "font-medium text-ich-primary", render: (r) => (
+    { key: "full_name", label: "Traveller", className: "font-medium text-foreground", render: (r) => (
       <span className="flex items-center gap-2.5 min-w-0">
-        <span className="w-8 h-8 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">
+        <span className="w-8 h-8 rounded-full bg-accent/10 text-accent-strong flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">
           {(r.full_name || r.email || "?").trim().charAt(0)}
         </span>
         <span className="min-w-0">
           <span className="block truncate">{r.full_name || "—"}</span>
-          <span className="block text-[11px] text-ich-neutral/60 truncate">{r.email}</span>
+          <span className="block text-[11px] text-muted truncate">{r.email}</span>
         </span>
       </span>
     ) },
@@ -89,7 +89,7 @@ export default function DashboardRegistrations() {
     { key: "created_at", label: "Requested", render: (r) => (r.created_at ? (
       <span className="block leading-tight">
         <span className="block">{moment(r.created_at).format("MMM D, YYYY")}</span>
-        <span className="block text-[11px] text-ich-neutral/60">{moment(r.created_at).fromNow()}</span>
+        <span className="block text-[11px] text-muted">{moment(r.created_at).fromNow()}</span>
       </span>
     ) : "—") },
     { key: "status", label: "Status", render: (r) => (
@@ -99,8 +99,8 @@ export default function DashboardRegistrations() {
     ) },
     { key: "reviewed_by", label: "Decided by", render: (r) => (r.reviewed_by || r.reviewed_at ? (
       <span className="block leading-tight">
-        <span className="block text-ich-primary">{r.reviewed_by || "—"}</span>
-        {r.reviewed_at && <span className="block text-[11px] text-ich-neutral/60">{moment(r.reviewed_at).format("MMM D, YYYY")}</span>}
+        <span className="block text-foreground">{r.reviewed_by || "—"}</span>
+        {r.reviewed_at && <span className="block text-[11px] text-muted">{moment(r.reviewed_at).format("MMM D, YYYY")}</span>}
       </span>
     ) : "—") },
   ];
@@ -108,7 +108,7 @@ export default function DashboardRegistrations() {
   if (canEdit) {
     columns.push({ key: "actions", label: "", align: "right", className: "text-right", render: (r) => {
       const status = r.status || "pending";
-      if (busyId === r.id) return <Loader2 className="w-4 h-4 animate-spin text-ich-neutral inline-block" />;
+      if (busyId === r.id) return <Loader2 className="w-4 h-4 animate-spin text-muted inline-block" />;
       return (
         <span className="inline-flex gap-1.5">
           {status !== "approved" && (
@@ -126,7 +126,7 @@ export default function DashboardRegistrations() {
               onClick={() => decide(r, "rejected")}
               disabled={!!busyId}
               aria-label={`Reject ${r.full_name || r.email}`}
-              className="h-9 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 inline-flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 press"
+              className="h-9 px-3 rounded-lg border border-accent/30 text-accent-strong hover:bg-accent-soft inline-flex items-center gap-1.5 text-xs font-semibold disabled:opacity-40 press"
             >
               <Ban className="w-3.5 h-3.5" /> Reject
             </button>
@@ -140,17 +140,17 @@ export default function DashboardRegistrations() {
     <div className="p-4 sm:p-6 lg:p-8">
       <ReadOnlyBanner resource="registrations" />
       <header className="mb-6">
-        <p className="text-[11px] uppercase tracking-widest text-gold font-semibold mb-1 flex items-center gap-1.5">
+        <p className="text-[11px] uppercase tracking-widest text-accent-strong font-semibold mb-1 flex items-center gap-1.5">
           <UserCheck className="w-3.5 h-3.5" /> Access
         </p>
-        <h1 className="text-2xl font-display font-bold text-ich-primary">Registrations</h1>
-        <p className="text-sm text-ich-neutral mt-0.5">Approve or reject traveller sign-ups from the mobile app. Nobody gets in until you decide.</p>
+        <h1 className="text-2xl font-display font-bold text-foreground">Registrations</h1>
+        <p className="text-sm text-muted mt-0.5">Approve or reject traveller sign-ups from the mobile app. Nobody gets in until you decide.</p>
       </header>
 
       {items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-5 shadow-card"><SkeletonRows rows={6} /></div>
       ) : items.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10">
+        <div className="bg-card rounded-card shadow-card">
           <EmptyState
             icon={UserCheck}
             title="No sign-ups yet"
@@ -166,12 +166,12 @@ export default function DashboardRegistrations() {
                 onClick={() => setTab(t.key)}
                 aria-pressed={tab === t.key}
                 className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors press ${
-                  tab === t.key ? "border-ich-gold/40 bg-ich-gold/10 text-gold" : "border-ich-primary/10 bg-white text-ich-neutral hover:bg-ich-primary/5"
+                  tab === t.key ? "border-accent/40 bg-accent/10 text-accent-strong" : "border-border bg-white text-muted hover:bg-surface"
                 }`}
               >
                 {t.label}
                 <span className={`min-w-[1.25rem] px-1 rounded-full text-[11px] font-bold ${
-                  t.key === "pending" && counts.pending > 0 ? "bg-ich-gold text-white" : "text-ich-primary"
+                  t.key === "pending" && counts.pending > 0 ? "bg-accent-strong text-white" : "text-foreground"
                 }`}>
                   {counts[t.key] || 0}
                 </span>
@@ -181,7 +181,7 @@ export default function DashboardRegistrations() {
 
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
               <input
                 className="dash-input pl-9"
                 placeholder="Search name or email…"
@@ -190,14 +190,14 @@ export default function DashboardRegistrations() {
               />
             </div>
             {(query || tab !== "pending") && (
-              <button onClick={() => { setQuery(""); setTab("pending"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setTab("pending"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
           </div>
 
           {tab === "pending" && !q && counts.pending === 0 ? (
-            <div className="bg-white rounded-2xl border border-ich-primary/10">
+            <div className="bg-card rounded-card shadow-card">
               <EmptyState
                 icon={MailCheck}
                 title="Queue clear"

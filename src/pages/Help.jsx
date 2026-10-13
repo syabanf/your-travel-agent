@@ -59,13 +59,13 @@ export default function Help() {
                   onClick={() => setOpenIndex(isOpen ? null : i)}
                 >
                   <div className="flex items-center justify-between gap-3 p-5">
-                    <h2 className="text-sm font-medium text-ich-primary">{faq.title}</h2>
+                    <h2 className="text-sm font-medium text-foreground">{faq.title}</h2>
                     <ChevronDown
-                      className={`w-4 h-4 text-ich-neutral flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 text-muted flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
                     />
                   </div>
                   {isOpen && (
-                    <p className="px-5 pb-5 -mt-1 text-sm text-ich-neutral/70 leading-relaxed">
+                    <p className="px-5 pb-5 -mt-1 text-sm text-muted leading-relaxed">
                       {faq.body}
                     </p>
                   )}
@@ -77,17 +77,17 @@ export default function Help() {
 
         {/* Contact support */}
         <GlassCard className="p-5 space-y-1">
-          <p className="text-sm font-semibold text-ich-primary mb-2">Contact support</p>
+          <p className="text-sm font-semibold text-foreground mb-2">Contact support</p>
 
           {settings.support_email && (
             <a
               href={`mailto:${settings.support_email}`}
-              className="flex items-center gap-3 py-2.5 text-ich-neutral hover:text-ich-primary transition-colors"
+              className="flex items-center gap-3 py-2.5 text-muted hover:text-foreground transition-colors"
             >
-              <Mail className="w-5 h-5 text-gold/70 flex-shrink-0" />
+              <Mail className="w-5 h-5 text-accent-strong/70 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ich-white">Email us</p>
-                <p className="text-xs text-ich-neutral/50 truncate">{settings.support_email}</p>
+                <p className="text-sm font-medium text-foreground">Email us</p>
+                <p className="text-xs text-muted truncate">{settings.support_email}</p>
               </div>
             </a>
           )}
@@ -95,12 +95,12 @@ export default function Help() {
           {settings.support_phone && (
             <a
               href={`tel:${settings.support_phone.replace(/\s+/g, "")}`}
-              className="flex items-center gap-3 py-2.5 text-ich-neutral hover:text-ich-primary transition-colors"
+              className="flex items-center gap-3 py-2.5 text-muted hover:text-foreground transition-colors"
             >
-              <Phone className="w-5 h-5 text-gold/70 flex-shrink-0" />
+              <Phone className="w-5 h-5 text-accent-strong/70 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ich-white">Call us</p>
-                <p className="text-xs text-ich-neutral/50 truncate">{settings.support_phone}</p>
+                <p className="text-sm font-medium text-foreground">Call us</p>
+                <p className="text-xs text-muted truncate">{settings.support_phone}</p>
               </div>
             </a>
           )}
@@ -113,7 +113,7 @@ export default function Help() {
                   `Hi ${settings.brand_name} support, I need some help with the app.`
                 )
               }
-              className="w-full mt-2 flex items-center justify-center gap-2 py-3 glass-light rounded-xl text-sm font-medium text-gold hover:bg-white/10 transition-all"
+              className="w-full mt-2 flex items-center justify-center gap-2 py-3 bg-card shadow-card rounded-xl text-sm font-medium text-accent-strong hover:bg-surface transition-all"
             >
               <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
             </button>
@@ -122,22 +122,22 @@ export default function Help() {
 
         {/* Legal */}
         <GlassCard className="p-5 space-y-1">
-          <p className="text-sm font-semibold text-ich-primary mb-2">Legal</p>
+          <p className="text-sm font-semibold text-foreground mb-2">Legal</p>
           <Link
             to="/privacy"
-            className="flex items-center gap-3 py-2.5 text-ich-neutral hover:text-ich-primary transition-colors"
+            className="flex items-center gap-3 py-2.5 text-muted hover:text-foreground transition-colors"
           >
-            <Shield className="w-5 h-5 text-gold/70 flex-shrink-0" />
-            <span className="flex-1 text-sm font-medium text-ich-white">Privacy Policy</span>
-            <ChevronDown className="w-4 h-4 -rotate-90 text-ich-neutral/50" />
+            <Shield className="w-5 h-5 text-accent-strong/70 flex-shrink-0" />
+            <span className="flex-1 text-sm font-medium text-foreground">Privacy Policy</span>
+            <ChevronDown className="w-4 h-4 -rotate-90 text-muted" />
           </Link>
           <Link
             to="/terms"
-            className="flex items-center gap-3 py-2.5 text-ich-neutral hover:text-ich-primary transition-colors"
+            className="flex items-center gap-3 py-2.5 text-muted hover:text-foreground transition-colors"
           >
-            <FileText className="w-5 h-5 text-gold/70 flex-shrink-0" />
-            <span className="flex-1 text-sm font-medium text-ich-white">Terms of Service</span>
-            <ChevronDown className="w-4 h-4 -rotate-90 text-ich-neutral/50" />
+            <FileText className="w-5 h-5 text-accent-strong/70 flex-shrink-0" />
+            <span className="flex-1 text-sm font-medium text-foreground">Terms of Service</span>
+            <ChevronDown className="w-4 h-4 -rotate-90 text-muted" />
           </Link>
         </GlassCard>
       </div>

@@ -40,6 +40,22 @@ npm run lint      # eslint
 npm run test:run  # run the test suite once (npm test = watch)
 ```
 
+## Brand and UI style
+
+The UI follows the WIT house style; see
+[`docs/frontend-conventions.md`](docs/frontend-conventions.md) for the tokens,
+the reference pages and the layout rules. The palette is sampled from the Icon
+Holiday logo, and every pair below passes WCAG AA where it carries text:
+
+| Pair | Ratio |
+|---|---|
+| white on `ink` `#0A6E4C` | 6.27 |
+| white on `accent-strong` `#B3161C` | 6.89 |
+| `on-ink-muted` `#CDEBDD` on `ink` | 4.94 |
+| `muted` `#5E6B65` on `surface` `#F1F4F2` | 5.03 |
+| `accent-strong` on `accent-soft` `#FEF1F1` | 6.25 |
+| `accent` on `ink` | 1.48, never used as text |
+
 ## Docker
 
 Nothing to install but Docker — no Node, no npm.

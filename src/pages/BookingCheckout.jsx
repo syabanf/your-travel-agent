@@ -55,6 +55,7 @@ export default function BookingCheckout() {
   const [method, setMethod] = useState(null);
   const [errors, setErrors] = useState({});
   const [travelers, setTravelers] = useState([]);
+  const [account, setAccount] = useState(null);
   // Down-payment percentage. The package sets the floor; 100 means paying in full.
   const [payPercent, setPayPercent] = useState(100);
   const [pkg, setPkg] = useState(null);
@@ -103,6 +104,8 @@ export default function BookingCheckout() {
       .me()
       .then((me) => {
         if (cancelled || !me) return;
+        setAccount(me);
+        setPaymentInfo((p) => ({ ...p, card_name: p.card_name || me.full_name || "" }));
         setGuestInfo((p) => ({
           ...p,
           full_name: p.full_name || me.full_name || "",
@@ -154,15 +157,16 @@ export default function BookingCheckout() {
   const updatePayment = (k, v) => { setPaymentInfo(p => ({ ...p, [k]: v })); clearError(k); };
   const chooseMethod = (m) => { setMethod(m); clearError("method"); };
 
+  // Fills the contact with one person's details only, so a companion never
+  // inherits the account holder's phone.
   const applyTraveler = (t) => {
-    setGuestInfo(p => ({
-      ...p,
-      full_name: t.name || p.full_name,
-      email: t.email || p.email,
-      phone: t.phone || p.phone,
-    }));
+    setGuestInfo(p => ({ ...p, full_name: t.name || "", email: t.email || "", phone: t.phone || "" }));
     setErrors({});
   };
+  const people = [
+    ...(account?.full_name ? [{ id: "me", name: account.full_name, email: account.email, phone: account.phone, label: "Me" }] : []),
+    ...travelers,
+  ];
 
   // Flags the missing fields, says what's missing and puts the cursor on the
   // first one. Returns true when everything required is filled in.
@@ -176,8 +180,8 @@ export default function BookingCheckout() {
   };
 
   const fieldClass = (name) =>
-    `bg-white/5 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11 ${
-      errors[name] ? "border-red-500/70 focus-visible:ring-red-500/50" : "border-white/10"
+    `bg-surface-2 text-foreground placeholder:text-muted rounded-xl h-11 ${
+      errors[name] ? "border-accent-strong/70 focus-visible:ring-accent/40" : "border-border"
     }`;
 
   const handleBack = () => {
@@ -324,7 +328,7 @@ export default function BookingCheckout() {
 
   if (!booking) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
     </div>
   );
 
@@ -337,13 +341,13 @@ export default function BookingCheckout() {
           <button
             onClick={handleBack}
             aria-label={step > 1 && step < 4 ? "Back one step" : "Go back"}
-            className="w-10 h-10 glass-light shadow-soft rounded-full flex items-center justify-center text-ich-primary hover:text-gold press-spring shrink-0"
+            className="w-10 h-10 bg-card shadow-card shadow-card rounded-full flex items-center justify-center text-foreground hover:text-accent-strong press-spring shrink-0"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="min-w-0">
-            <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-ich-primary truncate">Checkout</h1>
-            <p className="text-sm text-ich-neutral mt-0.5 truncate">{booking.title}</p>
+            <h1 className="text-[22px] leading-tight tracking-tight font-display font-bold text-foreground truncate">Checkout</h1>
+            <p className="text-sm text-muted mt-0.5 truncate">{booking.title}</p>
           </div>
         </div>
       </div>
@@ -360,15 +364,15 @@ export default function BookingCheckout() {
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                     done ? "bg-emerald-500/20 border border-emerald-500/40" :
-                    active ? "glass-gold border border-ich-gold/40" :
-                    "glass-light border border-white/10"
+                    active ? "bg-accent-soft border border-accent/40" :
+                    "bg-card shadow-card border border-border"
                   }`}>
-                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-gold" : "text-ich-neutral/30"}`} />
+                    <Icon className={`w-3.5 h-3.5 ${done ? "text-emerald-600" : active ? "text-accent-strong" : "text-muted"}`} />
                   </div>
-                  <span className={`text-[9px] mt-1 ${active ? "text-gold" : done ? "text-emerald-600" : "text-ich-neutral/30"}`}>{s.label}</span>
+                  <span className={`text-[9px] mt-1 ${active ? "text-accent-strong" : done ? "text-emerald-600" : "text-muted"}`}>{s.label}</span>
                 </div>
                 {i < steps.length - 1 && (
-                  <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-emerald-500/30" : "bg-white/10"}`} />
+                  <div className={`flex-1 h-px mx-2 mb-4 ${step > s.id ? "bg-emerald-500/30" : "bg-surface"}`} />
                 )}
               </div>
             );
@@ -382,44 +386,44 @@ export default function BookingCheckout() {
         {step === 1 && (
           <>
             <GlassCard className="p-4">
-              <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-3">Booking Summary</h3>
-              <p className="text-base font-display font-bold text-ich-white mb-1">{booking.title}</p>
-              {booking.provider && <p className="text-xs text-ich-neutral/60 mb-2">{booking.provider}</p>}
-              {booking.location && <p className="text-xs text-ich-neutral/60 mb-2">📍 {booking.location}</p>}
+              <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-3">Booking Summary</h3>
+              <p className="text-base font-display font-bold text-foreground mb-1">{booking.title}</p>
+              {booking.provider && <p className="text-xs text-muted mb-2">{booking.provider}</p>}
+              {booking.location && <p className="text-xs text-muted mb-2">📍 {booking.location}</p>}
               {booking.check_in && (
-                <p className="text-xs text-ich-neutral/60 mb-2">
+                <p className="text-xs text-muted mb-2">
                   📅 {moment(booking.check_in).format("MMM D, YYYY")}
                   {booking.check_out && ` → ${moment(booking.check_out).format("MMM D, YYYY")}`}
                 </p>
               )}
-              {booking.guests > 0 && <p className="text-xs text-ich-neutral/60 mb-2">👥 {booking.guests} guest(s)</p>}
-              {booking.notes && <p className="text-xs text-ich-neutral/50 mt-2 border-t border-white/5 pt-2">{booking.notes}</p>}
+              {booking.guests > 0 && <p className="text-xs text-muted mb-2">👥 {booking.guests} guest(s)</p>}
+              {booking.notes && <p className="text-xs text-muted mt-2 border-t border-border pt-2">{booking.notes}</p>}
             </GlassCard>
 
             <GlassCard className="p-4">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-ich-neutral/70 shrink-0">Total Price</span>
-                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(total)}</span>
+                <span className="text-sm text-muted shrink-0">Total Price</span>
+                <span className="stat-value text-lg font-display font-bold text-accent-strong text-right">{formatIDR(total)}</span>
               </div>
               {alreadyPaid > 0 ? (
-                <div className="mt-2 pt-2 border-t border-white/5 space-y-1.5">
+                <div className="mt-2 pt-2 border-t border-border space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-ich-neutral/50">Already paid</span>
+                    <span className="text-xs text-muted">Already paid</span>
                     <span className="text-xs text-emerald-600">{formatIDR(alreadyPaid)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-ich-neutral/50">Balance to settle</span>
-                    <span className="text-xs text-gold font-medium">{formatIDR(outstanding)}</span>
+                    <span className="text-xs text-muted">Balance to settle</span>
+                    <span className="text-xs text-accent-strong font-medium">{formatIDR(outstanding)}</span>
                   </div>
                 </div>
               ) : booking.package_id ? (
-                <p className="text-[11px] text-ich-neutral/60 mt-2 pt-2 border-t border-white/5 leading-relaxed">
+                <p className="text-[11px] text-muted mt-2 pt-2 border-t border-border leading-relaxed">
                   Pay in full, or start from {minDpPercent(pkg)}% down — {formatIDR(amountForPercent(total, minDpPercent(pkg)))}.
                 </p>
               ) : null}
             </GlassCard>
 
-            <button onClick={() => setStep(2)} className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2">
+            <button onClick={() => setStep(2)} className="w-full py-3.5 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2">
               Continue <ChevronRight className="w-4 h-4" />
             </button>
           </>
@@ -428,18 +432,18 @@ export default function BookingCheckout() {
         {/* Step 2: Guest Info */}
         {step === 2 && (
           <>
-            {travelers.length > 0 && (
+            {people.length > 1 && (
               <div>
-                <p className="text-[10px] text-ich-neutral/50 mb-2">Fill from a saved traveller</p>
+                <p className="text-[10px] text-muted mb-2">Fill in for</p>
                 <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-1 px-1">
-                  {travelers.map((t, i) => (
+                  {people.map((t, i) => (
                     <button
                       key={t.id || `${t.name}-${i}`}
                       type="button"
                       onClick={() => applyTraveler(t)}
-                      className="px-3.5 py-2 rounded-full glass-light text-xs font-medium text-ich-neutral hover:text-gold whitespace-nowrap shrink-0 press-spring transition-colors"
+                      className="px-3.5 py-2 rounded-full bg-card shadow-card text-xs font-medium text-muted hover:text-accent-strong whitespace-nowrap shrink-0 press-spring transition-colors"
                     >
-                      {t.name}
+                      {t.label ? `${t.label} · ${t.name}` : t.name}
                     </button>
                   ))}
                 </div>
@@ -447,40 +451,40 @@ export default function BookingCheckout() {
             )}
 
             <GlassCard className="p-4 space-y-3">
-              <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Guest Information</h3>
+              <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-1">Guest Information</h3>
               <div>
-                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Full Name *</label>
+                <label className="text-[10px] text-muted mb-1 block">Full Name *</label>
                 <Input ref={setFieldRef("full_name")} value={guestInfo.full_name} onChange={e => updateGuest("full_name", e.target.value)}
                   placeholder="As on ID/passport"
                   aria-invalid={errors.full_name ? "true" : undefined}
                   className={fieldClass("full_name")} />
               </div>
               <div>
-                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Email *</label>
+                <label className="text-[10px] text-muted mb-1 block">Email *</label>
                 <Input ref={setFieldRef("email")} type="email" value={guestInfo.email} onChange={e => updateGuest("email", e.target.value)}
                   placeholder="your@email.com"
                   aria-invalid={errors.email ? "true" : undefined}
                   className={fieldClass("email")} />
               </div>
               <div>
-                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Phone Number *</label>
+                <label className="text-[10px] text-muted mb-1 block">Phone Number *</label>
                 <Input ref={setFieldRef("phone")} type="tel" value={guestInfo.phone} onChange={e => updateGuest("phone", e.target.value)}
                   placeholder="+62 812 xxxx xxxx"
                   aria-invalid={errors.phone ? "true" : undefined}
                   className={fieldClass("phone")} />
               </div>
               <div>
-                <label className="text-[10px] text-ich-neutral/50 mb-1 block">Special Request</label>
+                <label className="text-[10px] text-muted mb-1 block">Special Request</label>
                 <Input value={guestInfo.special_request} onChange={e => updateGuest("special_request", e.target.value)}
                   placeholder="Dietary needs, accessibility, etc."
-                  className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/30 rounded-xl h-11" />
+                  className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11" />
               </div>
             </GlassCard>
 
             <button
               onClick={handleProceedToPayment}
               aria-disabled={!guestInfo.full_name || !guestInfo.email || !guestInfo.phone}
-              className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all aria-disabled:opacity-40 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all aria-disabled:opacity-40 flex items-center justify-center gap-2 sheen"
             >
               Proceed to Payment <ChevronRight className="w-4 h-4" />
             </button>
@@ -493,8 +497,8 @@ export default function BookingCheckout() {
             {plans.length > 0 && (
               <GlassCard className="p-4 space-y-3">
                 <div className="flex items-center gap-2 mb-1">
-                  <Wallet className="w-3.5 h-3.5 text-gold" />
-                  <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Payment plan</h3>
+                  <Wallet className="w-3.5 h-3.5 text-accent-strong" />
+                  <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest">Payment plan</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {plans.map((p) => {
@@ -507,8 +511,8 @@ export default function BookingCheckout() {
                         aria-pressed={selected}
                         className={`rounded-xl px-3 py-2.5 text-left press-spring transition-all border ${
                           selected
-                            ? "glass-gold border-ich-gold/40 text-gold"
-                            : "glass-light border-white/10 text-ich-neutral hover:text-ich-primary"
+                            ? "bg-accent-soft border-accent/40 text-accent-strong"
+                            : "bg-card shadow-card border-border text-muted hover:text-foreground"
                         }`}
                       >
                         <span className="block text-xs font-semibold">{p.label}</span>
@@ -519,7 +523,7 @@ export default function BookingCheckout() {
                     );
                   })}
                 </div>
-                <p className="text-[11px] text-ich-neutral/60 leading-relaxed">
+                <p className="text-[11px] text-muted leading-relaxed">
                   {remaining > 0
                     ? `Minimum down payment for this package is ${minDpPercent(pkg)}%. The remaining ${formatIDR(remaining)} is due 14 days after booking — your trip detail unlocks once it's settled.`
                     : "Paying in full unlocks your full trip itinerary straight away."}
@@ -527,19 +531,19 @@ export default function BookingCheckout() {
               </GlassCard>
             )}
 
-            <GlassCard className={`p-4 space-y-3 ${errors.method ? "border !border-red-500/70" : ""}`}>
+            <GlassCard className={`p-4 space-y-3 ${errors.method ? "border !border-accent-strong/70" : ""}`}>
               <div className="flex items-center gap-2 mb-1">
-                <Lock className="w-3.5 h-3.5 text-gold" />
-                <h3 className="text-xs font-semibold text-gold uppercase tracking-widest">Payment method</h3>
+                <Lock className="w-3.5 h-3.5 text-accent-strong" />
+                <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest">Payment method</h3>
               </div>
               <PaymentMethodPicker value={method} onChange={chooseMethod} />
             </GlassCard>
 
             {method?.isNewCard && (
               <GlassCard className="p-4 space-y-3">
-                <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-1">Card details</h3>
+                <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-1">Card details</h3>
                 <div>
-                  <label className="text-[10px] text-ich-neutral/50 mb-1 block">Card Number</label>
+                  <label className="text-[10px] text-muted mb-1 block">Card Number</label>
                   <Input
                     ref={setFieldRef("card_number")}
                     value={paymentInfo.card_number}
@@ -550,7 +554,7 @@ export default function BookingCheckout() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-ich-neutral/50 mb-1 block">Cardholder Name</label>
+                  <label className="text-[10px] text-muted mb-1 block">Cardholder Name</label>
                   <Input
                     ref={setFieldRef("card_name")}
                     value={paymentInfo.card_name}
@@ -562,7 +566,7 @@ export default function BookingCheckout() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] text-ich-neutral/50 mb-1 block">Expiry Date</label>
+                    <label className="text-[10px] text-muted mb-1 block">Expiry Date</label>
                     <Input
                       ref={setFieldRef("expiry")}
                       value={paymentInfo.expiry}
@@ -573,7 +577,7 @@ export default function BookingCheckout() {
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-ich-neutral/50 mb-1 block">CVV</label>
+                    <label className="text-[10px] text-muted mb-1 block">CVV</label>
                     <Input
                       ref={setFieldRef("cvv")}
                       value={paymentInfo.cvv}
@@ -590,11 +594,11 @@ export default function BookingCheckout() {
 
             {method && !method.isNewCard && (
               <GlassCard className="p-4">
-                <p className="text-xs text-ich-neutral/70">
+                <p className="text-xs text-muted">
                   {method.type === "bank"
                     ? "A virtual-account number will be issued to complete your transfer."
                     : `You'll be redirected to ${method.label} to approve the payment.`}
-                  <span className="text-ich-neutral/50"> Payment is simulated in this demo.</span>
+                  <span className="text-muted"> Payment is simulated in this demo.</span>
                 </p>
               </GlassCard>
             )}
@@ -602,26 +606,26 @@ export default function BookingCheckout() {
             <GlassCard className="p-4 space-y-2">
               {(remaining > 0 || alreadyPaid > 0) && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-ich-neutral/50 shrink-0">Package total</span>
-                  <span className="text-xs text-ich-neutral/70 text-right">{formatIDR(total)}</span>
+                  <span className="text-xs text-muted shrink-0">Package total</span>
+                  <span className="text-xs text-muted text-right">{formatIDR(total)}</span>
                 </div>
               )}
               {alreadyPaid > 0 && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-ich-neutral/50 shrink-0">Already paid</span>
+                  <span className="text-xs text-muted shrink-0">Already paid</span>
                   <span className="text-xs text-emerald-600 text-right">−{formatIDR(alreadyPaid)}</span>
                 </div>
               )}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-ich-neutral/70 shrink-0">
+                <span className="text-sm text-muted shrink-0">
                   {remaining > 0 ? `Pay now (${payPercent}%)` : alreadyPaid > 0 ? "Balance due now" : "Total Charge"}
                 </span>
-                <span className="stat-value text-lg font-display font-bold text-gold text-right">{formatIDR(amountDue)}</span>
+                <span className="stat-value text-lg font-display font-bold text-accent-strong text-right">{formatIDR(amountDue)}</span>
               </div>
               {remaining > 0 && (
-                <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/5">
-                  <span className="text-xs text-ich-neutral/50 shrink-0">Balance due later</span>
-                  <span className="text-xs text-ich-neutral/70 text-right">{formatIDR(remaining)}</span>
+                <div className="flex items-center justify-between gap-3 pt-2 border-t border-border">
+                  <span className="text-xs text-muted shrink-0">Balance due later</span>
+                  <span className="text-xs text-muted text-right">{formatIDR(remaining)}</span>
                 </div>
               )}
             </GlassCard>
@@ -630,7 +634,7 @@ export default function BookingCheckout() {
               onClick={handleConfirmPayment}
               disabled={processing}
               aria-disabled={!method || (method.isNewCard && (!paymentInfo.card_number || !paymentInfo.card_name || !paymentInfo.expiry || !paymentInfo.cvv))}
-              className="w-full py-4 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 aria-disabled:opacity-40 flex items-center justify-center gap-2"
+              className="w-full py-4 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all disabled:opacity-40 aria-disabled:opacity-40 flex items-center justify-center gap-2 sheen"
             >
               {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : <><Lock className="w-4 h-4" /> Confirm & Pay {formatIDR(amountDue)}</>}
             </button>
@@ -643,39 +647,39 @@ export default function BookingCheckout() {
             <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
               <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
-            <h2 className="text-xl font-display font-bold text-ich-white mb-2">Booking Confirmed!</h2>
-            <p className="text-sm text-ich-neutral/60 mb-6">
+            <h2 className="text-xl font-display font-bold text-foreground mb-2">Booking Confirmed!</h2>
+            <p className="text-sm text-muted mb-6">
               {remaining > 0
                 ? `Your deposit is in. ${formatIDR(remaining)} remains — settle it to unlock your full trip detail.`
                 : "Your booking has been successfully confirmed and saved."}
             </p>
 
             <GlassCard className="p-4 text-left mb-6">
-              <p className="text-xs text-ich-neutral/50 mb-1">Confirmation Code</p>
-              <p className="text-lg font-display font-bold text-gold tracking-widest">{confirmCode}</p>
-              <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
-                <p className="text-xs text-ich-neutral/60">{booking.title}</p>
-                <p className="text-xs text-ich-neutral/50">{guestInfo.full_name} · {guestInfo.email}</p>
-                {method && <p className="text-xs text-ich-neutral/50">Paid with {method.label}</p>}
+              <p className="text-xs text-muted mb-1">Confirmation Code</p>
+              <p className="text-lg font-display font-bold text-accent-strong tracking-widest">{confirmCode}</p>
+              <div className="mt-3 pt-3 border-t border-border space-y-1">
+                <p className="text-xs text-muted">{booking.title}</p>
+                <p className="text-xs text-muted">{guestInfo.full_name} · {guestInfo.email}</p>
+                {method && <p className="text-xs text-muted">Paid with {method.label}</p>}
               </div>
               {remaining > 0 && (
-                <div className="mt-3 pt-3 border-t border-white/5 space-y-1">
+                <div className="mt-3 pt-3 border-t border-border space-y-1">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-ich-neutral/50">Paid today</span>
+                    <span className="text-xs text-muted">Paid today</span>
                     <span className="text-xs text-emerald-600 font-medium">{formatIDR(amountDue)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs text-ich-neutral/50">Balance due</span>
-                    <span className="text-xs text-gold font-medium">{formatIDR(remaining)}</span>
+                    <span className="text-xs text-muted">Balance due</span>
+                    <span className="text-xs text-accent-strong font-medium">{formatIDR(remaining)}</span>
                   </div>
-                  <p className="text-[10px] text-ich-neutral/40 pt-1">
+                  <p className="text-[10px] text-muted pt-1">
                     Due by {moment().add(14, "days").format("MMM D, YYYY")}
                   </p>
                 </div>
               )}
             </GlassCard>
 
-            <button onClick={() => navigate("/booking")} className="w-full py-3.5 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all">
+            <button onClick={() => navigate("/booking")} className="w-full py-3.5 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all">
               Back to My Bookings
             </button>
           </div>

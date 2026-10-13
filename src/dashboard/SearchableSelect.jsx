@@ -72,29 +72,29 @@ export default function SearchableSelect({
         onClick={() => !disabled && setOpen((v) => !v)}
         className={`dash-input flex items-center gap-2 text-left ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
       >
-        {LeadingIcon ? <LeadingIcon className="w-4 h-4 text-gold shrink-0" /> : SelIcon ? <SelIcon className="w-4 h-4 text-gold shrink-0" /> : null}
-        <span className={`flex-1 truncate ${selected ? "text-ich-primary" : "text-ich-neutral/50"}`}>
+        {LeadingIcon ? <LeadingIcon className="w-4 h-4 text-accent-strong shrink-0" /> : SelIcon ? <SelIcon className="w-4 h-4 text-accent-strong shrink-0" /> : null}
+        <span className={`flex-1 truncate ${selected ? "text-foreground" : "text-muted"}`}>
           {selected ? selected.label : placeholder}
         </span>
         {allowClear && selected && String(value) !== "" ? (
-          <X className="w-3.5 h-3.5 text-ich-neutral/50 hover:text-ich-primary shrink-0" onClick={(e) => { e.stopPropagation(); onChange(""); }} />
+          <X className="w-3.5 h-3.5 text-muted hover:text-foreground shrink-0" onClick={(e) => { e.stopPropagation(); onChange(""); }} />
         ) : (
-          <ChevronDown className={`w-4 h-4 text-ich-neutral/50 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`w-4 h-4 text-muted shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
         )}
       </button>
 
       {open && (
-        <div className={`absolute z-50 w-full min-w-[180px] bg-white rounded-xl border border-ich-primary/15 shadow-xl overflow-hidden ${dropUp ? "bottom-full mb-1.5" : "mt-1.5"}`}>
-          <div className="p-2 border-b border-ich-primary/10">
+        <div className={`absolute z-50 w-full min-w-[180px] bg-white rounded-xl border border-foreground/15 shadow-xl overflow-hidden ${dropUp ? "bottom-full mb-1.5" : "mt-1.5"}`}>
+          <div className="p-2 border-b border-border">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-ich-neutral/40 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 ref={inputRef}
                 value={q}
                 onChange={(e) => { setQ(e.target.value); setActive(0); }}
                 onKeyDown={onKeyDown}
                 placeholder={searchPlaceholder}
-                className="w-full h-8 pl-8 pr-2 text-sm bg-ich-primary/[0.03] rounded-lg outline-none border border-transparent focus:border-ich-gold/40 text-ich-primary placeholder:text-ich-neutral/40"
+                className="w-full h-8 pl-8 pr-2 text-sm bg-surface-2 rounded-lg outline-none border border-transparent focus:border-accent/40 text-foreground placeholder:text-muted"
               />
             </div>
           </div>
@@ -110,16 +110,16 @@ export default function SearchableSelect({
                     aria-selected={isSel}
                     onMouseEnter={() => setActive(i)}
                     onClick={() => pick(o)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 min-h-[40px] text-sm text-left transition-colors ${i === active ? "bg-ich-gold/10" : ""} ${isSel ? "text-gold font-medium" : "text-ich-primary"}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 min-h-[40px] text-sm text-left transition-colors ${i === active ? "bg-accent/10" : ""} ${isSel ? "text-accent-strong font-medium" : "text-foreground"}`}
                   >
-                    {Icon && <Icon className="w-4 h-4 shrink-0 text-gold" />}
+                    {Icon && <Icon className="w-4 h-4 shrink-0 text-accent-strong" />}
                     <span className="flex-1 truncate">{o.label}</span>
-                    {isSel && <Check className="w-4 h-4 text-gold shrink-0" />}
+                    {isSel && <Check className="w-4 h-4 text-accent-strong shrink-0" />}
                   </button>
                 </li>
               );
             }) : (
-              <li className="px-3 py-6 text-center text-sm text-ich-neutral/50">No matches</li>
+              <li className="px-3 py-6 text-center text-sm text-muted">No matches</li>
             )}
           </ul>
         </div>

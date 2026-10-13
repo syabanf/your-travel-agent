@@ -75,8 +75,7 @@ const HEADER = `
 <header class="nav" id="nav">
   <div class="wrap nav__in">
     <a class="brand" href="index.html">
-      <span class="brand__mark"><svg class="i"><use href="#i-plane"/></svg></span>
-      <span class="brand__text">Icon Holiday<small>Indonesia</small></span>
+      <img class="brand__logo" src="assets/icon-holiday-logo.webp" width="426" height="184" alt="Icon Holiday" draggable="false">
     </a>
     <nav class="nav__links" id="navLinks" aria-label="Menu utama">
       ${NAV.map((n) => `<a href="${n.href}"${n.href === here ? ' aria-current="page" class="is-active"' : ""}>${n.label}</a>`).join("")}
@@ -93,8 +92,7 @@ const FOOTER = `
   <div class="wrap foot__in">
     <div class="foot__brand">
       <a class="brand brand--light" href="index.html">
-        <span class="brand__mark"><svg class="i"><use href="#i-plane"/></svg></span>
-        <span class="brand__text">Icon Holiday<small>Indonesia</small></span>
+        <img class="brand__logo" src="assets/icon-holiday-logo.webp" width="426" height="184" alt="Icon Holiday" draggable="false">
       </a>
       <p>Biro perjalanan wisata untuk tour, tiket, visa, hotel dan cruise — dengan kantor di Medan dan Jakarta.</p>
       <div class="foot__socials">

@@ -253,20 +253,20 @@ export default function TripWizard() {
       {/* Header + progress */}
       <div className="px-6 pt-4 pb-3">
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={back} aria-label="Go back" className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-ich-neutral hover:text-ich-primary transition-colors">
+          <button onClick={back} aria-label="Go back" className="w-10 h-10 bg-card shadow-card rounded-xl flex items-center justify-center text-muted hover:text-foreground transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-display font-semibold text-ich-primary">{meta.title}</h1>
-            <p className="text-xs text-ich-neutral mt-0.5">{meta.subtitle}</p>
+            <h1 className="text-xl font-display font-semibold text-foreground">{meta.title}</h1>
+            <p className="text-xs text-muted mt-0.5">{meta.subtitle}</p>
           </div>
           {key === "discover" && (
-            <button onClick={() => setStep(1)} className="text-xs text-gold font-medium">Skip</button>
+            <button onClick={() => setStep(1)} className="text-xs text-accent-strong font-medium">Skip</button>
           )}
         </div>
         <div className="flex gap-1.5">
           {Array.from({ length: PLANNING_STEPS }).map((_, i) => (
-            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= Math.min(step, PLANNING_STEPS - 1) ? "bg-ich-gold" : "bg-ich-primary/10"}`} />
+            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= Math.min(step, PLANNING_STEPS - 1) ? "bg-accent-strong" : "bg-surface"}`} />
           ))}
         </div>
       </div>
@@ -289,7 +289,7 @@ export default function TripWizard() {
               <div className="space-y-5 pt-1">
                 {liked.length > 0 && (
                   <div>
-                    <p className="text-[10px] text-gold uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                    <p className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 flex items-center gap-1.5">
                       <Heart className="w-3 h-3" fill="currentColor" /> Your references
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -300,7 +300,7 @@ export default function TripWizard() {
                           <button
                             key={d.id}
                             onClick={() => update("destination", label)}
-                            className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${active ? "glass-gold text-gold" : "glass-light text-ich-neutral hover:text-ich-primary"}`}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${active ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted hover:text-foreground"}`}
                           >
                             <span>{d.emoji}</span> {d.name}
                           </button>
@@ -310,14 +310,14 @@ export default function TripWizard() {
                   </div>
                 )}
                 <GlassCard className="p-4">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Destination</label>
+                  <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Destination</label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/50" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-strong/50" />
                     <Input
                       value={form.destination}
                       onChange={(e) => update("destination", e.target.value)}
                       placeholder="City, country, or island"
-                      className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/40 rounded-xl h-11 pl-10"
+                      className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11 pl-10"
                     />
                   </div>
                 </GlassCard>
@@ -326,58 +326,58 @@ export default function TripWizard() {
 
             {key === "dates" && (
               <GlassCard className="p-4">
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Dates</label>
+                <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Travel Dates</label>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[10px] text-ich-neutral/60 mb-1">From</p>
+                    <p className="text-[10px] text-muted mb-1">From</p>
                     <DateTimePicker type="date" value={form.start_date} onChange={(v) => update("start_date", v)} label="Departure" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-ich-neutral/60 mb-1">To</p>
-                    <DateTimePicker type="date" value={form.end_date} onChange={(v) => update("end_date", v)} label="Return" />
+                    <p className="text-[10px] text-muted mb-1">To</p>
+                    <DateTimePicker type="date" value={form.end_date} onChange={(v) => update("end_date", v)} label="Return" min={form.start_date} />
                   </div>
                 </div>
-                <p className="text-[11px] text-ich-neutral/60 mt-3">Not sure yet? Skip — we'll plan a 4-day trip.</p>
+                <p className="text-[11px] text-muted mt-3">Not sure yet? Skip — we'll plan a 4-day trip.</p>
               </GlassCard>
             )}
 
             {key === "details" && (
               <div className="space-y-4">
                 <GlassCard className="p-4">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travelers</label>
+                  <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Travelers</label>
                   <div className="flex items-center gap-4">
-                    <button onClick={() => update("travelers", Math.max(1, Number(form.travelers) - 1))} className="w-10 h-10 glass-light rounded-xl text-ich-primary text-lg font-semibold">−</button>
+                    <button onClick={() => update("travelers", Math.max(1, Number(form.travelers) - 1))} className="w-10 h-10 bg-card shadow-card rounded-xl text-foreground text-lg font-semibold">−</button>
                     <div className="flex items-center gap-2 flex-1 justify-center">
-                      <Users className="w-4 h-4 text-gold" />
-                      <span className="text-lg font-display font-semibold text-ich-primary">{form.travelers}</span>
+                      <Users className="w-4 h-4 text-accent-strong" />
+                      <span className="text-lg font-display font-semibold text-foreground">{form.travelers}</span>
                     </div>
-                    <button onClick={() => update("travelers", Number(form.travelers) + 1)} className="w-10 h-10 glass-light rounded-xl text-ich-primary text-lg font-semibold">+</button>
+                    <button onClick={() => update("travelers", Number(form.travelers) + 1)} className="w-10 h-10 bg-card shadow-card rounded-xl text-foreground text-lg font-semibold">+</button>
                   </div>
                 </GlassCard>
 
                 <GlassCard className="p-4">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Trip Type</label>
+                  <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Trip Type</label>
                   <div className="flex flex-wrap gap-2">
                     {tripTypes.map((t) => (
-                      <button key={t} onClick={() => update("trip_type", t)} className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${form.trip_type === t ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{t}</button>
+                      <button key={t} onClick={() => update("trip_type", t)} className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${form.trip_type === t ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>{t}</button>
                     ))}
                   </div>
                 </GlassCard>
 
                 <GlassCard className="p-4">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Travel Style</label>
+                  <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Travel Style</label>
                   <div className="flex flex-wrap gap-2">
                     {travelStyles.map((s) => (
-                      <button key={s} onClick={() => update("travel_style", s)} className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${form.travel_style === s ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{s}</button>
+                      <button key={s} onClick={() => update("travel_style", s)} className={`px-3.5 py-2 rounded-xl text-xs font-medium capitalize transition-all ${form.travel_style === s ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>{s}</button>
                     ))}
                   </div>
                 </GlassCard>
 
                 <GlassCard className="p-4">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-2.5 block">Pace</label>
+                  <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2.5 block">Pace</label>
                   <div className="grid grid-cols-3 gap-2">
                     {paceOptions.map((p) => (
-                      <button key={p} onClick={() => update("pace", p)} className={`py-2.5 rounded-xl text-xs font-medium capitalize transition-all ${form.pace === p ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{p}</button>
+                      <button key={p} onClick={() => update("pace", p)} className={`py-2.5 rounded-xl text-xs font-medium capitalize transition-all ${form.pace === p ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>{p}</button>
                     ))}
                   </div>
                 </GlassCard>
@@ -386,14 +386,14 @@ export default function TripWizard() {
 
             {key === "budget" && (
               <GlassCard className="p-4">
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1.5 block">Total Budget</label>
+                <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-1.5 block">Total Budget</label>
                 <div className="relative mb-3">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gold/70">Rp</span>
-                  <Input type="number" value={form.budget_total} onChange={(e) => update("budget_total", e.target.value)} placeholder="Total" className="bg-white/5 border-white/10 text-ich-white placeholder:text-ich-neutral/40 rounded-xl h-11 pl-10" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-accent-strong/70">Rp</span>
+                  <Input type="number" value={form.budget_total} onChange={(e) => update("budget_total", e.target.value)} placeholder="Total" className="bg-surface-2 border-border text-foreground placeholder:text-muted rounded-xl h-11 pl-10" />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {budgetChips.map((b) => (
-                    <button key={b} onClick={() => update("budget_total", String(b))} className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${String(b) === form.budget_total ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{formatIDRCompact(b)}</button>
+                    <button key={b} onClick={() => update("budget_total", String(b))} className={`px-3 py-2 rounded-xl text-xs font-medium transition-all ${String(b) === form.budget_total ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>{formatIDRCompact(b)}</button>
                   ))}
                 </div>
               </GlassCard>
@@ -409,15 +409,15 @@ export default function TripWizard() {
                   <Row icon={Plane} label="Budget" value={form.budget_total ? formatIDR(form.budget_total) : "Estimate with AI"} />
                 </GlassCard>
                 {liked.length > 0 && (
-                  <p className="text-[11px] text-ich-neutral/70">
+                  <p className="text-[11px] text-muted">
                     Inspired by {liked.map((d) => d.name).join(", ")}.
                   </p>
                 )}
-                <button onClick={handleGenerate} disabled={busy} className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 btn-primary disabled:opacity-50">
+                <button onClick={handleGenerate} disabled={busy} className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 disabled:opacity-50 sheen">
                   {busy === "ai" ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
                   {busy === "ai" ? "Building your trip…" : "Generate full trip with AI"}
                 </button>
-                <button onClick={handleCreate} disabled={busy} className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-all disabled:opacity-50">
+                <button onClick={handleCreate} disabled={busy} className="w-full py-3.5 bg-card shadow-card rounded-2xl text-sm font-medium text-foreground hover:bg-surface transition-all disabled:opacity-50 lift">
                   {busy === "save" ? "Creating…" : "Create without AI"}
                 </button>
               </div>
@@ -426,18 +426,18 @@ export default function TripWizard() {
             {key === "book" && (
               <div>
                 <GlassCard className="p-4 mb-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl glass-gold flex items-center justify-center flex-shrink-0">
-                    <Check className="w-5 h-5 text-gold" />
+                  <div className="w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center flex-shrink-0">
+                    <Check className="w-5 h-5 text-accent-strong" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-ich-primary">Trip created!</p>
-                    <p className="text-xs text-ich-neutral">Add flights & stays for {cityOnly}, or do it later.</p>
+                    <p className="text-sm font-semibold text-foreground">Trip created!</p>
+                    <p className="text-xs text-muted">Add flights & stays for {cityOnly}, or do it later.</p>
                   </div>
                 </GlassCard>
                 <div className="-mx-6">
                   <OTASearch defaultTo={cityOnly} tripId={createdTripId} defaultTab="flight" />
                 </div>
-                <button onClick={() => navigate(`/itinerary/${createdTripId}`)} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2">
+                <button onClick={() => navigate(`/itinerary/${createdTripId}`)} className="w-full py-3.5 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2">
                   View my trip <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -448,11 +448,11 @@ export default function TripWizard() {
       {/* Footer nav (planning steps only) */}
       {step < STEPS.indexOf("review") && (
         <div className="px-6 mt-6 flex gap-3">
-          <button onClick={back} className="px-5 py-3.5 glass-light rounded-2xl text-sm font-medium text-ich-neutral hover:text-ich-primary transition-all">Back</button>
+          <button onClick={back} className="px-5 py-3.5 bg-card shadow-card rounded-2xl text-sm font-medium text-muted hover:text-foreground transition-all lift">Back</button>
           <button
             onClick={next}
             disabled={!canContinue}
-            className="flex-1 py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-40"
+            className="flex-1 py-3.5 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-40"
           >
             {key === "discover" ? "Continue to planning" : "Continue"} <ChevronRight className="w-4 h-4" />
           </button>
@@ -465,12 +465,12 @@ export default function TripWizard() {
 function Row({ icon: Icon, label, value }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4 h-4 text-gold" />
+      <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+        <Icon className="w-4 h-4 text-accent-strong" />
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] text-ich-neutral/60 uppercase tracking-wider">{label}</p>
-        <p className="text-sm font-medium text-ich-primary capitalize truncate">{value}</p>
+        <p className="text-[10px] text-muted uppercase tracking-wider">{label}</p>
+        <p className="text-sm font-medium text-foreground capitalize truncate">{value}</p>
       </div>
     </div>
   );

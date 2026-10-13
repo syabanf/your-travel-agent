@@ -13,6 +13,8 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 import { tripAccess } from "@/lib/payments";
 import { isPlan } from "@/data/tripKinds";
 import ProtectedContent from "@/components/ProtectedContent";
+import TripMemberInfo from "../components/itinerary/TripMemberInfo";
+import { isItineraryOpen, opensOn } from "@/data/membership";
 import { inquiryForTrip } from "@/lib/inquiry";
 
 // Lead pipeline stages, said the way a traveller would understand them.
@@ -173,7 +175,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -181,7 +183,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
   if (!trip) return (
     <div className="animate-fade-in">
       <PageHeader title="Trip not found" showBack />
-      <p className="px-6 text-sm text-ich-neutral/70">This trip is no longer available.</p>
+      <p className="px-6 text-sm text-muted">This trip is no longer available.</p>
     </div>
   );
 
@@ -214,7 +216,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           alt={trip.title}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ich-primary via-ich-primary/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/50 to-transparent" />
         
         {/* Back & Actions */}
         <div className="absolute top-0 left-0 right-0">
@@ -224,15 +226,15 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
             rightAction={
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button aria-label="Trip options" className="w-10 h-10 glass-light rounded-xl flex items-center justify-center text-ich-neutral">
+                  <button aria-label="Trip options" className="w-10 h-10 bg-card shadow-card rounded-xl flex items-center justify-center text-muted">
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="glass border-ich-primary/10 text-ich-primary min-w-[180px]">
-                  <DropdownMenuItem onClick={() => navigate(`/itinerary/${tripId}/edit`)} className="text-ich-primary/80 focus:text-ich-primary focus:bg-ich-primary/5">
+                <DropdownMenuContent className="bg-card shadow-card border-border text-foreground min-w-[180px]">
+                  <DropdownMenuItem onClick={() => navigate(`/itinerary/${tripId}/edit`)} className="text-body focus:text-foreground focus:bg-surface">
                     <Edit className="w-4 h-4 mr-2" /> Edit Trip
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDuplicate} className="text-ich-primary/80 focus:text-ich-primary focus:bg-ich-primary/5">
+                  <DropdownMenuItem onClick={handleDuplicate} className="text-body focus:text-foreground focus:bg-surface">
                     <Copy className="w-4 h-4 mr-2" /> Duplicate
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -244,11 +246,11 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
                         toast("Link copied");
                       }
                     }}
-                    className="text-ich-primary/80 focus:text-ich-primary focus:bg-ich-primary/5"
+                    className="text-body focus:text-foreground focus:bg-surface"
                   >
                     <Share2 className="w-4 h-4 mr-2" /> Share
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDelete} className="text-red-600 focus:text-red-300 focus:bg-red-500/10">
+                  <DropdownMenuItem onClick={handleDelete} className="text-accent-strong focus:text-red-300 focus:bg-accent-soft">
                     <Trash2 className="w-4 h-4 mr-2" /> Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -260,12 +262,12 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         {/* Trip Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 min-w-0">
           {plan ? (
-            <span className="text-[10px] px-2.5 py-1 rounded-full border mb-2 inline-flex items-center gap-1 bg-gold/15 text-gold border-gold/20">
+            <span className="text-[10px] px-2.5 py-1 rounded-full border mb-2 inline-flex items-center gap-1 bg-accent/15 text-accent-strong border-accent/20">
               <Sparkles className="w-3 h-3" /> Trip plan
             </span>
           ) : (
             <span className={`text-[10px] px-2.5 py-1 rounded-full border capitalize mb-2 inline-block ${
-              trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-gold/15 text-gold border-gold/20"
+              trip.status === "active" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20" : "bg-accent/15 text-accent-strong border-accent/20"
             }`}>
               {trip.status}
             </span>
@@ -273,11 +275,11 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           <h1 className="text-2xl font-display font-bold text-white mb-1 truncate">{trip.title}</h1>
           <div className="flex items-center gap-3 text-white/80">
             <span className="flex items-center gap-1 text-xs">
-              <MapPin className="w-3.5 h-3.5 text-gold" /> {trip.destination}
+              <MapPin className="w-3.5 h-3.5 text-accent-strong" /> {trip.destination}
             </span>
             {trip.start_date && (
               <span className="flex items-center gap-1 text-xs">
-                <Calendar className="w-3.5 h-3.5 text-gold" />
+                <Calendar className="w-3.5 h-3.5 text-accent-strong" />
                 {moment(trip.start_date).format("MMM D")} - {moment(trip.end_date).format("MMM D")}
               </span>
             )}
@@ -288,20 +290,20 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 px-6 -mt-2 relative z-10">
         <GlassCard className="p-4 text-center min-w-0">
-          <p className="stat-value text-lg font-display font-bold text-ich-primary">{totalDays}</p>
-          <p className="text-[10px] text-ich-neutral uppercase tracking-wider mt-1">Days</p>
+          <p className="stat-value text-lg font-display font-bold text-foreground">{totalDays}</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mt-1">Days</p>
         </GlassCard>
         <GlassCard className="p-4 text-center min-w-0">
-          <p className="stat-value text-lg font-display font-bold text-gold" title={formatIDR(totalBudget)}>
+          <p className="stat-value text-lg font-display font-bold text-accent-strong" title={formatIDR(totalBudget)}>
             {formatIDRCompact(totalBudget)}
           </p>
-          <p className="text-[10px] text-ich-neutral/60 uppercase tracking-wider mt-1">Budget</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mt-1">Budget</p>
         </GlassCard>
         <GlassCard className="p-4 text-center min-w-0">
-          <p className="stat-value text-lg font-display font-bold text-ich-primary">
+          <p className="stat-value text-lg font-display font-bold text-foreground">
             {completedItems}/{items.length}
           </p>
-          <p className="text-[10px] text-ich-neutral uppercase tracking-wider mt-1">Done</p>
+          <p className="text-[10px] text-muted uppercase tracking-wider mt-1">Done</p>
         </GlassCard>
       </div>
 
@@ -310,19 +312,19 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         <div className="px-6 mt-6">
           <GlassCard className="p-4">
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl glass-gold flex items-center justify-center shrink-0">
-                <Sparkles className="w-4 h-4 text-gold" />
+              <div className="w-9 h-9 rounded-xl bg-accent-soft flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4 text-accent-strong" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ich-primary">This is a proposal, not a booking</p>
-                <p className="text-xs text-ich-neutral leading-relaxed mt-1">
+                <p className="text-sm font-semibold text-foreground">This is a proposal, not a booking</p>
+                <p className="text-xs text-muted leading-relaxed mt-1">
                   {inquiry
                     ? `Our team has your inquiry${INQUIRY_STAGE[inquiry.status] ? ` — ${INQUIRY_STAGE[inquiry.status]}` : ""}. Nothing is reserved until you confirm a quote.`
                     : "Nothing is reserved. Send it to our team and they'll come back with a quote."}
                 </p>
                 <button
                   onClick={() => navigate("/assistant")}
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-gold press"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-accent-strong press"
                 >
                   <MessageCircle className="w-3.5 h-3.5" /> Talk to a travel expert
                 </button>
@@ -336,22 +338,22 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
       {access.locked ? (
         <div className="px-6 mt-8 pb-28">
           <GlassCard className="p-6 text-center">
-            <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6 text-gold" />
+            <div className="w-14 h-14 rounded-2xl bg-accent-soft flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-accent-strong" />
             </div>
-            <h2 className="text-base font-display font-bold text-ich-primary mb-1.5">Trip locked</h2>
-            <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">
+            <h2 className="text-base font-display font-bold text-foreground mb-1.5">Trip locked</h2>
+            <p className="text-sm text-muted leading-relaxed max-w-[280px] mx-auto">
               Your day-by-day itinerary, contacts and travel documents open as soon as this trip
               is paid in full.
             </p>
 
             <div className="mt-6 text-left">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] text-ich-neutral/60 uppercase tracking-wider">Paid so far</span>
-                <span className="text-[11px] text-gold font-medium">{Math.round(access.progress * 100)}%</span>
+                <span className="text-[11px] text-muted uppercase tracking-wider">Paid so far</span>
+                <span className="text-[11px] text-accent-strong font-medium">{Math.round(access.progress * 100)}%</span>
               </div>
               <div
-                className="h-2 rounded-full bg-white/10 overflow-hidden"
+                className="h-2 rounded-full bg-surface overflow-hidden"
                 role="progressbar"
                 aria-valuenow={Math.round(access.progress * 100)}
                 aria-valuemin={0}
@@ -359,16 +361,16 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
                 aria-label="Payment progress"
               >
                 <div
-                  className="h-full rounded-full bg-ich-gold transition-all"
+                  className="h-full rounded-full bg-accent-strong transition-all"
                   style={{ width: `${Math.max(4, access.progress * 100)}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
-                <span className="text-sm text-ich-neutral/70">Balance remaining</span>
-                <span className="text-base font-display font-bold text-gold">{formatIDR(access.balance)}</span>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                <span className="text-sm text-muted">Balance remaining</span>
+                <span className="text-base font-display font-bold text-accent-strong">{formatIDR(access.balance)}</span>
               </div>
               {access.booking?.balance_due_date && (
-                <p className="text-[11px] text-ich-neutral/50 mt-1.5">
+                <p className="text-[11px] text-muted mt-1.5">
                   Due by {moment(access.booking.balance_due_date).format("MMM D, YYYY")}
                 </p>
               )}
@@ -376,7 +378,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
 
             <button
               onClick={() => navigate(`/booking/${access.booking.id}/checkout`)}
-              className="w-full py-3.5 mt-6 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 mt-6 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2"
             >
               <CreditCard className="w-4 h-4" /> Pay {formatIDR(access.balance)} to unlock
             </button>
@@ -385,24 +387,24 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           {/* A taste of what's inside, without giving it away. */}
           {items.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-sm font-semibold text-ich-primary tracking-wide uppercase mb-3">
+              <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase mb-3">
                 {items.length} activities waiting
               </h3>
               <GlassCard className="p-2" aria-label={`${items.length} activities, locked until paid`}>
                 {items.slice(0, 3).map((it, i) => (
                   <div key={it.id} className="flex items-center gap-3 px-3 py-2.5">
-                    <div className="w-8 h-8 rounded-lg glass-light flex items-center justify-center text-[11px] text-ich-neutral shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-card shadow-card flex items-center justify-center text-[11px] text-muted shrink-0">
                       D{it.day_number || i + 1}
                     </div>
                     {/* A placeholder bar, not a blurred title — CSS blur still
                         leaves the real text in the DOM for anyone who looks. */}
                     <div className="min-w-0 flex-1" aria-hidden="true">
                       <div
-                        className="h-2.5 rounded-full bg-ich-primary/10"
+                        className="h-2.5 rounded-full bg-surface"
                         style={{ width: `${55 + ((i * 17) % 35)}%` }}
                       />
                     </div>
-                    <Lock className="w-3.5 h-3.5 text-ich-neutral/40 shrink-0" />
+                    <Lock className="w-3.5 h-3.5 text-muted shrink-0" />
                   </div>
                 ))}
               </GlassCard>
@@ -411,44 +413,46 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         </div>
       ) : (
       <>
+      <TripMemberInfo trip={trip} />
+
       {/* Travelers */}
       <div className="px-6 mt-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ich-primary tracking-wide uppercase">Travelers ({members.length})</h2>
-          <button onClick={() => setShowInvite((v) => !v)} className="flex items-center gap-1 text-xs text-gold">
+          <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">Travelers ({members.length})</h2>
+          <button onClick={() => setShowInvite((v) => !v)} className="flex items-center gap-1 text-xs text-accent-strong">
             <Plus className="w-4 h-4" /> Invite
           </button>
         </div>
         <GlassCard className="p-2">
           {members.length === 0 && !showInvite && (
-            <p className="text-sm text-ich-neutral/70 px-3 py-3">No travelers yet — invite someone to join this trip.</p>
+            <p className="text-sm text-muted px-3 py-3">No travelers yet — invite someone to join this trip.</p>
           )}
           {members.map((m) => (
             <div key={m.id} className="flex items-center gap-3 px-3 py-2.5 group">
-              <div className="w-9 h-9 rounded-full glass-gold text-gold flex items-center justify-center font-display font-semibold shrink-0 uppercase">{(m.name || "?").trim().charAt(0)}</div>
+              <div className="w-9 h-9 rounded-full bg-accent-soft text-accent-strong flex items-center justify-center font-display font-semibold shrink-0 uppercase">{(m.name || "?").trim().charAt(0)}</div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-ich-primary truncate">{m.name}</p>
-                <p className="text-[11px] text-ich-neutral truncate capitalize">{m.role} · {m.status}</p>
+                <p className="text-sm font-medium text-foreground truncate">{m.name}</p>
+                <p className="text-[11px] text-muted truncate capitalize">{m.role} · {m.status}</p>
               </div>
-              <button onClick={() => removeMember(m)} aria-label="Remove traveler" className="w-9 h-9 rounded-lg flex items-center justify-center text-ich-neutral/60 hover:text-red-600 hover:bg-red-500/10 transition-colors">
+              <button onClick={() => removeMember(m)} aria-label="Remove traveler" className="w-9 h-9 rounded-lg flex items-center justify-center text-muted hover:text-accent-strong hover:bg-accent-soft transition-colors">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
           {showInvite && (
-            <div className="p-3 mt-1 border-t border-ich-primary/10 space-y-2">
-              <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} placeholder="Name" aria-label="Guest name" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none" />
-              <input value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} placeholder="Email (optional)" aria-label="Guest email" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none" />
-              <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} aria-label="Guest role" className="w-full glass-light rounded-xl px-3 py-2.5 text-sm text-ich-primary outline-none capitalize">
+            <div className="p-3 mt-1 border-t border-border space-y-2">
+              <input value={invite.name} onChange={(e) => setInvite((p) => ({ ...p, name: e.target.value }))} placeholder="Name" aria-label="Guest name" className="w-full bg-card shadow-card rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted outline-none" />
+              <input value={invite.email} onChange={(e) => setInvite((p) => ({ ...p, email: e.target.value }))} placeholder="Email (optional)" aria-label="Guest email" className="w-full bg-card shadow-card rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted outline-none" />
+              <select value={invite.role} onChange={(e) => setInvite((p) => ({ ...p, role: e.target.value }))} aria-label="Guest role" className="w-full bg-card shadow-card rounded-xl px-3 py-2.5 text-sm text-foreground outline-none capitalize">
                 <option value="traveler">Traveler</option>
                 <option value="organizer">Organizer</option>
                 <option value="guest">Guest</option>
               </select>
               <div className="flex gap-2 pt-1">
-                <button onClick={addMember} disabled={savingInvite} className="flex-1 py-2.5 btn-primary rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+                <button onClick={addMember} disabled={savingInvite} className="flex-1 py-2.5 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
                   {savingInvite ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Send invite
                 </button>
-                <button onClick={() => setShowInvite(false)} className="px-4 py-2.5 glass-light rounded-xl text-sm text-ich-neutral">Cancel</button>
+                <button onClick={() => setShowInvite(false)} className="px-4 py-2.5 bg-card shadow-card rounded-xl text-sm text-muted">Cancel</button>
               </div>
             </div>
           )}
@@ -462,7 +466,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           <button
             onClick={handleGenerateActivities}
             disabled={aiGenerating}
-            className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 glass-gold border border-gold text-gold hover:glow-gold mb-4"
+            className="w-full py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 bg-accent-strong border border-accent text-white shadow-glow hover:bg-accent-dark mb-4 sheen"
           >
             {aiGenerating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
             {aiGenerating ? "Generating activities..." : "✨ Generate Activities with AI"}
@@ -470,13 +474,13 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         )}
 
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-ich-primary tracking-wide uppercase">Itinerary</h2>
+          <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">Itinerary</h2>
           <div className="flex items-center gap-3">
             {items.length > 0 && (
               <button
                 onClick={handleGenerateActivities}
                 disabled={aiGenerating}
-                className="flex items-center gap-1 text-xs text-gold disabled:opacity-50"
+                className="flex items-center gap-1 text-xs text-accent-strong disabled:opacity-50"
               >
                 {aiGenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
                 {aiGenerating ? "Generating..." : "AI Generate"}
@@ -484,7 +488,7 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
             )}
             <Link 
               to={`/itinerary/${tripId}/add`}
-              className="flex items-center gap-1.5 text-xs text-gold"
+              className="flex items-center gap-1.5 text-xs text-accent-strong"
             >
               <Plus className="w-4 h-4" /> Add Activity
             </Link>
@@ -492,6 +496,34 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
         </div>
 
         {(() => {
+          // A guided trip shows only the day-by-day overview until departure
+          // day; the operational detail (times, meeting points) opens on H.
+          if (trip.tour_leader && !isItineraryOpen(trip)) {
+            return (
+              <div className="space-y-3">
+                <p className="flex items-center gap-2 rounded-2xl bg-info-soft px-4 py-3 text-xs font-semibold text-info">
+                  <Lock className="size-4 shrink-0" aria-hidden="true" />
+                  Detailed times and meeting points open on {moment(opensOn(trip, 0)).format("D MMMM YYYY")}.
+                </p>
+                <ol className="stagger space-y-2">
+                  {Object.entries(dayGroups).map(([day, dayItems]) => (
+                    <li key={day} className="flex items-start gap-3 rounded-2xl bg-card p-3 shadow-card">
+                      <span className="flex size-10 shrink-0 flex-col items-center justify-center rounded-xl bg-accent-soft text-accent-strong">
+                        <span className="text-[10px] font-semibold leading-none">Day</span>
+                        <span className="text-sm font-bold leading-tight">{day}</span>
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted">{moment(trip.start_date).add(day - 1, "days").format("ddd, D MMM")}</p>
+                        <p className="text-sm font-medium text-foreground">
+                          {dayItems.length ? dayItems.map((i) => i.activity_name).join(" · ") : "Free day"}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            );
+          }
           const days = Object.entries(dayGroups).map(([day, dayItems]) => (
             <DayTimeline
               key={day}

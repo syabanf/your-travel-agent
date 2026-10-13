@@ -20,6 +20,7 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 const EMPTY = {
   name: "", type: "flight", country: "", contact_person: "", contact_email: "", contact_phone: "",
@@ -31,7 +32,7 @@ const TYPES = ["flight", "hotel", "activity", "transport", "dmc"];
 const TYPE_BADGE = {
   flight: "bg-blue-100 text-blue-700",
   hotel: "bg-emerald-100 text-emerald-700",
-  activity: "bg-ich-gold/10 text-gold",
+  activity: "bg-accent/10 text-accent-strong",
   transport: "bg-indigo-100 text-indigo-700",
   dmc: "bg-slate-200 text-slate-700",
 };
@@ -119,8 +120,8 @@ export default function DashboardSuppliers() {
   scoped.forEach((s) => { const k = s.type || "dmc"; if (!byType[k]) byType[k] = { name: cap(k), value: 0 }; byType[k].value += 1; });
   const dataType = Object.values(byType).sort((a, b) => b.value - a.value);
   const statusMix = [
-    { name: "Active", value: scoped.filter((s) => (s.status || "active") === "active").length, color: "#10B981" },
-    { name: "Inactive", value: scoped.filter((s) => (s.status || "active") !== "active").length, color: "#94A3B8" },
+    { name: "Active", value: scoped.filter((s) => (s.status || "active") === "active").length, color: BRAND.success },
+    { name: "Inactive", value: scoped.filter((s) => (s.status || "active") !== "active").length, color: BRAND.chartMuted },
   ];
 
   const q = query.trim().toLowerCase();
@@ -152,17 +153,17 @@ export default function DashboardSuppliers() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Suppliers</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Manage partner airlines, hotels, DMCs & their commissions.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Suppliers</h1>
+          <p className="text-sm text-muted mt-0.5">Manage partner airlines, hotels, DMCs & their commissions.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="suppliers" data={items} />
-            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press">
+            <button onClick={exportCSV} className="rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 border border-foreground/15 text-foreground hover:bg-surface press">
               <Download className="w-4 h-4" /> Export CSV
             </button>
             {can(role, "suppliers", "create") && (
-              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+              <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen">
                 <Plus className="w-4 h-4" /> Add supplier
               </button>
             )}
@@ -189,10 +190,10 @@ export default function DashboardSuppliers() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
+        <div className="bg-card rounded-card p-6 shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit supplier" : "New supplier"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-foreground">{editing.id ? "Edit supplier" : "New supplier"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
 
           <div className="space-y-3 max-w-2xl">
@@ -239,21 +240,21 @@ export default function DashboardSuppliers() {
             </Row2>
             <FieldD label="Notes"><textarea value={editing.notes} onChange={(e) => upd("notes", e.target.value)} className="dash-input" rows={3} placeholder="Contract terms, account manager…" /></FieldD>
             <div className="flex gap-2 pt-3">
-              <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
             </div>
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-5"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-5 shadow-card"><SkeletonRows rows={6} /></div>
       ) : (
         <>
         <ReadOnlyBanner resource="suppliers" />
         <div className="flex flex-wrap gap-2 mb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
             <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search suppliers…" />
           </div>
           <SearchableSelect
@@ -298,7 +299,7 @@ export default function DashboardSuppliers() {
             className="max-w-[160px]"
           />
           {(query || typeF !== "all" || statusF !== "all" || range !== "all" || sort !== "newest") && (
-            <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+            <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSort("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
               <X className="w-3.5 h-3.5" /> Clear
             </button>
           )}
@@ -307,16 +308,16 @@ export default function DashboardSuppliers() {
         {view === "table" ? (
           <DataTable
             columns={[
-              { key: "name", label: "Supplier", className: "font-medium text-ich-primary", render: (s) => (
+              { key: "name", label: "Supplier", className: "font-medium text-foreground", render: (s) => (
                 <span className="flex items-center gap-2.5 min-w-0">
-                  <span className="w-8 h-8 rounded-full bg-ich-gold/10 text-gold flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(s.name || "?").trim().charAt(0)}</span>
-                  <span className="min-w-0"><span className="block truncate">{s.name}</span><span className="block text-[11px] text-ich-neutral/60 truncate">{s.country || "—"}</span></span>
+                  <span className="w-8 h-8 rounded-full bg-accent/10 text-accent-strong flex items-center justify-center text-xs font-display font-semibold uppercase shrink-0">{(s.name || "?").trim().charAt(0)}</span>
+                  <span className="min-w-0"><span className="block truncate">{s.name}</span><span className="block text-[11px] text-muted truncate">{s.country || "—"}</span></span>
                 </span>
               ) },
               { key: "type", label: "Type", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.dmc}`}>{s.type || "dmc"}</span> },
               { key: "status", label: "Status", render: (s) => <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.status || "active"}</span> },
               { key: "contact", label: "Contact", render: (s) => s.contact_email || s.contact_phone || "—" },
-              { key: "commission", label: "Commission", align: "right", className: "text-right font-semibold text-gold", render: (s) => `${Number(s.commission_rate || 0)}%` },
+              { key: "commission", label: "Commission", align: "right", className: "text-right font-semibold text-accent-strong", render: (s) => `${Number(s.commission_rate || 0)}%` },
             ]}
             rows={pg.pageItems}
             onRowClick={(s) => navigate(`/dashboard/suppliers/${s.id}`)}
@@ -325,10 +326,10 @@ export default function DashboardSuppliers() {
         ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
           {pg.pageItems.map((s) => (
-            <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-white rounded-2xl border border-ich-primary/10 p-5 group hover:shadow-md transition-shadow press">
+            <Link key={s.id} to={`/dashboard/suppliers/${s.id}`} className="block bg-card rounded-card p-5 group hover:shadow-md transition-shadow press shadow-card lift">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <h3 className="font-display font-semibold text-ich-primary truncate">{s.name}</h3>
+                  <h3 className="font-display font-semibold text-foreground truncate">{s.name}</h3>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${TYPE_BADGE[s.type] || TYPE_BADGE.dmc}`}>{s.type || "dmc"}</span>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{s.status || "active"}</span>
@@ -337,24 +338,24 @@ export default function DashboardSuppliers() {
                 {(can(role, "suppliers", "edit") || can(role, "suppliers", "delete")) && (
                   <div className="flex gap-1 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "suppliers", "edit") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(s); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(s); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-foreground hover:text-accent-strong press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {can(role, "suppliers", "delete") && (
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(s); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(s); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-accent-soft flex items-center justify-center text-accent-strong press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}
               </div>
 
-              <p className="text-xs text-ich-neutral mt-3 flex items-center gap-1.5 truncate">
+              <p className="text-xs text-muted mt-3 flex items-center gap-1.5 truncate">
                 <Globe className="w-3 h-3 shrink-0" /> {s.country || "No country"}
               </p>
 
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-ich-primary/5">
-                <span className="text-sm text-ich-primary flex items-center gap-1">
-                  <Star className="w-3.5 h-3.5 text-gold fill-gold" /> {Number(s.rating || 0).toFixed(1)}
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                <span className="text-sm text-foreground flex items-center gap-1">
+                  <Star className="w-3.5 h-3.5 text-accent-strong fill-accent" /> {Number(s.rating || 0).toFixed(1)}
                 </span>
-                <span className="text-sm font-semibold text-gold">{Number(s.commission_rate || 0)}% comm.</span>
+                <span className="text-sm font-semibold text-accent-strong">{Number(s.commission_rate || 0)}% comm.</span>
               </div>
 
               {s.contact_phone && (
@@ -374,12 +375,12 @@ export default function DashboardSuppliers() {
                 title="No suppliers yet"
                 hint="Add partner airlines, hotels and DMCs to track their commissions."
                 action={can(role, "suppliers", "create") && (
-                  <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press"><Plus className="w-4 h-4" /> Add supplier</button>
+                  <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 press sheen"><Plus className="w-4 h-4" /> Add supplier</button>
                 )}
               />
             </div>
           )}
-          {items.length > 0 && sorted.length === 0 && <p className="text-ich-neutral/60 text-center py-10 col-span-full">No suppliers match your filters.</p>}
+          {items.length > 0 && sorted.length === 0 && <p className="text-muted text-center py-10 col-span-full">No suppliers match your filters.</p>}
         </div>
         )}
         <Pagination page={pg.page} pageCount={pg.pageCount} total={pg.total} pageSize={pg.pageSize} onPage={pg.setPage} noun="suppliers" />
@@ -390,11 +391,11 @@ export default function DashboardSuppliers() {
 }
 
 const Kpi = ({ icon: Icon, label, value }) => (
-  <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 flex items-center gap-4 min-w-0">
-    <div className="w-11 h-11 rounded-xl bg-ich-gold/10 text-gold flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
+  <div className="bg-card rounded-card p-5 flex items-center gap-4 min-w-0 shadow-card">
+    <div className="w-11 h-11 rounded-xl bg-accent/10 text-accent-strong flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>
     <div className="min-w-0">
-      <div className="text-xs text-ich-neutral uppercase tracking-wider">{label}</div>
-      <div className="stat-value text-xl font-display font-bold text-ich-primary">{value}</div>
+      <div className="text-xs text-muted uppercase tracking-wider">{label}</div>
+      <div className="stat-value text-xl font-display font-bold text-foreground">{value}</div>
     </div>
   </div>
 );
@@ -402,7 +403,7 @@ const Kpi = ({ icon: Icon, label, value }) => (
 const Row2 = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
 const FieldD = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

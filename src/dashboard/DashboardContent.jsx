@@ -17,20 +17,21 @@ import { ChartCard, CategoryBars, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 
 const EMPTY = { type: "page", status: "draft", title: "", slug: "", excerpt: "", body: "", cover_image: "", order: "" };
 
 const TYPE_META = {
-  page: { label: "Page", pill: "bg-ich-primary/10 text-ich-neutral" },
+  page: { label: "Page", pill: "bg-surface text-muted" },
   faq: { label: "FAQ", pill: "bg-blue-500/15 text-blue-600" },
-  announcement: { label: "Announcement", pill: "bg-ich-gold/10 text-gold" },
+  announcement: { label: "Announcement", pill: "bg-accent/10 text-accent-strong" },
   hero: { label: "Hero", pill: "bg-indigo-500/15 text-indigo-600" },
 };
 
 const STATUS_META = {
   published: { label: "Published", pill: "bg-emerald-500/15 text-emerald-600" },
-  draft: { label: "Draft", pill: "bg-ich-primary/10 text-ich-neutral" },
+  draft: { label: "Draft", pill: "bg-surface text-muted" },
 };
 
 const slugify = (s) =>
@@ -158,7 +159,7 @@ export default function DashboardContent() {
   const byType = Object.keys(TYPE_META)
     .map((t) => ({ name: TYPE_META[t].label, value: typeCount[t] || 0 }))
     .filter((d) => d.value);
-  const STATUS_COLOR = { published: "#10B981", draft: "#C99A3F" };
+  const STATUS_COLOR = { published: BRAND.success, draft: BRAND.warning };
   const byStatus = Object.keys(statusCount).map((s) => ({
     name: STATUS_META[s]?.label || (s ? s[0].toUpperCase() + s.slice(1) : s),
     value: statusCount[s],
@@ -169,14 +170,14 @@ export default function DashboardContent() {
     <div className="p-4 sm:p-6 lg:p-8">
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Content</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Manage app pages, FAQs, announcements &amp; hero copy.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Content</h1>
+          <p className="text-sm text-muted mt-0.5">Manage app pages, FAQs, announcements &amp; hero copy.</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="content" data={items} />
             {can(role, "content", "create") && (
-              <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+              <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2 sheen">
                 <Plus className="w-4 h-4" /> New page
               </button>
             )}
@@ -192,10 +193,10 @@ export default function DashboardContent() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 max-w-2xl">
+        <div className="bg-card rounded-card p-6 max-w-2xl shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit content" : "New content"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-foreground">{editing.id ? "Edit content" : "New content"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -241,21 +242,21 @@ export default function DashboardContent() {
             <Fld label="Cover image URL"><input value={editing.cover_image} onChange={(e) => upd("cover_image", e.target.value)} className="dash-input" placeholder="https://…" /></Fld>
             <Fld label="Body"><textarea value={editing.body} onChange={(e) => upd("body", e.target.value)} className="dash-input !h-auto py-2" rows={6} placeholder="Full content…" /></Fld>
             <div className="flex gap-2 pt-3">
-              <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
             </div>
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-4 shadow-card"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <ReadOnlyBanner resource="content" />
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ich-neutral/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
               <input
                 className="dash-input pl-9"
                 placeholder="Search content…"
@@ -301,17 +302,17 @@ export default function DashboardContent() {
               className="max-w-[160px]"
             />
             {(query || typeF !== "all" || statusF !== "all" || range !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setTypeF("all"); setStatusF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
           </div>
 
           {selected.size > 0 && canDelete && (
-            <div className="flex items-center gap-3 bg-white rounded-xl border border-ich-primary/10 px-4 py-2.5 text-sm">
-              <span className="font-medium text-ich-primary">{selected.size} selected</span>
-              <span className="text-ich-neutral/40">·</span>
-              <button onClick={deleteSelected} className="font-semibold text-red-600 hover:text-red-700 flex items-center gap-1.5">
+            <div className="flex items-center gap-3 bg-card rounded-xl px-4 py-2.5 text-sm shadow-card">
+              <span className="font-medium text-foreground">{selected.size} selected</span>
+              <span className="text-muted">·</span>
+              <button onClick={deleteSelected} className="font-semibold text-accent-strong hover:text-accent-strong flex items-center gap-1.5">
                 <Trash2 className="w-4 h-4" /> Delete selected
               </button>
             </div>
@@ -323,38 +324,38 @@ export default function DashboardContent() {
             const sm = STATUS_META[p.status] || STATUS_META.draft;
             const isSel = selected.has(p.id);
             return (
-              <div key={p.id} onClick={() => navigate(`/dashboard/content/${p.id}`)} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow cursor-pointer press">
+              <div key={p.id} onClick={() => navigate(`/dashboard/content/${p.id}`)} className="bg-card rounded-card p-4 flex items-center gap-4 group hover:shadow-md transition-shadow cursor-pointer press shadow-card">
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleSelect(p.id); }}
-                  className={`shrink-0 ${isSel ? "text-gold" : "text-ich-neutral/40 hover:text-ich-neutral"}`}
+                  className={`shrink-0 ${isSel ? "text-accent-strong" : "text-muted hover:text-muted"}`}
                   aria-label={isSel ? "Deselect" : "Select"}
                 >
                   {isSel ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
                 </button>
-                <div className="w-16 h-14 rounded-xl overflow-hidden bg-ich-primary/5 shrink-0 flex items-center justify-center">
+                <div className="w-16 h-14 rounded-xl overflow-hidden bg-surface shrink-0 flex items-center justify-center">
                   {p.cover_image
                     ? <img src={p.cover_image} alt={p.title} loading="lazy" decoding="async" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
-                    : <FileText className="w-5 h-5 text-ich-neutral/40" />}
+                    : <FileText className="w-5 h-5 text-muted" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta.pill}`}>{meta.label}</span>
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${sm.pill}`}>{sm.label}</span>
                   </div>
-                  <h3 className="font-display font-semibold text-ich-primary truncate mt-1">{p.title}</h3>
-                  {p.slug && <p className="text-xs font-mono text-ich-neutral/60 truncate">/{p.slug}</p>}
-                  {p.excerpt && <p className="text-xs text-ich-neutral truncate">{p.excerpt}</p>}
+                  <h3 className="font-display font-semibold text-foreground truncate mt-1">{p.title}</h3>
+                  {p.slug && <p className="text-xs font-mono text-muted truncate">/{p.slug}</p>}
+                  {p.excerpt && <p className="text-xs text-muted truncate">{p.excerpt}</p>}
                 </div>
                 <div className="text-right shrink-0 mr-2 hidden sm:block">
-                  {p.created_at && <p className="text-[11px] text-ich-neutral/60">{moment(p.created_at).format("MMM D, YYYY")}</p>}
+                  {p.created_at && <p className="text-[11px] text-muted">{moment(p.created_at).format("MMM D, YYYY")}</p>}
                 </div>
                 {(can(role, "content", "edit") || canDelete) && (
                   <div className="flex gap-1.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     {can(role, "content", "edit") && (
-                      <button onClick={(e) => { e.stopPropagation(); startEdit(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); startEdit(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-foreground hover:text-accent-strong press"><Pencil className="w-4 h-4" /></button>
                     )}
                     {canDelete && (
-                      <button onClick={(e) => { e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-accent-soft flex items-center justify-center text-accent-strong press"><Trash2 className="w-4 h-4" /></button>
                     )}
                   </div>
                 )}
@@ -369,7 +370,7 @@ export default function DashboardContent() {
               title="No content yet"
               hint="Create app pages, FAQs, announcements & hero copy."
               action={can(role, "content", "create") ? (
-                <button onClick={startAdd} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                <button onClick={startAdd} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2 sheen">
                   <Plus className="w-4 h-4" /> New page
                 </button>
               ) : null}
@@ -386,7 +387,7 @@ export default function DashboardContent() {
 
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

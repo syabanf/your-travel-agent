@@ -29,6 +29,32 @@ export async function submitRegistration({ full_name, email, phone, note = "" })
 }
 
 /**
+ * What Icon Holiday already knows about an account, for prefilling forms:
+ * the CRM customer record first, then the approved sign-up, then any trip
+ * membership. Empty strings where nothing is known.
+ */
+export async function accountProfile(email) {
+  const addr = normalise(email);
+  const [customers, regs, members] = await Promise.all([
+    backend.entities.Customer.list(),
+    backend.entities.Registration.list(),
+    backend.entities.TripMember.list(),
+  ]);
+  const mine = (rows) => rows.find((r) => normalise(r.email) === addr);
+  const cust = mine(customers) || {};
+  const reg = mine(regs.filter((r) => r.status === "approved")) || {};
+  const member = mine(members) || {};
+  return {
+    email: addr,
+    full_name: cust.name || reg.full_name || member.name || "",
+    phone: cust.phone || reg.phone || member.phone || "",
+    city: cust.city || "",
+    country: cust.country || "",
+    date_of_birth: cust.date_of_birth || "",
+  };
+}
+
+/**
  * The admin's decision for an email.
  *
  * `none` means no request was ever filed. Demo accounts fall in that bucket, so

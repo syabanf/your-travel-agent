@@ -16,12 +16,12 @@ const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) :
 
 const statusPill = {
   confirmed: "bg-emerald-500/15 text-emerald-600",
-  pending: "bg-ich-gold/10 text-gold",
-  cancelled: "bg-red-500/15 text-red-600",
+  pending: "bg-accent/10 text-accent-strong",
+  cancelled: "bg-accent-soft text-accent-strong",
   completed: "bg-blue-500/15 text-blue-600",
   active: "bg-emerald-500/15 text-emerald-600",
   planned: "bg-blue-500/15 text-blue-600",
-  draft: "bg-ich-primary/10 text-ich-neutral",
+  draft: "bg-surface text-muted",
 };
 
 export default function DashboardDestinationDetail() {
@@ -61,7 +61,7 @@ export default function DashboardDestinationDetail() {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
         <div className="flex justify-center py-20">
-          <div className="w-7 h-7 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-7 h-7 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -71,8 +71,8 @@ export default function DashboardDestinationDetail() {
   if (dest === null) {
     return (
       <div className="p-4 sm:p-6 lg:p-8">
-        <p className="text-ich-neutral">Destination not found.</p>
-        <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-gold mt-3 hover:underline">
+        <p className="text-muted">Destination not found.</p>
+        <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-accent-strong mt-3 hover:underline">
           <ArrowLeft className="w-4 h-4" /> Back to destinations
         </Link>
       </div>
@@ -116,21 +116,21 @@ export default function DashboardDestinationDetail() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-ich-neutral hover:text-gold mb-5">
+      <Link to="/dashboard/destinations" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent-strong mb-5">
         <ArrowLeft className="w-4 h-4" /> Back to destinations
       </Link>
 
       {/* 1. Header */}
       <header className="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary flex items-center gap-2">
+          <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
             <span>{dest.emoji || "🌍"}</span> {name}
           </h1>
-          <p className="text-sm text-ich-neutral mt-1">
+          <p className="text-sm text-muted mt-1">
             {dest.country}{dest.tagline ? ` · ${dest.tagline}` : ""}
           </p>
           {dest.fromPrice > 0 && (
-            <span className="inline-flex items-center mt-3 text-xs font-semibold text-gold bg-ich-gold/10 border border-ich-gold/20 rounded-full px-3 py-1">
+            <span className="inline-flex items-center mt-3 text-xs font-semibold text-accent-strong bg-accent/10 border border-accent/20 rounded-full px-3 py-1">
               from {formatIDR(dest.fromPrice)}
             </span>
           )}
@@ -138,7 +138,7 @@ export default function DashboardDestinationDetail() {
         {can(role, "destinations", "delete") && (
           <button
             onClick={remove}
-            className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-medium text-red-600 bg-red-500/10 hover:bg-red-500/15 shrink-0"
+            className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-medium text-accent-strong bg-accent-soft hover:bg-accent-soft shrink-0"
           >
             <Trash2 className="w-4 h-4" /> Delete
           </button>
@@ -155,8 +155,8 @@ export default function DashboardDestinationDetail() {
       {/* 3. Two-column grid */}
       <div className="grid lg:grid-cols-2 gap-6 mb-6">
         {/* Left — Details */}
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
-          <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">Details</h2>
+        <div className="bg-card rounded-card p-6 shadow-card">
+          <h2 className="font-display font-semibold text-lg text-foreground mb-4">Details</h2>
           {gallery.length > 0 && (
             <div className="mb-4">
               <img
@@ -172,7 +172,7 @@ export default function DashboardDestinationDetail() {
                       key={i}
                       type="button"
                       onClick={() => setImgIdx(i)}
-                      className={`w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 ${i === imgIdx ? "border-gold" : "border-transparent opacity-70 hover:opacity-100"}`}
+                      className={`w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 ${i === imgIdx ? "border-accent" : "border-transparent opacity-70 hover:opacity-100"}`}
                     >
                       <img src={url} alt={url || "Destination image"} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
                     </button>
@@ -184,15 +184,15 @@ export default function DashboardDestinationDetail() {
           {vibes.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {vibes.map((v) => (
-                <span key={v} className="text-xs text-gold bg-ich-gold/10 border border-ich-gold/20 rounded-full px-2.5 py-1">{v}</span>
+                <span key={v} className="text-xs text-accent-strong bg-accent/10 border border-accent/20 rounded-full px-2.5 py-1">{v}</span>
               ))}
             </div>
           )}
-          <div className="flex items-center gap-1.5 text-sm text-ich-neutral">
-            <MapPin className="w-4 h-4 text-gold" />
-            {hasCoords ? <span>{dest.lat.toFixed(4)}, {dest.lng.toFixed(4)}</span> : <span className="text-ich-neutral/60">No coordinates</span>}
+          <div className="flex items-center gap-1.5 text-sm text-muted">
+            <MapPin className="w-4 h-4 text-accent-strong" />
+            {hasCoords ? <span>{dest.lat.toFixed(4)}, {dest.lng.toFixed(4)}</span> : <span className="text-muted">No coordinates</span>}
           </div>
-          <div className="mt-4 pt-4 border-t border-ich-primary/5 space-y-1">
+          <div className="mt-4 pt-4 border-t border-border space-y-1">
             <InfoRow icon={Sun} label="Best season" value={dest.best_season} />
             <InfoRow icon={Coins} label="Currency" value={dest.currency} />
             <InfoRow icon={Clock} label="Timezone" value={dest.timezone} />
@@ -202,10 +202,10 @@ export default function DashboardDestinationDetail() {
         </div>
 
         {/* Right — On the map */}
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
-          <h2 className="font-display font-semibold text-lg text-ich-primary mb-4">On the map</h2>
+        <div className="bg-card rounded-card p-6 shadow-card">
+          <h2 className="font-display font-semibold text-lg text-foreground mb-4">On the map</h2>
           {hasCoords ? (
-            <div className="rounded-xl overflow-hidden border border-ich-primary/10 h-64">
+            <div className="rounded-xl overflow-hidden border border-border h-64">
               <OLMap
                 center={[dest.lng, dest.lat]}
                 zoom={6}
@@ -214,7 +214,7 @@ export default function DashboardDestinationDetail() {
               />
             </div>
           ) : (
-            <div className="h-64 flex items-center justify-center rounded-xl bg-ich-primary/5 text-ich-neutral/60 text-sm">
+            <div className="h-64 flex items-center justify-center rounded-xl bg-surface text-muted text-sm">
               No coordinates
             </div>
           )}
@@ -222,12 +222,12 @@ export default function DashboardDestinationDetail() {
       </div>
 
       {/* 4. Trips to {name} */}
-      <div className="bg-white rounded-2xl border border-ich-primary/10 p-6">
-        <h2 className="font-display font-semibold text-lg text-ich-primary mb-4 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-gold" /> Trips to {name}
+      <div className="bg-card rounded-card p-6 shadow-card">
+        <h2 className="font-display font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-accent-strong" /> Trips to {name}
         </h2>
         {matchTrips.length === 0 ? (
-          <p className="text-ich-neutral/60 text-sm py-4">No trips yet.</p>
+          <p className="text-muted text-sm py-4">No trips yet.</p>
         ) : (
           <>
           <div className="flex flex-wrap gap-2 mb-3">
@@ -251,7 +251,7 @@ export default function DashboardDestinationDetail() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-ich-neutral border-b border-ich-primary/10">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted border-b border-border">
                   <th className="py-2 pr-4 font-medium">Trip</th>
                   <th className="py-2 pr-4 font-medium">Status</th>
                   <th className="py-2 font-medium">Dates</th>
@@ -259,12 +259,12 @@ export default function DashboardDestinationDetail() {
               </thead>
               <tbody>
                 {filteredTrips.map((t) => (
-                  <tr key={t.id} className="border-b border-ich-primary/5 last:border-0">
-                    <td className="py-3 pr-4 font-medium text-ich-primary">{t.title}</td>
+                  <tr key={t.id} className="border-b border-border last:border-0">
+                    <td className="py-3 pr-4 font-medium text-foreground">{t.title}</td>
                     <td className="py-3 pr-4">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusPill[t.status] || statusPill.draft}`}>{t.status}</span>
                     </td>
-                    <td className="py-3 text-ich-neutral">
+                    <td className="py-3 text-muted">
                       {t.start_date ? moment(t.start_date).format("MMM D, YYYY") : "—"}
                       {t.end_date ? ` – ${moment(t.end_date).format("MMM D, YYYY")}` : ""}
                     </td>
@@ -273,7 +273,7 @@ export default function DashboardDestinationDetail() {
               </tbody>
             </table>
             {filteredTrips.length === 0 && (
-              <p className="text-ich-neutral/60 text-sm py-4">No trips match your filter.</p>
+              <p className="text-muted text-sm py-4">No trips match your filter.</p>
             )}
           </div>
           </>
@@ -285,11 +285,11 @@ export default function DashboardDestinationDetail() {
 
 function InfoRow({ icon: Icon, label, value, multiline }) {
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-ich-primary/5 last:border-0">
-      <Icon className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+    <div className="flex items-start gap-3 py-2 border-b border-border last:border-0">
+      <Icon className="w-4 h-4 text-accent-strong mt-0.5 shrink-0" />
       <div className="min-w-0">
-        <div className="text-[11px] text-ich-neutral uppercase tracking-wider">{label}</div>
-        <div className={`text-sm text-ich-primary break-words ${multiline ? "whitespace-pre-line" : ""}`}>{value || "—"}</div>
+        <div className="text-[11px] text-muted uppercase tracking-wider">{label}</div>
+        <div className={`text-sm text-foreground break-words ${multiline ? "whitespace-pre-line" : ""}`}>{value || "—"}</div>
       </div>
     </div>
   );
@@ -297,12 +297,12 @@ function InfoRow({ icon: Icon, label, value, multiline }) {
 
 function Kpi({ icon: Icon, label, value }) {
   return (
-    <div className="bg-white rounded-2xl border border-ich-primary/10 p-5 min-w-0">
-      <div className="w-9 h-9 rounded-lg bg-ich-gold/10 text-gold flex items-center justify-center mb-3">
+    <div className="bg-card rounded-card p-5 min-w-0 shadow-card">
+      <div className="w-9 h-9 rounded-lg bg-accent/10 text-accent-strong flex items-center justify-center mb-3">
         <Icon className="w-4 h-4" />
       </div>
-      <div className="stat-value text-xl font-display font-bold text-ich-primary">{value}</div>
-      <div className="text-xs text-ich-neutral mt-0.5">{label}</div>
+      <div className="stat-value text-xl font-display font-bold text-foreground">{value}</div>
+      <div className="text-xs text-muted mt-0.5">{label}</div>
     </div>
   );
 }

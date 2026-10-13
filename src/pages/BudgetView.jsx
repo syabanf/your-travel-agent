@@ -7,18 +7,19 @@ import GlassCard from "../components/GlassCard";
 import EmptyState from "@/components/EmptyState";
 import { Link } from "react-router-dom";
 import { formatIDR } from "@/lib/currency";
+import { BRAND } from "@/lib/brand";
 
-const COLORS = ["#AD1F23", "#0B1B3B", "#60A5FA", "#34D399", "#F472B6", "#FBBF24", "#94A3B8"];
+const COLORS = [BRAND.accent, BRAND.ink, BRAND.info, BRAND.success, BRAND.accent, BRAND.warning, BRAND.chartMuted];
 
 const categoryColors = {
-  transport: "#60A5FA",
-  accommodation: "#A78BFA",
-  dining: "#FB923C",
-  attraction: "#34D399",
-  activity: "#F472B6",
-  shopping: "#FBBF24",
-  rest: "#94A3B8",
-  other: "#94A3B8",
+  transport: BRAND.info,
+  accommodation: BRAND.ink,
+  dining: BRAND.warning,
+  attraction: BRAND.success,
+  activity: BRAND.accent,
+  shopping: BRAND.warning,
+  rest: BRAND.chartMuted,
+  other: BRAND.chartMuted,
 };
 
 export default function BudgetView() {
@@ -59,7 +60,7 @@ export default function BudgetView() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+      <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
     </div>
   );
 
@@ -74,7 +75,7 @@ export default function BudgetView() {
             <button key={t.id}
               onClick={() => setSelectedTrip(t.id === selectedTrip ? null : t.id)}
               className={`flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
-                selectedTrip === t.id ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"
+                selectedTrip === t.id ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"
               }`}>
               {t.title}
             </button>
@@ -87,29 +88,29 @@ export default function BudgetView() {
           {/* Budget summary */}
           <div className="px-6 mb-4">
             <GlassCard className="p-5">
-              <h3 className="text-sm font-display font-semibold text-ich-white mb-4">{focusTrip.title}</h3>
+              <h3 className="text-sm font-display font-semibold text-foreground mb-4">{focusTrip.title}</h3>
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="text-center min-w-0">
-                  <p className="text-[10px] text-ich-neutral/50 mb-1">Budget</p>
-                  <p className="stat-value text-[15px] font-display font-bold text-ich-white">{formatIDR(focusTrip.budget_total)}</p>
+                  <p className="text-[10px] text-muted mb-1">Budget</p>
+                  <p className="stat-value text-[15px] font-display font-bold text-foreground">{formatIDR(focusTrip.budget_total)}</p>
                 </div>
                 <div className="text-center min-w-0">
-                  <p className="text-[10px] text-ich-neutral/50 mb-1">Planned</p>
-                  <p className="stat-value text-[15px] font-display font-bold text-gold">{formatIDR(spent)}</p>
+                  <p className="text-[10px] text-muted mb-1">Planned</p>
+                  <p className="stat-value text-[15px] font-display font-bold text-accent-strong">{formatIDR(spent)}</p>
                 </div>
                 <div className="text-center min-w-0">
-                  <p className="text-[10px] text-ich-neutral/50 mb-1">Remaining</p>
-                  <p className={`stat-value text-[15px] font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                  <p className="text-[10px] text-muted mb-1">Remaining</p>
+                  <p className={`stat-value text-[15px] font-display font-bold ${focusTrip.budget_total - spent >= 0 ? "text-emerald-600" : "text-accent-strong"}`}>
                     {formatIDR(focusTrip.budget_total - spent)}
                   </p>
                 </div>
               </div>
               {/* Progress bar */}
-              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-ich-gold to-gold rounded-full transition-all"
+              <div className="w-full h-2 bg-surface-2 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent to-accent rounded-full transition-all"
                   style={{ width: `${Math.min(100, (spent / focusTrip.budget_total) * 100)}%` }} />
               </div>
-              <p className="text-[10px] text-ich-neutral/55 mt-1 text-right">
+              <p className="text-[10px] text-muted mt-1 text-right">
                 {Math.round((spent / focusTrip.budget_total) * 100)}% used
               </p>
             </GlassCard>
@@ -119,7 +120,7 @@ export default function BudgetView() {
           {breakdown.length > 0 && (
             <div className="px-6 mb-4">
               <GlassCard className="p-5">
-                <h4 className="text-xs font-semibold text-ich-white/70 uppercase tracking-widest mb-4">By Category</h4>
+                <h4 className="text-xs font-semibold text-body uppercase tracking-widest mb-4">By Category</h4>
                 <ResponsiveContainer width="100%" height={180}>
                   <PieChart>
                     <Pie data={breakdown} cx="50%" cy="50%" innerRadius={50} outerRadius={80}
@@ -129,14 +130,14 @@ export default function BudgetView() {
                       ))}
                     </Pie>
                     <Tooltip formatter={(v) => [formatIDR(v), ""]}
-                      contentStyle={{ background: "#FFFFFF", border: "1px solid rgba(11,27,59,0.12)", borderRadius: 12, color: "#0B1B3B" }} />
+                      contentStyle={{ background: "#FFFFFF", border: "1px solid rgba(15, 26, 21,0.12)", borderRadius: 12, color: BRAND.ink }} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {breakdown.map((b, i) => (
                     <div key={b.name} className="flex items-center gap-1.5">
                       <div className="w-2 h-2 rounded-full" style={{ background: categoryColors[b.name] || COLORS[i % COLORS.length] }} />
-                      <span className="text-[10px] text-ich-neutral/60 capitalize">{b.name} {formatIDR(b.value)}</span>
+                      <span className="text-[10px] text-muted capitalize">{b.name} {formatIDR(b.value)}</span>
                     </div>
                   ))}
                 </div>
@@ -148,7 +149,7 @@ export default function BudgetView() {
 
       {/* All trips overview */}
       <div className="px-6">
-        <h3 className="text-xs font-semibold text-ich-white/70 uppercase tracking-widest mb-3">All Trips</h3>
+        <h3 className="text-xs font-semibold text-body uppercase tracking-widest mb-3">All Trips</h3>
         {trips.length === 0 ? (
           <EmptyState icon={Wallet} title="No trips yet" hint="Create a trip to track its budget." />
         ) : (
@@ -158,16 +159,16 @@ export default function BudgetView() {
             const pct = trip.budget_total > 0 ? Math.min(100, (s / trip.budget_total) * 100) : 0;
             return (
               <Link key={trip.id} to={`/itinerary/${trip.id}`} className="block">
-                <GlassCard className="p-4 hover:bg-white/10 transition-all">
+                <GlassCard className="p-4 hover:bg-surface transition-all lift">
                   <div className="flex items-center justify-between gap-3 mb-2">
-                    <h4 className="text-sm font-semibold text-ich-white truncate min-w-0">{trip.title}</h4>
-                    <span className="stat-value text-xs text-gold font-display shrink-0">{formatIDR(trip.budget_total)}</span>
+                    <h4 className="text-sm font-semibold text-foreground truncate min-w-0">{trip.title}</h4>
+                    <span className="stat-value text-xs text-accent-strong font-display shrink-0">{formatIDR(trip.budget_total)}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-ich-gold to-gold rounded-full"
+                  <div className="w-full h-1.5 bg-surface-2 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-accent to-accent rounded-full"
                       style={{ width: `${pct}%` }} />
                   </div>
-                  <p className="text-[10px] text-ich-neutral/55 mt-1">{formatIDR(s)} planned · {Math.round(pct)}% of budget</p>
+                  <p className="text-[10px] text-muted mt-1">{formatIDR(s)} planned · {Math.round(pct)}% of budget</p>
                 </GlassCard>
               </Link>
             );

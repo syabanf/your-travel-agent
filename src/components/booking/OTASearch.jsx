@@ -2,14 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { backend } from "@/api/backend";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Ticket, Search, MapPin, Users, ArrowRight, Loader2, Star, Clock } from "lucide-react";
+import { Ticket, Search, MapPin, Users, ArrowRight, ArrowUpDown, Loader2, Star, Clock, Minus, Plus, PlaneTakeoff, PlaneLanding } from "lucide-react";
 import { toast } from "sonner";
 import GlassCard from "../GlassCard";
-import DateTimePicker from "../DateTimePicker";
+import DateTimePicker, { DateRangePicker } from "../DateTimePicker";
+import LocationPicker from "./LocationPicker";
 import { formatIDR } from "@/lib/currency";
 import { DEFAULT_OTA_CATEGORIES, iconFor } from "@/data/otaCategories";
 
 const MY_BOOKINGS_TAB = { key: "my_bookings", label: "My Bookings", icon: Ticket };
+// Tabs that search a route (origin to destination) rather than one place.
+const ROUTE_TABS = new Set(["flight", "train", "bus", "ship"]);
+const todayISO = () => new Date().toLocaleDateString("en-CA");
 
 // Booking an option navigates to checkout, which unmounts this component.
 // The search is kept in sessionStorage so coming back shows the same results
@@ -27,9 +31,9 @@ function readSearch() {
 }
 
 const statusColors = {
-  pending: "bg-ich-gold/10 text-gold border-ich-gold/20",
+  pending: "bg-accent/10 text-accent-strong border-accent/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
+  cancelled: "bg-accent-soft text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
@@ -83,6 +87,12 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
   }, [defaultTo, activeTab, form, results, searched]);
 
   const upd = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  const [spun, setSpun] = useState(false);
+  const swap = () => {
+    setForm((p) => ({ ...p, from: p.to, to: p.from }));
+    setSpun((v) => !v);
+  };
+  const guestNoun = activeTab === "hotel" ? "Guests" : activeTab === "attraction" ? "Visitors" : "Passengers";
 
   const loadMyBookings = async () => {
     setLoadingBookings(true);
@@ -194,7 +204,7 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
           const Icon = t.icon;
           return (
             <button key={t.uid || t.key} onClick={() => handleTabChange(t.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === t.key ? "glass-gold text-gold" : "glass-light text-ich-neutral/60"}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold flex-shrink-0 transition-all ${activeTab === t.key ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>
               <Icon className="w-3.5 h-3.5" />
               {t.label}
             </button>
@@ -206,21 +216,21 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
       {activeTab === "my_bookings" && (
         <div className="space-y-3">
           {loadingBookings ? (
-            <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-gold" /></div>
+            <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-accent-strong" /></div>
           ) : myBookings.length === 0 ? (
             <GlassCard className="p-8 text-center">
-              <Ticket className="w-8 h-8 text-ich-neutral/30 mx-auto mb-2" />
-              <p className="text-sm text-ich-neutral/50">No bookings yet</p>
+              <Ticket className="w-8 h-8 text-muted mx-auto mb-2" />
+              <p className="text-sm text-muted">No bookings yet</p>
             </GlassCard>
           ) : (
             myBookings.map((b) => (
               <GlassCard key={b.id} className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="text-sm font-semibold text-ich-white">{b.title}</p>
+                  <p className="text-sm font-semibold text-foreground">{b.title}</p>
                   <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[b.status] || statusColors.pending}`}>{b.status}</span>
                 </div>
-                <p className="text-xs text-ich-neutral/50">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
-                {b.price > 0 && <p className="text-sm font-display font-bold text-gold mt-1.5">{formatIDR(b.price)}</p>}
+                <p className="text-xs text-muted">{b.provider}{b.location ? ` · ${b.location}` : ""}</p>
+                {b.price > 0 && <p className="text-sm font-display font-bold text-accent-strong mt-1.5">{formatIDR(b.price)}</p>}
               </GlassCard>
             ))
           )}
@@ -229,74 +239,66 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
 
       {/* Search form */}
       {activeTab !== "my_bookings" && (
-        <GlassCard className="p-4 space-y-3">
-          {/* From / To */}
-          <div className={`grid gap-3 ${(activeTab === "hotel" || activeTab === "car_rental" || activeTab === "attraction") ? "grid-cols-1" : "grid-cols-2"}`}>
-            {activeTab !== "hotel" && activeTab !== "car_rental" && activeTab !== "attraction" && (
-              <div>
-                <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">From</label>
-                <div className="relative">
-                  <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                  <input value={form.from} onChange={e => upd("from", e.target.value)}
-                    placeholder="Origin"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white placeholder:text-ich-neutral/30 outline-none" />
-                </div>
-              </div>
-            )}
-            <div>
-              <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">
-                {activeTab === "hotel" ? "Destination" : activeTab === "car_rental" ? "Pickup Location" : activeTab === "attraction" ? "Destination" : "To"}
-              </label>
-              <div className="relative">
-                <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                <input value={form.to} onChange={e => upd("to", e.target.value)}
-                  placeholder={activeTab === "hotel" ? "City or area" : activeTab === "car_rental" ? "City or airport" : activeTab === "attraction" ? "City or destination" : "Destination"}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white placeholder:text-ich-neutral/30 outline-none" />
-              </div>
+        <GlassCard className="p-4 space-y-2">
+          {ROUTE_TABS.has(activeTab) ? (
+            <div className="relative space-y-2">
+              <LocationPicker mode={activeTab} label="From" icon={activeTab === "flight" ? PlaneTakeoff : MapPin} value={form.from} onChange={(v) => upd("from", v)} placeholder="Where from?" exclude={form.to} />
+              <LocationPicker mode={activeTab} label="To" icon={activeTab === "flight" ? PlaneLanding : MapPin} value={form.to} onChange={(v) => upd("to", v)} placeholder="Where to?" exclude={form.from} />
+              <button
+                type="button"
+                onClick={swap}
+                aria-label="Swap origin and destination"
+                className="absolute right-3 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-card text-accent-strong shadow-card ring-1 ring-border transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+              >
+                <ArrowUpDown className={`size-4 transition-transform duration-300 ${spun ? "rotate-180" : ""}`} aria-hidden="true" />
+              </button>
             </div>
-          </div>
+          ) : (
+            <LocationPicker
+              mode={activeTab}
+              label={activeTab === "car_rental" ? "Pickup location" : "Destination"}
+              value={form.to}
+              onChange={(v) => upd("to", v)}
+              placeholder={activeTab === "hotel" ? "City, area or hotel" : activeTab === "car_rental" ? "City or airport" : "City or destination"}
+            />
+          )}
 
-          {/* Dates + travelers */}
-          <div className="grid grid-cols-2 gap-3">
-            {(activeTab === "hotel" || activeTab === "car_rental") ? (
-              <>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Pickup Date" : "Check-in"}</label>
-                  <DateTimePicker type="date" value={form.checkin} onChange={v => upd("checkin", v)} label={activeTab === "car_rental" ? "Pickup Date" : "Check-in"} />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Return Date" : "Check-out"}</label>
-                  <DateTimePicker type="date" value={form.checkout} onChange={v => upd("checkout", v)} label={activeTab === "car_rental" ? "Return Date" : "Check-out"} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "car_rental" ? "Passengers" : "Guests"}</label>
-                  <div className="relative">
-                    <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                    <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white outline-none" />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">Travel Date</label>
-                  <DateTimePicker type="date" value={form.date} onChange={v => upd("date", v)} label="Travel Date" />
-                </div>
-                <div>
-                  <label className="text-[10px] text-gold uppercase tracking-widest mb-1 block">{activeTab === "attraction" ? "Visitors" : "Passengers"}</label>
-                  <div className="relative">
-                    <Users className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gold/40" />
-                    <input type="number" min={1} max={9} value={form.guests} onChange={e => upd("guests", Number(e.target.value))}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl h-11 pl-8 pr-3 text-sm text-ich-white outline-none" />
-                  </div>
-                </div>
-              </>
-            )}
+          {activeTab === "hotel" || activeTab === "car_rental" ? (
+            <DateRangePicker
+              from={form.checkin}
+              to={form.checkout}
+              onChange={({ from, to }) => setForm((p) => ({ ...p, checkin: from, checkout: to }))}
+              labels={activeTab === "car_rental" ? ["Pickup", "Return"] : ["Check-in", "Check-out"]}
+              unit={activeTab === "car_rental" ? "day" : "night"}
+            />
+          ) : (
+            <DateTimePicker type="date" caption={activeTab === "attraction" ? "Visit date" : "Departure date"} value={form.date} onChange={(v) => upd("date", v)} min={todayISO()} />
+          )}
+
+          <div className="flex items-center gap-3 rounded-2xl bg-surface-2 px-3 py-2.5">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-card shadow-card">
+              <Users className="size-4 text-accent" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="eyebrow block">{guestNoun}</span>
+              <span className="block text-sm font-semibold tabular-nums text-foreground" aria-live="polite">{form.guests} {guestNoun.toLowerCase().slice(0, form.guests > 1 ? undefined : -1)}</span>
+            </span>
+            {[[Minus, -1, `Fewer ${guestNoun.toLowerCase()}`, form.guests <= 1], [Plus, 1, `More ${guestNoun.toLowerCase()}`, form.guests >= 9]].map(([Icon, step, aria, off]) => (
+              <button
+                key={step}
+                type="button"
+                onClick={() => upd("guests", form.guests + step)}
+                disabled={off}
+                aria-label={aria}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground shadow-card transition-colors hover:bg-surface disabled:opacity-40 disabled:hover:bg-card"
+              >
+                <Icon className="size-4" aria-hidden="true" />
+              </button>
+            ))}
           </div>
 
           <button onClick={handleSearch} disabled={loading || (!form.to && !form.from)}
-            className="w-full py-3 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all disabled:opacity-40 flex items-center justify-center gap-2">
+            className="!mt-3 w-full py-3 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all disabled:opacity-40 flex items-center justify-center gap-2 sheen">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
             {loading ? "Searching..." : `Search ${visibleTabs.find(t => t.key === activeTab)?.label || ""}s`}
           </button>
@@ -306,39 +308,39 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
       {/* Results */}
       {searched && results.length === 0 && !loading && (
         <div className="mt-4 text-center">
-          <p className="text-sm text-ich-neutral/50">No results found. Try a different search.</p>
+          <p className="text-sm text-muted">No results found. Try a different search.</p>
         </div>
       )}
 
       {results.length > 0 && (
         <div className="mt-4 space-y-3">
-          <h3 className="text-xs font-semibold text-ich-white/70 uppercase tracking-widest">{results.length} Results Found</h3>
+          <h3 className="text-xs font-semibold text-body uppercase tracking-widest">{results.length} Results Found</h3>
           {results.map((item, i) => (
             <GlassCard key={i} className="p-4">
               {activeTab === "flight" && (
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-sm font-semibold text-ich-white">{item.airline}</p>
-                      <p className="text-[10px] text-ich-neutral/50">{item.flight_number} · {item.class}</p>
+                      <p className="text-sm font-semibold text-foreground">{item.airline}</p>
+                      <p className="text-[10px] text-muted">{item.flight_number} · {item.class}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
-                      <p className="text-[10px] text-ich-neutral/40">per person</p>
+                      <p className="text-base font-display font-bold text-accent-strong">{formatIDR(item.price)}</p>
+                      <p className="text-[10px] text-muted">per person</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm font-bold text-ich-white">{item.departure_time}</span>
+                    <span className="text-sm font-bold text-foreground">{item.departure_time}</span>
                     <div className="flex-1 flex items-center gap-1">
-                      <div className="h-px flex-1 bg-white/10" />
-                      <span className="text-[10px] text-ich-neutral/40">{item.stops === 0 ? "Direct" : `${item.stops} stop`}</span>
-                      <div className="h-px flex-1 bg-white/10" />
+                      <div className="h-px flex-1 bg-surface" />
+                      <span className="text-[10px] text-muted">{item.stops === 0 ? "Direct" : `${item.stops} stop`}</span>
+                      <div className="h-px flex-1 bg-surface" />
                     </div>
-                    <span className="text-sm font-bold text-ich-white">{item.arrival_time}</span>
+                    <span className="text-sm font-bold text-foreground">{item.arrival_time}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-xs text-ich-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
-                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
+                    <span className="flex items-center gap-1 text-xs text-muted"><Clock className="w-3 h-3" />{item.duration}</span>
+                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 bg-accent-soft rounded-lg text-xs font-semibold text-accent-strong hover:shadow-glow transition-all">Book Now</button>
                   </div>
                 </div>
               )}
@@ -347,22 +349,22 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-ich-white">{item.name}</p>
-                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.location}</p>
+                      <p className="text-sm font-semibold text-foreground">{item.name}</p>
+                      <p className="text-[10px] text-muted mt-0.5">{item.location}</p>
                       <div className="flex items-center gap-1 mt-1">
                         {Array.from({ length: Math.round(item.rating || 4) }).map((_, j) => (
-                          <Star key={j} className="w-2.5 h-2.5 text-gold fill-gold" />
+                          <Star key={j} className="w-2.5 h-2.5 text-accent-strong fill-accent" />
                         ))}
-                        <span className="text-[10px] text-ich-neutral/50 ml-1">{item.rating}</span>
+                        <span className="text-[10px] text-muted ml-1">{item.rating}</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_night)}</p>
-                      <p className="text-[10px] text-ich-neutral/40">/ night</p>
+                      <p className="text-base font-display font-bold text-accent-strong">{formatIDR(item.price_per_night)}</p>
+                      <p className="text-[10px] text-muted">/ night</p>
                     </div>
                   </div>
-                  <p className="text-xs text-ich-neutral/50 mb-3">{item.room_type} · {item.amenities?.join(" · ")}</p>
-                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Reserve Now</button>
+                  <p className="text-xs text-muted mb-3">{item.room_type} · {item.amenities?.join(" · ")}</p>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 bg-accent-strong rounded-lg text-xs font-semibold text-white shadow-glow hover:bg-accent-dark transition-all">Reserve Now</button>
                 </div>
               )}
 
@@ -370,26 +372,26 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="text-sm font-semibold text-ich-white">{item.operator}</p>
-                      <p className="text-[10px] text-ich-neutral/50">{item.train_name || item.bus_type || item.ship_name} · {item.class || item.ship_type || ""}</p>
+                      <p className="text-sm font-semibold text-foreground">{item.operator}</p>
+                      <p className="text-[10px] text-muted">{item.train_name || item.bus_type || item.ship_name} · {item.class || item.ship_type || ""}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price)}</p>
-                      <p className="text-[10px] text-ich-neutral/40">per person</p>
+                      <p className="text-base font-display font-bold text-accent-strong">{formatIDR(item.price)}</p>
+                      <p className="text-[10px] text-muted">per person</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm font-bold text-ich-white">{item.departure_time}</span>
+                    <span className="text-sm font-bold text-foreground">{item.departure_time}</span>
                     <div className="flex-1 flex items-center gap-1">
-                      <div className="h-px flex-1 bg-white/10" />
-                      <ArrowRight className="w-3 h-3 text-ich-neutral/30" />
-                      <div className="h-px flex-1 bg-white/10" />
+                      <div className="h-px flex-1 bg-surface" />
+                      <ArrowRight className="w-3 h-3 text-muted" />
+                      <div className="h-px flex-1 bg-surface" />
                     </div>
-                    <span className="text-sm font-bold text-ich-white">{item.arrival_time}</span>
+                    <span className="text-sm font-bold text-foreground">{item.arrival_time}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-xs text-ich-neutral/50"><Clock className="w-3 h-3" />{item.duration}</span>
-                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Now</button>
+                    <span className="flex items-center gap-1 text-xs text-muted"><Clock className="w-3 h-3" />{item.duration}</span>
+                    <button onClick={() => handleBook(item)} className="px-4 py-1.5 bg-accent-soft rounded-lg text-xs font-semibold text-accent-strong hover:shadow-glow transition-all">Book Now</button>
                   </div>
                 </div>
               )}
@@ -398,17 +400,17 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="text-sm font-semibold text-ich-white">{item.car_name}</p>
-                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.provider} · {item.car_type} · {item.transmission}</p>
-                      <p className="text-[10px] text-ich-neutral/40 mt-0.5">{item.seats} seats · {item.mileage}</p>
+                      <p className="text-sm font-semibold text-foreground">{item.car_name}</p>
+                      <p className="text-[10px] text-muted mt-0.5">{item.provider} · {item.car_type} · {item.transmission}</p>
+                      <p className="text-[10px] text-muted mt-0.5">{item.seats} seats · {item.mileage}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_day)}</p>
-                      <p className="text-[10px] text-ich-neutral/40">/ day</p>
+                      <p className="text-base font-display font-bold text-accent-strong">{formatIDR(item.price_per_day)}</p>
+                      <p className="text-[10px] text-muted">/ day</p>
                     </div>
                   </div>
-                  <p className="text-xs text-ich-neutral/50 mb-3">{item.features?.join(" · ")}</p>
-                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Rent Now</button>
+                  <p className="text-xs text-muted mb-3">{item.features?.join(" · ")}</p>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 bg-accent-strong rounded-lg text-xs font-semibold text-white shadow-glow hover:bg-accent-dark transition-all">Rent Now</button>
                 </div>
               )}
 
@@ -416,23 +418,23 @@ export default function OTASearch({ onSaveBooking, defaultTo = "", tripId = null
                 <div>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-ich-white">{item.name}</p>
-                      <p className="text-[10px] text-ich-neutral/50 mt-0.5">{item.location} · {item.category}</p>
+                      <p className="text-sm font-semibold text-foreground">{item.name}</p>
+                      <p className="text-[10px] text-muted mt-0.5">{item.location} · {item.category}</p>
                       <div className="flex items-center gap-1 mt-1">
                         {Array.from({ length: Math.round(item.rating || 4) }).map((_, j) => (
-                          <Star key={j} className="w-2.5 h-2.5 text-gold fill-gold" />
+                          <Star key={j} className="w-2.5 h-2.5 text-accent-strong fill-accent" />
                         ))}
-                        <span className="text-[10px] text-ich-neutral/50 ml-1">{item.rating}</span>
+                        <span className="text-[10px] text-muted ml-1">{item.rating}</span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-base font-display font-bold text-gold">{formatIDR(item.price_per_person)}</p>
-                      <p className="text-[10px] text-ich-neutral/40">/ person</p>
+                      <p className="text-base font-display font-bold text-accent-strong">{formatIDR(item.price_per_person)}</p>
+                      <p className="text-[10px] text-muted">/ person</p>
                     </div>
                   </div>
-                  <p className="text-xs text-ich-neutral/60 mb-2 leading-relaxed">{item.description}</p>
-                  <p className="text-xs text-ich-neutral/50 mb-3"><Clock className="w-3 h-3 inline mr-1" />{item.duration_hours}h · Includes: {item.includes?.join(", ")}</p>
-                  <button onClick={() => handleBook(item)} className="w-full py-2 glass-gold rounded-lg text-xs font-semibold text-gold hover:glow-gold transition-all">Book Activity</button>
+                  <p className="text-xs text-muted mb-2 leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-muted mb-3"><Clock className="w-3 h-3 inline mr-1" />{item.duration_hours}h · Includes: {item.includes?.join(", ")}</p>
+                  <button onClick={() => handleBook(item)} className="w-full py-2 bg-accent-strong rounded-lg text-xs font-semibold text-white shadow-glow hover:bg-accent-dark transition-all">Book Activity</button>
                 </div>
               )}
             </GlassCard>

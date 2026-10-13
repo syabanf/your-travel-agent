@@ -20,7 +20,15 @@ const MOCK_USER = {
   id: 'user_local',
   full_name: 'Alex Rivera',
   email: 'traveler@iconholiday.app',
+  phone: '+62 811 2233 4455',
   role: 'user',
+};
+
+// The signed-in account's details (name, phone, city, ...), written at sign-in
+// and from Profile > Personal details. Forms prefill from it.
+const PROFILE_KEY = 'ich_user_profile';
+const readProfile = () => {
+  try { return JSON.parse(readRaw(PROFILE_KEY) || '{}') || {}; } catch { return {}; }
 };
 
 /* ----------------------------- storage ----------------------------- */
@@ -150,16 +158,26 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage', 'Registration', 'FeatureAccess'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage', 'Registration', 'FeatureAccess', 'TravelDocument', 'Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry'];
 
 // Business records whose changes are written to the AuditLog (compliance trail).
-const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage', 'Registration']);
+const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage', 'Registration', 'TravelDocument', 'Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry']);
+// The staff member signed in to the back office (lib/staffAuth.js), else the app user.
+function actorName() {
+  for (const store of [globalThis.localStorage, globalThis.sessionStorage]) {
+    try {
+      const name = JSON.parse(store?.getItem('ich_staff_session') || 'null')?.name;
+      if (name) return name;
+    } catch { /* fall through */ }
+  }
+  return readRaw('ich_user_name') || MOCK_USER.full_name;
+}
 function logAudit(action, name, id, data) {
   if (!AUDITABLE.has(name)) return;
   try {
     const rows = readCollection('AuditLog');
     const label = data?.title || data?.name || id;
-    rows.unshift({ id: uid(), created_at: nowISO(), actor: MOCK_USER.full_name, action, entity: name, entity_id: id, summary: `${action} ${name}${label ? ` — ${label}` : ''}` });
+    rows.unshift({ id: uid(), created_at: nowISO(), actor: actorName(), action, entity: name, entity_id: id, summary: `${action} ${name}${label ? ` — ${label}` : ''}` });
     writeCollection('AuditLog', rows.slice(0, 500));
   } catch { /* never block a write on audit logging */ }
 }
@@ -271,7 +289,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v10`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v13`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -329,6 +347,17 @@ function runMigrations() {
     for (const nm of ['Supplier', 'Lead', 'Campaign']) {
       if (readCollection(nm).length === 0 && (seed[nm] || []).length) writeCollection(nm, seed[nm]);
     }
+    // Link the seeded trips to their tour leader and meeting point records.
+    const seedTrips = new Map((seed.Trip || []).map((t) => [t.id, t]));
+    const linkTrips = readCollection('Trip');
+    if (linkTrips.some((t) => t.tour_leader && !t.tour_leader.key && seedTrips.get(t.id)?.tour_leader?.key)) {
+      writeCollection('Trip', linkTrips.map((t) => {
+        const s = seedTrips.get(t.id);
+        return t.tour_leader && !t.tour_leader.key && s?.tour_leader?.key
+          ? { ...t, tour_leader: { ...t.tour_leader, key: s.tour_leader.key }, meeting_point_key: t.meeting_point_key || s.meeting_point_key }
+          : t;
+      }));
+    }
 
     // 5. Seed CMS collections (pages, media, settings) if empty.
     for (const nm of ['Page', 'MediaAsset', 'Setting']) {
@@ -336,7 +365,7 @@ function runMigrations() {
     }
 
     // v5: backfill newly-added fields from the seed onto existing rows.
-    for (const nm of ['Customer', 'Booking', 'Trip', 'Supplier', 'Lead', 'Promotion', 'Destination', 'TourPackage']) {
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Supplier', 'Lead', 'Promotion', 'Destination', 'TourPackage', 'ItineraryItem', 'Notification']) {
       const sMap = Object.fromEntries((seed[nm] || []).map((r) => [r.id, r]));
       const rows = readCollection(nm);
       if (!rows.length) continue;
@@ -360,6 +389,19 @@ function runMigrations() {
     // v8: seed the sellable holiday packages.
     if (readCollection('TourPackage').length === 0 && (seed.TourPackage || []).length) {
       writeCollection('TourPackage', seed.TourPackage);
+    }
+
+    // v11: Icon Membership v2. Document status starts from the seed; the new
+    // trip, package, itinerary and notification fields arrive through the
+    // field backfill above, matched by id so nothing a user edited is touched.
+    if (readCollection('TravelDocument').length === 0 && (seed.TravelDocument || []).length) {
+      writeCollection('TravelDocument', seed.TravelDocument);
+    }
+
+    // v12: master data moved out of the code into the back office.
+    // v13: the chart of accounts and the manual journal behind Accounting.
+    for (const nm of ['Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry']) {
+      if (readCollection(nm).length === 0 && (seed[nm] || []).length) writeCollection(nm, seed[nm]);
     }
 
     // v9: seed the registration queue, and give every existing booking a
@@ -394,7 +436,7 @@ function runMigrations() {
     // v6: insert seed rows added after the user first seeded (the spread-out
     // historical demo data). Match by id so anything the user created/edited is
     // left untouched; empty collections are already handled by ensureSeeded.
-    for (const nm of ['Customer', 'Booking', 'Trip', 'Lead', 'TourPackage']) {
+    for (const nm of ['Customer', 'Booking', 'Trip', 'Lead', 'TourPackage', 'Notification']) {
       const existing = readCollection(nm);
       if (!existing.length) continue;
       const have = new Set(existing.map((r) => r.id));
@@ -418,11 +460,21 @@ const auth = {
     // a registered name actually show up instead of the demo user's.
     const name = readRaw('ich_user_name');
     const email = readRaw('ich_user_email');
+    const profile = readProfile();
+    // A different account than the demo one starts from blank details.
+    const base = email && email !== MOCK_USER.email ? { id: MOCK_USER.id, role: MOCK_USER.role } : MOCK_USER;
     return clone({
-      ...MOCK_USER,
+      ...base,
+      ...Object.fromEntries(Object.entries(profile).filter(([, v]) => v)),
       ...(name ? { full_name: name } : {}),
       ...(email ? { email } : {}),
     });
+  },
+  /** Saves the account's details; returns the updated user. */
+  async updateMe(patch) {
+    writeRaw(PROFILE_KEY, JSON.stringify({ ...readProfile(), ...patch }));
+    if (patch.full_name) writeRaw('ich_user_name', patch.full_name);
+    return auth.me();
   },
   // No real session in local mode — these are intentionally inert so the UI
   // controls still work without throwing or redirecting off-app.

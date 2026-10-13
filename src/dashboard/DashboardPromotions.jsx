@@ -20,10 +20,11 @@ import { ChartCard, MixDonut } from "@/dashboard/charts";
 import DateRangeSelect from "@/dashboard/DateRangeSelect";
 import { inRange } from "@/dashboard/dateRange";
 import SearchableSelect from "@/dashboard/SearchableSelect";
+import { BRAND } from "@/lib/brand";
 
 const EMPTY = { type: "promo", title: "", description: "", image: "", discount: "", price: "", valid_until: "", date: "", location: "", cta: "Learn more", featured: false, terms: "", promo_code: "", max_redemptions: "", audience: "all" };
 const TYPE_META = {
-  promo: { label: "Promotion", icon: Megaphone, pill: "bg-ich-gold/10 text-gold" },
+  promo: { label: "Promotion", icon: Megaphone, pill: "bg-accent/10 text-accent-strong" },
   event: { label: "Event", icon: CalendarDays, pill: "bg-blue-500/15 text-blue-600" },
   news: { label: "News", icon: Newspaper, pill: "bg-emerald-500/15 text-emerald-600" },
 };
@@ -114,13 +115,13 @@ export default function DashboardPromotions() {
   const typeCount = { promo: 0, event: 0, news: 0 };
   scoped.forEach((p) => { const t = p.type || "promo"; typeCount[t] = (typeCount[t] || 0) + 1; });
   const byType = [
-    { name: "Promotion", value: typeCount.promo, color: "#AD1F23" },
-    { name: "Event", value: typeCount.event, color: "#C99A3F" },
-    { name: "News", value: typeCount.news, color: "#05308C" },
+    { name: "Promotion", value: typeCount.promo, color: BRAND.accent },
+    { name: "Event", value: typeCount.event, color: BRAND.warning },
+    { name: "News", value: typeCount.news, color: BRAND.info },
   ];
   const featuredMix = [
-    { name: "Featured", value: scoped.filter((p) => p.featured).length, color: "#AD1F23" },
-    { name: "Standard", value: scoped.filter((p) => !p.featured).length, color: "#94A3B8" },
+    { name: "Featured", value: scoped.filter((p) => p.featured).length, color: BRAND.accent },
+    { name: "Standard", value: scoped.filter((p) => !p.featured).length, color: BRAND.chartMuted },
   ];
 
   return (
@@ -128,14 +129,14 @@ export default function DashboardPromotions() {
       <ReadOnlyBanner resource="promotions" />
       <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-ich-primary">Promotions & Events</h1>
-          <p className="text-sm text-ich-neutral mt-0.5">Publish the offers, events and news shown in the app's "What's New".</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">Promotions & Events</h1>
+          <p className="text-sm text-muted mt-0.5">Publish the offers, events and news shown in the app's "What's New".</p>
         </div>
         {!editing && (
           <div className="flex flex-wrap items-center gap-2">
             <DashboardAiStub resource="promotions" data={items} />
             {can(role, "promotions", "create") && (
-              <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
+              <button onClick={() => setEditing({ ...EMPTY })} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold flex items-center gap-2">
                 <Plus className="w-4 h-4" /> New entry
               </button>
             )}
@@ -151,10 +152,10 @@ export default function DashboardPromotions() {
       )}
 
       {editing ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-6 max-w-2xl">
+        <div className="bg-card rounded-card p-6 max-w-2xl shadow-card">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display font-semibold text-lg text-ich-primary">{editing.id ? "Edit entry" : "New entry"}</h2>
-            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral press"><X className="w-4 h-4" /></button>
+            <h2 className="font-display font-semibold text-lg text-foreground">{editing.id ? "Edit entry" : "New entry"}</h2>
+            <button onClick={() => setEditing(null)} aria-label="Close" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-muted press"><X className="w-4 h-4" /></button>
           </div>
           <div className="space-y-3">
             <Fld label="Type">
@@ -207,25 +208,25 @@ export default function DashboardPromotions() {
               />
             </Fld>
             <Fld label="Terms & conditions"><textarea value={editing.terms ?? ""} onChange={(e) => upd("terms", e.target.value)} className="dash-input !h-auto py-2" rows={3} placeholder="Terms that apply to this offer…" /></Fld>
-            <label className="flex items-center gap-2 text-sm text-ich-neutral pt-1">
-              <input type="checkbox" checked={!!editing.featured} onChange={(e) => upd("featured", e.target.checked)} className="accent-[#AD1F23] w-4 h-4" />
+            <label className="flex items-center gap-2 text-sm text-muted pt-1">
+              <input type="checkbox" checked={!!editing.featured} onChange={(e) => upd("featured", e.target.checked)} className="accent-accent w-4 h-4" />
               Feature this as the hero banner
             </label>
             <div className="flex gap-2 pt-3">
-              <button onClick={save} disabled={saving} className="btn-primary rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-5 py-2.5 text-sm font-semibold flex items-center gap-2 disabled:opacity-50 sheen">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save
               </button>
-              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-ich-neutral hover:bg-ich-primary/5">Cancel</button>
+              <button onClick={() => setEditing(null)} className="rounded-xl px-5 py-2.5 text-sm font-medium text-muted hover:bg-surface">Cancel</button>
             </div>
           </div>
         </div>
       ) : items == null ? (
-        <div className="bg-white rounded-2xl border border-ich-primary/10 p-4"><SkeletonRows rows={6} /></div>
+        <div className="bg-card rounded-card p-4 shadow-card"><SkeletonRows rows={6} /></div>
       ) : (
         <div className="space-y-3">
           <div className="flex gap-2 mb-4">
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ich-neutral pointer-events-none" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
               <input value={query} onChange={(e) => setQuery(e.target.value)} className="dash-input pl-9" placeholder="Search entries…" />
             </div>
             <SearchableSelect
@@ -253,7 +254,7 @@ export default function DashboardPromotions() {
               className="max-w-[160px]"
             />
             {(query || typeF !== "all" || range !== "all" || sortBy !== "newest") && (
-              <button onClick={() => { setQuery(""); setTypeF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-ich-primary/15 text-sm text-ich-neutral hover:bg-ich-primary/5 inline-flex items-center gap-1.5 press">
+              <button onClick={() => { setQuery(""); setTypeF("all"); setRange("all"); setSortBy("newest"); }} className="h-[2.6rem] px-3 rounded-lg border border-foreground/15 text-sm text-muted hover:bg-surface inline-flex items-center gap-1.5 press">
                 <X className="w-3.5 h-3.5" /> Clear
               </button>
             )}
@@ -262,13 +263,13 @@ export default function DashboardPromotions() {
           {view === "table" ? (
             <DataTable
               columns={[
-                { key: "title", label: "Title", className: "font-medium text-ich-primary", render: (p) => (
-                  <span className="block min-w-0"><span className="block truncate">{p.title}</span>{p.description ? <span className="block text-[11px] text-ich-neutral/60 truncate">{p.description}</span> : null}</span>
+                { key: "title", label: "Title", className: "font-medium text-foreground", render: (p) => (
+                  <span className="block min-w-0"><span className="block truncate">{p.title}</span>{p.description ? <span className="block text-[11px] text-muted truncate">{p.description}</span> : null}</span>
                 ) },
                 { key: "type", label: "Type", render: (p) => { const meta = TYPE_META[p.type] || TYPE_META.promo; return <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${meta.pill}`}>{p.type || "promo"}</span>; } },
-                { key: "value", label: "Discount / Price", align: "right", className: "text-right font-semibold text-gold", render: (p) => p.discount ? `${p.discount}% off` : (p.price ? formatIDR(p.price) : "—") },
+                { key: "value", label: "Discount / Price", align: "right", className: "text-right font-semibold text-accent-strong", render: (p) => p.discount ? `${p.discount}% off` : (p.price ? formatIDR(p.price) : "—") },
                 { key: "date", label: "Date", render: (p) => p.valid_until ? `Until ${moment(p.valid_until).format("MMM D")}` : (p.date ? moment(p.date).format("MMM D, YYYY") : "—") },
-                { key: "featured", label: "Featured", render: (p) => p.featured ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-ich-gold/15 text-gold"><Star className="w-3 h-3 fill-gold" /> Featured</span> : <span className="text-ich-neutral/40">—</span> },
+                { key: "featured", label: "Featured", render: (p) => p.featured ? <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent/15 text-accent-strong"><Star className="w-3 h-3 fill-accent" /> Featured</span> : <span className="text-muted">—</span> },
               ]}
               rows={pg.pageItems}
               onRowClick={(p) => navigate(`/dashboard/promotions/${p.id}`)}
@@ -279,26 +280,26 @@ export default function DashboardPromotions() {
           {pg.pageItems.map((p) => {
             const meta = TYPE_META[p.type] || TYPE_META.promo;
             return (
-              <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-white rounded-2xl border border-ich-primary/10 p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press">
-                <div className="w-20 h-16 rounded-xl overflow-hidden bg-ich-primary shrink-0">
+              <Link key={p.id} to={`/dashboard/promotions/${p.id}`} className="bg-card rounded-card p-4 flex items-center gap-4 group hover:shadow-md transition-shadow press shadow-card lift">
+                <div className="w-20 h-16 rounded-xl overflow-hidden bg-surface shrink-0">
                   {p.image && <img src={p.image} alt={p.title} loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${meta.pill}`}>{meta.label}</span>
-                    {p.featured && <span className="text-[10px] px-2 py-0.5 rounded-full bg-ich-primary/10 text-ich-primary">Featured</span>}
+                    {p.featured && <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface text-foreground">Featured</span>}
                   </div>
-                  <h3 className="font-display font-semibold text-ich-primary truncate mt-1">{p.title}</h3>
-                  <p className="text-xs text-ich-neutral truncate">{p.description}</p>
+                  <h3 className="font-display font-semibold text-foreground truncate mt-1">{p.title}</h3>
+                  <p className="text-xs text-muted truncate">{p.description}</p>
                 </div>
                 <div className="text-right shrink-0 mr-2">
-                  {p.discount ? <p className="text-sm font-semibold text-gold">{p.discount}% off</p> : null}
-                  {p.price ? <p className="text-xs text-ich-neutral">{formatIDR(p.price)}</p> : null}
-                  {p.date ? <p className="text-xs text-ich-neutral">{moment(p.date).format("MMM D")}</p> : null}
+                  {p.discount ? <p className="text-sm font-semibold text-accent-strong">{p.discount}% off</p> : null}
+                  {p.price ? <p className="text-xs text-muted">{formatIDR(p.price)}</p> : null}
+                  {p.date ? <p className="text-xs text-muted">{moment(p.date).format("MMM D")}</p> : null}
                 </div>
                 <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-primary hover:text-gold press"><Pencil className="w-4 h-4" /></button>}
-                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-red-600 press"><Trash2 className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "edit") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(p); }} aria-label="Edit" className="w-9 h-9 rounded-lg hover:bg-surface flex items-center justify-center text-foreground hover:text-accent-strong press"><Pencil className="w-4 h-4" /></button>}
+                  {can(role, "promotions", "delete") && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(p); }} aria-label="Delete" className="w-9 h-9 rounded-lg hover:bg-accent-soft flex items-center justify-center text-accent-strong press"><Trash2 className="w-4 h-4" /></button>}
                 </div>
               </Link>
             );
@@ -312,7 +313,7 @@ export default function DashboardPromotions() {
               title="No entries yet"
               hint="Publish offers, events and news to show in the app's What's New."
               action={can(role, "promotions", "create") ? (
-                <button onClick={() => setEditing({ ...EMPTY })} className="btn-primary rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
+                <button onClick={() => setEditing({ ...EMPTY })} className="bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-xl px-4 py-2.5 text-sm font-semibold inline-flex items-center gap-2">
                   <Plus className="w-4 h-4" /> New entry
                 </button>
               ) : null}
@@ -329,7 +330,7 @@ export default function DashboardPromotions() {
 
 const Fld = ({ label, children }) => (
   <div>
-    <label className="text-[11px] text-ich-neutral uppercase tracking-wider mb-1 block">{label}</label>
+    <label className="text-[11px] text-muted uppercase tracking-wider mb-1 block">{label}</label>
     {children}
   </div>
 );

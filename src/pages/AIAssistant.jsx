@@ -153,7 +153,7 @@ ${content}`,
   if (checkingAccess) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-6 h-6 text-gold animate-spin" />
+        <Loader2 className="w-6 h-6 text-accent-strong animate-spin" />
       </div>
     );
   }
@@ -166,24 +166,24 @@ ${content}`,
         <PageHeader title="Smart-A Itinerary" subtitle="Locked" showBack />
         <div className="px-6 pb-28">
           <GlassCard className="p-6 text-center">
-            <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6 text-gold" />
+            <div className="w-14 h-14 rounded-2xl bg-accent-soft flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-accent-strong" />
             </div>
-            <h2 className="text-base font-display font-bold text-ich-primary mb-1.5">
+            <h2 className="text-base font-display font-bold text-foreground mb-1.5">
               Itinerary building is a paid add-on
             </h2>
-            <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-sm text-muted leading-relaxed max-w-[280px] mx-auto">
               {meta.tagline}
             </p>
             <button
               onClick={() => navigate("/unlock/ai_itinerary")}
-              className="w-full py-3.5 mt-6 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all"
+              className="w-full py-3.5 mt-6 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all"
             >
               Unlock for {formatIDR(meta.price)}
             </button>
             <button
               onClick={() => navigate("/assistant")}
-              className="w-full py-3 mt-2 text-[11px] text-ich-neutral hover:text-ich-primary transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-3 mt-2 text-[11px] text-muted hover:text-foreground transition-colors flex items-center justify-center gap-1.5"
             >
               <Headphones className="w-3.5 h-3.5" /> Or talk to a human concierge — free
             </button>
@@ -205,31 +205,31 @@ ${content}`,
         {messages.length === 0 && (
           <div className="pt-4">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 glass-gold rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-gold" />
+              <div className="w-16 h-16 bg-accent-soft rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-accent-strong" />
               </div>
-              <h2 className="text-lg font-display font-semibold text-ich-primary mb-1">
+              <h2 className="text-lg font-display font-semibold text-foreground mb-1">
                 Your AI Travel Concierge
               </h2>
-              <p className="text-xs text-ich-neutral leading-relaxed max-w-[260px] mx-auto">
+              <p className="text-xs text-muted leading-relaxed max-w-[260px] mx-auto">
                 I can create personalized itineraries, optimize routes, suggest hidden gems, and more.
               </p>
-              <p className="text-[10px] text-ich-neutral/80 leading-relaxed max-w-[260px] mx-auto mt-2">
+              <p className="text-[10px] text-muted leading-relaxed max-w-[260px] mx-auto mt-2">
                 I'm an AI assistant — a human concierge is available anytime if you'd prefer to talk to a person.
               </p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-[10px] text-gold uppercase tracking-widest mb-2">Try asking</p>
+              <p className="text-[10px] text-accent-strong uppercase tracking-widest mb-2">Try asking</p>
               {quickPrompts.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => sendMessage(prompt)}
                   className="w-full text-left"
                 >
-                  <GlassCard className="p-3 flex items-center gap-3 hover:bg-white/10 transition-all">
-                    <Sparkles className="w-4 h-4 text-gold flex-shrink-0" />
-                    <span className="text-xs text-ich-primary">{prompt}</span>
+                  <GlassCard className="p-3 flex items-center gap-3 hover:bg-surface transition-all lift">
+                    <Sparkles className="w-4 h-4 text-accent-strong flex-shrink-0" />
+                    <span className="text-xs text-foreground">{prompt}</span>
                   </GlassCard>
                 </button>
               ))}
@@ -261,14 +261,14 @@ ${content}`,
             <div className={isUser ? "max-w-[85%]" : "w-full"}>
               {!isUser && (
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-ich-gold/10 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-gold" />
+                  <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 text-accent-strong" />
                   </div>
-                  <span className="text-[10px] text-gold">Icon Holiday AI</span>
+                  <span className="text-[10px] text-accent-strong">Icon Holiday AI</span>
                 </div>
               )}
               {isUser ? (
-                <GlassCard className="p-4 glass-gold">{markdown}</GlassCard>
+                <GlassCard className="p-4 bg-accent-soft">{markdown}</GlassCard>
               ) : (
                 markdown
               )}
@@ -278,13 +278,13 @@ ${content}`,
                   <button
                     onClick={() => handleSaveToTrip(msg.content)}
                     disabled={saving}
-                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-gold hover:bg-white/10 transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card shadow-card rounded-lg text-[10px] text-accent-strong hover:bg-surface transition-all disabled:opacity-50"
                   >
                     <Save className="w-3 h-3" /> Save as trip plan
                   </button>
                   <button
                     onClick={() => sendMessage("Regenerate this itinerary with different suggestions")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 glass-light rounded-lg text-[10px] text-ich-neutral hover:text-ich-primary hover:bg-ich-primary/5 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card shadow-card rounded-lg text-[10px] text-muted hover:text-foreground hover:bg-surface transition-all"
                   >
                     <RefreshCw className="w-3 h-3" /> Regenerate
                   </button>
@@ -299,11 +299,11 @@ ${content}`,
           // Borderless too, so the thinking state sits where the reply will.
           <div className="flex items-center gap-3">
             <div className="flex gap-1">
-              <div className="w-2 h-2 bg-ich-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-2 h-2 bg-ich-gold/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-2 h-2 bg-ich-gold/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 bg-accent-strong rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-2 h-2 bg-accent/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-accent/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs text-ich-neutral">Planning your journey...</span>
+            <span className="text-xs text-muted">Planning your journey...</span>
           </div>
         )}
         
@@ -318,7 +318,7 @@ ${content}`,
               key={prompt}
               onClick={() => sendMessage(prompt)}
               disabled={loading}
-              className="flex-shrink-0 glass-light rounded-full px-3 py-1.5 text-xs text-ich-primary hover:bg-white/10 transition-all disabled:opacity-40"
+              className="flex-shrink-0 bg-card shadow-card rounded-full px-3 py-1.5 text-xs text-foreground hover:bg-surface transition-all disabled:opacity-40"
             >
               {prompt}
             </button>
@@ -326,7 +326,7 @@ ${content}`,
         </div>
         <button
           onClick={() => navigate("/assistant")}
-          className="flex items-center gap-1.5 text-[11px] text-ich-neutral hover:text-ich-primary transition-all"
+          className="flex items-center gap-1.5 text-[11px] text-muted hover:text-foreground transition-all"
         >
           <Headphones className="w-3.5 h-3.5" /> Talk to a human concierge
         </button>
@@ -340,12 +340,12 @@ ${content}`,
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && sendMessage(input)}
             placeholder="Ask anything about your trip..."
-            className="flex-1 bg-transparent text-sm text-ich-primary placeholder:text-ich-neutral px-3 py-2.5 outline-none"
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted px-3 py-2.5 outline-none"
           />
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim() || loading}
-            className="w-10 h-10 glass-gold rounded-xl flex items-center justify-center text-gold hover:glow-gold transition-all disabled:opacity-40"
+            className="w-10 h-10 bg-accent-soft rounded-xl flex items-center justify-center text-accent-strong hover:shadow-glow transition-all disabled:opacity-40"
           >
             <Send className="w-4 h-4" />
           </button>

@@ -24,7 +24,7 @@ export default function VirtualGuiding() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-6 h-6 text-gold animate-spin" />
+        <Loader2 className="w-6 h-6 text-accent-strong animate-spin" />
       </div>
     );
   }
@@ -36,18 +36,18 @@ export default function VirtualGuiding() {
         <PageHeader title="Virtual Guiding" subtitle="Locked" showBack />
         <div className="px-6 pb-28">
           <GlassCard className="p-6 text-center">
-            <div className="w-14 h-14 rounded-2xl glass-gold flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-6 h-6 text-gold" />
+            <div className="w-14 h-14 rounded-2xl bg-accent-soft flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-6 h-6 text-accent-strong" />
             </div>
-            <h2 className="text-base font-display font-bold text-ich-primary mb-1.5">
+            <h2 className="text-base font-display font-bold text-foreground mb-1.5">
               Virtual Guiding is a paid add-on
             </h2>
-            <p className="text-sm text-ich-neutral leading-relaxed max-w-[280px] mx-auto">
+            <p className="text-sm text-muted leading-relaxed max-w-[280px] mx-auto">
               {meta.tagline} Unlock it once and it covers your whole travelling party.
             </p>
             <button
               onClick={() => navigate("/unlock/virtual_guiding")}
-              className="w-full py-3.5 mt-6 glass-gold rounded-xl text-sm font-semibold text-gold hover:glow-gold transition-all"
+              className="w-full py-3.5 mt-6 bg-accent-strong rounded-xl text-sm font-semibold text-white shadow-glow hover:bg-accent-dark transition-all"
             >
               Unlock for {formatIDR(meta.price)}
             </button>
@@ -72,25 +72,25 @@ export default function VirtualGuiding() {
       <div className="px-6 pb-28 space-y-4">
         <GlassCard className="p-5">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl glass-gold flex items-center justify-center shrink-0">
-              <Radio className="w-5 h-5 text-gold" />
+            <div className="w-11 h-11 rounded-xl bg-accent-soft flex items-center justify-center shrink-0">
+              <Radio className="w-5 h-5 text-accent-strong" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-ich-primary">Live guide available</p>
-              <p className="text-[11px] text-ich-neutral/60">Tap any stop to start the audio guide</p>
+              <p className="text-sm font-semibold text-foreground">Live guide available</p>
+              <p className="text-[11px] text-muted">Tap any stop to start the audio guide</p>
             </div>
           </div>
         </GlassCard>
 
         {trips.length > 0 && (
           <div>
-            <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-2">Your trips</h3>
+            <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-2">Your trips</h3>
             <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-1 px-1">
               {trips.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => navigate(`/itinerary/${t.id}`)}
-                  className="px-3.5 py-2 rounded-full glass-light text-xs font-medium text-ich-neutral hover:text-gold whitespace-nowrap shrink-0 press-spring transition-colors"
+                  className="px-3.5 py-2 rounded-full bg-card shadow-card text-xs font-medium text-muted hover:text-accent-strong whitespace-nowrap shrink-0 press-spring transition-colors"
                 >
                   {t.destination || t.title}
                 </button>
@@ -100,7 +100,7 @@ export default function VirtualGuiding() {
         )}
 
         <div>
-          <h3 className="text-xs font-semibold text-gold uppercase tracking-widest mb-2">Guided stops</h3>
+          <h3 className="text-xs font-semibold text-accent-strong uppercase tracking-widest mb-2">Guided stops</h3>
           <GlassCard className="p-2">
             {stops.map((stop) => {
               const isPlaying = playing === stop.id;
@@ -110,18 +110,18 @@ export default function VirtualGuiding() {
                     onClick={() => setPlaying(isPlaying ? null : stop.id)}
                     aria-label={isPlaying ? `Pause ${stop.title}` : `Play ${stop.title}`}
                     className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 press-spring transition-all ${
-                      isPlaying ? "glass-gold text-gold" : "glass-light text-ich-neutral hover:text-gold"
+                      isPlaying ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted hover:text-accent-strong"
                     }`}
                   >
                     {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
                   </button>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-ich-primary truncate">{stop.title}</p>
-                    <p className="text-[11px] text-ich-neutral/60 flex items-center gap-1 truncate">
+                    <p className="text-sm font-medium text-foreground truncate">{stop.title}</p>
+                    <p className="text-[11px] text-muted flex items-center gap-1 truncate">
                       <MapPin className="w-3 h-3 shrink-0" /> {stop.place} · {stop.minutes} min
                     </p>
                   </div>
-                  {isPlaying && <Volume2 className="w-4 h-4 text-gold shrink-0 animate-pulse" />}
+                  {isPlaying && <Volume2 className="w-4 h-4 text-accent-strong shrink-0 animate-pulse" />}
                 </div>
               );
             })}
@@ -130,7 +130,7 @@ export default function VirtualGuiding() {
 
         <button
           onClick={() => navigate("/assistant")}
-          className="w-full py-3.5 glass-light rounded-xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3.5 bg-card shadow-card rounded-xl text-sm font-medium text-foreground hover:bg-surface transition-colors flex items-center justify-center gap-2"
         >
           <Headphones className="w-4 h-4" /> Ask a live guide
         </button>

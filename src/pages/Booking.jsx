@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { backend } from "@/api/backend";
 import { Plane, Building2, Train, Bus, Ship, Car, Ticket, MessageCircle, CalendarSearch, ChevronRight, Package } from "lucide-react";
@@ -11,9 +12,9 @@ import { formatIDR } from "@/lib/currency";
 import moment from "moment";
 
 const statusColors = {
-  pending: "bg-ich-gold/10 text-gold border-ich-gold/20",
+  pending: "bg-accent/10 text-accent-strong border-accent/20",
   confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  cancelled: "bg-red-500/15 text-red-400 border-red-500/20",
+  cancelled: "bg-accent-soft text-red-400 border-red-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
 };
 
@@ -82,7 +83,7 @@ export default function Booking() {
     <div className="animate-fade-in pb-28" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       )}
       <PageHeader title="My Bookings" subtitle="Your reservations" />
@@ -90,28 +91,28 @@ export default function Booking() {
       {/* Ways to book: ready-made packages, or search the marketplace */}
       <div className="px-6 mb-6 space-y-3">
         <Link to="/packages" className="block press-spring">
-          <div className="card-modern rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-lift transition-shadow">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-soft" style={{ backgroundImage: "linear-gradient(135deg, #C42A2E, #8E181B)" }}>
+          <div className="bg-card shadow-card rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-float transition-shadow lift">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-card" style={{ backgroundColor: BRAND.accentStrong }}>
               <Package className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-ich-primary">Holiday packages</p>
-              <p className="text-xs text-ich-neutral/70 mt-0.5">Ready-made trips, everything included</p>
+              <p className="text-sm font-semibold text-foreground">Holiday packages</p>
+              <p className="text-xs text-muted mt-0.5">Ready-made trips, everything included</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-ich-neutral/40 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-muted flex-shrink-0" />
           </div>
         </Link>
 
         <Link to="/ota" className="block press-spring">
-          <div className="card-modern rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-lift transition-shadow">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-soft" style={{ backgroundImage: "linear-gradient(135deg, #1B2D52, #0B1B3B)" }}>
+          <div className="bg-card shadow-card rounded-2xl p-4 flex items-center gap-3.5 hover:shadow-float transition-shadow lift">
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-card" style={{ backgroundImage: "linear-gradient(135deg, #0a6e4c, #0a6e4c)" }}>
               <CalendarSearch className="w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-ich-primary">Book flights, hotels &amp; more</p>
-              <p className="text-xs text-ich-neutral/70 mt-0.5">Search the travel marketplace</p>
+              <p className="text-sm font-semibold text-foreground">Book flights, hotels &amp; more</p>
+              <p className="text-xs text-muted mt-0.5">Search the travel marketplace</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-ich-neutral/40 flex-shrink-0" />
+            <ChevronRight className="w-5 h-5 text-muted flex-shrink-0" />
           </div>
         </Link>
       </div>
@@ -119,7 +120,7 @@ export default function Booking() {
       {/* Recent Bookings */}
       <div className="px-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-ich-white/90 tracking-wide uppercase">
+          <h2 className="text-sm font-semibold text-body tracking-wide uppercase">
             My Bookings
           </h2>
         </div>
@@ -133,7 +134,7 @@ export default function Booking() {
                 onClick={() => setStatus(c.value)}
                 aria-pressed={status === c.value}
                 className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                  status === c.value ? "btn-primary text-white" : "glass-light text-ich-neutral"
+                  status === c.value ? "bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-white" : "bg-card shadow-card text-muted"
                 }`}
               >
                 {c.label}
@@ -158,7 +159,7 @@ export default function Booking() {
             action={
               <Link
                 to="/ota"
-                className="press inline-flex items-center gap-2 px-5 py-2.5 glass-gold rounded-xl text-xs text-gold font-medium hover:glow-gold transition-all"
+                className="press inline-flex items-center gap-2 px-5 py-2.5 bg-accent-soft rounded-xl text-xs text-accent-strong font-medium hover:shadow-glow transition-all"
               >
                 <CalendarSearch className="w-4 h-4" /> Book travel
               </Link>
@@ -176,31 +177,31 @@ export default function Booking() {
               const Icon = typeIcons[booking.type] || Ticket;
               return (
                 <Link key={booking.id} to={`/booking/${booking.id}`} className="block press">
-                  <GlassCard className="p-4 hover:bg-white/10 transition-all">
+                  <GlassCard className="p-4 hover:bg-surface transition-all lift">
                     <div className="flex items-start gap-3.5">
                       {booking.image_url ? (
                         <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
                           <img src={booking.image_url} alt={booking.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-6 h-6 text-gold" strokeWidth={1.5} />
+                        <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-6 h-6 text-accent-strong" strokeWidth={1.5} />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="text-sm font-medium text-ich-white truncate">{booking.title}</h3>
+                          <h3 className="text-sm font-medium text-foreground truncate">{booking.title}</h3>
                           <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[booking.status] || statusColors.pending}`}>
                             {booking.status}
                           </span>
                         </div>
-                        <p className="text-xs text-ich-neutral/60 mt-0.5">{booking.provider}</p>
+                        <p className="text-xs text-muted mt-0.5">{booking.provider}</p>
                         <div className="flex items-center justify-between gap-2 mt-2">
-                          <span className="text-xs text-ich-neutral/70 truncate min-w-0">
+                          <span className="text-xs text-muted truncate min-w-0">
                             {booking.check_in && moment(booking.check_in).format("MMM D, YYYY")}
                           </span>
                           {booking.price > 0 && (
-                            <span className="stat-value text-sm font-display font-semibold text-gold shrink-0">
+                            <span className="stat-value text-sm font-display font-semibold text-accent-strong shrink-0">
                               {formatIDR(booking.price)}
                             </span>
                           )}

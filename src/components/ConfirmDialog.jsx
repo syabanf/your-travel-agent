@@ -65,34 +65,34 @@ export function ConfirmHost() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-      <div className="absolute inset-0 bg-ich-primary/30 backdrop-blur-[2px] animate-fade-in" onClick={() => close(false)} />
+      <div className="absolute inset-0 bg-foreground/30 backdrop-blur-[2px] animate-fade-in" onClick={() => close(false)} />
       <div className="dash-drawer-in relative w-full max-w-sm bg-white rounded-3xl shadow-float p-6 text-center">
         <button
           onClick={() => close(false)}
           aria-label="Close"
-          className="absolute top-3 right-3 w-10 h-10 rounded-full hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral"
+          className="absolute top-3 right-3 w-10 h-10 rounded-full hover:bg-surface flex items-center justify-center text-muted"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className={`w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center ${destructive ? "bg-red-500/10 text-red-600" : "bg-ich-gold/10 text-gold"}`}>
+        <div className={`w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center ${destructive ? "bg-accent-soft text-accent-strong" : "bg-accent/10 text-accent-strong"}`}>
           <AlertTriangle className="w-6 h-6" />
         </div>
 
-        <h2 id="confirm-title" className="text-lg font-display font-bold text-ich-primary">{title}</h2>
-        {body && <p className="text-sm text-ich-neutral mt-1.5 leading-relaxed">{body}</p>}
+        <h2 id="confirm-title" className="text-lg font-display font-bold text-foreground">{title}</h2>
+        {body && <p className="text-sm text-muted mt-1.5 leading-relaxed">{body}</p>}
 
         <div className="flex gap-2.5 mt-6">
           <button
             onClick={() => close(false)}
-            className="flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold border border-ich-primary/15 text-ich-primary hover:bg-ich-primary/5 press-spring"
+            className="flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold border border-foreground/15 text-foreground hover:bg-surface press-spring"
           >
             {cancelLabel}
           </button>
           <button
             ref={confirmRef}
             onClick={() => close(true)}
-            className={`flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold text-white press-spring ${destructive ? "bg-red-600 hover:bg-red-700 shadow-soft" : "btn-primary"}`}
+            className={`flex-1 min-h-[44px] px-4 rounded-xl text-sm font-semibold text-white press-spring ${destructive ? "bg-accent-strong hover:bg-red-700 shadow-card" : "bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50"}`}
           >
             {confirmLabel}
           </button>

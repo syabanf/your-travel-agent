@@ -5,17 +5,17 @@ import moment from "moment";
 import { isPlan } from "@/data/tripKinds";
 
 const statusColors = {
-  draft: "bg-ich-neutral/15 text-ich-neutral border-ich-neutral/20",
-  planned: "bg-ich-gold/10 text-gold border-ich-gold/20",
+  draft: "bg-muted/15 text-muted border-muted/20",
+  planned: "bg-accent/10 text-accent-strong border-accent/20",
   active: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
   completed: "bg-blue-500/15 text-blue-400 border-blue-500/20",
-  cancelled: "bg-red-500/15 text-red-600 border-red-500/20",
+  cancelled: "bg-accent-soft text-accent-strong border-red-500/20",
 };
 
 export default function TripCard({ trip }) {
   return (
     <Link to={`/itinerary/${trip.id}`} className="block">
-      <GlassCard className="overflow-hidden hover:glow-gold transition-all duration-300">
+      <GlassCard className="overflow-hidden hover:shadow-glow transition-all duration-300 lift">
         <div className="flex">
           <div className="w-24 h-24 flex-shrink-0">
             <img 
@@ -26,27 +26,27 @@ export default function TripCard({ trip }) {
           </div>
           <div className="flex-1 p-3.5 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1.5">
-            <h3 className="text-sm font-display font-semibold text-ich-primary truncate">
+            <h3 className="text-sm font-display font-semibold text-foreground truncate">
               {trip.title}
             </h3>
             {isPlan(trip) ? (
               // A proposal, not a booked trip — label it as one.
-              <span className="text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 inline-flex items-center gap-1 bg-gold/15 text-gold border-gold/25">
+              <span className="text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 inline-flex items-center gap-1 bg-accent/15 text-accent-strong border-accent/25">
                 <Sparkles className="w-2.5 h-2.5" /> Plan
               </span>
             ) : (
-              <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status]?.replace('text-ich-neutral', 'text-ich-primary').replace('bg-ich-neutral', 'bg-ich-primary') || statusColors.draft}`}>
+              <span className={`text-[9px] px-2 py-0.5 rounded-full border flex-shrink-0 capitalize ${statusColors[trip.status]?.replace('text-muted', 'text-foreground').replace('bg-muted', 'bg-ink') || statusColors.draft}`}>
                 {trip.status}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-ich-neutral mb-1.5">
-              <MapPin className="w-3 h-3 text-gold" />
+          <div className="flex items-center gap-1.5 text-muted mb-1.5">
+              <MapPin className="w-3 h-3 text-accent-strong" />
               <span className="text-xs truncate">{trip.destination}</span>
             </div>
             <div className="flex items-center gap-3">
               {trip.start_date && (
-                <div className="flex items-center gap-1 text-ich-neutral">
+                <div className="flex items-center gap-1 text-muted">
                   <Calendar className="w-3 h-3" />
                   <span className="text-[10px]">
                     {moment(trip.start_date).format("MMM D")}
@@ -55,7 +55,7 @@ export default function TripCard({ trip }) {
                 </div>
               )}
               {trip.travelers > 1 && (
-                <div className="flex items-center gap-1 text-ich-neutral">
+                <div className="flex items-center gap-1 text-muted">
                   <Users className="w-3 h-3" />
                   <span className="text-[10px]">{trip.travelers}</span>
                 </div>

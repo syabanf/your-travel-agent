@@ -92,9 +92,23 @@ It runs **fully standalone** on a client-side mock backend (data in `localStorag
 - Sub-pages: **Preferences**, **Saved Travellers** (add/remove), **Payment Methods** (mock cards), **Security**, **Settings**, **Privacy & Data** (export all data as JSON, delete all data).
 - **Notifications** (`/notifications`), **Privacy** (`/privacy`) and **Terms** (`/terms`) pages.
 
+### Icon Membership v2
+- **Guest vs member:** guests browse packages without prices and see a sign-in prompt; members see prices, trips and documents.
+- **Staged trip information** for guided trips: overview any time, pre-departure (meeting point, Tour Leader, documents, packing) from H-2, the detailed itinerary and travel info (hotels, WhatsApp group, important places) on the day of departure.
+- **Visa info** (`/visa`) per destination.
+- **My documents** (`/profile/documents`): a checklist per trip from the document types its destination needs. Members upload a photo or PDF; staff approve it, send it back with a note, or upload the e-ticket, visa or policy for the member to open.
+- **Staff sign-in** (`/dashboard/login`): the back office has its own sign-in for accounts in Team & Roles. The role comes from the account; only administrators can preview other roles. Invited accounts are refused until activated, five wrong attempts lock the form for 30 seconds, and every sign-in and sign-out goes to the audit log.
+- **Master data** (`/dashboard/master`): locations, document types, visa info, payment methods, tour leaders, meeting points and the chart of accounts, all edited in the back office and read by the app.
+- **Accounting** (`/dashboard/accounting`): double-entry books. Bookings post invoices, payments, supplier costs, refunds and PPN on their own; staff post expenses and other movements as journal entries. Reports: a monthly report (P&L and key figures against last month, the same month last year and year to date, a 12-month trend and a written summary, printable as PDF), profit and loss, balance sheet, cash flow, trial balance, general ledger, journal and receivables aging, each with a period filter and CSV export. The Financial report reads the same ledger.
+- **Prefilled forms:** sign-in loads the account's name, phone, city and date of birth from the customer record or the approved sign-up; checkout fills them in, and members edit them in Profile > Personal details.
+- **Book search** works like Traveloka and Agoda: searchable origin and destination with airport codes, recent and popular places, a swap button, a calendar sheet and a check-in/check-out range.
+- **Notifications** in four categories with an unread filter and delivery settings; staff send broadcasts or targeted messages from the dashboard.
+- **Digital member card** with member number, barcode and points.
+- Per-feature status against the spec: [FEATURE-MAP.md](FEATURE-MAP.md#icon-membership-v2).
+
 ### Mobile UX
 - 5-tab **bottom dock** with an animated active indicator; **swipe left/right** between tabs; **directional page transitions**.
-- Modern visuals: gradient app-icon tiles, image-zoom cards, frosted chips, premium dark cards, aurora backdrop.
+- White-dominant WIT look from the Icon Holiday logo: white cards on a soft grey canvas, one red accent, sliding active pills, staggered rise-in, image zoom on hover.
 
 ---
 

@@ -1,240 +1,123 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Dashboard form input — in the components layer so utilities (pl-9, px-*, etc.) override it. */
-@layer components {
-  .dash-input {
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid rgba(11, 27, 59, 0.12);
-    border-radius: 0.7rem;
-    height: 2.6rem;
-    padding: 0 0.75rem;
-    font-size: 0.875rem;
-    color: var(--ich-navy);
-    outline: none;
-    transition: border-color 0.15s ease;
-  }
-  /* A soft ring on focus so it's always obvious which field you're typing in. */
-  .dash-input:focus { border-color: rgba(173, 31, 35, 0.5); box-shadow: 0 0 0 3px rgba(173, 31, 35, 0.10); }
-  .dash-input::placeholder { color: #93a0b8; }
-}
-
 /* ------------------------------------------------------------------ *
- * Icon Holiday — coherent light "luxury" palette: deep navy + crimson + cream *
- * One source of truth so text/surfaces stay high-contrast everywhere. *
+ * Icon Holiday on the WIT house style.
+ *
+ * Palette sampled from the logo file: red #EF242A, green #0C895F. White text
+ * on either measures just under 4.5:1 (4.24 and 4.41), so both stay in the
+ * logo and icons and a darker step of each carries the tokens: the red as the
+ * accent, the green as the ink. Contrast gate, all WCAG 2.x:
+ *   white on ink #0A6E4C              6.27
+ *   white on accent-strong #B3161C    6.89
+ *   on-ink-muted #CDEBDD on ink       4.94
+ *   muted #5E6B65 on surface #F1F4F2  5.03
+ *   accent-strong on accent-soft      6.25 (4.61 on a 20% red tint)
+ *   accent on ink                     1.48  (never used as text)
+ * Values are RGB channels so Tailwind's /opacity modifiers work. Keep
+ * src/lib/brand.js (the hex mirror for charts and SVG) in step.
  * ------------------------------------------------------------------ */
 
 @layer base {
   :root {
-    --font-display: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --c-accent: 239 36 42;          /* #EF242A, the logo red */
+    --c-accent-strong: 179 22 28;   /* #B3161C: passes on every red tint, not only white */
+    --c-accent-dark: 143 17 22;     /* #8F1116 */
+    --c-accent-soft: 254 241 241;   /* #FEF1F1 */
+    --c-highlight: 12 137 95;       /* #0C895F, the logo green: icon stripes and marks only */
+    --c-highlight-soft: 232 246 239;
 
-    /* shadcn tokens (light) */
-    --background: 45 56% 98%;
-    --foreground: 222 70% 14%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 70% 14%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 70% 14%;
-    --primary: 222 70% 14%;
-    --primary-foreground: 45 56% 98%;
-    --secondary: 222 30% 92%;
-    --secondary-foreground: 222 70% 14%;
-    --muted: 222 24% 94%;
-    --muted-foreground: 222 16% 45%;
-    --accent: 358 70% 40%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 358 70% 40%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 24% 88%;
-    --input: 222 24% 90%;
-    --ring: 358 70% 45%;
-    --chart-1: 222 70% 18%;
-    --chart-2: 358 70% 45%;
-    --chart-3: 211 90% 35%;
-    --chart-4: 38 70% 55%;
-    --chart-5: 160 50% 42%;
+    --c-ink: 10 110 76;             /* #0A6E4C */
+    --c-ink-2: 14 122 85;           /* #0E7A55 */
+    --c-ink-3: 15 103 72;           /* #0F6748 */
+    --c-on-ink-muted: 205 235 221;  /* #CDEBDD */
+
+    --c-surface: 241 244 242;       /* #F1F4F2 */
+    --c-surface-2: 246 248 247;     /* #F6F8F7 */
+    --c-border: 227 232 229;        /* #E3E8E5 */
+    --c-silver: 185 194 189;        /* #B9C2BD */
+    --c-muted: 94 107 101;          /* #5E6B65 */
+    --c-body: 44 54 49;             /* #2C3631 */
+    --c-foreground: 15 26 21;       /* #0F1A15 */
+
+    --c-info: 37 99 168;            /* #2563A8 */
+    --c-info-soft: 236 243 251;
+    --c-success: 4 120 87;
+    --c-success-soft: 209 250 229;
+    --c-warning: 151 80 0;
+    --c-warning-soft: 254 243 199;
+    --c-chart-muted: 211 217 214;
+
     --radius: 1rem;
 
-    --sidebar-background: 45 56% 98%;
-    --sidebar-foreground: 222 70% 14%;
-    --sidebar-primary: 222 70% 14%;
-    --sidebar-primary-foreground: 45 56% 98%;
-    --sidebar-accent: 358 70% 40%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 222 24% 88%;
-    --sidebar-ring: 358 70% 45%;
-
-    /* brand */
-    --ich-navy: #0B1B3B;
-    --ich-navy-soft: #1B2D52;
-    --ich-crimson: #AD1F23;
-    --ich-crimson-bright: #C42A2E;
-    --ich-cream: #FBFAF5;
-    --ich-slate: #46566F;
-
-    /* Golden ratio — informs type scale, spacing rhythm & key proportions */
-    --phi: 1.618;
-    /* Secondary accent — muted gold for non-destructive highlights */
-    --ich-amber: #C99A3F;
+    /* Neutral shadows: the UI is white-dominant, so cards lift without a tint. */
+    --shadow-card: 0 1px 2px rgb(15 26 21 / 0.04), 0 8px 24px -12px rgb(15 26 21 / 0.14);
+    --shadow-float: 0 12px 40px -12px rgb(15 26 21 / 0.3);
+    --shadow-glow: 0 8px 20px -8px rgb(var(--c-accent) / 0.6);
+    --shadow-up: 0 -10px 30px -14px rgb(15 26 21 / 0.28);
   }
-}
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-tap-highlight-color: transparent;
   }
-  html, body {
-    min-height: 100vh;
-  }
+  html, body { min-height: 100vh; }
   body {
-    @apply text-foreground font-body;
-    color: var(--ich-navy);
-    background:
-      radial-gradient(1200px 600px at 110% -10%, rgba(173, 31, 35, 0.06), transparent 60%),
-      radial-gradient(1000px 700px at -10% 110%, rgba(11, 27, 59, 0.06), transparent 55%),
-      linear-gradient(160deg, #FFFFFF 0%, #FBFAF5 45%, #F3F6FB 100%);
-    background-attachment: fixed;
+    @apply bg-surface font-sans text-foreground;
     overscroll-behavior: none;
     position: fixed;
     width: 100%;
     height: 100%;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    line-height: 1.55;
   }
+  *, ::before, ::after { border-color: rgb(var(--c-border)); }
   button, a[role="button"], nav a {
     -webkit-user-select: none;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
   }
-
-  /* ----- Reading comfort -----
-     DM Sans sets tight by default; give running text room to breathe and pull
-     display sizes in slightly so headings stay crisp rather than airy. */
-  body { line-height: 1.55; letter-spacing: -0.005em; }
-  p { line-height: 1.6; }
   h1, h2, h3, h4 { line-height: 1.22; letter-spacing: -0.018em; }
-  /* Long-form copy (policies, help, notes) — cap the measure for easy scanning. */
-  .prose-comfort p { max-width: 68ch; line-height: 1.7; }
-  /* Numerals stay aligned in tables/stats so columns are easy to compare. */
   table, .stat-value { font-variant-numeric: tabular-nums; }
-  ::selection {
-    background: rgba(173, 31, 35, 0.18);
+  ::selection { background: rgb(var(--c-accent)); color: #fff; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-@layer utilities {
-  .font-display { font-family: var(--font-display); }
-  .font-body { font-family: var(--font-body); }
+@layer components {
+  /* Form field: 16px on phones so iOS never zooms in, 14px from md. */
+  .dash-input {
+    @apply h-11 w-full rounded-2xl border border-border bg-card px-3.5 text-base text-foreground outline-none transition-colors placeholder:text-silver md:text-sm;
+  }
+  .dash-input:focus { @apply border-accent/50 ring-2 ring-accent/30; }
 
-  .premium-bg-light {
-    background: linear-gradient(160deg, #FFFFFF 0%, #FBFAF5 45%, #F3F6FB 100%);
-  }
-  .premium-bg-dark {
-    background: linear-gradient(160deg, #0B1B3B 0%, #0E2350 55%, #081027 100%);
-  }
+  /* Kicker: small uppercase section label. */
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-wider text-muted; }
 
-  /* ----- Surfaces: frosted white cards on cream ----- */
-  .glass {
-    background: rgba(255, 255, 255, 0.62);
-    backdrop-filter: blur(22px) saturate(140%);
-    -webkit-backdrop-filter: blur(22px) saturate(140%);
-    border: 1px solid rgba(11, 27, 59, 0.08);
-    box-shadow: 0 6px 22px rgba(11, 27, 59, 0.07);
-  }
-  .glass-light {
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(18px) saturate(135%);
-    -webkit-backdrop-filter: blur(18px) saturate(135%);
-    border: 1px solid rgba(11, 27, 59, 0.07);
-    box-shadow: 0 3px 14px rgba(11, 27, 59, 0.05);
-  }
-  .glass-card {
-    background: rgba(255, 255, 255, 0.68);
-    backdrop-filter: blur(26px) saturate(145%);
-    -webkit-backdrop-filter: blur(26px) saturate(145%);
-    border: 1px solid rgba(11, 27, 59, 0.08);
-    box-shadow: 0 10px 34px rgba(11, 27, 59, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  }
-  .glass-gold {
-    background: linear-gradient(135deg, rgba(173, 31, 35, 0.10), rgba(173, 31, 35, 0.05));
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid rgba(173, 31, 35, 0.22);
-  }
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(28px) saturate(150%);
-    -webkit-backdrop-filter: blur(28px) saturate(150%);
-    border: 1px solid rgba(11, 27, 59, 0.07);
-    box-shadow: 0 -6px 28px rgba(11, 27, 59, 0.08);
+  /* Pill over photography, the one place a translucent surface stays. */
+  .chip-glass {
+    @apply inline-flex items-center gap-1 rounded-full bg-foreground/55 px-2.5 py-1 text-[11px] font-semibold leading-none text-white backdrop-blur-sm;
   }
 
-  /* ----- Primary CTA ----- */
-  .btn-primary {
-    background: linear-gradient(135deg, #C42A2E 0%, #AD1F23 55%, #8E181B 100%);
-    color: #FFFFFF;
-    border: 1px solid rgba(173, 31, 35, 0.5);
-    box-shadow: 0 10px 26px rgba(173, 31, 35, 0.28);
+  /* A light sweep across a primary button on hover. Text stays above it. */
+  .sheen { position: relative; overflow: hidden; isolation: isolate; }
+  .sheen::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.32) 50%, transparent 70%);
+    transform: translateX(-120%); transition: transform 0.75s ease;
   }
-  .btn-primary:hover {
-    box-shadow: 0 12px 32px rgba(173, 31, 35, 0.38);
-    filter: brightness(1.04);
-  }
-  .btn-primary:disabled { opacity: 0.45; }
+  .sheen:hover::after { transform: translateX(120%); }
 
-  /* ----- Text colors (kept names; aligned to palette) ----- */
-  .text-gold { color: #AD1F23; }
-  .text-ich-white { color: #0B1B3B; }       /* legacy name → primary dark text on light */
-  .text-ich-primary { color: #0B1B3B; }
-  .text-ich-neutral { color: #46566F; }
-  .text-ich-neutral-light { color: #6B7A93; }
-  .text-ich-green-light { color: #05308C; }
-
-  /* ----- Fills / borders ----- */
-  .bg-ich-green { background-color: #05308C; }
-  .bg-ich-gold { background-color: #AD1F23; }
-  .border-gold { border-color: rgba(173, 31, 35, 0.3); }
-
-  /* ----- Accents ----- */
-  .glow-gold {
-    box-shadow: 0 0 0 1px rgba(173, 31, 35, 0.12), 0 12px 30px rgba(173, 31, 35, 0.16);
-  }
-  .gradient-premium {
-    background: linear-gradient(135deg, rgba(173, 31, 35, 0.08) 0%, rgba(255, 255, 255, 0.6) 50%, rgba(11, 27, 59, 0.06) 100%);
-  }
-  .text-shadow-soft {
-    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
-  }
-
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .safe-top { padding-top: env(safe-area-inset-top, 0px); }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-  /* Inputs/dividers/hovers were styled with white tints for a dark theme.
-     On this light theme those are invisible — remap to subtle navy tints. */
-  .bg-white\/5 { background-color: rgba(11, 27, 59, 0.04); }
-  .bg-white\/10 { background-color: rgba(11, 27, 59, 0.06); }
-  .bg-white\/20 { background-color: rgba(11, 27, 59, 0.09); }
-  .border-white\/5 { border-color: rgba(11, 27, 59, 0.07); }
-  .border-white\/10 { border-color: rgba(11, 27, 59, 0.12); }
-  .border-white\/20 { border-color: rgba(11, 27, 59, 0.18); }
-  .hover\:bg-white\/5:hover { background-color: rgba(11, 27, 59, 0.05); }
-  .hover\:bg-white\/10:hover { background-color: rgba(11, 27, 59, 0.07); }
-
-  /* .dash-input lives in @layer components (top of file) so utilities like pl-9 can override it. */
-
-  /* Overflow-safe numeric/stat values — never spill past their card.
-     Pair with `min-w-0` on the card so grid/flex items can shrink. */
   .stat-value {
-    font-family: var(--font-body);
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
     letter-spacing: -0.01em;
     line-height: 1.12;
     overflow-wrap: anywhere;
@@ -242,148 +125,73 @@
   }
 }
 
-/* ---------------- Motion, skeletons & accents (UI polish) ---------------- */
-@keyframes ich-shimmer { 100% { transform: translateX(100%); } }
-@keyframes ich-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@layer utilities {
+  .hide-scrollbar, .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar { display: none; }
+  .safe-b { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-/* Shimmering placeholder for loading states */
-.skeleton { position: relative; overflow: hidden; background: rgba(11, 27, 59, 0.07); border-radius: 0.6rem; }
+  /* Tap feedback: a slight press, no overshoot. */
+  .press, .press-spring { transition: transform 0.15s ease; }
+  .press:active, .press-spring:active { transform: scale(0.98); }
+
+  .text-shadow-soft { text-shadow: 0 1px 12px rgb(0 0 0 / 0.45); }
+
+}
+
+/* ---------------- Motion ---------------- */
+@keyframes ich-shimmer { 100% { transform: translateX(100%); } }
+@keyframes ich-rise { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes ich-pop { 0% { opacity: 0; transform: scale(0.5); } 70% { transform: scale(1.15); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes dash-drawer-in { from { transform: translateX(26px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.skeleton { position: relative; overflow: hidden; background: rgb(var(--c-foreground) / 0.06); border-radius: 0.75rem; }
 .skeleton::after {
   content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6), transparent);
   animation: ich-shimmer 1.4s infinite;
 }
 
-/* Entrance motion */
-.animate-rise { animation: ich-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.stagger > * { animation: ich-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.stagger > *:nth-child(1) { animation-delay: 0.03s; }
-.stagger > *:nth-child(2) { animation-delay: 0.06s; }
-.stagger > *:nth-child(3) { animation-delay: 0.09s; }
-.stagger > *:nth-child(4) { animation-delay: 0.12s; }
-.stagger > *:nth-child(5) { animation-delay: 0.15s; }
-.stagger > *:nth-child(6) { animation-delay: 0.18s; }
-.stagger > *:nth-child(7) { animation-delay: 0.21s; }
-.stagger > *:nth-child(8) { animation-delay: 0.24s; }
-.stagger > *:nth-child(9) { animation-delay: 0.27s; }
-.stagger > *:nth-child(n+10) { animation-delay: 0.3s; }
+/* Content rises in; lists cascade one card after another. */
+.animate-rise, .stagger > * { animation: ich-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(2) { animation-delay: 0.05s; }
+.stagger > *:nth-child(3) { animation-delay: 0.1s; }
+.stagger > *:nth-child(4) { animation-delay: 0.15s; }
+.stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger > *:nth-child(6) { animation-delay: 0.25s; }
+.stagger > *:nth-child(7) { animation-delay: 0.3s; }
+.stagger > *:nth-child(n+8) { animation-delay: 0.35s; }
 
-/* Tap/press feedback */
-.press { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-.press:active { transform: scale(0.985); }
-
-/* Secondary accent (muted gold) */
-.text-amber-accent { color: var(--ich-amber); }
-.bg-amber-soft { background-color: rgba(201, 154, 63, 0.12); }
-.border-amber-soft { border-color: rgba(201, 154, 63, 0.30); }
-
-/* ----------------- Modern visual layer (mobile app) ----------------- *
- * Large soft shadows, clean surfaces, gradient accents and springy
- * micro-interactions for a more contemporary feel.                     */
-@layer utilities {
-  /* Layered, low-opacity elevation */
-  .shadow-soft  { box-shadow: 0 2px 8px rgba(11,27,59,0.05), 0 10px 26px rgba(11,27,59,0.06); }
-  .shadow-lift  { box-shadow: 0 4px 14px rgba(11,27,59,0.06), 0 20px 48px rgba(11,27,59,0.11); }
-  .shadow-float { box-shadow: 0 10px 30px rgba(11,27,59,0.10), 0 34px 70px rgba(11,27,59,0.14); }
-
-  /* Clean modern surface */
-  .card-modern {
-    background: #ffffff;
-    border: 1px solid rgba(11,27,59,0.06);
-    box-shadow: 0 1px 2px rgba(11,27,59,0.04), 0 12px 30px rgba(11,27,59,0.06);
-  }
-
-  /* Crimson→navy gradient text for display headings */
-  .text-gradient {
-    background: linear-gradient(115deg, #AD1F23 0%, #0B1B3B 78%);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
-  }
-
-  /* Section label with a small gradient tick before it */
-  .eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; }
-  .eyebrow::before {
-    content: ""; width: 1.15rem; height: 2px; border-radius: 2px; flex: none;
-    background: linear-gradient(90deg, #AD1F23, rgba(173,31,35,0.15));
-  }
-
-  /* Springy tap feedback (overshoot) */
-  .press-spring { transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease; }
-  .press-spring:active { transform: scale(0.955); }
-
-  /* Ken-burns style zoom when the parent .group is pressed/hovered */
-  .img-zoom { transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); will-change: transform; }
-  .group:hover .img-zoom, .group:active .img-zoom { transform: scale(1.07); }
-
-  /* Frosted pill used over imagery */
-  .chip-glass {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    padding: 0.2rem 0.55rem; border-radius: 999px;
-    font-size: 0.6875rem; font-weight: 600; line-height: 1;
-    background: rgba(255,255,255,0.18); color: #fff;
-    backdrop-filter: blur(10px) saturate(140%);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.28);
-  }
-}
-
-/* ----------------- Modern visual layer (admin dashboard) ----------------- *
- * Scoped to .dash-shell so it only touches the console, never the mobile app.
- * Soft aurora ground + low-opacity elevation on every content card (rounded-2xl/
- * 3xl white surfaces) with no per-page edits, plus a gentle hover lift.        */
-@layer utilities {
-  .dash-shell {
-    background:
-      radial-gradient(900px 480px at 100% -8%, rgba(173,31,35,0.05), transparent 55%),
-      radial-gradient(760px 460px at -8% 108%, rgba(11,27,59,0.055), transparent 52%),
-      linear-gradient(180deg, #F6F8FC 0%, #EDF1F8 100%);
-    background-attachment: fixed;
-  }
-  .dash-shell .bg-white.rounded-2xl,
-  .dash-shell .bg-white.rounded-3xl {
-    box-shadow: 0 1px 2px rgba(11,27,59,0.04), 0 10px 26px rgba(11,27,59,0.05);
-    border-color: rgba(11,27,59,0.05);
-  }
-  .dash-shell a.bg-white.rounded-2xl:hover,
-  .dash-shell button.bg-white.rounded-2xl:hover {
-    box-shadow: 0 6px 18px rgba(11,27,59,0.08), 0 22px 46px rgba(11,27,59,0.11);
-    transform: translateY(-1px);
-  }
-}
-
-@keyframes dash-drawer-in { from { transform: translateX(26px); opacity: 0; } to { transform: none; opacity: 1; } }
+.animate-pop { animation: ich-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .dash-drawer-in { animation: dash-drawer-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-@media (prefers-reduced-motion: reduce) {
-  .press-spring:active { transform: none; }
-  .img-zoom { transition: none; }
-  .dash-drawer-in { animation: none; }
-  .dash-shell a.bg-white.rounded-2xl:hover,
-  .dash-shell button.bg-white.rounded-2xl:hover { transform: none; }
-}
+/* Clickable cards lift toward the pointer. */
+.lift { transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, background-color 0.15s ease; }
+.lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-float); }
+.lift:active { transform: translateY(0) scale(0.98); }
+
+/* Photos inside a hovered card drift closer. */
+.img-zoom { transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.group:hover .img-zoom { transform: scale(1.06); }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise, .stagger > *, .animate-fade-in { animation: none !important; }
-  .skeleton::after { animation: none; }
-  .press:active { transform: none; }
+  .lift:hover, .lift:active, .group:hover .img-zoom { transform: none; }
 }
 
-/* Visible keyboard-focus ring (only for keyboard navigation, not mouse/touch) */
-:focus-visible { outline: 2px solid var(--ich-crimson); outline-offset: 2px; border-radius: 6px; }
+/* Keyboard focus ring on every interactive element. */
+:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.4); outline-offset: 2px; }
 
-/* Skip-to-content link (shown only when focused) */
 .skip-link {
   position: absolute; left: 0.75rem; top: 0.5rem; z-index: 100;
-  background: var(--ich-navy); color: #fff; padding: 0.5rem 0.9rem; border-radius: 0.6rem;
+  background: rgb(var(--c-ink)); color: #fff; padding: 0.5rem 0.9rem; border-radius: 9999px;
   font-size: 0.8rem; font-weight: 600; transform: translateY(-150%); transition: transform 0.15s ease;
 }
 .skip-link:focus { transform: translateY(0); }
 
 /* --------------------------- protected content --------------------------- */
 /* Deterrence for priced proposals and paid itineraries. A page can't stop an
-   OS screenshot, so the watermark is the part that actually carries — it rides
-   along in whatever gets captured. These rules cover the routes a page CAN
-   close: text selection, and printing / "Save as PDF". */
+   OS screenshot, so the watermark is the part that carries: it rides along in
+   whatever gets captured. These rules close what a page can: text selection,
+   and printing or "Save as PDF". */
 
 .ich-protected {
   -webkit-user-select: none;
@@ -392,12 +200,43 @@
 }
 
 @media print {
-  /* Print and PDF export get the notice instead of the content. */
   .ich-protected > *:not(.ich-print-notice) { display: none !important; }
   .ich-protected > .ich-print-notice { display: flex !important; }
 }
 
-/* The stamp must stay legible in a screenshot without drowning the content. */
 @media (prefers-contrast: more) {
-  .ich-watermark span { color: rgb(11 27 59 / 0.14); }
+  .ich-watermark span { color: rgb(var(--c-foreground) / 0.14); }
 }
+
+/* Calendar (react-day-picker 8, its default rdp-* class names). Outside any
+   @layer: Tailwind would purge these, since only node_modules uses them. */
+.rdp-vhidden { @apply sr-only; }
+.rdp-caption { @apply relative flex h-10 items-center justify-center; }
+.rdp-caption_label { @apply text-base font-semibold text-foreground; }
+.rdp-nav_button {
+  @apply absolute top-0 flex size-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:opacity-30 disabled:hover:bg-transparent;
+}
+.rdp-nav_button_previous { @apply left-0; }
+/* Month and year dropdowns: the native select sits invisible over its label. */
+.rdp-caption_dropdowns { @apply flex items-center gap-1; }
+.rdp-dropdown_month, .rdp-dropdown_year { @apply relative flex items-center rounded-full px-2.5 py-1.5 transition-colors hover:bg-surface; }
+.rdp-dropdown_month .rdp-caption_label, .rdp-dropdown_year .rdp-caption_label { @apply flex items-center gap-1 text-base font-semibold text-foreground; }
+.rdp-dropdown { @apply absolute inset-0 w-full cursor-pointer appearance-none opacity-0; }
+.rdp-dropdown:focus-visible + .rdp-caption_label { @apply rounded-full ring-2 ring-accent/40; }
+.rdp-nav_button_next { @apply right-0; }
+.rdp-table { @apply mt-2 w-full table-fixed border-collapse; }
+.rdp-head_cell { @apply pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted; }
+.rdp-cell { @apply p-0 text-center; }
+.rdp-day {
+  @apply mx-auto flex size-11 items-center justify-center rounded-full text-sm font-medium tabular-nums text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40;
+}
+.rdp-day:not([disabled]):not(.rdp-day_selected):hover { @apply bg-surface; }
+.rdp-day_today:not(.rdp-day_selected) { @apply font-bold text-accent-strong; }
+.rdp-day_disabled { @apply cursor-not-allowed text-muted opacity-40; }
+.rdp-day_selected { @apply bg-accent-strong text-white; }
+.rdp-day_selected:hover { @apply bg-accent-dark; }
+.rdp-day_range_middle { @apply w-full rounded-none bg-accent-soft text-accent-strong; }
+.rdp-day_range_middle:hover { @apply bg-accent/15; }
+/* Half-fill the start and end cells so the range reads as one band. */
+.rdp-cell:has(.rdp-day_range_start:not(.rdp-day_range_end)) { background: linear-gradient(to right, transparent 50%, rgb(var(--c-accent-soft)) 50%); }
+.rdp-cell:has(.rdp-day_range_end:not(.rdp-day_range_start)) { background: linear-gradient(to left, transparent 50%, rgb(var(--c-accent-soft)) 50%); }

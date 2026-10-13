@@ -32,10 +32,10 @@ export default function ConsultationBooking() {
   }, [assistantId]);
 
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" /></div>
+    <div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" /></div>
   );
   if (!assistant) return (
-    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-ich-neutral/70">This expert is no longer available.</p></div>
+    <div className="animate-fade-in"><PageHeader title="Not found" showBack /><p className="px-6 text-sm text-muted">This expert is no longer available.</p></div>
   );
 
   const packages = assistant.packages?.length
@@ -81,8 +81,8 @@ export default function ConsultationBooking() {
           <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <Check className="w-10 h-10 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-display font-bold text-ich-primary mb-1">You're booked!</h2>
-          <p className="text-sm text-ich-neutral/70 mb-6">A consultation with {assistant.name} is confirmed.</p>
+          <h2 className="text-xl font-display font-bold text-foreground mb-1">You're booked!</h2>
+          <p className="text-sm text-muted mb-6">A consultation with {assistant.name} is confirmed.</p>
 
           <GlassCard className="p-4 text-left mb-6 space-y-2">
             <Row label="Expert" value={assistant.name} />
@@ -93,10 +93,10 @@ export default function ConsultationBooking() {
             {confirmed.confirmation_code && <Row label="Code" value={confirmed.confirmation_code} />}
           </GlassCard>
 
-          <button onClick={() => navigate(`/booking/${confirmed.id}`)} className="w-full py-3.5 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 mb-3">
+          <button onClick={() => navigate(`/booking/${confirmed.id}`)} className="w-full py-3.5 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 mb-3">
             View booking <ChevronRight className="w-4 h-4" />
           </button>
-          <button onClick={() => navigate("/assistant")} className="w-full py-3.5 glass-light rounded-2xl text-sm font-medium text-ich-primary hover:bg-ich-primary/5 transition-colors">
+          <button onClick={() => navigate("/assistant")} className="w-full py-3.5 bg-card shadow-card rounded-2xl text-sm font-medium text-foreground hover:bg-surface transition-colors">
             Done
           </button>
         </div>
@@ -111,35 +111,35 @@ export default function ConsultationBooking() {
       <div className="px-6 space-y-5">
         {/* Expert */}
         <GlassCard className="p-4 flex items-center gap-3">
-          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-ich-gold/10">
+          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-accent/10">
             {assistant.photo_url
               ? <img src={assistant.photo_url} alt={assistant.name} onError={(e) => { e.currentTarget.style.display = "none"; }} className="w-full h-full object-cover" />
-              : <div className="w-full h-full flex items-center justify-center text-xl font-display text-gold">{assistant.name?.[0]}</div>}
+              : <div className="w-full h-full flex items-center justify-center text-xl font-display text-accent-strong">{assistant.name?.[0]}</div>}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-ich-primary truncate">{assistant.name}</h3>
-            <p className="text-xs text-ich-neutral/60 truncate">{assistant.specialization}</p>
-            {assistant.rating && <span className="flex items-center gap-1 text-xs text-gold mt-0.5"><Star className="w-3 h-3 fill-current" /> {assistant.rating}</span>}
+            <h3 className="text-sm font-semibold text-foreground truncate">{assistant.name}</h3>
+            <p className="text-xs text-muted truncate">{assistant.specialization}</p>
+            {assistant.rating && <span className="flex items-center gap-1 text-xs text-accent-strong mt-0.5"><Star className="w-3 h-3 fill-current" /> {assistant.rating}</span>}
           </div>
         </GlassCard>
 
         {/* Package */}
         <div>
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Choose a package</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 block">Choose a package</label>
           <div className="space-y-2.5">
             {packages.map((p, i) => {
               const active = i === pkgIdx;
               return (
-                <button key={i} onClick={() => setPkgIdx(i)} className={`w-full text-left rounded-2xl p-4 border transition-all flex items-start gap-3 ${active ? "glass-gold border-gold" : "glass-light border-transparent"}`}>
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${active ? "border-gold bg-ich-gold/20" : "border-ich-neutral/30"}`}>
-                    {active && <div className="w-2 h-2 rounded-full bg-gold" />}
+                <button key={i} onClick={() => setPkgIdx(i)} className={`w-full text-left rounded-2xl p-4 border transition-all flex items-start gap-3 ${active ? "bg-accent-strong border-accent" : "bg-card shadow-card border-transparent"}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${active ? "border-accent bg-accent/20" : "border-muted/30"}`}>
+                    {active && <div className="w-2 h-2 rounded-full bg-accent-strong" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-ich-primary min-w-0 truncate">{p.name}</p>
-                      {p.price ? <span className="stat-value text-sm font-display font-semibold text-gold flex-shrink-0">{formatIDR(p.price)}</span> : null}
+                      <p className="text-sm font-semibold text-foreground min-w-0 truncate">{p.name}</p>
+                      {p.price ? <span className="stat-value text-sm font-display font-semibold text-accent-strong flex-shrink-0">{formatIDR(p.price)}</span> : null}
                     </div>
-                    {p.description && <p className="text-xs text-ich-neutral/60 mt-0.5">{p.description}</p>}
+                    {p.description && <p className="text-xs text-muted mt-0.5">{p.description}</p>}
                   </div>
                 </button>
               );
@@ -149,43 +149,43 @@ export default function ConsultationBooking() {
 
         {/* Date */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Date</label>
-          <DateTimePicker type="date" value={date} onChange={setDate} label="Consultation date" />
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 block">Date</label>
+          <DateTimePicker type="date" value={date} onChange={setDate} label="Consultation date" min={new Date().toLocaleDateString("en-CA")} />
         </GlassCard>
 
         {/* Time */}
         <div>
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Time</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 block">Time</label>
           <div className="grid grid-cols-3 gap-2">
             {TIME_SLOTS.map((t) => (
-              <button key={t} onClick={() => setTime(t)} className={`py-2.5 rounded-xl text-xs font-medium transition-all ${time === t ? "glass-gold text-gold" : "glass-light text-ich-neutral/70"}`}>{t}</button>
+              <button key={t} onClick={() => setTime(t)} className={`py-2.5 rounded-xl text-xs font-medium transition-all ${time === t ? "bg-accent-soft text-accent-strong" : "bg-card shadow-card text-muted"}`}>{t}</button>
             ))}
           </div>
         </div>
 
         {/* Notes */}
         <GlassCard className="p-4">
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">What would you like help with?</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 block">What would you like help with?</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. a 10-day honeymoon in Japan…" rows={3}
-            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-ich-white placeholder:text-ich-neutral/40 outline-none resize-none" />
+            className="w-full bg-surface-2 border border-border rounded-xl p-3 text-sm text-foreground placeholder:text-muted outline-none resize-none" />
         </GlassCard>
 
         {/* Payment method */}
         <div>
-          <label className="text-[10px] text-gold uppercase tracking-widest mb-2 block">Payment method</label>
+          <label className="text-[10px] text-accent-strong uppercase tracking-widest mb-2 block">Payment method</label>
           <PaymentMethodPicker value={method} onChange={setMethod} />
         </div>
 
         {/* Summary + confirm */}
         <GlassCard className="p-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm text-ich-neutral min-w-0">
-            <CalendarDays className="w-4 h-4 text-gold flex-shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-muted min-w-0">
+            <CalendarDays className="w-4 h-4 text-accent-strong flex-shrink-0" />
             <span className="truncate">{date && time ? `${moment(date).format("MMM D")} · ${time}` : "Select date & time"}</span>
           </div>
-          <span className="stat-value text-lg font-display font-bold text-gold flex-shrink-0">{formatIDR(pkg.price || 0)}</span>
+          <span className="stat-value text-lg font-display font-bold text-accent-strong flex-shrink-0">{formatIDR(pkg.price || 0)}</span>
         </GlassCard>
 
-        <button onClick={confirm} disabled={saving || !date || !time || !method} className="w-full py-4 btn-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50">
+        <button onClick={confirm} disabled={saving || !date || !time || !method} className="w-full py-4 bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 sheen">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
           {saving ? "Booking…" : `Confirm consultation · ${formatIDR(pkg.price || 0)}`}
         </button>
@@ -197,8 +197,8 @@ export default function ConsultationBooking() {
 function Row({ label, value, accent }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-ich-neutral/60 flex-shrink-0">{label}</span>
-      <span className={`stat-value text-sm font-medium text-right ${accent ? "text-gold font-display font-bold" : "text-ich-primary"}`}>{value}</span>
+      <span className="text-xs text-muted flex-shrink-0">{label}</span>
+      <span className={`stat-value text-sm font-medium text-right ${accent ? "text-accent-strong font-display font-bold" : "text-foreground"}`}>{value}</span>
     </div>
   );
 }

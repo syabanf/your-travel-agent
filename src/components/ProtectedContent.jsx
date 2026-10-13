@@ -59,7 +59,7 @@ export default function ProtectedContent({ children, label = "Protected content"
         {Array.from({ length: 10 }).map((_, i) => (
           <span
             key={i}
-            className="absolute text-[10px] tracking-wider whitespace-nowrap text-ich-primary/[0.06] font-medium"
+            className="absolute text-[10px] tracking-wider whitespace-nowrap text-foreground/[0.06] font-medium"
             style={{ top: `${i * 11}%`, left: "-10%", transform: "rotate(-24deg)" }}
           >
             {`${stamp}   ${stamp}   ${stamp}`}
@@ -69,10 +69,10 @@ export default function ProtectedContent({ children, label = "Protected content"
 
       {/* Shown while the window is in the background. */}
       {obscured && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-ich-cream/80 backdrop-blur-sm">
-          <EyeOff className="h-5 w-5 text-ich-neutral" />
-          <p className="text-xs font-medium text-ich-neutral">{label} hidden</p>
-          <p className="text-[10px] text-ich-neutral/70">Return to this window to view it</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-surface/80 backdrop-blur-sm">
+          <EyeOff className="h-5 w-5 text-muted" />
+          <p className="text-xs font-medium text-muted">{label} hidden</p>
+          <p className="text-[10px] text-muted">Return to this window to view it</p>
         </div>
       )}
 

@@ -1,24 +1,27 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { LayoutDashboard, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, Plane, LogOut, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags, Package, Luggage, UserCheck } from "lucide-react";
-import { useAuth } from "@/lib/AuthContext";
+import { LayoutDashboard, BookOpen, Database, MapPin, Megaphone, CalendarCheck, Users, BarChart3, Shield, Smartphone, LogOut, PanelLeftClose, PanelLeftOpen, Target, Building2, Send, Globe, Hotel, Receipt, ClipboardList, History, FileText, Image as ImageIcon, Settings, X, ChevronDown, Tags, Package, Luggage, UserCheck, Bell, FolderOpen } from "lucide-react";
+import { staffSignOut } from "@/lib/staffAuth";
 import { RoleProvider, useRole } from "./RoleContext";
 import { ROLES, can } from "./rbac";
 import DashboardHeader from "./DashboardHeader";
 import SearchableSelect from "./SearchableSelect";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import useScrollRestoration from "@/lib/useScrollRestoration";
+import BrandMark from "@/components/BrandMark";
 
 const GROUPS = [
   { title: "Insight Center", items: [
     { to: "/dashboard", end: true, icon: LayoutDashboard, label: "Overview", res: "overview" },
     { to: "/dashboard/reports", icon: BarChart3, label: "Reports", res: "reports" },
+    { to: "/dashboard/accounting", icon: BookOpen, label: "Accounting", res: "accounting" },
   ] },
   { title: "Sales & CRM", items: [
     { to: "/dashboard/leads", icon: Target, label: "Leads", res: "leads" },
     { to: "/dashboard/customers", icon: Users, label: "Customers", res: "customers" },
     { to: "/dashboard/trips", icon: Luggage, label: "Trips", res: "trips" },
+    { to: "/dashboard/documents", icon: FolderOpen, label: "Travel documents", res: "bookings" },
     { to: "/dashboard/bookings", icon: CalendarCheck, label: "Trips & Bookings", res: "bookings" },
   ] },
   { title: "Operations", items: [
@@ -33,6 +36,7 @@ const GROUPS = [
     { to: "/dashboard/promotions", icon: Megaphone, label: "Promotions & Events", res: "promotions" },
     { to: "/dashboard/packages", icon: Package, label: "Holiday Packages", res: "promotions" },
     { to: "/dashboard/suppliers", icon: Building2, label: "Suppliers", res: "suppliers" },
+    { to: "/dashboard/master", icon: Database, label: "Master data", res: "master" },
   ] },
   { title: "Content", items: [
     { to: "/dashboard/content", icon: FileText, label: "Pages", res: "content" },
@@ -41,6 +45,7 @@ const GROUPS = [
   ] },
   { title: "Growth", items: [
     { to: "/dashboard/marketing", icon: Send, label: "Marketing", res: "marketing" },
+    { to: "/dashboard/notifications", icon: Bell, label: "Member notifications", res: "marketing" },
   ] },
   { title: "System", items: [
     { to: "/dashboard/registrations", icon: UserCheck, label: "Registrations", res: "registrations" },
@@ -49,22 +54,64 @@ const GROUPS = [
   ] },
 ];
 
+const DESKTOP = "(min-width: 1280px)";
+const subscribeDesktop = (cb) => {
+  const mq = window.matchMedia(DESKTOP);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+const useIsDesktop = () => useSyncExternalStore(subscribeDesktop, () => window.matchMedia(DESKTOP).matches, () => true);
+
+const RAIL_KEY = "ich_dash_rail";
+const readRailPref = () => {
+  try { return localStorage.getItem(RAIL_KEY) !== "collapsed"; } catch { return true; }
+};
+
+// The only decorative light on the canvas, built from the accent token.
+const GLOW =
+  "radial-gradient(38% 34% at 72% 22%, rgb(var(--c-accent) / 0.09), transparent 70%), " +
+  "radial-gradient(28% 30% at 92% 48%, rgb(var(--c-accent) / 0.06), transparent 70%)";
+
+const itemClass = (active, expanded) =>
+  `relative isolate flex shrink-0 items-center rounded-2xl transition-colors [&_svg]:size-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong ${
+    expanded ? "h-11 w-full gap-3 px-3 text-sm font-medium" : "size-11 justify-center"
+  } ${active ? "text-white" : "text-muted hover:bg-surface hover:text-foreground active:bg-border"}`;
+
+// The active fill is one element that slides between items instead of
+// blinking from one to the next.
+const ActivePill = () => (
+  <motion.span
+    layoutId="rail-active"
+    aria-hidden="true"
+    className="absolute inset-0 -z-10 rounded-2xl bg-accent-strong shadow-glow"
+    transition={{ type: "spring", stiffness: 480, damping: 38 }}
+  />
+);
+
 function Shell() {
   const navigate = useNavigate();
   const location = useLocation();
-  const reduce = useReducedMotion();
   // Returning from a record puts you back where you were in the list.
   const mainRef = useRef(null);
   useScrollRestoration(mainRef);
-  const { logout } = useAuth();
-  const { role, setRole } = useRole();
-  const [open, setOpen] = useState(false);
+  const { role, setRole, canPreview } = useRole();
+  const signOut = async () => { await staffSignOut(); navigate("/dashboard/login", { replace: true }); };
+  const isDesktop = useIsDesktop();
+  const reduce = useReducedMotion();
+  const [railPref, setRailPref] = useState(readRailPref);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const expanded = isDesktop && railPref;
 
-  // Close the mobile drawer whenever the route changes.
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => { setMoreOpen(false); }, [location.pathname]);
 
-  // Which section contains the current route (longest-prefix match) — for the
-  // active highlight and to keep that section drilled open while navigating.
+  const toggleRail = () => {
+    setRailPref((prev) => {
+      try { localStorage.setItem(RAIL_KEY, prev ? "collapsed" : "expanded"); } catch { /* ignore */ }
+      return !prev;
+    });
+  };
+
+  // Which section contains the current route (longest-prefix match).
   const activeGroup = useMemo(() => {
     let best = null, bestLen = -1;
     for (const g of GROUPS) {
@@ -76,16 +123,16 @@ function Shell() {
     return best;
   }, [location.pathname]);
 
-  // Collapsible drill-down sections. Persist the user's open/closed choices.
+  // Collapsible sections in the expanded rail; the user's choices persist.
   const [openGroups, setOpenGroups] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("ich_dash_nav_open") || "null");
       if (Array.isArray(saved)) return new Set(saved);
     } catch { /* ignore */ }
-    return new Set(["Insight Center", "Sales & CRM"]); // sensible drilled-open defaults
+    return new Set(["Insight Center", "Sales & CRM"]);
   });
 
-  // Always keep the active section open so the current page stays reachable.
+  // The active section always stays open so the current page stays reachable.
   useEffect(() => {
     if (activeGroup) setOpenGroups((prev) => (prev.has(activeGroup) ? prev : new Set(prev).add(activeGroup)));
   }, [activeGroup]);
@@ -98,129 +145,156 @@ function Shell() {
       return next;
     });
 
-  const allOpen = openGroups.size >= GROUPS.length;
-  const toggleAll = () => {
-    const next = allOpen ? new Set(activeGroup ? [activeGroup] : []) : new Set(GROUPS.map((g) => g.title));
-    setOpenGroups(next);
-    try { localStorage.setItem("ich_dash_nav_open", JSON.stringify([...next])); } catch { /* ignore */ }
-  };
+  const groups = GROUPS.map((g) => ({ ...g, visible: g.items.filter((n) => can(role, n.res, "view")) }))
+    .filter((g) => g.visible.length);
+
+  const navLink = (item, wide) => (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      end={item.end}
+      title={wide ? undefined : item.label}
+      className={({ isActive }) => itemClass(isActive, wide)}
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && <ActivePill />}
+          <item.icon aria-hidden="true" />
+          {wide ? <span className="truncate">{item.label}</span> : <span className="sr-only">{item.label}</span>}
+        </>
+      )}
+    </NavLink>
+  );
+
+  // Grouped list for the expanded rail and the phone sheet; flat icons for the collapsed rail.
+  const nav = (wide) =>
+    wide ? (
+      groups.map((group) => {
+        const isOpen = openGroups.has(group.title);
+        return (
+          <div key={group.title} className="flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.title)}
+              aria-expanded={isOpen}
+              className={`flex h-9 w-full items-center justify-between gap-2 rounded-2xl px-3 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:bg-surface ${
+                activeGroup === group.title ? "text-foreground" : "text-muted"
+              }`}
+            >
+              {group.title}
+              <ChevronDown aria-hidden="true" className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+            {isOpen && group.visible.map((item) => navLink(item, true))}
+          </div>
+        );
+      })
+    ) : (
+      groups.flatMap((g) => g.visible).map((item) => navLink(item, false))
+    );
+
+  const footer = (wide) => (
+    <div className="mt-3 flex w-full flex-col gap-1">
+      {wide && canPreview && (
+        <div className="mb-1 rounded-2xl bg-surface-2 p-2.5">
+          <p className="mb-1.5 flex items-center gap-1.5 text-[10.5px] font-semibold text-muted">
+            <Shield aria-hidden="true" className="size-3.5" /> Preview as
+          </p>
+          <SearchableSelect value={role} onChange={setRole} options={ROLES.map((r) => ({ value: r.key, label: r.key === "admin" ? "Administrator (you)" : r.label }))} ariaLabel="Preview the dashboard as role" />
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        title={wide ? undefined : "Open mobile app"}
+        className={wide
+          ? "flex h-11 w-full items-center justify-center gap-2 rounded-full bg-accent-strong px-4 text-sm font-semibold text-white shadow-glow transition-colors hover:bg-accent-dark"
+          : "flex size-11 items-center justify-center rounded-full bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark"}
+      >
+        <Smartphone aria-hidden="true" className="size-5" />
+        {wide ? "Open mobile app" : <span className="sr-only">Open mobile app</span>}
+      </button>
+      <button type="button" onClick={signOut} title={wide ? undefined : "Sign out"} className={itemClass(false, wide)}>
+        <LogOut aria-hidden="true" />
+        {wide ? "Sign out" : <span className="sr-only">Sign out</span>}
+      </button>
+      {isDesktop && (
+        <button
+          type="button"
+          onClick={toggleRail}
+          aria-expanded={expanded}
+          title={wide ? undefined : "Expand menu"}
+          className={wide
+            ? "mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-2xl border border-border text-xs font-semibold text-muted transition-colors hover:bg-surface hover:text-foreground"
+            : "mt-1 flex size-11 items-center justify-center rounded-2xl text-muted transition-colors hover:bg-surface hover:text-foreground"}
+        >
+          {wide ? <><PanelLeftClose aria-hidden="true" className="size-4" /> Collapse menu</> : <><PanelLeftOpen aria-hidden="true" className="size-5" /><span className="sr-only">Expand menu</span></>}
+        </button>
+      )}
+    </div>
+  );
 
   return (
-    <div className="min-h-screen w-full dash-shell text-ich-primary font-body">
-      <a href="#main" className="skip-link">Skip to content</a>
+    <div className="relative flex h-dvh gap-4 overflow-clip bg-surface p-3 text-foreground lg:p-4">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -right-[8%] -top-[30%] h-[120%] w-[70%] opacity-70 blur-xl" style={{ background: GLOW }} />
+      </div>
 
-      {/* Backdrop (mobile) */}
-      {open && <div onClick={() => setOpen(false)} className="lg:hidden fixed inset-0 bg-black/30 z-40" aria-hidden="true" />}
-
-      {/* Sidebar */}
-      <aside className={`w-64 bg-white border-r border-ich-primary/10 flex flex-col fixed inset-y-0 left-0 z-50 transition-transform duration-300 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="px-5 h-16 flex items-center justify-between border-b border-ich-primary/10">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl btn-primary flex items-center justify-center">
-              <Plane className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-display font-bold leading-none text-ich-primary">Icon Holiday</p>
-              <p className="text-[10px] text-ich-neutral">Admin Console</p>
-            </div>
-          </div>
-          <button onClick={() => setOpen(false)} aria-label="Close menu" className="lg:hidden w-9 h-9 rounded-lg hover:bg-ich-primary/5 flex items-center justify-center text-ich-neutral">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        <nav className="flex-1 p-3 overflow-y-auto">
-          <div className="flex items-center justify-between px-3 mb-1">
-            <span className="text-[10px] uppercase tracking-wider text-ich-neutral/40 font-semibold">Menu</span>
-            <button onClick={toggleAll} className="text-[10px] uppercase tracking-wider font-semibold text-gold/80 hover:text-gold">
-              {allOpen ? "Collapse all" : "Expand all"}
-            </button>
-          </div>
-          {GROUPS.map((group) => {
-            const visible = group.items.filter((n) => can(role, n.res, "view"));
-            if (!visible.length) return null;
-            const isOpen = openGroups.has(group.title);
-            const isActiveGroup = activeGroup === group.title;
-            return (
-              <div key={group.title} className="mb-1.5">
-                <button
-                  onClick={() => toggleGroup(group.title)}
-                  aria-expanded={isOpen}
-                  className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-semibold transition-colors ${
-                    isActiveGroup ? "text-gold" : "text-ich-neutral/50 hover:text-ich-primary"
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    {group.title}
-                    {!isOpen && isActiveGroup && <span className="w-1.5 h-1.5 rounded-full bg-gold" />}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="text-ich-neutral/30 font-medium normal-case tracking-normal">{visible.length}</span>
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "" : "-rotate-90"}`} />
-                  </span>
-                </button>
-                {isOpen && (
-                  <div className="space-y-1 mt-1">
-                    {visible.map((item) => (
-                      <NavLink
-                        key={item.to}
-                        to={item.to}
-                        end={item.end}
-                        onClick={() => setOpen(false)}
-                        className={({ isActive }) =>
-                          `relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
-                            isActive
-                              ? "bg-gradient-to-r from-ich-gold/[0.14] to-ich-gold/[0.03] text-gold font-semibold"
-                              : "text-ich-neutral font-medium hover:bg-ich-primary/5 hover:text-ich-primary"
-                          }`
-                        }
-                      >
-                        {({ isActive }) => (
-                          <>
-                            {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-gold" />}
-                            <item.icon className="w-4.5 h-4.5 shrink-0" /> {item.label}
-                          </>
-                        )}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+      {/* Floating ink rail: icons on tablets, full width from xl. */}
+      <aside
+        aria-label="Admin navigation"
+        className={`relative hidden h-full shrink-0 flex-col rounded-hero bg-card py-4 text-foreground shadow-card transition-[width] duration-200 md:flex ${
+          expanded ? "w-60 px-3" : "w-[76px] items-center"
+        }`}
+      >
+        <NavLink to="/dashboard" aria-label="Icon Holiday admin home" className="flex justify-center">
+          {expanded ? (
+            <BrandMark className="[&_img]:w-32" />
+          ) : (
+            <BrandMark compact className="flex size-11 items-center justify-center [&_img]:w-10" />
+          )}
+        </NavLink>
+        <nav className="no-scrollbar mt-4 flex min-h-0 w-full flex-1 flex-col gap-1 overflow-y-auto p-1">
+          {nav(expanded)}
         </nav>
-
-        <div className="p-3 border-t border-ich-primary/10 space-y-2">
-          {/* Role switcher (demo RBAC) */}
-          <div>
-            <label className="text-[10px] text-ich-neutral uppercase tracking-wider mb-1 flex items-center gap-1 px-1">
-              <Shield className="w-3 h-3" /> Viewing as
-            </label>
-            <SearchableSelect value={role} onChange={setRole} options={ROLES.map((r) => ({ value: r.key, label: r.label }))} ariaLabel="Viewing as role" />
-          </div>
-          <button onClick={() => navigate("/")} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold btn-primary">
-            <Smartphone className="w-4 h-4" /> Open Mobile App
-          </button>
-          <button onClick={() => { logout(); navigate("/login"); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ich-neutral hover:bg-ich-primary/5 transition-colors">
-            <LogOut className="w-4 h-4" /> Sign out
-          </button>
-        </div>
+        {footer(expanded)}
       </aside>
 
-      {/* Content — own scroll container because the global body is position:fixed (mobile-app lock) */}
-      <main id="main" ref={mainRef} className="lg:ml-64 h-screen overflow-y-auto">
-        <DashboardHeader onMenu={() => setOpen(true)} role={role} groups={GROUPS} />
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: reduce ? 0 : 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.24, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <ErrorBoundary inline resetKey={location.pathname}>
-            <Outlet />
-          </ErrorBoundary>
-        </motion.div>
-      </main>
+      <div className="relative flex min-w-0 flex-1 flex-col gap-4">
+        <a href="#main" className="sr-only z-30 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-on-ink shadow-float focus:not-sr-only focus:absolute focus:left-4 focus:top-3">
+          Skip to content
+        </a>
+        <DashboardHeader onMenu={() => setMoreOpen(true)} role={role} groups={GROUPS} />
+        <main id="main" tabIndex={-1} ref={mainRef} className="relative min-h-0 flex-1 overflow-y-auto pb-6 pr-0.5 focus:outline-none md:pb-2">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: reduce ? 0 : 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ErrorBoundary inline resetKey={location.pathname}>
+              <Outlet />
+            </ErrorBoundary>
+          </motion.div>
+        </main>
+      </div>
+
+      {/* Phones: every menu slides up from the bottom, never in from the side. */}
+      {moreOpen && (
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-foreground/30" onClick={() => setMoreOpen(false)} />
+          <div className="safe-b absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-[28px] bg-card px-4 pb-4 pt-3 text-foreground shadow-float animate-slide-up">
+            <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-border" aria-hidden="true" />
+            <div className="mb-2 flex items-center justify-between">
+              <BrandMark className="[&_img]:w-28" />
+              <button type="button" onClick={() => setMoreOpen(false)} aria-label="Close menu" className="flex size-10 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-foreground">
+                <X className="size-5" aria-hidden="true" />
+              </button>
+            </div>
+            <nav className="no-scrollbar flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-1">{nav(true)}</nav>
+            {footer(true)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

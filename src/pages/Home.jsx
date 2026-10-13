@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { backend } from "@/api/backend";
-import { Gift, ChevronRight } from "lucide-react";
+import { Gift, ChevronRight, LockKeyhole } from "lucide-react";
+import { useAuth } from "@/lib/AuthContext";
 import { Link } from "react-router-dom";
 import QuickActions from "../components/home/QuickActions";
 import ActiveTrip from "../components/home/ActiveTrip";
@@ -11,6 +12,7 @@ import HolidayPackages from "../components/home/HolidayPackages";
 import Skeleton, { SkeletonRows } from "@/components/Skeletons";
 
 export default function Home() {
+  const { isGuest } = useAuth();
   const [user, setUser] = useState(null);
   const [activeTrip, setActiveTrip] = useState(null);
   const [bookings, setBookings] = useState([]);
@@ -30,7 +32,7 @@ export default function Home() {
         
         const recentBookings = await backend.entities.Booking.list("-created_at", 3);
         setBookings(recentBookings);
-      } catch (err) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -93,11 +95,11 @@ export default function Home() {
   if (!user) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center min-h-screen px-6 text-center">
-        <h1 className="text-3xl font-display font-semibold text-ich-primary mb-3">Welcome to Icon Holiday</h1>
-        <p className="text-ich-neutral mb-8">Sign in to plan your next adventure</p>
+        <h1 className="text-3xl font-display font-semibold text-foreground mb-3">Welcome to Icon Holiday</h1>
+        <p className="text-muted mb-8">Sign in to plan your next adventure</p>
         <Link
           to="/login"
-          className="px-6 py-3 glass-gold rounded-xl text-gold font-medium hover:glow-gold transition-all"
+          className="px-6 py-3 bg-accent-soft rounded-xl text-accent-strong font-medium hover:shadow-glow transition-all"
         >
           Sign In
         </Link>
@@ -109,37 +111,54 @@ export default function Home() {
     <div className="animate-fade-in" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {refreshing && user && (
         <div className="flex justify-center py-3">
-          <div className="w-5 h-5 border-2 border-ich-gold/30 border-t-ich-gold rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       )}
       {/* Greeting */}
       <div className="px-6 pt-4 pb-2">
-        <p className="text-xs text-gold tracking-[0.2em] uppercase mb-1">{greeting()}</p>
-        <h1 className="text-[28px] leading-none font-display font-bold text-gradient pb-1">
-          {user?.full_name?.split(" ")[0] || "Traveler"}
+        <p className="text-xs text-accent-strong tracking-[0.2em] uppercase mb-1">{greeting()}</p>
+        <h1 className="text-[28px] leading-none font-display font-bold text-foreground pb-1">
+          {isGuest ? "Welcome" : user?.full_name?.split(" ")[0] || "Traveler"}<span className="text-accent">.</span>
         </h1>
       </div>
+
+      {/* Guests see the catalog without member content (1.3). */}
+      {isGuest && (
+        <div className="px-6 pt-2">
+          <div className="flex items-center gap-3 rounded-card bg-card p-4 shadow-card">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent-strong">
+              <LockKeyhole className="size-5" aria-hidden="true" />
+            </span>
+            <p className="min-w-0 flex-1 text-xs leading-relaxed text-body">
+              <span className="block text-sm font-semibold text-foreground">You're browsing as a guest</span>
+              Sign in as a member to see package prices and your trips.
+            </p>
+            <Link to="/login" className="sheen shrink-0 rounded-full bg-accent-strong px-4 py-2 text-xs font-semibold text-white shadow-glow transition-colors hover:bg-accent-dark">
+              Sign in
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8 pt-4 stagger">
         <QuickActions />
         <Link to="/promotions" className="block px-6 press-spring">
-          <div className="relative overflow-hidden rounded-3xl btn-primary p-4 flex items-center gap-3.5 shadow-lift">
-            <div className="absolute -top-8 -right-6 w-32 h-32 rounded-full blur-2xl" style={{ background: "rgba(255,255,255,0.12)" }} />
-            <div className="relative w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ring-1 ring-white/30" style={{ background: "rgba(255,255,255,0.18)" }}>
-              <Gift className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3.5 rounded-card bg-card p-4 shadow-card transition-colors hover:bg-surface-2 lift">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+              <Gift className="size-5" aria-hidden="true" />
             </div>
-            <div className="relative flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">What's New</p>
-              <p className="text-xs text-white/80">Promotions, events & travel news</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-foreground">What&apos;s New</p>
+              <p className="text-xs text-muted">Promotions, events & travel news</p>
             </div>
-            <ChevronRight className="relative w-5 h-5 text-white/90" />
+            <ChevronRight className="size-5 text-muted" aria-hidden="true" />
           </div>
         </Link>
-        <ActiveTrip trip={activeTrip} />
+        {!isGuest && <ActiveTrip trip={activeTrip} />}
         <HolidayPackages />
         <FeaturedDestinations />
         <ConciergeOffer />
-        <RecentBookings bookings={bookings} />
+        {!isGuest && <RecentBookings bookings={bookings} />}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import EmptyState from "@/components/EmptyState";
 import { formatIDR } from "@/lib/currency";
 import { PACKAGE_CATEGORIES, categoryLabel, packageDiscount } from "@/data/packageCategories";
 import { MapPin, CalendarDays, Star, Package as PackageIcon, Users } from "lucide-react";
+import MemberPrice from "@/components/MemberPrice";
 
 const Img = (props) => <img {...props} onError={(e) => { e.currentTarget.style.display = "none"; }} />;
 
@@ -14,11 +15,13 @@ function PriceTag({ pkg, className = "" }) {
   const off = packageDiscount(pkg);
   return (
     <div className={className}>
-      {off != null && (
-        <span className="block text-[11px] text-ich-neutral/50 line-through leading-none">{formatIDR(pkg.price_before)}</span>
-      )}
-      <span className="stat-value text-base font-display font-bold text-gold">{formatIDR(pkg.price)}</span>
-      <span className="text-[10px] text-ich-neutral/60"> /person</span>
+      <MemberPrice compact inLink>
+        {off != null && (
+          <span className="block text-[11px] text-muted line-through leading-none">{formatIDR(pkg.price_before)}</span>
+        )}
+        <span className="stat-value text-base font-display font-bold text-accent-strong">{formatIDR(pkg.price)}</span>
+        <span className="text-[10px] text-muted"> /person</span>
+      </MemberPrice>
     </div>
   );
 }
@@ -69,7 +72,7 @@ export default function Packages() {
                   key={c.value}
                   onClick={() => setCat(c.value)}
                   className={`px-4 min-h-[38px] rounded-full text-xs font-semibold whitespace-nowrap shrink-0 press-spring transition-colors ${
-                    cat === c.value ? "btn-primary text-white" : "glass-light text-ich-neutral"
+                    cat === c.value ? "bg-accent-strong text-white shadow-glow transition-colors hover:bg-accent-dark disabled:opacity-50 text-white" : "bg-card shadow-card text-muted"
                   }`}
                 >
                   {c.label}
@@ -82,21 +85,21 @@ export default function Packages() {
             {/* Featured */}
             {featured && (
               <Link to={`/packages/${featured.id}`} className="block press-spring group">
-                <div className="relative h-52 rounded-3xl overflow-hidden shadow-lift">
-                  <Img src={featured.image} alt={featured.title} className="absolute inset-0 w-full h-full object-cover img-zoom" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ich-primary via-ich-primary/35 to-transparent" />
+                <div className="relative h-52 rounded-3xl overflow-hidden shadow-float">
+                  <Img src={featured.image} alt={featured.title} className="absolute inset-0 w-full h-full object-cover img-zoom " />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/35 to-transparent" />
                   <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10" />
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className="chip-glass">Featured</span>
                     {packageDiscount(featured) != null && (
-                      <span className="chip-glass !bg-ich-gold/90 !border-white/30">{packageDiscount(featured)}% off</span>
+                      <span className="chip-glass !bg-accent/90 !border-white/30">{packageDiscount(featured)}% off</span>
                     )}
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <h2 className="text-xl font-display font-bold text-white text-shadow-soft">{featured.title}</h2>
                     <p className="text-xs text-white/80 flex items-center gap-3 mt-1">
-                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-gold" />{featured.destination}</span>
-                      <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3 text-gold" />{featured.duration_days}D / {featured.duration_nights}N</span>
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-accent-strong" />{featured.destination}</span>
+                      <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3 text-accent-strong" />{featured.duration_days}D / {featured.duration_nights}N</span>
                     </p>
                     <p className="mt-2 text-white">
                       <span className="stat-value text-lg font-display font-bold">{formatIDR(featured.price)}</span>
@@ -112,33 +115,33 @@ export default function Packages() {
               const off = packageDiscount(p);
               return (
                 <Link key={p.id} to={`/packages/${p.id}`} className="block press-spring group">
-                  <div className="card-modern rounded-3xl overflow-hidden flex gap-3.5 p-3 hover:shadow-lift transition-shadow">
-                    <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-ich-primary/5 flex-shrink-0">
-                      <Img src={p.image} alt={p.title} className="w-full h-full object-cover img-zoom" />
+                  <div className="bg-card shadow-card rounded-3xl overflow-hidden flex gap-3.5 p-3 hover:shadow-float transition-shadow lift">
+                    <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-surface flex-shrink-0">
+                      <Img src={p.image} alt={p.title} className="w-full h-full object-cover img-zoom " />
                       {off != null && (
-                        <span className="absolute top-1 left-1 bg-ich-gold text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{off}%</span>
+                        <span className="absolute top-1 left-1 bg-accent-strong text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{off}%</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-semibold text-ich-primary line-clamp-2">{p.title}</h3>
+                        <h3 className="text-sm font-semibold text-foreground line-clamp-2">{p.title}</h3>
                         {p.rating > 0 && (
-                          <span className="flex items-center gap-0.5 text-[11px] text-gold font-semibold shrink-0">
-                            <Star className="w-3 h-3 fill-gold" />{Number(p.rating).toFixed(1)}
+                          <span className="flex items-center gap-0.5 text-[11px] text-accent-strong font-semibold shrink-0">
+                            <Star className="w-3 h-3 fill-accent" />{Number(p.rating).toFixed(1)}
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-ich-neutral/70 truncate mt-0.5 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-gold shrink-0" />{p.destination}
+                      <p className="text-[11px] text-muted truncate mt-0.5 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-accent-strong shrink-0" />{p.destination}
                       </p>
-                      <p className="text-[11px] text-ich-neutral/60 mt-0.5 flex items-center gap-2.5">
+                      <p className="text-[11px] text-muted mt-0.5 flex items-center gap-2.5">
                         <span className="flex items-center gap-1"><CalendarDays className="w-3 h-3" />{p.duration_days}D/{p.duration_nights}N</span>
                         <span className="truncate">{categoryLabel(p.category)}</span>
                       </p>
                       <div className="flex items-end justify-between gap-2 mt-auto pt-1.5">
                         <PriceTag pkg={p} />
                         {p.slots_left > 0 && p.slots_left <= 5 && (
-                          <span className="text-[10px] font-semibold text-red-600 flex items-center gap-1 shrink-0">
+                          <span className="text-[10px] font-semibold text-accent-strong flex items-center gap-1 shrink-0">
                             <Users className="w-3 h-3" />{p.slots_left} left
                           </span>
                         )}

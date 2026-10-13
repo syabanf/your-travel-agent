@@ -82,16 +82,16 @@ export default function ProfilePayments() {
     <div className="animate-fade-in pb-28">
       <PageHeader title="Payment Methods" subtitle="Cards & digital wallets" showBack />
       <div className="px-6 space-y-4 mt-2">
-        <p className="text-[11px] text-ich-neutral/60 text-center">Demo only — no real charges</p>
+        <p className="text-[11px] text-muted text-center">Demo only — no real charges</p>
 
         {showForm && (
           <GlassCard className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-ich-primary">Add card</h2>
+              <h2 className="text-sm font-semibold text-foreground">Add card</h2>
               <button
                 onClick={resetForm}
                 aria-label="Cancel"
-                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral hover:text-ich-primary transition-colors"
+                className="w-8 h-8 bg-card shadow-card rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-colors lift"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -102,7 +102,7 @@ export default function ProfilePayments() {
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="Label (e.g. Personal Visa) *"
                 autoFocus
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
               />
               <input
                 value={last4}
@@ -110,12 +110,12 @@ export default function ProfilePayments() {
                 inputMode="numeric"
                 maxLength={4}
                 placeholder="Last 4 digits *"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
               />
               <select
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/40"
               >
                 {BRANDS.map((b) => (
                   <option key={b} value={b}>{b}</option>
@@ -123,7 +123,7 @@ export default function ProfilePayments() {
               </select>
               <button
                 type="submit"
-                className="w-full py-3 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 press"
+                className="w-full py-3 bg-accent-strong rounded-xl text-sm font-medium text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2 press sheen"
               >
                 <Plus className="w-4 h-4" /> Save card
               </button>
@@ -141,19 +141,19 @@ export default function ProfilePayments() {
           <div className="space-y-3 stagger">
             {methods.map((m) => (
               <GlassCard key={m.id} className="p-4 flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-                  <CreditCard className="w-5 h-5 text-gold" strokeWidth={1.5} />
+                <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <CreditCard className="w-5 h-5 text-accent-strong" strokeWidth={1.5} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-ich-primary truncate">{m.label}</p>
-                  <p className="text-xs text-ich-neutral mt-0.5">
+                  <p className="text-sm font-medium text-foreground truncate">{m.label}</p>
+                  <p className="text-xs text-muted mt-0.5">
                     {m.brand} ···· {m.last4}
                   </p>
                 </div>
                 <button
                   onClick={() => handleDelete(m.id)}
                   aria-label={`Remove ${m.label}`}
-                  className="w-9 h-9 glass-light rounded-lg flex items-center justify-center text-red-600/70 hover:text-red-600 transition-colors flex-shrink-0 press"
+                  className="w-9 h-9 bg-card shadow-card rounded-lg flex items-center justify-center text-red-600/70 hover:text-accent-strong transition-colors flex-shrink-0 press"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -165,7 +165,7 @@ export default function ProfilePayments() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 press"
+            className="w-full py-4 bg-accent-strong rounded-xl text-sm font-medium text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2 press"
           >
             <Plus className="w-4 h-4" /> Add Payment Method
           </button>

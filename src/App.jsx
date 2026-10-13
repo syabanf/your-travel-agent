@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ConfirmHost } from '@/components/ConfirmDialog';
@@ -14,6 +14,7 @@ import PageNotFound from './lib/PageNotFound';
 import Splash from './pages/Splash';
 import Onboarding from './pages/Onboarding';
 import Login from './pages/Login';
+import { readStaffSession } from './lib/staffAuth';
 import Home from './pages/Home';
 
 // Lazy — mobile app (loaded on demand)
@@ -41,6 +42,8 @@ const PromotionDetail = lazy(() => import('./pages/PromotionDetail'));
 const Packages = lazy(() => import('./pages/Packages'));
 const FeatureUnlock = lazy(() => import('./pages/FeatureUnlock'));
 const VirtualGuiding = lazy(() => import('./pages/VirtualGuiding'));
+const VisaInfo = lazy(() => import('./pages/VisaInfo'));
+const MyDocuments = lazy(() => import('./pages/MyDocuments'));
 const PackageDetail = lazy(() => import('./pages/PackageDetail'));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail'));
 const ProfilePreferences = lazy(() => import('./pages/ProfilePreferences'));
@@ -48,6 +51,7 @@ const ProfileTravelers = lazy(() => import('./pages/ProfileTravelers'));
 const ProfilePayments = lazy(() => import('./pages/ProfilePayments'));
 const ProfileSecurity = lazy(() => import('./pages/ProfileSecurity'));
 const ProfileSettings = lazy(() => import('./pages/ProfileSettings'));
+const ProfileDetails = lazy(() => import('./pages/ProfileDetails'));
 const ProfilePrivacy = lazy(() => import('./pages/ProfilePrivacy'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
@@ -57,6 +61,7 @@ const Search = lazy(() => import('./pages/Search'));
 
 // Lazy — admin dashboard (heavy: recharts, OpenLayers, jsPDF) split off the initial bundle
 const DashboardLayout = lazy(() => import('./dashboard/DashboardLayout'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const DashboardOverview = lazy(() => import('./dashboard/DashboardOverview'));
 const DashboardDestinations = lazy(() => import('./dashboard/DashboardDestinations'));
 const DashboardDestinationDetail = lazy(() => import('./dashboard/DashboardDestinationDetail'));
@@ -69,6 +74,10 @@ const DashboardBookingDetail = lazy(() => import('./dashboard/DashboardBookingDe
 const DashboardTrips = lazy(() => import('./dashboard/DashboardTrips'));
 const DashboardTripDetail = lazy(() => import('./dashboard/DashboardTripDetail'));
 const DashboardRegistrations = lazy(() => import('./dashboard/DashboardRegistrations'));
+const DashboardNotifications = lazy(() => import('./dashboard/DashboardNotifications'));
+const DashboardDocuments = lazy(() => import('./dashboard/DashboardDocuments'));
+const DashboardMasterData = lazy(() => import('./dashboard/DashboardMasterData'));
+const DashboardAccounting = lazy(() => import('./dashboard/DashboardAccounting'));
 const DashboardCustomers = lazy(() => import('./dashboard/DashboardCustomers'));
 const DashboardCustomerDetail = lazy(() => import('./dashboard/DashboardCustomerDetail'));
 const DashboardLeads = lazy(() => import('./dashboard/DashboardLeads'));
@@ -98,7 +107,7 @@ const DashboardTeamDetail = lazy(() => import('./dashboard/DashboardTeamDetail')
 
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center">
-    <div className="w-8 h-8 border-4 border-ich-gold/20 border-t-ich-gold rounded-full animate-spin" />
+    <div className="w-8 h-8 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
   </div>
 );
 
@@ -106,6 +115,13 @@ const RequireSession = () => {
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) return <Spinner />;
   return isAuthenticated ? <Outlet /> : <Navigate to="/splash" replace />;
+};
+
+// The dashboard needs a staff sign-in; the page asked for comes back after it.
+const RequireStaff = () => {
+  const location = useLocation();
+  if (readStaffSession()) return <Outlet />;
+  return <Navigate to={`/dashboard/login?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
 };
 
 const AppRoutes = () => (
@@ -117,10 +133,11 @@ const AppRoutes = () => (
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Login register />} />
 
-      {/* Everything below requires a session */}
-      <Route element={<RequireSession />}>
-        {/* /admin is the public-facing entry point to the CMS (the landing site links here). */}
-        <Route path="/admin/*" element={<Navigate to="/dashboard" replace />} />
+      {/* Back office: its own staff sign-in, separate from the member session.
+          /admin is the public entry point the landing site links to. */}
+      <Route path="/dashboard/login" element={<AdminLogin />} />
+      <Route path="/admin/*" element={<Navigate to="/dashboard" replace />} />
+      <Route element={<RequireStaff />}>
         {/* Admin dashboard / CMS (desktop) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
@@ -135,6 +152,10 @@ const AppRoutes = () => (
           <Route path="trips" element={<DashboardTrips />} />
           <Route path="trips/:id" element={<DashboardTripDetail />} />
           <Route path="registrations" element={<DashboardRegistrations />} />
+          <Route path="notifications" element={<DashboardNotifications />} />
+          <Route path="documents" element={<DashboardDocuments />} />
+          <Route path="master" element={<DashboardMasterData />} />
+          <Route path="accounting" element={<DashboardAccounting />} />
           <Route path="customers" element={<DashboardCustomers />} />
           <Route path="customers/:id" element={<DashboardCustomerDetail />} />
           <Route path="leads" element={<DashboardLeads />} />
@@ -169,7 +190,10 @@ const AppRoutes = () => (
           <Route path="team" element={<DashboardTeam />} />
           <Route path="team/:id" element={<DashboardTeamDetail />} />
         </Route>
+      </Route>
 
+      {/* Everything below requires a session */}
+      <Route element={<RequireSession />}>
         {/* Mobile app */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
@@ -199,6 +223,8 @@ const AppRoutes = () => (
           <Route path="/packages" element={<Packages />} />
           <Route path="/unlock/:feature" element={<FeatureUnlock />} />
           <Route path="/virtual-guiding" element={<VirtualGuiding />} />
+          <Route path="/visa" element={<VisaInfo />} />
+          <Route path="/profile/documents" element={<MyDocuments />} />
           <Route path="/packages/:id" element={<PackageDetail />} />
           <Route path="/destination/:id" element={<DestinationDetail />} />
           <Route path="/profile" element={<Profile />} />
@@ -207,6 +233,7 @@ const AppRoutes = () => (
           <Route path="/profile/payments" element={<ProfilePayments />} />
           <Route path="/profile/security" element={<ProfileSecurity />} />
           <Route path="/profile/settings" element={<ProfileSettings />} />
+          <Route path="/profile/details" element={<ProfileDetails />} />
           <Route path="/profile/privacy" element={<ProfilePrivacy />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
@@ -229,7 +256,7 @@ function App() {
           </Router>
           <Toaster />
           <ConfirmHost />
-          <SonnerToaster position="top-center" richColors toastOptions={{ style: { fontFamily: 'var(--font-body)' } }} />
+          <SonnerToaster position="top-center" richColors toastOptions={{ style: { fontFamily: '"DM Sans", system-ui, sans-serif' } }} />
         </QueryClientProvider>
       </AuthProvider>
     </ErrorBoundary>

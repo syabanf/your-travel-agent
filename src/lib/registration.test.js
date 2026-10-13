@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { backend } from "@/api/backend";
-import { submitRegistration, registrationStatus, decideRegistration } from "@/lib/registration";
+import { submitRegistration, registrationStatus, decideRegistration, accountProfile } from "@/lib/registration";
 
 const wipe = async () => {
   for (const r of await backend.entities.Registration.list()) {
@@ -52,5 +52,22 @@ describe("sign-up approval", () => {
     const { registration } = await submitRegistration({ full_name: "Spam", email: "spam@example.com" });
     await decideRegistration(registration.id, "rejected");
     expect((await registrationStatus("spam@example.com")).status).toBe("rejected");
+  });
+});
+
+describe("account profile for prefilling forms", () => {
+  beforeEach(wipe);
+
+  it("takes the approved sign-up's name and phone, whatever the email's case", async () => {
+    const { registration } = await submitRegistration({ full_name: "Rina Sari", email: "rina@example.com", phone: "+62 812 0000 1111" });
+    expect((await accountProfile("RINA@example.com")).phone).toBe("");
+    await decideRegistration(registration.id, "approved");
+    expect(await accountProfile("RINA@example.com")).toMatchObject({ full_name: "Rina Sari", phone: "+62 812 0000 1111" });
+  });
+
+  it("prefers the CRM customer record", async () => {
+    const c = await backend.entities.Customer.create({ name: "Budi Santoso", email: "budi@example.com", phone: "+62 811 9999 0000", city: "Medan" });
+    expect(await accountProfile("budi@example.com")).toMatchObject({ full_name: "Budi Santoso", phone: "+62 811 9999 0000", city: "Medan" });
+    await backend.entities.Customer.delete(c.id);
   });
 });

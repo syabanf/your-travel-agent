@@ -78,11 +78,11 @@ export default function ProfileTravelers() {
         {showForm && (
           <GlassCard className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-ich-primary">Add traveler</h2>
+              <h2 className="text-sm font-semibold text-foreground">Add traveler</h2>
               <button
                 onClick={resetForm}
                 aria-label="Cancel"
-                className="w-8 h-8 glass-light rounded-lg flex items-center justify-center text-ich-neutral hover:text-ich-primary transition-colors"
+                className="w-8 h-8 bg-card shadow-card rounded-lg flex items-center justify-center text-muted hover:text-foreground transition-colors lift"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -94,7 +94,7 @@ export default function ProfileTravelers() {
                 placeholder="Full name *"
                 aria-label="Full name"
                 autoFocus
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
               />
               <input
                 value={email}
@@ -102,18 +102,18 @@ export default function ProfileTravelers() {
                 type="email"
                 placeholder="Email (optional)"
                 aria-label="Email (optional)"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
               />
               <input
                 value={relation}
                 onChange={(e) => setRelation(e.target.value)}
                 placeholder="Relation (e.g. Spouse, Child)"
                 aria-label="Relation"
-                className="w-full glass-light rounded-xl px-4 py-3 text-sm text-ich-primary placeholder:text-ich-neutral/50 outline-none focus:ring-1 focus:ring-ich-gold/40"
+                className="w-full bg-card shadow-card rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted outline-none focus:ring-1 focus:ring-accent/40"
               />
               <button
                 type="submit"
-                className="w-full py-3 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 press"
+                className="w-full py-3 bg-accent-strong rounded-xl text-sm font-medium text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2 press sheen"
               >
                 <Plus className="w-4 h-4" /> Save traveler
               </button>
@@ -131,13 +131,13 @@ export default function ProfileTravelers() {
           <div className="space-y-3 stagger">
             {travelers.map((t) => (
               <GlassCard key={t.id} className="p-4 flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-ich-gold/10 flex items-center justify-center flex-shrink-0">
-                  <span className="text-base font-display text-gold">{t.name?.[0]?.toUpperCase() || "?"}</span>
+                <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-base font-display text-accent-strong">{t.name?.[0]?.toUpperCase() || "?"}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-ich-primary truncate">{t.name}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
                   {(t.relation || t.email) && (
-                    <p className="text-xs text-ich-neutral mt-0.5 truncate">
+                    <p className="text-xs text-muted mt-0.5 truncate">
                       {[t.relation, t.email].filter(Boolean).join(" · ")}
                     </p>
                   )}
@@ -145,7 +145,7 @@ export default function ProfileTravelers() {
                 <button
                   onClick={() => handleDelete(t.id)}
                   aria-label={`Remove ${t.name}`}
-                  className="w-9 h-9 glass-light rounded-lg flex items-center justify-center text-red-600/70 hover:text-red-600 transition-colors flex-shrink-0 press"
+                  className="w-9 h-9 bg-card shadow-card rounded-lg flex items-center justify-center text-red-600/70 hover:text-accent-strong transition-colors flex-shrink-0 press"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -157,7 +157,7 @@ export default function ProfileTravelers() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="w-full py-4 glass-gold rounded-xl text-sm font-medium text-gold hover:glow-gold transition-all flex items-center justify-center gap-2 press"
+            className="w-full py-4 bg-accent-strong rounded-xl text-sm font-medium text-white shadow-glow hover:bg-accent-dark transition-all flex items-center justify-center gap-2 press"
           >
             <Plus className="w-4 h-4" /> Add Traveler
           </button>

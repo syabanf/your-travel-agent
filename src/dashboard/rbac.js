@@ -8,7 +8,7 @@ export const ROLES = [
   { key: "viewer", label: "Viewer", desc: "Read-only access" },
 ];
 
-export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "content", "media", "settings", "reports", "erp", "ota", "pms", "audit", "team", "registrations"];
+export const RESOURCES = ["overview", "destinations", "promotions", "bookings", "trips", "customers", "leads", "suppliers", "marketing", "content", "media", "settings", "reports", "erp", "ota", "pms", "audit", "team", "registrations", "master", "accounting"];
 
 const ALL = ["view", "create", "edit", "delete"];
 const VIEW = ["view"];
@@ -35,6 +35,8 @@ const PERMS = {
     audit: VIEW,
     team: [],
     registrations: ALL,
+    master: ALL,
+    accounting: ALL,
   },
   editor: {
     overview: VIEW,
@@ -55,6 +57,8 @@ const PERMS = {
     pms: ["view", "edit"],
     audit: [],
     team: [],
+    master: ["view", "create", "edit"],
+    accounting: VIEW,
   },
   viewer: Object.fromEntries(RESOURCES.map((r) => [r, r === "team" || r === "audit" || r === "settings" ? [] : VIEW])),
 };
