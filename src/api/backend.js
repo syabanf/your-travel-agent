@@ -158,7 +158,7 @@ function createEntity(name) {
   };
 }
 
-const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage', 'Registration', 'FeatureAccess', 'TravelDocument', 'Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry'];
+const ENTITY_NAMES = ['Trip', 'Booking', 'ItineraryItem', 'Notification', 'PersonalAssistant', 'ChatMessage', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'AuditLog', 'Page', 'MediaAsset', 'Setting', 'OtaCategory', 'TourPackage', 'Registration', 'FeatureAccess', 'TravelDocument', 'Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry', 'TripPhoto'];
 
 // Business records whose changes are written to the AuditLog (compliance trail).
 const AUDITABLE = new Set(['Trip', 'Booking', 'Destination', 'Promotion', 'Customer', 'StaffMember', 'TripMember', 'Supplier', 'Lead', 'Campaign', 'Page', 'MediaAsset', 'Setting', 'TourPackage', 'Registration', 'TravelDocument', 'Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry']);
@@ -289,7 +289,7 @@ ensureSeeded();
 /* ----------------------------- migrations -------------------------- */
 // Non-destructive, run-once upgrades for data seeded before a feature landed.
 
-const MIGRATION_FLAG = `${PREFIX}_migrated_v13`;
+const MIGRATION_FLAG = `${PREFIX}_migrated_v14`;
 function runMigrations() {
   if (readRaw(MIGRATION_FLAG)) return;
   try {
@@ -400,7 +400,8 @@ function runMigrations() {
 
     // v12: master data moved out of the code into the back office.
     // v13: the chart of accounts and the manual journal behind Accounting.
-    for (const nm of ['Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry']) {
+    // v14: photos travellers share with their trip group.
+    for (const nm of ['Place', 'DocumentType', 'VisaInfo', 'PaymentMethod', 'TourLeader', 'MeetingPoint', 'Account', 'JournalEntry', 'TripPhoto']) {
       if (readCollection(nm).length === 0 && (seed[nm] || []).length) writeCollection(nm, seed[nm]);
     }
 

@@ -29,7 +29,7 @@
     <h1>Gallery<span class="dot">.</span></h1>
     <p>
       Moments from our group departures, from Nami Island to Cappadocia.
-      Click a photo to see it full size.
+      Pick a destination, then click a photo to see it full size.
     </p>
   </div>
 </section>
@@ -43,8 +43,13 @@
       Photos taken by tour leaders and travelers on our group departures.
     </p>
 
+    <div class="chips" id="galChips" role="group" aria-label="Filter by destination"></div>
+    <p class="gal__count" id="galCount" aria-live="polite"></p>
     <div class="gal" id="galGrid"></div>
-    <p class="note">Want your trip photos featured here? Send them to our team on WhatsApp.</p>
+    <p class="gal__share">
+      Travelled with us? Upload your photos to your trip group in the <a data-link="app" href="#">Icon Holiday app</a>.
+      Your tour leader features the best ones here.
+    </p>
   </div>
 </section>
 
@@ -67,94 +72,42 @@
 <script src="./common.js"></script>
 <script>
 (function () {
-  const esc = window.esc;
+  const { esc, qs, photosFor, photoTile, openLightbox } = window;
 
   document.querySelectorAll("[data-bg]").forEach((n) => {
     n.style.backgroundImage = `url("${n.dataset.bg}")`;
   });
 
-  const ITEMS = window.GALLERY;
-  const grid  = document.getElementById("galGrid");
+  const grid = document.getElementById("galGrid");
+  const chips = document.getElementById("galChips");
+  const count = document.getElementById("galCount");
+  const dests = window.DESTS.filter((d) => photosFor(d.id).length);
+  let dest = dests.some((d) => d.id === qs("dest")) ? qs("dest") : "";
+  let shown = [];
 
-  grid.innerHTML = ITEMS.map((g, i) => `
-    <figure role="button" tabindex="0" data-i="${i}" aria-label="Enlarge photo: ${esc(g.cap)}">
-      <img src="${esc(g.img)}" alt="${esc(g.cap)}" loading="lazy" decoding="async" />
-      <figcaption>${esc(g.cap)}</figcaption>
-    </figure>`).join("");
-
-  /* ── Lightbox ────────────────────────────────────────────────
-     styles.css has no overlay class, so the elements are built
-     in JS with only the inline styles they need.                */
-  let overlay = null;
-  let lastFocus = null;
-
-  const close = () => {
-    if (!overlay) return;
-    overlay.remove();
-    overlay = null;
-    removeEventListener("keydown", onKey);
-    if (lastFocus) lastFocus.focus();
+  const render = () => {
+    shown = photosFor(dest);
+    chips.innerHTML = [{ id: "", name: "All" }, ...dests].map((d) => `
+      <button class="chip" type="button" data-dest="${esc(d.id)}" aria-pressed="${d.id === dest}">
+        ${esc(d.name)} <small>${photosFor(d.id).length}</small>
+      </button>`).join("");
+    const name = dests.find((d) => d.id === dest)?.name;
+    count.textContent = `${shown.length} photos${name ? ` from ${name}` : ""}, featured first`;
+    grid.innerHTML = shown.map(photoTile).join("");
+    history.replaceState(null, "", dest ? `?dest=${encodeURIComponent(dest)}` : location.pathname);
   };
 
-  function onKey(e) {
-    if (e.key === "Escape") { e.preventDefault(); close(); return; }
-    if (e.key === "Tab" && overlay) {           // keep focus inside the overlay
-      e.preventDefault();
-      overlay.querySelector("button").focus();
-    }
-  }
-
-  const open = (i, trigger) => {
-    const item = ITEMS[i];
-    if (!item) return;
-    close();
-    lastFocus = trigger || null;
-
-    overlay = document.createElement("div");
-    overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", item.cap);
-    overlay.style.cssText =
-      "position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;" +
-      "align-items:center;justify-content:center;gap:1rem;padding:24px;" +
-      "background:rgba(15, 26, 21,.9);cursor:zoom-out";
-
-    const img = document.createElement("img");
-    img.src = String(item.img).replace("w=900", "w=1600");
-    img.alt = item.cap;
-    img.decoding = "async";
-    img.style.cssText =
-      "max-width:min(1100px,100%);max-height:72vh;object-fit:contain;" +
-      "border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,.5);cursor:auto";
-
-    const cap = document.createElement("p");
-    cap.textContent = item.cap;
-    cap.style.cssText = "color:#fff;font-size:.9rem;text-align:center;max-width:620px";
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "btn btn--light";
-    btn.textContent = "Close";
-    btn.addEventListener("click", close);
-
-    overlay.append(img, cap, btn);
-    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
-    document.body.appendChild(overlay);
-    addEventListener("keydown", onKey);
-    btn.focus();
-  };
-
+  chips.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-dest]");
+    if (!chip) return;
+    dest = chip.dataset.dest;
+    render();
+  });
   grid.addEventListener("click", (e) => {
-    const fig = e.target.closest("figure[data-i]");
-    if (fig) open(+fig.dataset.i, fig);
+    const tile = e.target.closest(".gal__tile");
+    if (tile) openLightbox(shown, Number(tile.dataset.i));
   });
-  grid.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
-    const fig = e.target.closest("figure[data-i]");
-    if (!fig) return;
-    e.preventDefault();
-    open(+fig.dataset.i, fig);
-  });
+  render();
 })();
 </script>
 </body>

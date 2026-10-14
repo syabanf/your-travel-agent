@@ -37,17 +37,57 @@
 <!-- ══ Destination list ══ -->
 <section class="sect">
   <div class="wrap">
+    <form class="finder" id="finder" role="search" aria-label="Find a destination">
+      <label class="finder__f">
+        <span>Destination</span>
+        <select name="dest" id="fDest"><option value="">All countries</option></select>
+      </label>
+      <label class="finder__f">
+        <span>Travel month</span>
+        <select name="month" id="fMonth"><option value="">Any time</option></select>
+      </label>
+      <label class="finder__f">
+        <span>Trip length</span>
+        <select name="len">
+          <option value="">Any length</option>
+          <option value="short">Up to 7 days</option>
+          <option value="mid">8 to 10 days</option>
+          <option value="long">11 days or more</option>
+        </select>
+      </label>
+      <label class="finder__f">
+        <span>Visa</span>
+        <select name="visa">
+          <option value="">Any visa</option>
+          <option value="easy">Waiver, e-Visa or on arrival</option>
+          <option value="embassy">Embassy visa</option>
+        </select>
+      </label>
+      <button class="btn btn--primary finder__go" type="submit"><svg class="i"><use href="#i-search"/></svg> Search</button>
+    </form>
+
     <div class="chips" id="destChips" role="group" aria-label="Filter destinations by region"></div>
 
+    <div class="finder__bar">
+      <p id="destCount" aria-live="polite"></p>
+      <label class="finder__sort">Sort by
+        <select name="sort" form="finder">
+          <option value="">Most packages</option>
+          <option value="price">Lowest price</option>
+          <option value="name">Name, A to Z</option>
+        </select>
+      </label>
+    </div>
+
     <div id="destResults">
-      <div class="grid grid--4 reveal" id="destGrid"></div>
+      <div class="grid dgrid" id="destGrid"></div>
       <p class="note">Can't find your destination? We also arrange routes outside this list. Tell us your plans and we will put the itinerary together.</p>
     </div>
 
     <div id="destEmpty" hidden>
       <div class="empty">
-        <b>No destinations in this region yet</b>
-        Try another region, or contact us about a destination that isn't listed.
+        <b>No destination matches these filters</b>
+        <button class="btn btn--ghost" type="button" id="destReset">Clear the filters</button>
       </div>
     </div>
   </div>
@@ -60,44 +100,100 @@
 <script>
 (() => {
   const DESTS = window.DESTS || [];
+  const form = document.getElementById("finder");
   const chips = document.getElementById("destChips");
   const grid = document.getElementById("destGrid");
+  const count = document.getElementById("destCount");
   const results = document.getElementById("destResults");
   const empty = document.getElementById("destEmpty");
 
-  /* Unique regions, in the order they appear in data.js */
-  const regions = [];
-  DESTS.forEach((d) => { if (d.region && !regions.includes(d.region)) regions.push(d.region); });
+  // Everything the filters read, worked out once per destination.
+  const rows = DESTS.map((d) => {
+    const tours = toursFor(d);
+    const prices = tours.map((t) => t.price).filter(Boolean);
+    return {
+      d, tours,
+      months: bestMonths(d.best),
+      from: prices.length ? Math.min(...prices) : null,
+      easyVisa: /waiver|e-visa|on arrival|visa-free/i.test(d.visa),
+    };
+  });
+  const LENGTH = { short: (n) => n <= 7, mid: (n) => n >= 8 && n <= 10, long: (n) => n >= 11 };
 
-  chips.innerHTML = [`<button class="chip" type="button" data-region="" aria-pressed="true">All</button>`]
-    .concat(regions.map((r) =>
-      `<button class="chip" type="button" data-region="${esc(r)}" aria-pressed="false">${esc(r)}</button>`))
-    .join("");
+  document.getElementById("fDest").insertAdjacentHTML("beforeend",
+    DESTS.map((d) => `<option value="${esc(d.id)}">${esc(d.name)}</option>`).join(""));
+  document.getElementById("fMonth").insertAdjacentHTML("beforeend",
+    MONTHS.map((m, i) => `<option value="${i}">${m}</option>`).join(""));
 
-  /* Destination card: same markup as the home page destination grid */
-  const card = (d) => `
-    <a class="dest" href="destinasi-detail.html?id=${encodeURIComponent(d.id)}" aria-label="Destination: ${esc(d.name)}">
-      <img src="${esc(d.img)}" alt="${esc(d.name)}" loading="lazy" decoding="async" />
-      <span class="dest__ov"></span>
-      <span class="dest__txt"><b>${esc(d.name)}</b><span>${esc(d.region)}</span></span>
+  const regions = [...new Set(DESTS.map((d) => d.region).filter(Boolean))];
+  chips.innerHTML = ["", ...regions].map((r) =>
+    `<button class="chip" type="button" data-region="${esc(r)}">${r ? esc(r) : "All regions"}</button>`).join("");
+
+  // Filters live in the URL, so a filtered list can be shared and survives Back.
+  const params = new URLSearchParams(location.search);
+  for (const el of form.elements) if (el.name && params.has(el.name)) el.value = params.get(el.name);
+  let region = params.get("region") || "";
+
+  const card = ({ d, tours, months, from }) => `
+    <a class="dcard" href="destinasi-detail.html?id=${encodeURIComponent(d.id)}">
+      <span class="dcard__img"><img src="${esc(d.img)}" alt="" loading="lazy" decoding="async" /></span>
+      <span class="dcard__body">
+        <span class="dcard__meta">${esc(d.region)} · ${tours.length ? `${tours.length} ${tours.length === 1 ? "package" : "packages"}` : "private trips only"}</span>
+        <b>${esc(d.name)}</b>
+        <span class="months months--light" role="img" aria-label="Best months: ${esc(d.best)}">
+          ${MONTHS.map((m, k) => `<span class="${months.has(k) ? "is-on" : ""}">${m[0]}</span>`).join("")}
+        </span>
+        <span class="dcard__foot">
+          <span>${esc(d.visa)}</span>
+          <span class="dcard__price">${from ? `from <b>${rp(from)}</b>` : "Price on request"}</span>
+        </span>
+      </span>
     </a>`;
 
-  const render = (region) => {
-    const list = region ? DESTS.filter((d) => d.region === region) : DESTS;
+  const render = () => {
+    const f = Object.fromEntries(new FormData(form));
+    const list = rows.filter((r) =>
+      (!region || r.d.region === region) &&
+      (!f.dest || r.d.id === f.dest) &&
+      (f.month === "" || r.months.has(Number(f.month))) &&
+      (!f.len || r.tours.some((t) => LENGTH[f.len](t.days))) &&
+      (!f.visa || r.easyVisa === (f.visa === "easy")));
+
+    list.sort(f.sort === "price" ? (a, b) => (a.from ?? Infinity) - (b.from ?? Infinity)
+      : f.sort === "name" ? (a, b) => a.d.name.localeCompare(b.d.name)
+      : (a, b) => b.tours.length - a.tours.length);
+
+    chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.region === region)));
     grid.innerHTML = list.map(card).join("");
+    count.textContent = `${list.length} ${list.length === 1 ? "destination" : "destinations"} found`;
     results.hidden = list.length === 0;
     empty.hidden = list.length > 0;
-    window.initReveal();
+
+    const q = new URLSearchParams(Object.entries({ ...f, region }).filter(([, v]) => v !== ""));
+    history.replaceState(null, "", q.size ? `?${q}` : location.pathname);
   };
 
+  // The sort select sits outside the form, so its change event doesn't bubble to it.
+  form.addEventListener("change", render);
+  form.elements.sort.addEventListener("change", render);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    render();
+    results.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+  });
   chips.addEventListener("click", (e) => {
     const btn = e.target.closest(".chip");
     if (!btn) return;
-    chips.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c === btn)));
-    render(btn.dataset.region);
+    region = btn.dataset.region;
+    render();
+  });
+  document.getElementById("destReset").addEventListener("click", () => {
+    form.reset();
+    region = "";
+    render();
   });
 
-  render("");
+  render();
 })();
 </script>
 </body>

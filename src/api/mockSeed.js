@@ -236,6 +236,24 @@ export function buildSeed() {
     { id: 'tm_san_guest', created_at: iso(-3), created_by: by, trip_id: 'trip_santorini', name: 'Hana Kim', email: 'hana.kim@example.com', phone: '+82 10 5555 6666', role: 'guest', status: 'invited' },
   ];
 
+  // Photos the Bali group shared on the trip. `url` holds a seeded photo;
+  // an upload keeps its bytes in IndexedDB under `file_id` instead.
+  const bali = (n, url, caption, who, featured = false) => {
+    const m = TripMember.find((x) => x.id === who);
+    return { id: `tp_bali_${n}`, created_at: iso(-2 + n * 0.2), created_by: by, trip_id: 'trip_bali', url: `https://images.unsplash.com/photo-${url}?w=1200&q=80`,
+      caption, uploader_name: m.name, uploader_email: m.email, featured };
+  };
+  const TripPhoto = [
+    bali(1, '1537996194471-e657df975ab4', 'Ulun Danu Beratan before the crowds', 'tm_bali_alex', true),
+    bali(2, '1555400038-63f5ba517a47', 'Tegallalang rice terraces', 'tm_bali_mia'),
+    bali(3, '1571896349842-33c89424de2d', 'Our pool at Azure Bay', 'tm_bali_mia'),
+    bali(4, '1552733407-5d5c46c3bb3b', 'Jungle river near Ubud', 'tm_bali_alex'),
+    bali(5, '1558005530-a7958896ec60', 'Mount Agung behind the paddies', 'tm_bali_mia', true),
+    bali(6, '1573790387438-4da905039392', 'Diamond Beach, Nusa Penida', 'tm_bali_alex'),
+    bali(7, '1539367628448-4bc5c9d171c8', 'Kelingking cliff from the top', 'tm_bali_mia'),
+    bali(8, '1518548419970-58e3b4079ab2', 'Sunset at Tanah Lot', 'tm_bali_alex', true),
+  ];
+
   // Suppliers travel products are sourced from (flights, hotels, activities, DMCs).
   const Supplier = [
     { id: 'sup_garuda', created_at: iso(-200), created_by: by, name: 'Garuda Indonesia', type: 'flight', contact_email: 'agency@garuda.example', contact_phone: '+62 21 2351 9999', country: 'Indonesia', commission_rate: 7, rating: 4.6, status: 'active', notes: 'National carrier — strong domestic network.', contact_person: 'Rama Saputra', website: 'https://www.garuda-indonesia.com', payment_terms: 'Net 14', address: 'Garuda City Center, Soekarno-Hatta Airport, Tangerang 19120, Indonesia' },
@@ -759,5 +777,5 @@ export function buildSeed() {
     { id: 'nt_itin_change', created_at: iso(-1.1), created_by: by, title: 'Itinerary updated: Ubud day', message: 'The rice terrace visit moved to 09:00. Check day 2 in your itinerary.', type: 'itinerary_change', category: 'trip', audience: 'targeted', is_read: false, related_trip_id: 'trip_bali' },
   );
 
-  return { Registration, FeatureAccess, TravelDocument, Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage, Place, DocumentType, VisaInfo, PaymentMethod, TourLeader, MeetingPoint, Account, JournalEntry };
+  return { Registration, FeatureAccess, TravelDocument, Trip, Booking, ItineraryItem, Notification, PersonalAssistant, ChatMessage: [], Destination, Promotion, Customer, StaffMember, TripMember, Supplier, Lead, Campaign, AuditLog: [], Page, MediaAsset, Setting, OtaCategory, TourPackage, Place, DocumentType, VisaInfo, PaymentMethod, TourLeader, MeetingPoint, Account, JournalEntry, TripPhoto };
 }

@@ -23,6 +23,38 @@ window.qs = (k) => new URLSearchParams(location.search).get(k);
 window.esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+window.MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// Dates in data.js read "23 Oct 2026"; parse them by hand so every browser agrees.
+window.parseDate = (s) => {
+  const [d, m, y] = String(s).split(" ");
+  const mi = window.MONTHS.indexOf(String(m).slice(0, 3));
+  return mi < 0 ? null : new Date(Number(y), mi, Number(d));
+};
+const TODAY = new Date(new Date().toDateString());
+window.isUpcoming = (s) => window.parseDate(s) >= TODAY;
+// "Mar–May (cherry blossom) & Oct–Nov" -> the month indexes it covers, wrapping past December.
+window.bestMonths = (s) => {
+  const on = new Set();
+  for (const [, a, b] of String(s).matchAll(/([A-Z][a-z]{2})(?:–([A-Z][a-z]{2}))?/g)) {
+    const from = window.MONTHS.indexOf(a);
+    if (from < 0) continue;
+    const to = b ? window.MONTHS.indexOf(b) : from;
+    for (let m = from; ; m = (m + 1) % 12) { on.add(m); if (m === to) break; }
+  }
+  return on;
+};
+window.toursFor = (dest) => window.TOURS.filter((t) => t.country === dest.name);
+// Featured photos first, then the gallery's own order.
+window.photosFor = (destId) => window.GALLERY
+  .filter((p) => !destId || p.dest === destId)
+  .sort((a, b) => b.featured - a.featured);
+window.photoTile = (p, i) => `
+  <button class="gal__tile" type="button" data-i="${i}" aria-label="Enlarge photo by ${window.esc(p.by)}, ${window.esc(p.trip)}">
+    <img src="${window.esc(p.img)}" alt="" loading="lazy" decoding="async" />
+    ${p.featured ? `<span class="gal__star"><svg class="i"><use href="#i-star"/></svg> Featured</span>` : ""}
+    <span class="gal__cap"><b>${window.esc(p.by)}</b>${window.esc(p.trip)}</span>
+  </button>`;
+
 /* ── Icon sprite ─────────────────────────────────────────────── */
 const SPRITE = `
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -41,6 +73,7 @@ const SPRITE = `
 <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
 <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 4.5a4 4 0 0 1 0 7M22 21a6 6 0 0 0-4-5.6"/></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2Z"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/></symbol>
 <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
 <symbol id="i-phone-app" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
 <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm5.8 14.2c-.3.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.8-.6-3.1-1.3-5.1-4.4-5.3-4.6-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.4.7-.4h.6c.2 0 .4 0 .6.5l.9 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.4 1.8 2.2 1.2 1.1 2.2 1.4 2.5 1.6.3.1.5.1.6-.1l.9-1c.2-.2.4-.2.6-.1l2 1c.2.1.4.2.4.3.1.2.1.7-.1 1.3Z"/></symbol>
@@ -177,6 +210,50 @@ window.initReveal = () => {
   nodes.forEach((n) => io.observe(n));
 };
 window.initReveal();
+
+/* ── Lightbox ────────────────────────────────────────────────
+   One <dialog> for every page. The browser handles Escape and
+   hands focus back to the opener; arrows and the side buttons
+   step through the list the page passed in.                    */
+let lbItems = [];
+let lbAt = 0;
+let lb = null;
+const lbShow = (i) => {
+  lbAt = (i + lbItems.length) % lbItems.length;
+  const p = lbItems[lbAt];
+  const img = lb.querySelector(".lb__img");
+  img.src = p.img.replace(/w=\d+/, "w=1600");
+  img.alt = `${p.trip}, photo by ${p.by}`;
+  lb.querySelector(".lb__cap").innerHTML =
+    `<b>${window.esc(p.by)}</b>${window.esc(p.trip)}${p.featured ? " · Featured" : ""}`;
+  lb.querySelector(".lb__n").textContent = `${lbAt + 1} / ${lbItems.length}`;
+};
+window.openLightbox = (items, i) => {
+  if (!lb) {
+    lb = document.createElement("dialog");
+    lb.className = "lb";
+    lb.setAttribute("aria-label", "Photo viewer");
+    lb.innerHTML = `
+      <button class="lb__btn lb__x" type="button" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+      <button class="lb__btn lb__prev" type="button" aria-label="Previous photo"><svg class="i"><use href="#i-back"/></svg></button>
+      <figure><img class="lb__img" decoding="async" /><figcaption><span class="lb__cap"></span><span class="lb__n"></span></figcaption></figure>
+      <button class="lb__btn lb__next" type="button" aria-label="Next photo"><svg class="i"><use href="#i-arrow"/></svg></button>`;
+    lb.addEventListener("click", (e) => {
+      if (e.target === lb || e.target.closest(".lb__x")) lb.close();
+      else if (e.target.closest(".lb__prev")) lbShow(lbAt - 1);
+      else if (e.target.closest(".lb__next")) lbShow(lbAt + 1);
+    });
+    lb.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") lbShow(lbAt - 1);
+      if (e.key === "ArrowRight") lbShow(lbAt + 1);
+    });
+    document.body.append(lb);
+  }
+  lbItems = items;
+  lb.classList.toggle("lb--one", items.length < 2);
+  lbShow(i);
+  lb.showModal();
+};
 
 const yr = document.getElementById("yr");
 if (yr) yr.textContent = new Date().getFullYear();

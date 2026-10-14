@@ -19,7 +19,7 @@ beforeEach(() => {
   // Skip the prefix migration and seeding so these cases test the rename alone.
   window.localStorage.setItem("ich_storage_renamed", "2026-01-01T00:00:00.000Z");
   window.localStorage.setItem("ich_db__seeded_v4", "2026-01-01T00:00:00.000Z");
-  window.localStorage.setItem("ich_db__migrated_v13", "2026-01-01T00:00:00.000Z");
+  window.localStorage.setItem("ich_db__migrated_v14", "2026-01-01T00:00:00.000Z");
 });
 
 describe("timestamp column rename", () => {

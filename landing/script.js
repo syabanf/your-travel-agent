@@ -6,22 +6,14 @@
 
 const el = (id) => document.getElementById(id);
 const IMG = (u, w = 800) => (u.includes("?") ? u : `${u}?w=${w}&q=80`);
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const arrow = `<svg class="i"><use href="#i-arrow"/></svg>`;
+const MONTHS = window.MONTHS;
 
-// Dates in data.js read "23 Oct 2026"; parse them by hand so every browser agrees.
-const parseDate = (s) => {
-  const [d, m, y] = String(s).split(" ");
-  const mi = MONTHS.indexOf(String(m).slice(0, 3));
-  return mi < 0 ? null : new Date(Number(y), mi, Number(d));
-};
-const today = new Date(new Date().toDateString());
 const fmt = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]}`;
 const detail = (t) => `tour-detail.html?id=${encodeURIComponent(t.id)}`;
 
 // Every future departure, one per date, soonest first.
 const departures = window.TOURS
-  .flatMap((t) => t.dates.map(parseDate).filter((d) => d && d >= today).map((date) => ({ t, date })))
+  .flatMap((t) => t.dates.filter(isUpcoming).map((s) => ({ t, date: parseDate(s) })))
   .sort((a, b) => a.date - b.date);
 
 /* ── Departure board ───────────────────────────────────────── */
@@ -67,17 +59,6 @@ if (lead) {
 }
 
 /* ── Destinations with a 12-month strip ────────────────────── */
-// "Mar–May (cherry blossom) & Oct–Nov" -> the months it covers, wrapping past December.
-const bestMonths = (s) => {
-  const on = new Set();
-  for (const [, a, b] of String(s).matchAll(/([A-Z][a-z]{2})(?:–([A-Z][a-z]{2}))?/g)) {
-    const from = MONTHS.indexOf(a);
-    if (from < 0) continue;
-    const to = b ? MONTHS.indexOf(b) : from;
-    for (let m = from; ; m = (m + 1) % 12) { on.add(m); if (m === to) break; }
-  }
-  return on;
-};
 el("destGrid").innerHTML = window.DESTS.slice(0, 7).map((d, i) => {
   const on = bestMonths(d.best);
   return `

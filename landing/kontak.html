@@ -105,7 +105,15 @@
   const tour = tourId ? (window.TOURS || []).find((t) => t.id === tourId) : null;
   const dest = destId ? (window.DESTS || []).find((d) => d.id === destId) : null;
 
-  if (tour) {
+  const date = window.qs("date");
+  const pax = Number(window.qs("pax")) || 0;
+  const room = window.qs("room") === "single" ? "single rooms" : "twin sharing";
+
+  if (tour && date && pax) {
+    msg.value = `I'd like to book "${tour.title}" departing ${date} for ${pax} ${pax === 1 ? "person" : "people"}, ${room}. Please confirm the seats.`;
+    note.textContent = `You are booking ${tour.title} on ${date}. Fill in your details and we will confirm the seats on WhatsApp.`;
+    note.hidden = false;
+  } else if (tour) {
     msg.value = `I'm interested in the "${tour.title}" package. Please send me more information.`;
     note.textContent = `You are asking about the package: ${tour.title} (${tour.days} days). Please fill in your details below. We have already written the message for you.`;
     note.hidden = false;

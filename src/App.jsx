@@ -20,6 +20,7 @@ import Home from './pages/Home';
 // Lazy — mobile app (loaded on demand)
 const Itinerary = lazy(() => import('./pages/Itinerary'));
 const TripDetail = lazy(() => import('./pages/TripDetail'));
+const TripPhotos = lazy(() => import('./pages/TripPhotos'));
 const NewTrip = lazy(() => import('./pages/NewTrip'));
 const TripWizard = lazy(() => import('./pages/TripWizard'));
 const AddActivity = lazy(() => import('./pages/AddActivity'));
@@ -205,6 +206,7 @@ const AppRoutes = () => (
           <Route path="/itinerary/budget" element={<BudgetView />} />
           <Route path="/itinerary/checklist" element={<ChecklistView />} />
           <Route path="/itinerary/:tripId" element={<TripDetail />} />
+          <Route path="/itinerary/:tripId/photos" element={<TripPhotos />} />
           <Route path="/itinerary/:tripId/add" element={<AddActivity />} />
           <Route path="/itinerary/:tripId/edit" element={<NewTrip />} />
           <Route path="/assistant" element={<Assistant />} />

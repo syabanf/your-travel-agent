@@ -14,6 +14,7 @@ import { tripAccess } from "@/lib/payments";
 import { isPlan } from "@/data/tripKinds";
 import ProtectedContent from "@/components/ProtectedContent";
 import TripMemberInfo from "../components/itinerary/TripMemberInfo";
+import TripPhotosCard from "../components/itinerary/TripPhotos";
 import { isItineraryOpen, opensOn } from "@/data/membership";
 import { inquiryForTrip } from "@/lib/inquiry";
 
@@ -458,6 +459,8 @@ IMPORTANT: The trip is exactly ${totalDays} day(s). Only generate activities for
           )}
         </GlassCard>
       </div>
+
+      <TripPhotosCard tripId={tripId} />
 
       {/* Day Timeline */}
       <div className="px-6 mt-8 space-y-5 pb-28">

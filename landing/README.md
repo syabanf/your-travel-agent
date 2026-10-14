@@ -16,7 +16,7 @@ landing/
 ├── destinasi.html        ← destination list
 │   └── destinasi-detail.html ← ?id= : travel info and related packages
 ├── visa.html             ← countries we handle (accordion and search)
-├── galeri.html           ← photo gallery with lightbox
+├── galeri.html           ← photo gallery, filtered by destination
 ├── artikel.html          ← article list (filter by topic)
 │   └── artikel-detail.html   ← ?id= : article body
 ├── tentang.html          ← company profile
@@ -84,12 +84,13 @@ date in the past drops out, so the home page never advertises a trip that has le
 All content lives in **`data.js`**, one file used by every page. Change it
 there and the whole site follows:
 
-- `TOURS`: packages (`price: null` shows "Contact us"; `seats <= 6` shows a seats-left badge; `itinerary`, `includes`, `excludes` and `gallery` fill the detail page)
-- `DESTS`: destinations (`best`, `visa` and `currency` show on the detail page)
+- `TOURS`: packages (`price: null` shows "Contact us"; `seats <= 6` shows a seats-left badge; `itinerary`, `includes`, `excludes` and `gallery` fill the detail page; `leader` and `single`, the single-room supplement, feed the booking card on the destination page). `country` must equal a destination's `name` for the package to show on that destination
+- `DESTS`: destinations. The detail page needs every field: `overview` (paragraphs), `highlights`, `cities`, `best`, `visa`, `visaFee` (IDR per person, `0` when no visa is needed), `currency`, `language`, `timezone` and `flight`. The filters on `destinasi.html` read `best` for the travel month and treat a `visa` with "waiver", "e-Visa" or "on arrival" as an easy visa; trip length and price come from the matching `TOURS`
 - `SERVICES`: services (fill `layanan.html` and the footer menu)
 - `VISA_COUNTRIES`: the countries on `visa.html`
 - `NEWS`: articles (`body` is an array of paragraphs for the detail page)
-- `GALLERY`, `REVIEWS`, `COMPANY`: gallery, reviews and the company profile and offices
+- `GALLERY`: photos from past group departures, one `shot(dest, photoId, by, trip, featured)` per photo. `dest` is a `DESTS` id. `galeri.html` filters them by destination, and each destination page shows its own as the traveller gallery and the top photo strip. `featured` photos come first in both
+- `REVIEWS`, `COMPANY`: reviews and the company profile and offices
 
 Adding a package or an article takes one new object: the list page **and** its
 detail page pick it up.

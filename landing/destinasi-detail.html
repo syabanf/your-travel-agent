@@ -17,163 +17,241 @@
 
 <a href="#main" class="skip-link">Skip to content</a>
 
-<main id="main">
-
-<!-- ══ Destination hero ══ -->
-<section class="phero">
-  <div class="phero__bg" id="ddBg" aria-hidden="true"></div>
-  <div class="wrap phero__in" id="ddHead"></div>
-</section>
-
-<!-- ══ Destination profile ══ -->
-<section class="sect">
-  <div class="wrap" id="ddBody"></div>
-</section>
-
-<!-- ══ Packages to this destination ══ -->
-<section class="sect sect--tint" id="ddToursSect" hidden>
-  <div class="wrap" id="ddTours"></div>
-</section>
-
+<main id="main" class="dd">
+  <div class="wrap">
+    <nav class="crumb crumb--dark" aria-label="Breadcrumb" id="ddCrumb">
+      <a href="index.html">Home</a><span aria-hidden="true">/</span><a href="destinasi.html">Destinations</a>
+    </nav>
+    <div id="ddPage"></div>
+  </div>
 </main>
 
 <script src="./data.js"></script>
 <script src="./common.js"></script>
 <script>
 (() => {
-  const DESTS = window.DESTS || [];
-  const TOURS = window.TOURS || [];
-  const dest = DESTS.find((d) => d.id === qs("id"));
-  const bg = document.getElementById("ddBg");
-  const head = document.getElementById("ddHead");
-  const body = document.getElementById("ddBody");
-  const toursSect = document.getElementById("ddToursSect");
-  const tours = document.getElementById("ddTours");
+  const dest = (window.DESTS || []).find((d) => d.id === qs("id"));
+  const page = document.getElementById("ddPage");
+  const crumb = document.getElementById("ddCrumb");
 
-  /* ── Destination not found ─────────────────────────────────── */
   if (!dest) {
     document.title = "Destination not found | Icon Holiday";
-    head.innerHTML = `
-      <nav class="crumb" aria-label="Breadcrumb">
-        <a href="index.html">Home</a>
-        <span aria-hidden="true">/</span>
-        <a href="destinasi.html">Destinations</a>
-        <span aria-hidden="true">/</span>
-        <span>Destination not found</span>
-      </nav>
-      <h1>Destination not found</h1>
-      <p>The link you opened may have expired or contain a typo.</p>`;
-    body.innerHTML = `
+    page.innerHTML = `
       <div class="empty">
-        <b>Destination not found</b>
-        Go back to the destination list to see where we travel.
-        <p class="note"><a class="btn btn--primary" href="destinasi.html"><svg class="i"><use href="#i-back"/></svg> View all destinations</a></p>
+        <h1 class="empty__title">Destination not found</h1>
+        <p>The link may be wrong, or the destination is no longer listed.</p>
+        <p class="note"><a class="btn btn--ghost" href="destinasi.html"><svg class="i"><use href="#i-back"/></svg> Back to destinations</a></p>
       </div>`;
     return;
   }
 
-  /* ── Hero ──────────────────────────────────────────────────── */
-  document.title = `${dest.name} | Icon Holiday`;
-  bg.style.backgroundImage = `url("${dest.img}")`;
-  head.innerHTML = `
-    <nav class="crumb" aria-label="Breadcrumb">
-      <a href="index.html">Home</a>
-      <span aria-hidden="true">/</span>
-      <a href="destinasi.html">Destinations</a>
-      <span aria-hidden="true">/</span>
-      <span>${esc(dest.name)}</span>
-    </nav>
-    <p class="eyebrow eyebrow--light">${esc(dest.region)}</p>
-    <h1>${esc(dest.name)}<span class="dot">.</span></h1>
-    <p>${esc(dest.blurb)}</p>`;
+  document.title = `${dest.name} | Icon Holiday Destinations`;
+  document.querySelector('meta[name="description"]').setAttribute("content", dest.blurb);
+  crumb.insertAdjacentHTML("beforeend", `<span aria-hidden="true">/</span><span>${esc(dest.name)}</span>`);
 
-  /* ── Matching packages: name first, then region ────────────── */
-  const norm = (s) => String(s || "").toLowerCase().trim();
-  const dn = norm(dest.name);
-  const byName = TOURS.filter((t) => {
-    const c = norm(t.country);
-    return c === dn || c.includes(dn) || dn.includes(c) || norm(t.title).includes(dn);
-  });
-  const byRegion = TOURS.filter((t) => norm(t.region) === norm(dest.region));
-  const matches = byName.length ? byName : byRegion;
+  const tours = toursFor(dest);
+  // One row per upcoming date; the seat count belongs to the soonest date of each tour.
+  const deps = tours
+    .flatMap((t) => t.dates.filter(isUpcoming).map((date, i) => ({ t, date, seats: i === 0 ? t.seats : null })))
+    .sort((a, b) => parseDate(a.date) - parseDate(b.date));
+  const next = deps[0];
+  const photos = photosFor(dest.id);
+  const months = bestMonths(dest.best);
+  const plural = (n, word, many = `${word}s`) => `${n} ${n === 1 ? word : many}`;
+  const seatText = (d) => (d.seats ? `${plural(d.seats, "seat")} left` : "seats open");
 
-  /* ── Profile: two columns ──────────────────────────────────── */
-  body.innerHTML = `
-    <div class="detail">
+  const facts = [
+    next && ["i-cal", `Next departure ${next.date}`,
+      `${next.t.days} days, ${seatText(next)}. ${deps.length > 1 ? `${plural(deps.length - 1, "more date")} below.` : ""}`],
+    ["i-map", `${plural(dest.cities.length, "city", "cities")}: ${dest.cities.join(", ")}`,
+      tours.length ? `On ${plural(tours.length, "group package")} from Jakarta and Medan.` : "On a private route we plan with you."],
+    next && ["i-users", `Tour leader ${next.t.leader}`, "Travels with the group from the airport in Jakarta and back again."],
+    ["i-doc", `Visa: ${dest.visa}`,
+      dest.visaFee ? `We file it for you for ${rp(dest.visaFee)} per person.` : "No visa fee. We register the whole group for you."],
+    ["i-plane", dest.flight, `Time zone ${dest.timezone}.`],
+  ].filter(Boolean);
+
+  const pkgRow = (t) => {
+    const dates = t.dates.filter(isUpcoming);
+    return `
+      <a class="pkg" href="tour-detail.html?id=${encodeURIComponent(t.id)}">
+        <img src="${esc(t.img)}" alt="" loading="lazy" decoding="async" />
+        <span class="pkg__body">
+          <b>${esc(t.title)}</b>
+          <span>${dates.length ? esc(dates.join(" · ")) : "No dates scheduled yet"}</span>
+        </span>
+        <span class="pkg__price">${rp(t.price)}<small>per person</small></span>
+      </a>`;
+  };
+
+  page.innerHTML = `
+    <div class="ddgal">
+      ${photos.slice(0, 3).map(({ img: src }, i) => `
+        <button class="ddgal__item" type="button" data-i="${i}" aria-label="Open photo ${i + 1} of ${photos.length}">
+          <img src="${esc(i ? src : src.replace("w=900", "w=1600"))}" alt="" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" />
+          ${i === 2 ? `<span class="ddgal__all"><svg class="i"><use href="#i-grid"/></svg> All ${photos.length} photos</span>` : ""}
+        </button>`).join("")}
+    </div>
+
+    <div class="detail dd__cols">
       <div>
-        <article class="panel">
-          <h2><svg class="i"><use href="#i-map"/></svg> Overview</h2>
+        <header class="dd__head">
+          <h1>${esc(dest.name)}<span class="dot">.</span></h1>
           <p>${esc(dest.blurb)}</p>
-          <p>We take guests to ${esc(dest.name)} on group tours with scheduled departures and on private tours on your dates, with flights, hotels, ground transport, attraction tickets and an Indonesian-speaking tour leader.</p>
-          <p>If the group departure dates don't suit you, we can rework the same route for your own family or group.</p>
-        </article>
+          <p class="dd__meta">${esc(dest.region)} · best ${esc(dest.best)} · ${esc(dest.currency)}</p>
+        </header>
 
-        <article class="panel">
-          <h2><svg class="i"><use href="#i-doc"/></svg> Travel information</h2>
-          <div class="buy__meta">
-            <div><span><svg class="i"><use href="#i-pin"/></svg> Region</span><b>${esc(dest.region)}</b></div>
-            <div><span><svg class="i"><use href="#i-cal"/></svg> Best season</span><b>${esc(dest.best)}</b></div>
-            <div><span><svg class="i"><use href="#i-doc"/></svg> Visa</span><b>${esc(dest.visa)}</b></div>
-            <div><span><svg class="i"><use href="#i-grid"/></svg> Currency</span><b>${esc(dest.currency)}</b></div>
+        <ul class="facts">
+          ${facts.map(([icon, title, text]) => `
+            <li><svg class="i"><use href="#${icon}"/></svg><span><b>${esc(title)}</b>${esc(text)}</span></li>`).join("")}
+        </ul>
+
+        <section class="dd__sect" aria-labelledby="ddAbout">
+          <h2 id="ddAbout">About the trip</h2>
+          ${dest.overview.map((p) => `<p>${esc(p)}</p>`).join("")}
+        </section>
+
+        <section class="dd__sect" aria-labelledby="ddSee">
+          <h2 id="ddSee">What you'll see</h2>
+          <ul class="incl incl--yes dd__two">
+            ${dest.highlights.map((h) => `<li><svg class="i"><use href="#i-check"/></svg>${esc(h)}</li>`).join("")}
+          </ul>
+        </section>
+
+        <section class="dd__sect" aria-labelledby="ddGal">
+          <h2 id="ddGal">Traveller gallery</h2>
+          <p>${plural(photos.length, "photo")} from our travellers and tour leaders on past ${esc(dest.name)} departures.</p>
+          <div class="gal gal--dd">${photos.map(photoTile).join("")}</div>
+          <p class="gal__share">
+            Travelled with us? Upload your photos to your trip group in the <a data-link="app" href="#">Icon Holiday app</a>.
+            Your tour leader features the best ones here.
+            <a href="galeri.html?dest=${encodeURIComponent(dest.id)}">Open in the Gallery</a>
+          </p>
+        </section>
+
+        <section class="dd__sect" aria-labelledby="ddWhen">
+          <h2 id="ddWhen">When to go</h2>
+          <div class="months months--light dd__months" role="img" aria-label="Best months: ${esc(dest.best)}">
+            ${MONTHS.map((m, k) => `<span class="${months.has(k) ? "is-on" : ""}">${m}</span>`).join("")}
           </div>
-          <p class="note">Visa and document rules can change at any time. Check with our team before you buy tickets.</p>
-        </article>
+          <p>Best months: ${esc(dest.best)}. ${deps.length ? `Our group dates: ${esc(deps.map((d) => d.date).join(", "))}.` : ""}</p>
+        </section>
+
+        <section class="dd__sect" aria-labelledby="ddInfo">
+          <h2 id="ddInfo">Practical information</h2>
+          <dl class="kv">
+            <div><dt>Currency</dt><dd>${esc(dest.currency)}</dd></div>
+            <div><dt>Language</dt><dd>${esc(dest.language)}</dd></div>
+            <div><dt>Time zone</dt><dd>${esc(dest.timezone)}</dd></div>
+            <div><dt>Flight</dt><dd>${esc(dest.flight)}</dd></div>
+            <div><dt>Visa</dt><dd>${esc(dest.visa)}</dd></div>
+            <div><dt>Visa fee</dt><dd>${dest.visaFee ? `${rp(dest.visaFee)} per person` : "None"}</dd></div>
+          </dl>
+          <p class="note">Visa and entry rules change. We check them again for your dates before you pay the deposit.</p>
+        </section>
+
+        <section class="dd__sect" aria-labelledby="ddPkgs">
+          <h2 id="ddPkgs">Packages to ${esc(dest.name)}</h2>
+          ${tours.length ? `<div class="pkgs">${tours.map(pkgRow).join("")}</div>`
+            : `<p>No group package is listed right now. Tell us your dates and group size and we will plan a private route.</p>`}
+        </section>
       </div>
 
-      <aside class="buy" aria-label="Destination summary">
-        <p class="buy__price">${esc(dest.name)}</p>
-        <p class="buy__unit">${esc(dest.region)}</p>
-
-        <div class="buy__meta">
-          <div><span><svg class="i"><use href="#i-cal"/></svg> Best season</span><b>${esc(dest.best)}</b></div>
-          <div><span><svg class="i"><use href="#i-doc"/></svg> Visa</span><b>${esc(dest.visa)}</b></div>
-          <div><span><svg class="i"><use href="#i-map"/></svg> Packages available</span><b>${byName.length} ${byName.length === 1 ? "package" : "packages"}</b></div>
-        </div>
-
-        <div class="grid">
-          <a class="btn btn--primary" href="kontak.html?dest=${encodeURIComponent(dest.id)}">Ask about a trip to ${esc(dest.name)}</a>
-          <a class="btn btn--ghost" href="tour.html"><svg class="i"><use href="#i-map"/></svg> View all packages</a>
-        </div>
-
-        <p class="buy__note">Free consultation. Tell us your dates and number of travelers and we will put the plan together.</p>
-      </aside>
+      <aside class="buy book" aria-label="Book a trip to ${esc(dest.name)}" id="book"></aside>
     </div>`;
 
-  /* ── Packages to this destination ──────────────────────────── */
-  const card = (t) => `
-    <a class="tour" href="tour-detail.html?id=${encodeURIComponent(t.id)}">
-      <div class="tour__media">
-        <img src="${esc(t.img)}" alt="${esc(t.country)}" loading="lazy" decoding="async" />
-        <span class="tour__country">${esc(t.country)}</span>
-        <span class="tour__days">${esc(t.days)} days</span>
-      </div>
-      <div class="tour__body">
-        <p class="tour__date">${esc((t.dates || []).join(" · "))}</p>
-        <h3 class="tour__title">${esc(t.title)}</h3>
-        <div class="tour__foot">
-          <p class="tour__price">${t.price ? esc(rp(t.price)) : "Contact us"}<small>${t.price ? "per person" : "for the latest price"}</small></p>
-          ${t.seats <= 6 ? `<span class="tour__seat">${esc(t.seats)} seats left</span>` : ""}
-        </div>
-      </div>
-    </a>`;
-
-  toursSect.hidden = false;
-  if (matches.length) {
-    const direct = byName.length > 0;
-    tours.innerHTML = `
-      <p class="eyebrow">2026 Departures</p>
-      <h2 class="sect__title">${direct ? `Packages to ${esc(dest.name)}` : `Other packages in ${esc(dest.region)}`}</h2>
-      ${direct ? "" : `<p class="sect__lead">There are no group departures to ${esc(dest.name)} this year yet. Here are other packages in the same region, or contact us to plan a custom route.</p>`}
-      <div class="grid grid--3 reveal">${matches.map(card).join("")}</div>
-      <p class="note">Prices are per person and include flights, hotels and a tour leader. Seats are limited, so contact us for current availability.</p>`;
+  /* ── Booking card ──────────────────────────────────────────── */
+  const book = document.getElementById("book");
+  if (!next) {
+    book.innerHTML = `
+      <p class="buy__price">${esc(dest.name)}</p>
+      <p class="buy__unit">Private trip on your dates</p>
+      <a class="btn btn--primary" href="kontak.html?dest=${encodeURIComponent(dest.id)}">Plan a trip with us</a>
+      <p class="buy__note">Free consultation. A consultant replies the same day.</p>`;
   } else {
-    tours.innerHTML = `
-      <p class="eyebrow">2026 Departures</p>
-      <h2 class="sect__title">Packages to ${esc(dest.name)}</h2>
-      <p class="note">No group departures to ${esc(dest.name)} are listed right now. Tell us your dates and number of travelers and we will plan a custom itinerary, including flights, hotels and the visa. <a href="kontak.html?dest=${encodeURIComponent(dest.id)}">Contact us</a>.</p>`;
+    const byTour = tours.filter((t) => deps.some((d) => d.t === t));
+    const option = (d) => `<option value="${esc(d.t.id)}|${esc(d.date)}">${esc(d.date)} · ${seatText(d)}</option>`;
+    book.innerHTML = `
+      <p class="book__price"><b id="bkPrice"></b><span>/ person</span><s id="bkWas"></s></p>
+      <form class="book__form" id="bkForm">
+        <label class="book__f">
+          <span>Departure</span>
+          <select name="dep">
+            ${byTour.length > 1
+              ? byTour.map((t) => `<optgroup label="${esc(t.title)}">${deps.filter((d) => d.t === t).map(option).join("")}</optgroup>`).join("")
+              : deps.map(option).join("")}
+          </select>
+        </label>
+        <div class="book__f book__pax">
+          <span id="bkPaxLabel">Travelers</span>
+          <output id="bkPaxText" aria-labelledby="bkPaxLabel"></output>
+          <div class="stepper">
+            <button type="button" data-step="-1" aria-label="One traveler fewer">−</button>
+            <b id="bkPax" aria-live="polite"></b>
+            <button type="button" data-step="1" aria-label="One traveler more">+</button>
+          </div>
+        </div>
+        <label class="book__f">
+          <span>Room</span>
+          <select name="room"><option value="twin">Twin sharing</option><option value="single">Single room</option></select>
+        </label>
+      </form>
+      <a class="btn btn--primary book__go" id="bkGo" href="kontak.html">Book this trip <svg class="i"><use href="#i-arrow"/></svg></a>
+      <p class="buy__note">You won't be charged yet. A 30% deposit is due once we confirm your seats.</p>
+      <dl class="book__sum" id="bkSum"></dl>
+      <p class="book__promo" id="bkPromo"></p>`;
+
+    const form = document.getElementById("bkForm");
+    let pax = 2;
+
+    const render = () => {
+      const [id, date] = form.dep.value.split("|");
+      const t = tours.find((x) => x.id === id);
+      const d = deps.find((x) => x.t === t && x.date === date);
+      const max = Math.min(d.seats || 10, 10);
+      pax = Math.max(1, Math.min(pax, max));
+      const single = form.room.value === "single";
+      const off = t.priceBefore - t.price;
+      const lines = [
+        [`${rp(t.priceBefore)} × ${plural(pax, "traveler")}`, t.priceBefore * pax],
+        single && [`Single room × ${pax}`, t.single * pax],
+        dest.visaFee && [`${dest.name} visa × ${pax}`, dest.visaFee * pax],
+        off > 0 && ["Early bird discount", -off * pax],
+      ].filter(Boolean);
+      const total = lines.reduce((sum, [, v]) => sum + v, 0);
+
+      document.getElementById("bkPrice").textContent = rp(t.price);
+      document.getElementById("bkWas").textContent = off > 0 ? rp(t.priceBefore) : "";
+      document.getElementById("bkPax").textContent = pax;
+      document.getElementById("bkPaxText").textContent = plural(pax, "adult");
+      form.querySelector('[data-step="-1"]').disabled = pax <= 1;
+      form.querySelector('[data-step="1"]').disabled = pax >= max;
+      form.room.options[1].textContent = `Single room (+${rp(t.single)})`;
+      document.getElementById("bkSum").innerHTML = lines.map(([k, v]) =>
+        `<div${v < 0 ? ' class="is-off"' : ""}><dt>${esc(k)}</dt><dd>${v < 0 ? "− " : ""}${rp(Math.abs(v))}</dd></div>`).join("")
+        + `<div class="book__total"><dt>Total</dt><dd>${rp(total)}</dd></div>`;
+      document.getElementById("bkPromo").textContent = off > 0
+        ? `Early bird price: you save ${rp(off)} per person while the ${t.seats} seats on the next date last.`
+        : "Book with a 30% deposit. The balance is due 30 days before departure.";
+      document.getElementById("bkGo").href = `kontak.html?${new URLSearchParams({ tour: t.id, date, pax, room: form.room.value })}`;
+    };
+
+    form.addEventListener("change", render);
+    form.addEventListener("click", (e) => {
+      const step = e.target.closest("[data-step]");
+      if (!step) return;
+      pax += Number(step.dataset.step);
+      render();
+    });
+    render();
   }
 
-  window.initReveal();
+  /* ── Photos ────────────────────────────────────────────────── */
+  page.addEventListener("click", (e) => {
+    const tile = e.target.closest("[data-i]");
+    if (tile) openLightbox(photos, Number(tile.dataset.i));
+  });
+  wireLinks(page);
 })();
 </script>
 </body>
